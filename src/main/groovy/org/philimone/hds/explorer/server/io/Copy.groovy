@@ -1,7 +1,5 @@
 package org.philimone.hds.explorer.server.io
 
-import net.openva.server.model.WhoVa2016
-
 /**
  * Created by paul on 4/6/17.
  */

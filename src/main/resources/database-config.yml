@@ -1,0 +1,20 @@
+#system global variables
+hds.explorer.database.using_openhds: true
+openhds.individual.custom_code: lastName
+
+dataSources:
+# Default datasource for HDS-Database
+  dataSource.pooled: true
+  dataSource.driverClassName: com.mysql.jdbc.Driver
+  dataSource.dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+  dataSource.username: hds_explorer
+  dataSource.password: d33_2019xx
+  dataSource.url: jdbc:mysql://localhost/hds_explorer_db?createDatabaseIfNotExist=true&autoReconnect=true&zeroDateTimeBehavior=convertToNull
+
+# Datasource properties for OpenHDS - to be able to access openhds tables - optional
+  openhds.pooled: true
+  openhds.driverClassName: com.mysql.jdbc.Driver
+  openhds.dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+  openhds.username: hds_explorer
+  openhds.password: d33_2019xx
+  openhds.url: jdbc:mysql://localhost/openhds?autoReconnect=true&zeroDateTimeBehavior=convertToNull
