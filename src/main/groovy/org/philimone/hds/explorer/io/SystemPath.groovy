@@ -4,26 +4,26 @@ package org.philimone.hds.explorer.io
  * Created by paul on 5/6/15.
  */
 class SystemPath {
-    static String HOME_PATH = ""
-    static String APP_PATH = "openva-ext-files"
-    static String BIN_PATH = "openva-ext-files${File.separator}bin"
-    static String LOG_PATH = "openva-ext-files${File.separator}logs"
-    static String RESOURCES_PATH = "openva-ext-files${File.separator}exported-files"
+    static String HOME_PATH = "/var/lib/hds-explorer" /* we must ensure that this path is created and tomcat has access to it*/
+    static String GEN_PATH = "generated-files" /* xml files that will be downloaded to the mobile app */
+    static String BIN_PATH = "bin"
+    static String LOG_PATH = "logs"
+    static String EXT_PATH = "a-docs" /* uploaded files or attachments docs directory */
 
-    static String getAbsoluteAppPath(){
-        return "${HOME_PATH}${APP_PATH}"
+    static String getGeneratedFilesPath(){
+        return "${HOME_PATH}${GEN_PATH}"
     }
 
-    static String getAbsoluteBinPath(){
+    static String getBinariesPath(){
         return "${HOME_PATH}${BIN_PATH}"
     }
 
-    static String getAbsoluteLogPath(){
+    static String getLogsPath(){
         return "${HOME_PATH}${LOG_PATH}"
     }
 
-    static String getAbsoluteResourcesPath(){
-        return "${HOME_PATH}${RESOURCES_PATH}"
+    static String getExternalDocsPath(){
+        return "${HOME_PATH}${EXT_PATH}"
     }
 }
 
