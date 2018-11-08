@@ -1,4 +1,4 @@
-package hds.explorer.server
+package org.philimone.server.hds.explorer
 
 class BootStrap {
 

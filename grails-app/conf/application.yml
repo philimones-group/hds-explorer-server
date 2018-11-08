@@ -2,7 +2,7 @@
 grails:
     profile: web
     codegen:
-        defaultPackage: hds.explorer.server
+        defaultPackage: org.philimone.hds.explorer.server
     gorm:
         reactor:
             # Whether to translate GORM events into Reactor events
