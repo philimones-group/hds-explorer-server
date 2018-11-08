@@ -11,7 +11,7 @@ buildscript {
 }
 
 version "0.1"
-group "hds.explorer.server"
+group "org.philimone.hds.explorer.server"
 
 apply plugin:"eclipse"
 apply plugin:"idea"
@@ -58,6 +58,22 @@ dependencies {
     testRuntime "org.seleniumhq.selenium:selenium-chrome-driver:2.47.1"
     testRuntime "org.seleniumhq.selenium:selenium-htmlunit-driver:2.47.1"
     testRuntime "net.sourceforge.htmlunit:htmlunit:2.18"
+
+    //plugins
+    compile 'com.google.guava:guava:22.0'
+    runtime 'mysql:mysql-connector-java:5.1.29'
+    runtime 'org.postgresql:postgresql:9.3-1101-jdbc41'
+
+    runtime "org.grails.plugins:jquery:1.11.1"
+    compile 'org.grails.plugins:jasper:2.1.0.RC1'
+    compile "org.grails.plugins:jquery-ui:1.10.4"
+    runtime 'org.grails.plugins:twitter-bootstrap:3.3.5'
+    //compile 'org.grails.plugins:db-reverse-engineer:4.0.0'
+
+    compile 'org.grails.plugins:spring-security-core:3.2.0'
+
+    //load local libraries
+    compile fileTree(dir: 'lib', include: '*.jar')
 }
 
 bootRun {
