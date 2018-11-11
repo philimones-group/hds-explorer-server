@@ -12,10 +12,31 @@ import java.text.SimpleDateFormat
 class GeneralUtilitiesService {
 
     def springSecurityService
+    def mailService
     def grailsApplication
 
     def boolean isUsingOpenHDS(){
         return grailsApplication.config.openva.database.using_openhds
+    }
+
+    def boolean isUsingMailService(){
+        return grailsApplication.config.hds.explorer.mail.configured
+    }
+
+    def String getDefaultMailSender(){
+        return grailsApplication.config.grails.mail.username
+    }
+
+    def sendTextEmail(String toEmail, String subjectText, String message){
+        if (isUsingMailService()){
+            def sender = getDefaultMailSender()
+            mailService.sendMail {
+                from sender
+                to toEmail
+                subject subjectText
+                text message
+            }
+        }
     }
 
     def String getMessage(String messageCode, Object[] args, String defaultMessage, Locale locale) {

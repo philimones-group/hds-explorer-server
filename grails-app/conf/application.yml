@@ -95,13 +95,25 @@ hibernate:
         use_second_level_cache: false
         use_query_cache: false
 
+grails:
+     mail:
+          host: "smtp.gmail.com"
+          port: 465
+          username: "youremail@gmail.com"
+          password: "yourpassword"
+          props:
+              mail.smtp.auth: "true"
+              mail.smtp.socketFactory.port: "465"
+              mail.smtp.socketFactory.class: "javax.net.ssl.SSLSocketFactory"
+              mail.smtp.socketFactory.fallback: "false"
+
 dataSources:
     dataSource:
         pooled: true
         driverClassName: com.mysql.jdbc.Driver
         dialect: org.hibernate.dialect.MySQL5InnoDBDialect
         username: hds_explorer
-        password: d33_2019xx
+        password: your_password
         url: jdbc:mysql://localhost/hds_explorer_db?createDatabaseIfNotExist=true&autoReconnect=true&zeroDateTimeBehavior=convertToNull
     openhds:
         pooled: true

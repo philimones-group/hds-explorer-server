@@ -121,7 +121,7 @@ class BootStrap {
             user.lastName = "Administrator"
             user.username = "admin";
             user.password = "admin";
-            user.email = "paulphilimone@gmail.com"
+            user.email = "youremail@gmail.com"
 
             println ("admin user - hasErrors: "+user.hasErrors())
             println ("admin user - saving: " + userService.addUser(user))

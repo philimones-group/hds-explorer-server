@@ -1,6 +1,7 @@
 #system global variables
 hds.explorer.database.using_openhds: true
-openhds.individual.custom_code: lastName
+hds.explorer.mail.configured: true
+
 
 dataSources:
 # Default datasource for HDS-Database
@@ -8,7 +9,7 @@ dataSources:
   dataSource.driverClassName: com.mysql.jdbc.Driver
   dataSource.dialect: org.hibernate.dialect.MySQL5InnoDBDialect
   dataSource.username: hds_explorer
-  dataSource.password: d33_2019xx
+  dataSource.password: your_password
   dataSource.url: jdbc:mysql://localhost/hds_explorer_db?createDatabaseIfNotExist=true&autoReconnect=true&zeroDateTimeBehavior=convertToNull
 
 # Datasource properties for OpenHDS - to be able to access openhds tables - optional
@@ -16,5 +17,19 @@ dataSources:
   openhds.driverClassName: com.mysql.jdbc.Driver
   openhds.dialect: org.hibernate.dialect.MySQL5InnoDBDialect
   openhds.username: hds_explorer
-  openhds.password: d33_2019xx
+  openhds.password: your_password
   openhds.url: jdbc:mysql://localhost/openhds?autoReconnect=true&zeroDateTimeBehavior=convertToNull
+
+# Don't forget to turn on access from a less secure app in your Gmail account configuration, otherwise, google will block it and return this error.
+#
+grails:
+     mail:
+          host: "smtp.gmail.com"
+          port: 465
+          username: "youremail@gmail.com"
+          password: "yourpassword@gmail.com"
+          props:
+              mail.smtp.auth: "true"
+              mail.smtp.socketFactory.port: "465"
+              mail.smtp.socketFactory.class: "javax.net.ssl.SSLSocketFactory"
+              mail.smtp.socketFactory.fallback: "false"
