@@ -38,7 +38,7 @@ class Application extends GrailsAutoConfiguration implements EnvironmentAware {
     }
 
     File getExternalConfigurationFile(){
-        def url = getClass().classLoader.getResource("database-config.yml")
+        def url = getClass().classLoader.getResource("app-config.yml")
 
         return new File(url.toURI())
     }
