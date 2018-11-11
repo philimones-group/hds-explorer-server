@@ -3,6 +3,7 @@ package org.philimone.hds.explorer.authentication
 import groovy.transform.EqualsAndHashCode
 import groovy.transform.ToString
 import grails.compiler.GrailsCompileStatic
+import org.philimone.hds.explorer.services.GeneralUtilitiesService
 
 @GrailsCompileStatic
 @EqualsAndHashCode(includes='authority')
@@ -10,6 +11,8 @@ import grails.compiler.GrailsCompileStatic
 class Role implements Serializable {
 
 	private static final long serialVersionUID = 1
+
+	transient GeneralUtilitiesService generalUtilitiesService
 
 	static String ROLE_ADMINISTRATOR = "ROLE_ADMINISTRATOR"
 	static String ROLE_DATA_MANAGER = "ROLE_DATA_MANAGER"
@@ -19,8 +22,6 @@ class Role implements Serializable {
 	static String LABEL_DATA_MANAGER = "role.datamanager.label"
 	static String LABEL_FIELD_WORKER = "role.fieldworker.label"
 
-	transient generalUtilitiesService
-
 	String name
 	String authority
 
@@ -29,7 +30,7 @@ class Role implements Serializable {
 	}
 
 	static constraints = {
-		name nullable: false
+		name nullable: false, blank: false
 		authority nullable: false, blank: false, unique: true
 	}
 

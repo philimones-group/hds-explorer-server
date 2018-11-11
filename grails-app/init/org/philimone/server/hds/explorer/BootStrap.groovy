@@ -14,6 +14,9 @@ class BootStrap {
     def init = { servletContext ->
 
         createDirectories(servletContext)
+        configSecurityMap()
+        defaultAppUser()
+        insertDefaults()
 
     }
 

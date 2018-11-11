@@ -13,6 +13,8 @@ class UserService {
         user.creationDate = new Date()
 
         user.save(flush: true)
+
+        //println "error ${user.errors}"
     }
 
     def User updateUser(User user){
@@ -21,5 +23,7 @@ class UserService {
         user.updatedDate = new Date()
 
         user.save(flush: true)
+
+        //println "error ${user.errors}"
     }
 }

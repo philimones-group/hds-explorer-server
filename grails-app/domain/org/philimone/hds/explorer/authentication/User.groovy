@@ -51,8 +51,18 @@ class User implements Serializable {
     static transients = ['isPasswordEncoded']
 
     static constraints = {
+
+        firstName blank: false
+        lastName blank: false
         password nullable: false, blank: false, password: true
         username nullable: false, blank: false, unique: true
+        email blank: true
+
+        createdBy nullable: true
+        creationDate nullable: true
+        updatedBy nullable: true
+        updatedDate nullable:true
+
     }
 
     static mapping = {
