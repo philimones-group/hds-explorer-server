@@ -1,0 +1,5 @@
+# create the hds-explorer directory
+sudo mkdir /var/lib/hds-explorer
+
+# grant access to tomcat user
+sudo chown -R tomcat8:tomcat8 /var/lib/hds-explorer/
