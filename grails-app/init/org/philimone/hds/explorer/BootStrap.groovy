@@ -1,4 +1,4 @@
-package org.philimone.server.hds.explorer
+package org.philimone.hds.explorer
 
 import org.philimone.hds.explorer.authentication.Role
 import org.philimone.hds.explorer.authentication.SecurityMap

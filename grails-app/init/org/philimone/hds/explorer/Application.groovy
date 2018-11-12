@@ -1,4 +1,4 @@
-package org.philimone.server.hds.explorer
+package org.philimone.hds.explorer
 
 import grails.boot.GrailsApp
 import grails.boot.config.GrailsAutoConfiguration
