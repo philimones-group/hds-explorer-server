@@ -4,8 +4,6 @@ import org.philimone.hds.explorer.authentication.User
 
 class ApplicationParam {
 
-    transient generalUtilitiesService
-
     String name
     String type
     String value
@@ -26,17 +24,4 @@ class ApplicationParam {
         updatedDate nullable:true
     }
 
-    def beforeInsert() {
-        createdBy  =  generalUtilitiesService.currentUser()
-        this.creationDate = new Date()
-    }
-
-    def beforeUpdate() {
-        this.updatedBy = generalUtilitiesService.currentUser()
-        this.updatedDate = new Date()
-    }
-
-    static mapping = {
-        autowire true
-    }
 }

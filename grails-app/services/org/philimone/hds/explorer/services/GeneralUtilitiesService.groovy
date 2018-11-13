@@ -27,6 +27,10 @@ class GeneralUtilitiesService {
         return grailsApplication.config.grails.mail.username
     }
 
+    def String getConfigValue(String variable){
+        return grailsApplication.config."${variable}"
+    }
+
     def sendTextEmail(String toEmail, String subjectText, String message){
         if (isUsingMailService()){
             def sender = getDefaultMailSender()

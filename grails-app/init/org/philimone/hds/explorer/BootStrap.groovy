@@ -5,11 +5,17 @@ import org.philimone.hds.explorer.authentication.SecurityMap
 import org.philimone.hds.explorer.authentication.User
 import org.philimone.hds.explorer.authentication.UserRole
 import org.philimone.hds.explorer.io.SystemPath
+import org.philimone.hds.explorer.server.Codes
+import org.philimone.hds.explorer.server.model.logs.LogGroup
+import org.philimone.hds.explorer.server.model.logs.LogReport
+import org.philimone.hds.explorer.server.model.logs.LogStatus
+import org.philimone.hds.explorer.server.model.settings.ApplicationParam
 
 class BootStrap {
 
     def generalUtilitiesService
     def userService
+    def applicationParamService
 
     def init = { servletContext ->
 
@@ -135,6 +141,130 @@ class BootStrap {
     }
 
     def insertDefaults(){
+        def svc = generalUtilitiesService
+
+        if (LogStatus.count() == 0){
+            new LogStatus(name: LogStatus.STARTED).save(flush: true)
+            new LogStatus(name: LogStatus.FINISHED).save(flush: true)
+            new LogStatus(name: LogStatus.ERROR).save(flush: true)
+            new LogStatus(name: LogStatus.NOT_STARTED).save(flush: true)
+        }
+
+        //Inserting Log Groups
+        new LogGroup(groupId: Codes.GROUP_IMPORT_DATA_OPENHDS,   name: "OPENHDS",    description: "").save(flush: true)
+        new LogGroup(groupId: Codes.GROUP_IMPORT_DATA_XLSHDS,    name: "XLSHDS",     description: "").save(flush: true)
+        new LogGroup(groupId: Codes.GROUP_UPLOAD_TRACKING_LISTS, name: "TRACKLISTS", description: "").save(flush: true)
+        new LogGroup(groupId: Codes.GROUP_GENERATE_FILES,        name: "GENFILES",   description: "").save(flush: true)
+
+
+        //Inserting Log Reports
+
+        /* Group Import from OpenHDS */
+        new LogReport(
+                reportId: Codes.REPORT_IMPORT_FROM_OPENHDS_FIELDWORKERS,
+                group: LogGroup.findByGroupId(Codes.GROUP_IMPORT_DATA_OPENHDS),
+                status: LogStatus.findByName(LogStatus.NOT_STARTED),
+                description: 'logreport.import.openhds.fieldworkers.label'
+        ).save(flush: true)
+
+        new LogReport(
+                reportId: Codes.REPORT_IMPORT_FROM_OPENHDS_HOUSEHOLDS,
+                group: LogGroup.findByGroupId(Codes.GROUP_IMPORT_DATA_OPENHDS),
+                status: LogStatus.findByName(LogStatus.NOT_STARTED),
+                description: 'logreport.import.openhds.households.label'
+        ).save(flush: true)
+
+        new LogReport(
+                reportId: Codes.REPORT_IMPORT_FROM_OPENHDS_INDIVIDUALS,
+                group: LogGroup.findByGroupId(Codes.GROUP_IMPORT_DATA_OPENHDS),
+                status: LogStatus.findByName(LogStatus.NOT_STARTED),
+                description: 'logreport.import.openhds.individuals.label'
+        ).save(flush: true)
+
+        new LogReport(
+                reportId: Codes.REPORT_IMPORT_FROM_OPENHDS_RESIDENCIES,
+                group: LogGroup.findByGroupId(Codes.GROUP_IMPORT_DATA_OPENHDS),
+                status: LogStatus.findByName(LogStatus.NOT_STARTED),
+                description: 'logreport.import.openhds.residencies.label'
+        ).save(flush: true)
+
+
+        /* Group Import from HDS-XLS Files */
+        new LogReport(
+                reportId: Codes.REPORT_IMPORT_HDSXLS_HOUSEHOLDS,
+                group: LogGroup.findByGroupId(Codes.GROUP_IMPORT_DATA_XLSHDS),
+                status: LogStatus.findByName(LogStatus.NOT_STARTED),
+                description: 'logreport.import.hdsxls.households.label'
+        ).save(flush: true)
+
+        new LogReport(
+                reportId: Codes.REPORT_IMPORT_HDSXLS_INDIVIDUALS,
+                group: LogGroup.findByGroupId(Codes.GROUP_IMPORT_DATA_XLSHDS),
+                status: LogStatus.findByName(LogStatus.NOT_STARTED),
+                description: 'logreport.import.hdsxls.individuals.label'
+        ).save(flush: true)
+
+
+        /* Group Uploading Tracking Lists */
+        new LogReport(
+                reportId: Codes.REPORT_UPLOAD_TRACKING_LISTS_BASIC,
+                group: LogGroup.findByGroupId(Codes.GROUP_UPLOAD_TRACKING_LISTS),
+                status: LogStatus.findByName(LogStatus.NOT_STARTED),
+                description: 'logreport.upload.trackinglists.basic.label'
+        ).save(flush: true)
+
+        new LogReport(
+                reportId: Codes.REPORT_UPLOAD_TRACKING_LISTS_W_EXTRA_DATA,
+                group: LogGroup.findByGroupId(Codes.GROUP_UPLOAD_TRACKING_LISTS),
+                status: LogStatus.findByName(LogStatus.NOT_STARTED),
+                description: 'logreport.upload.trackinglists.with_extradata.label'
+        ).save(flush: true)
+
+        /* Group Generate Files */
+        new LogReport(
+                reportId: Codes.REPORT_GENERATE_USERS_ZIP_XML_FILES,
+                group: LogGroup.findByGroupId(Codes.GROUP_GENERATE_FILES),
+                status: LogStatus.findByName(LogStatus.NOT_STARTED),
+                description: 'logreport.export.users.zip_xml_files.label'
+        ).save(flush: true)
+
+        new LogReport(
+                reportId: Codes.REPORT_GENERATE_HOUSEHOLDS_ZIP_XML_FILES,
+                group: LogGroup.findByGroupId(Codes.GROUP_GENERATE_FILES),
+                status: LogStatus.findByName(LogStatus.NOT_STARTED),
+                description: 'logreport.export.households.zip_xml_files.label'
+        ).save(flush: true)
+
+        new LogReport(
+                reportId: Codes.REPORT_GENERATE_INDIVIDUALS_ZIP_XML_FILES,
+                group: LogGroup.findByGroupId(Codes.GROUP_GENERATE_FILES),
+                status: LogStatus.findByName(LogStatus.NOT_STARTED),
+                description: 'logreport.export.individuals.zip_xml_files.label'
+        ).save(flush: true)
+
+        new LogReport(
+                reportId: Codes.REPORT_GENERATE_SETTINGS_ZIP_XML_FILES,
+                group: LogGroup.findByGroupId(Codes.GROUP_GENERATE_FILES),
+                status: LogStatus.findByName(LogStatus.NOT_STARTED),
+                description: 'logreport.export.settings.zip_xml_files.label'
+        ).save(flush: true)
+
+        new LogReport(
+                reportId: Codes.REPORT_GENERATE_TRACKING_LISTS_ZIP_XML_FILES,
+                group: LogGroup.findByGroupId(Codes.GROUP_GENERATE_FILES),
+                status: LogStatus.findByName(LogStatus.NOT_STARTED),
+                description: 'logreport.export.trakinglists.zip_xml_files.label'
+        ).save(flush: true)
+
+
+        //Inserting defaults system params
+
+        def maxCols = svc.getConfigValue("hds.explorer.trackinglists.max_data_columns")
+        println "code: ${maxCols}"
+
+        def param1 = new ApplicationParam(name: Codes.PARAMS_TRACKING_LISTS_MAX_DATA_COLUMNS, type: "string", value: maxCols).save(flush: true) /* HDSS Site specific individual code variable*/
+
+        applicationParamService.addApplicationParam(param1)
 
     }
 }

@@ -1,7 +1,7 @@
 #system global variables
 hds.explorer.database.using_openhds: true
 hds.explorer.mail.configured: true
-
+hds.explorer.trackinglists.max_data_columns: 25
 
 dataSources:
 # Default datasource for HDS-Database
@@ -27,7 +27,7 @@ grails:
           host: "smtp.gmail.com"
           port: 465
           username: "youremail@gmail.com"
-          password: "yourpassword@gmail.com"
+          password: "yourpassword"
           props:
               mail.smtp.auth: "true"
               mail.smtp.socketFactory.port: "465"
