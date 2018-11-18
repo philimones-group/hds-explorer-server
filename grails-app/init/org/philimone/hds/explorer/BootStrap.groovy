@@ -108,13 +108,13 @@ class BootStrap {
             //new SecurityMap(url: "/logReport/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
 
             //rest api access
-            //new SecurityMap(url: "/api/login", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
-            //new SecurityMap(url: "/api/export/households/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
-            //new SecurityMap(url: "/api/export/members/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
-            //new SecurityMap(url: "/api/export/settings/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
-            //new SecurityMap(url: "/api/export/users/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
-            //new SecurityMap(url: "/api/export/trackinglists/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
-            //new SecurityMap(url: "/api/export/stats/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
+            new SecurityMap(url: "/api/login", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
+            new SecurityMap(url: "/api/export/households/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
+            new SecurityMap(url: "/api/export/members/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
+            new SecurityMap(url: "/api/export/settings/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
+            new SecurityMap(url: "/api/export/users/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
+            new SecurityMap(url: "/api/export/trackinglists/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
+            new SecurityMap(url: "/api/export/stats/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
 
 
         }
@@ -128,7 +128,7 @@ class BootStrap {
             user.lastName = "Administrator"
             user.username = "admin";
             user.password = "admin";
-            user.email = "paulo.filimone@manhica.net"
+            user.email = "youremail@domain.net"
 
             println ("admin user - hasErrors: "+user.hasErrors())
             println ("admin user - saving: " + userService.addUser(user))
@@ -264,17 +264,15 @@ class BootStrap {
         def maxCols = svc.getConfigValue("hds.explorer.trackinglists.max_data_columns")
         println "code: ${maxCols}"
 
-        def param1 = new ApplicationParam(name: Codes.PARAMS_TRACKING_LISTS_MAX_DATA_COLUMNS, type: "string", value: maxCols).save(flush: true) /* HDSS Site specific individual code variable*/
-
-        aps.addApplicationParam(param1)
-        aps.addApplicationParam(new ApplicationParam(name: Codes.PARAMS_HIERARCHY_LEVEL_1, type: "string", value: "").save(flush: true))
-        aps.addApplicationParam(new ApplicationParam(name: Codes.PARAMS_HIERARCHY_LEVEL_2, type: "string", value: "").save(flush: true))
-        aps.addApplicationParam(new ApplicationParam(name: Codes.PARAMS_HIERARCHY_LEVEL_3, type: "string", value: "").save(flush: true))
-        aps.addApplicationParam(new ApplicationParam(name: Codes.PARAMS_HIERARCHY_LEVEL_4, type: "string", value: "").save(flush: true))
-        aps.addApplicationParam(new ApplicationParam(name: Codes.PARAMS_HIERARCHY_LEVEL_5, type: "string", value: "").save(flush: true))
-        aps.addApplicationParam(new ApplicationParam(name: Codes.PARAMS_HIERARCHY_LEVEL_6, type: "string", value: "").save(flush: true))
-        aps.addApplicationParam(new ApplicationParam(name: Codes.PARAMS_HIERARCHY_LEVEL_7, type: "string", value: "").save(flush: true))
-        aps.addApplicationParam(new ApplicationParam(name: Codes.PARAMS_HIERARCHY_LEVEL_8, type: "string", value: "").save(flush: true))
+        aps.addApplicationParam(new ApplicationParam(name: Codes.PARAMS_TRACKING_LISTS_MAX_DATA_COLUMNS, type: "string", value: maxCols))
+        aps.addApplicationParam(new ApplicationParam(name: Codes.PARAMS_HIERARCHY_LEVEL_1, type: "string", value: ""))
+        aps.addApplicationParam(new ApplicationParam(name: Codes.PARAMS_HIERARCHY_LEVEL_2, type: "string", value: ""))
+        aps.addApplicationParam(new ApplicationParam(name: Codes.PARAMS_HIERARCHY_LEVEL_3, type: "string", value: ""))
+        aps.addApplicationParam(new ApplicationParam(name: Codes.PARAMS_HIERARCHY_LEVEL_4, type: "string", value: ""))
+        aps.addApplicationParam(new ApplicationParam(name: Codes.PARAMS_HIERARCHY_LEVEL_5, type: "string", value: ""))
+        aps.addApplicationParam(new ApplicationParam(name: Codes.PARAMS_HIERARCHY_LEVEL_6, type: "string", value: ""))
+        aps.addApplicationParam(new ApplicationParam(name: Codes.PARAMS_HIERARCHY_LEVEL_7, type: "string", value: ""))
+        aps.addApplicationParam(new ApplicationParam(name: Codes.PARAMS_HIERARCHY_LEVEL_8, type: "string", value: ""))
 
         //Inserting Default Mapping Formats
         new MappingFormatType(description: "Boolean [yes, no]", type: "Boolean", format:"yes,no").save(flush: true)

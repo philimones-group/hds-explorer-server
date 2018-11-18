@@ -59,6 +59,15 @@ grails.plugin.springsecurity.filterChain.chainMap = [
 	[pattern: '/**/css/**',      filters: 'none'],
 	[pattern: '/**/images/**',   filters: 'none'],
 	[pattern: '/**/favicon.ico', filters: 'none'],
-	[pattern: '/**',             filters: 'JOINED_FILTERS']
+	[pattern: '/api/**',         filters: 'JOINED_FILTERS,-exceptionTranslationFilter'],  /*use basicAuth only on those*/
+	[pattern: '/**',             filters: 'JOINED_FILTERS,-basicAuthenticationFilter,-basicExceptionTranslationFilter'] /*use basicAuth only on those*/
 ]
 
+// Use BCRYPT to encode passwords
+grails.plugin.springsecurity.password.algorithm = 'bcrypt'
+grails.plugin.springsecurity.logout.postOnly = false
+
+// add this fix to be able to get current user from springSecurityService
+// grails.plugin.springsecurity.sch.strategyName = org.springframework.security.core.context.SecurityContextHolder.MODE_INHERITABLETHREADLOCAL
+
+grails.plugin.springsecurity.rejectIfNoRule = true
