@@ -6,6 +6,9 @@ import groovy.transform.ToString
 import org.codehaus.groovy.util.HashCodeHelper
 import grails.compiler.GrailsCompileStatic
 
+/**
+ * Store a mapping structure between a User and a Role, represents an associations between the two
+ */
 @GrailsCompileStatic
 @ToString(cache=true, includeNames=true, includePackage=false)
 class UserRole implements Serializable {

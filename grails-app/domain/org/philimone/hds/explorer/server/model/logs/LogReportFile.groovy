@@ -1,5 +1,8 @@
 package org.philimone.hds.explorer.server.model.logs
 
+/**
+ * A Log Report File represents the link to a file that contains details/logs of the execution of an specific task, generally the file can be downloaded from the application
+ */
 class LogReportFile {
 
     Date creationDate

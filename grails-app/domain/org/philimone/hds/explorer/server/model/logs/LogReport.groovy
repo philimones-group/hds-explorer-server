@@ -1,5 +1,9 @@
 package org.philimone.hds.explorer.server.model.logs
 
+/**
+ * A Log Report represents a register/report of the status of an specific execution that started and ended at an specific time
+ * Used to control the execution and report of a specific task
+ */
 class LogReport {
 
     int reportId

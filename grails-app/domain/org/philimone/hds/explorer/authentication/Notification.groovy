@@ -1,5 +1,8 @@
 package org.philimone.hds.explorer.authentication
 
+/**
+ * A Notification represents a message sent to a User, its part of the quick message system that keeps the Users notified about things of interest in the app
+ */
 class Notification {
 
     static String LABEL_STATUS = "notification.status.label"

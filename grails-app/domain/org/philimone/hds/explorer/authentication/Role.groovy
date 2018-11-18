@@ -5,6 +5,9 @@ import groovy.transform.ToString
 import grails.compiler.GrailsCompileStatic
 import org.philimone.hds.explorer.services.GeneralUtilitiesService
 
+/**
+ * Role represents a user role within the system with specific system security acces
+ */
 @GrailsCompileStatic
 @EqualsAndHashCode(includes='authority')
 @ToString(includes='authority', includeNames=true, includePackage=false)

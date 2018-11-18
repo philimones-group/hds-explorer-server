@@ -3,7 +3,11 @@ package org.philimone.hds.explorer.authentication
 import groovy.transform.EqualsAndHashCode
 import groovy.transform.ToString
 import grails.compiler.GrailsCompileStatic
+import org.philimone.hds.explorer.server.model.main.StudyModule
 
+/**
+ * This domain represents a Application User that can be an Administrator, Data Manager or a Field Worker, they can have access do the server or client app
+ */
 @GrailsCompileStatic
 @EqualsAndHashCode(includes='username')
 @ToString(includes='username', includeNames=true, includePackage=false)
@@ -28,6 +32,8 @@ class User implements Serializable {
     Date creationDate
     User updatedBy
     Date updatedDate
+
+    static hasMany = [modules:StudyModule] /* Modules that the user has access */
 
     String toString(){
         return firstName + " " + lastName
