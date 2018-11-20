@@ -11,19 +11,19 @@ class SystemPath {
     static String EXT_PATH = "a-docs" /* uploaded files or attachments docs directory */
 
     static String getGeneratedFilesPath(){
-        return "${HOME_PATH}${GEN_PATH}"
+        return "${HOME_PATH}${File.separator}${GEN_PATH}"
     }
 
     static String getBinariesPath(){
-        return "${HOME_PATH}${BIN_PATH}"
+        return "${HOME_PATH}${File.separator}${BIN_PATH}"
     }
 
     static String getLogsPath(){
-        return "${HOME_PATH}${LOG_PATH}"
+        return "${HOME_PATH}${File.separator}${LOG_PATH}"
     }
 
     static String getExternalDocsPath(){
-        return "${HOME_PATH}${EXT_PATH}"
+        return "${HOME_PATH}${File.separator}${EXT_PATH}"
     }
 }
 

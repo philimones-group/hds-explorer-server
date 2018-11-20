@@ -10,6 +10,7 @@ import org.philimone.hds.explorer.server.model.logs.LogGroup
 import org.philimone.hds.explorer.server.model.logs.LogReport
 import org.philimone.hds.explorer.server.model.logs.LogStatus
 import org.philimone.hds.explorer.server.model.main.MappingFormatType
+import org.philimone.hds.explorer.server.model.main.StudyModule
 import org.philimone.hds.explorer.server.model.settings.ApplicationParam
 
 class BootStrap {
@@ -17,6 +18,7 @@ class BootStrap {
     def generalUtilitiesService
     def userService
     def applicationParamService
+    def importDataFromOpenHDSService
 
     def init = { servletContext ->
 
@@ -25,6 +27,7 @@ class BootStrap {
         defaultAppUser()
         insertDefaults()
 
+        testApp()
     }
 
     def destroy = {
@@ -35,10 +38,10 @@ class BootStrap {
 
         //def homeKey = isUnix() ? "HOME" : "HOMEPATH"
 
-        def genDir = "${SystemPath.GEN_PATH}"
-        def binDir = "${SystemPath.BIN_PATH}"
-        def logDir = "${SystemPath.LOG_PATH}"
-        def extDir = "${SystemPath.EXT_PATH}"
+        def genDir = "${SystemPath.generatedFilesPath}"
+        def binDir = "${SystemPath.binariesPath}"
+        def logDir = "${SystemPath.logsPath}"
+        def extDir = "${SystemPath.externalDocsPath}"
 
 
         println "Homepath: ${SystemPath.HOME_PATH}"
@@ -288,6 +291,16 @@ class BootStrap {
         new MappingFormatType(description: "Date [M-D-Y H:M:S]", type: "Date", format: "MM-dd-yyyy HH:mm:ss").save(flush: true)
 
 
+        //Insert Default StudyModule
+        new StudyModule(code: StudyModule.DSS_SURVEY_MODULE, name: "DSS Surveillance", description: "The default module of HDS-Explorer that allows you to navigate the system").save(flush: true)
 
+
+    }
+
+    def testApp(){
+
+        importDataFromOpenHDSService.importFieldWorkersFromOpenHDS(Codes.REPORT_IMPORT_FROM_OPENHDS_FIELDWORKERS)
+
+        assert 1==0
     }
 }
