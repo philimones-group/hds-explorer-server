@@ -5,6 +5,7 @@ import org.philimone.hds.explorer.authentication.SecurityMap
 import org.philimone.hds.explorer.authentication.User
 import org.philimone.hds.explorer.authentication.UserRole
 import org.philimone.hds.explorer.io.SystemPath
+import org.philimone.hds.explorer.openhds.model.Relationship
 import org.philimone.hds.explorer.server.Codes
 import org.philimone.hds.explorer.server.model.logs.LogGroup
 import org.philimone.hds.explorer.server.model.logs.LogReport
@@ -299,8 +300,37 @@ class BootStrap {
 
     def testApp(){
 
-        importDataFromOpenHDSService.importFieldWorkersFromOpenHDS(Codes.REPORT_IMPORT_FROM_OPENHDS_FIELDWORKERS)
+        //importDataFromOpenHDSService.importHouseholds(Codes.REPORT_IMPORT_FROM_OPENHDS_HOUSEHOLDS)
+        importDataFromOpenHDSService.importIndividuals(Codes.REPORT_IMPORT_FROM_OPENHDS_INDIVIDUALS)
+/*
+        println "reading relationships"
+        def relationships1 = Relationship.executeQuery("select r.individualA.extId, r.individualB.extId, r.aisToB, r.startDate from Relationship r, Individual i where r.individualA.uuid=i.uuid and r.startDate=(select max(r2.startDate) from Relationship r2 where r2.individualA.uuid=r.individualA.uuid)")
+        def relationships2 = Relationship.executeQuery("select r.individualB.extId, r.individualA.extId, r.aisToB, r.startDate from Relationship r, Individual i where r.individualB.uuid=i.uuid and r.startDate=(select max(r2.startDate) from Relationship r2 where r2.individualB.uuid=r.individualB.uuid)")
+        def map1 = [:]
+
+        println "count A->B: ${relationships1.size()}"
+        relationships1.each { r ->
+            println "${r[0]}, ${r[1]}, ${r[3]}, ${r[2]}"
+
+            map1.put(r[0], [r[1], r[3], r[2]])
+        }
+
+        println "count B->A: ${relationships2.size()}"
+        relationships2.each { r ->
+            println "${r[0]}, ${r[1]}, ${r[3]}, ${r[2]}"
+            map1.put(r[0], [r[1], r[3], r[2]])
+        }
+
+        println "testing: \n\n"
+        relationships2.each { r ->
+            if (map1.containsKey(r[0])){
+                println("duplicated ${r[0]} of ${map1.get(r[0])}")
+            }
+        }
+*/
+
 
         assert 1==0
+
     }
 }

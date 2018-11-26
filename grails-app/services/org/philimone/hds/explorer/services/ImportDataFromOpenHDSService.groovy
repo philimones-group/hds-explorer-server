@@ -252,6 +252,225 @@ class ImportDataFromOpenHDSService {
         output.close()
     }
 
+    def importIndividuals(long logReportId){
+        LogOutput log = generalUtilitiesService.getOutput(SystemPath.getLogsPath(), "db-individuals-from-openhds");
+        PrintStream output = log.output
+
+        if (output == null) return;
+
+        int processed = 0
+        int errors = 0
+        def start = new Date()
+
+        println "starting copy of individuals - ${start}"
+        println "reading existing individuals - ${TimeCategory.minus(new Date(), start)}"
+
+
+        /* Import Functions here */
+
+        def List<Household>houses = []
+        def members = []
+        def membersExtIds = [:]
+        def membersFirstHhs = [:]
+        def memberSpouses = [:]
+        def memberDeaths = [:]
+
+
+
+        Household.withNewTransaction {
+            println "reading households"
+            houses = Household.list()
+
+            println "deleting members"
+            Member.executeUpdate("delete from Member")
+        }
+
+        Individual.withTransaction {
+            println "reading members"            //     0              1           2           3           4              5          6       7           8                 9                   10                11                 12               13                   14                   15              16           17          18          19
+            members = Individual.executeQuery("select i.uuid, r.location.extId, i.extId, i.firstName, i.middleName,  i.lastName, i.gender, i.dob, i.father.extId, i.father.firstName, i.father.middleName, i.father.lastName, i.mother.extId, i.mother.firstName, i.mother.middleName, i.mother.lastName, r.startType, r.startDate, r.endType, r.endDate from Individual i, Residency r where i.uuid=r.individual.uuid and r.startDate=(select max(r2.startDate) from Residency r2 where r2.individual.uuid=r.individual.uuid )")
+
+            println "reading members first house"      //    0        1            2              3            4
+            def memberx = Individual.executeQuery("select i.uuid, i.extId, r.location.extId, r.startType, r.startDate from Individual i, Residency r where i.uuid=r.individual.uuid and r.startDate=(select min(r2.startDate) from Residency r2 where r2.individual.uuid=r.individual.uuid )")
+
+            println "reading relationships"                          //        0                   1                     2                        3                         4                5          6
+            def relationshipsAb = Relationship.executeQuery("select r.individualA.extId, r.individualB.extId, r.individualB.firstName, r.individualB.middleName, r.individualB.lastName, r.aisToB, r.startDate from Relationship r, Individual i where r.individualA.uuid=i.uuid and r.startDate=(select max(r2.startDate) from Relationship r2 where r2.individualA.uuid=r.individualA.uuid)")
+            def relationshipsBa = Relationship.executeQuery("select r.individualB.extId, r.individualA.extId, r.individualA.firstName, r.individualA.middleName, r.individualA.lastName, r.aisToB, r.startDate from Relationship r, Individual i where r.individualB.uuid=i.uuid and r.startDate=(select max(r2.startDate) from Relationship r2 where r2.individualB.uuid=r.individualB.uuid)")
+
+
+            println "pulling extId->firstName"
+            membersExtIds = members.collectEntries{ [(it[2]) : it[3]]}
+
+            println "pulling list of member first house"
+            membersFirstHhs = memberx.collectEntries{ [ (it[1]) : [it[2],it[3],it[4]] ]}
+
+            println "pulling list of deaths dates"
+            memberDeaths = Death.executeQuery("select d.individual.extId, d.deathDate from Death d").collectEntries{ [(it[0]): (it[1]) ]  }
+
+            //read relationships
+            println "pulling list of relationships A->B: ${relationshipsAb.size()}"
+            relationshipsAb.each { r ->
+                //println "${r[0]}, ${r[1]}, ${r[3]}, ${r[2]}"
+
+                memberSpouses.put(r[0], [r[1], r[2], r[3], r[4], r[5]])
+            }
+
+            println "pulling list of relationships  B->A: ${relationshipsBa.size()}"
+            relationshipsBa.each { r ->
+                //println "${r[0]}, ${r[1]}, ${r[3]}, ${r[2]}"
+
+                memberSpouses.put(r[0], [r[1], r[2], r[3], r[4], r[5]])
+            }
+
+            relationshipsAb.clear()
+            relationshipsBa.clear()
+            memberx.clear()
+        }
+
+        println  "houses to process ${houses.size()}"
+        println  "members found ${members.size()}"
+
+        println "spliting list"
+        //createMember(members, houses, membersExtIds, membersFirstHhs, memberSpouses, memberDeaths, 1, log)
+
+        def listMembers = GeneralUtil.splitList(members, 6)
+
+        def p1 = task { createMember(listMembers[0], houses, membersExtIds, membersFirstHhs, memberSpouses, memberDeaths, 1, log) }
+        def p2 = task { createMember(listMembers[1], houses, membersExtIds, membersFirstHhs, memberSpouses, memberDeaths, 2, log) }
+        def p3 = task { createMember(listMembers[2], houses, membersExtIds, membersFirstHhs, memberSpouses, memberDeaths, 3, log) }
+        def p4 = task { createMember(listMembers[3], houses, membersExtIds, membersFirstHhs, memberSpouses, memberDeaths, 4, log) }
+        def p5 = task { createMember(listMembers[4], houses, membersExtIds, membersFirstHhs, memberSpouses, memberDeaths, 5, log) }
+        def p6 = task { createMember(listMembers[5], houses, membersExtIds, membersFirstHhs, memberSpouses, memberDeaths, 6, log) }
+
+        println "executing multithread"
+        waitAll(p1, p2, p3, p4, p5, p6)
+
+
+        println("finished creating/updating individuals!! - ${TimeCategory.minus(new Date(), start)}")
+
+
+        LogReport.withTransaction {
+            LogReport logReport = LogReport.get(logReportId)
+            LogReportFile reportFile = new LogReportFile(creationDate: new Date(), fileName: log.logFileName, logReport: logReport)
+            reportFile.creationDate = new Date()
+            reportFile.processedCount = processed
+            reportFile.errorsCount = errors
+
+            logReport.end = new Date()
+            logReport.status = LogStatus.findByName(LogStatus.FINISHED)
+            logReport.addToLogFiles(reportFile)
+            logReport.save()
+        }
+
+        output.close()
+    }
+
+    def createMember(def members, def List<Household> houses, Map membersExtIds, Map membersFirstHouses, Map memberSpouses, Map memberDeaths, int threadNumber, LogOutput log){
+        def processed = 0
+        def errors = 0
+
+        def start = new Date()
+        int from = 0;
+        int to = 0;
+        int max = 100
+        while (processed < members.size()) {
+            from = to
+            to = (members.size() > to + max) ? (to + max) : members.size();
+            //reading only some records to speed up the process
+
+            Member.withNewTransaction {
+                members.subList(from, to).each { mem ->
+                    processed++
+
+                    Household household = houses.find { it.code == mem[1]}
+
+                    def member = new Member()
+
+                    member.code = mem[2]
+                    member.name = StringUtil.getFullname(mem[3], mem[4], mem[5]) //3, 4, 5
+                    member.gender = mem[6]
+                    member.dob = mem[7]
+                    member.age = GeneralUtil.getAge(member.dob)
+                    //ageAtDeath
+
+                    member.fatherCode = mem[8]
+                    member.fatherName = StringUtil.getFullname(mem[9], mem[10], mem[11])  // 9, 10, 11
+                    member.motherCode = mem[12]
+                    member.motherName = StringUtil.getFullname(mem[13], mem[14], mem[15]) // 13, 14, 15
+
+
+                    member.startType = mem[16]==null ? "" : mem[16]
+                    member.startDate = mem[17] //StringUtil.format(mem[17], "yyyy-MM-dd")
+                    member.endType =   mem[18]==null ? "" : mem[18]
+                    member.endDate =   mem[19] //StringUtil.format(mem[19], "yyyy-MM-dd")
+
+                    if (member.endType == "DTH"){
+                        def dthDate = memberDeaths.get(member.code)
+                        if (dthDate != null){
+                            member.ageAtDeath = GeneralUtil.getYearsDiff(member.dob, dthDate)
+                        }
+                    }
+
+                    if (household != null) {
+                        member.householdCode = household.code
+                        member.householdName = household.name
+                        member.gpsNull = household.gpsNull
+                        member.gpsAccuracy = household.gpsAccuracy
+                        member.gpsAltitude = household.gpsAltitude
+                        member.gpsLatitude = household.gpsLatitude
+                        member.gpsLongitude = household.gpsLongitude
+
+                        member.cosLatitude = household.cosLatitude
+                        member.sinLatitude = household.sinLatitude
+                        member.cosLongitude = household.cosLongitude
+                        member.sinLongitude = household.sinLongitude
+                    }
+
+                    if (memberSpouses.containsKey(member.code)){
+                        def obj = memberSpouses.get(member.code)
+
+                        member.spouseCode = obj[0] //extId
+                        member.spouseName = StringUtil.getFullname(obj[1], obj[2], obj[3])  //1,2,3 - name
+                        member.spouseType = getRelationshipType(obj[4]) // spouse type
+                    }
+
+                    if (membersFirstHouses.containsKey(member.code)){
+                        def obj = membersFirstHouses.get(member.code)
+                        member.entryHousehold = obj[0]
+                        member.entryType = obj[1]
+                        member.entryDate = obj[2]
+                    }
+
+                    if (!member.save()){
+                        errors++
+                        println "${member.code}/${member.name}, errors: ${member.errors}"
+                        log.output.println "${member.code}/${member.name}: errors: ${member.errors}"
+                    }
+                }
+
+                //session.flush()
+                //session.clear()
+
+                println("thread-${threadNumber}: ${processed}/${max} reached clearing session - ${TimeCategory.minus(new Date(), start)}")
+                sessionFactory.currentSession.flush() //clearing cache save us a lot of time
+                sessionFactory.currentSession.clear()
+            }
+
+
+        }
+
+
+    }
+
+    String getRelationshipType(String openhdsRelationshipType){
+
+        if (openhdsRelationshipType=="2") return "MAR"; // = Married            = 2
+        if (openhdsRelationshipType=="3") return "SEP"; // = Separated/Divorced = 3
+        if (openhdsRelationshipType=="4") return "WID"; // = Widowed            = 4
+        if (openhdsRelationshipType=="5") return "LIV"; // = Living Together    = 5
+
+        return "NA"
+    }
+
     HierarchyRegion getHierarchies(String lastHiearchyUuid){
         def hierarchy = new HierarchyRegion()
         def lh = Locationhierarchy.findByUuid(lastHiearchyUuid)

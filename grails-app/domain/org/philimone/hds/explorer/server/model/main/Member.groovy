@@ -8,12 +8,18 @@ class Member {
     String code
     String name
     String gender
-    String dob
+    Date dob
     Integer age
     Integer ageAtDeath
 
     String spouseCode
     String spouseName
+    String spouseType  /* Relationship Type */
+                       /*
+                          MAR = Married            = 2
+                          SEP = Separated/Divorced = 3
+                          WID = Widowed            = 4
+                          LIV = Living Together    = 5  */
 
     String motherCode
     String motherName
@@ -24,12 +30,13 @@ class Member {
      */
     String householdCode
     String householdName
+    String entryHousehold
     String entryType
-    String entryDate
+    Date   entryDate
     String startType
-    String startDate
+    Date   startDate
     String endType
-    String endDate
+    Date   endDate
 
     Boolean isHouseholdHead = false
     Boolean isSecHouseholdHead = false
@@ -56,6 +63,7 @@ class Member {
 
         spouseCode blank: true, nullable: true
         spouseName blank: true, nullable: true
+        spouseType blank: true, nullable: true
 
         motherCode blank: true, nullable: true
         motherName blank: true, nullable: true
@@ -64,6 +72,7 @@ class Member {
 
         householdCode blank: false, nullable: false
         householdName blank: false, nullable: false
+        entryHousehold nullable: true
         entryType nullable: true
         entryDate nullable: true
         startType nullable: true
@@ -96,6 +105,7 @@ class Member {
 
         spouseCode column: 'spouse_code'
         spouseName column: 'spouse_name'
+        spouseType column: 'spouse_type'
 
         motherCode column: 'mother_code'
         motherName column: 'mother_name'
@@ -104,6 +114,7 @@ class Member {
 
         householdCode column: 'household_code'
         householdName column: 'household_name'
+        entryHousehold column: 'entry_household'
         entryType column: 'entry_type'
         entryDate column: 'entry_date'
         startType column: 'start_type'
