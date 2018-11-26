@@ -70,6 +70,17 @@ class GeneralUtil {
         return end - dob
     }
 
+    def static int getYearsDiff(Date firstDate, Date secondDate){
+        Calendar second = Calendar.getInstance()
+        Calendar first = Calendar.getInstance()
+        first.setTime(firstDate)
+        second.setTime(secondDate)
+
+        def diff = second.get(Calendar.YEAR)-first.get(Calendar.YEAR) + (second.get(Calendar.DAY_OF_YEAR)<first.get(Calendar.DAY_OF_YEAR) ? -1 : 0)
+
+        return diff
+    }
+
     def static Calendar getCalendar(Date date){
         Calendar cal = Calendar.getInstance();
         cal.setTime(date);
