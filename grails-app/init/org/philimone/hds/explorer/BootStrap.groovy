@@ -20,6 +20,7 @@ class BootStrap {
     def userService
     def applicationParamService
     def importDataFromOpenHDSService
+    def exportFilesService
 
     def init = { servletContext ->
 
@@ -300,8 +301,13 @@ class BootStrap {
 
     def testApp(){
 
+        //importDataFromOpenHDSService.importFieldWorkers(Codes.REPORT_IMPORT_FROM_OPENHDS_FIELDWORKERS)
         //importDataFromOpenHDSService.importHouseholds(Codes.REPORT_IMPORT_FROM_OPENHDS_HOUSEHOLDS)
-        importDataFromOpenHDSService.importIndividuals(Codes.REPORT_IMPORT_FROM_OPENHDS_INDIVIDUALS)
+        //importDataFromOpenHDSService.importIndividuals(Codes.REPORT_IMPORT_FROM_OPENHDS_INDIVIDUALS)
+
+        exportFilesService.generateUsersXML(Codes.REPORT_GENERATE_USERS_ZIP_XML_FILES)
+
+
 /*
         println "reading relationships"
         def relationships1 = Relationship.executeQuery("select r.individualA.extId, r.individualB.extId, r.aisToB, r.startDate from Relationship r, Individual i where r.individualA.uuid=i.uuid and r.startDate=(select max(r2.startDate) from Relationship r2 where r2.individualA.uuid=r.individualA.uuid)")

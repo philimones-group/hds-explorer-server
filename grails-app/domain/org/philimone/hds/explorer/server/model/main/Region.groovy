@@ -4,6 +4,7 @@ package org.philimone.hds.explorer.server.model.main
  * Region represents an Administrative division in a country or study area, the Administrative Division or Location Hieararchy it stored here
  */
 class Region {
+
     String code
     String name
     String hierarchyLevel

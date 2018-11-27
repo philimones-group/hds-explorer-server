@@ -81,10 +81,11 @@ class ImportDataFromOpenHDSService {
                     user.username = extid
                     user.password = password
                     user.isPasswordEncoded = true
+                    user.enabled = true
 
 
                     if (user.modules == null || user.modules.size()==0){
-                        println "adding module dss for user=${user.username}, ${user.modules}"
+                        //println "adding module dss for user=${user.username}, ${user.modules}"
                         user.addToModules(module)
                     }
 
@@ -116,7 +117,7 @@ class ImportDataFromOpenHDSService {
 
 
         LogReport.withTransaction {
-            LogReport logReport = LogReport.get(logReportId)
+            LogReport logReport = LogReport.findByReportId(logReportId)
             LogReportFile reportFile = new LogReportFile(creationDate: new Date(), fileName: log.logFileName, logReport: logReport)
             reportFile.creationDate = new Date()
             reportFile.processedCount = processed
@@ -237,7 +238,7 @@ class ImportDataFromOpenHDSService {
 
 
         LogReport.withTransaction {
-            LogReport logReport = LogReport.get(logReportId)
+            LogReport logReport = LogReport.findByReportId(logReportId)
             LogReportFile reportFile = new LogReportFile(creationDate: new Date(), fileName: log.logFileName, logReport: logReport)
             reportFile.creationDate = new Date()
             reportFile.processedCount = processed
@@ -349,7 +350,7 @@ class ImportDataFromOpenHDSService {
 
 
         LogReport.withTransaction {
-            LogReport logReport = LogReport.get(logReportId)
+            LogReport logReport = LogReport.findByReportId(logReportId)
             LogReportFile reportFile = new LogReportFile(creationDate: new Date(), fileName: log.logFileName, logReport: logReport)
             reportFile.creationDate = new Date()
             reportFile.processedCount = processed

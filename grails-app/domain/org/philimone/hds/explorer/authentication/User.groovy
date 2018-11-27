@@ -3,6 +3,7 @@ package org.philimone.hds.explorer.authentication
 import groovy.transform.EqualsAndHashCode
 import groovy.transform.ToString
 import grails.compiler.GrailsCompileStatic
+import net.betainteractive.utilities.StringUtil
 import org.philimone.hds.explorer.server.model.main.StudyModule
 
 /**
@@ -36,7 +37,7 @@ class User implements Serializable {
     static hasMany = [modules:StudyModule] /* Modules that the user has access */
 
     String toString(){
-        return firstName + " " + lastName
+        return StringUtil.getFullname(firstName, "", lastName)
     }
 
     Set<Role> getAuthorities() {
@@ -52,6 +53,14 @@ class User implements Serializable {
                 text += ", ${it.name}"
             }
         }
+    }
+
+    String getModulesAsText() {
+        String mds = ""
+        modules.each {
+            mds += (mds.empty ? "":",") + it.code
+        }
+        return mds
     }
 
     static transients = ['isPasswordEncoded']
