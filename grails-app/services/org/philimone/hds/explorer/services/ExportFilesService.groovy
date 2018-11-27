@@ -8,6 +8,7 @@ import org.philimone.hds.explorer.io.SystemPath
 import org.philimone.hds.explorer.server.model.logs.LogReport
 import org.philimone.hds.explorer.server.model.logs.LogReportFile
 import org.philimone.hds.explorer.server.model.logs.LogStatus
+import org.philimone.hds.explorer.server.model.main.StudyModule
 import org.w3c.dom.Document
 import org.w3c.dom.Element
 
@@ -114,6 +115,99 @@ class ExportFilesService {
 
     }
 
+    def generateSettingsXML(long logReportId){
+        generateModulesXML(logReportId)
+    }
+
+    def generateModulesXML(long logReportId) {
+
+        LogOutput log = generalUtilitiesService.getOutput(SystemPath.getLogsPath(), "generate-exp-modules-xml");
+        PrintStream output = log.output
+        if (output == null) return;
+
+        def start = new Date();
+
+        int processed = 0
+        int errors = 0
+
+        try {
+            //read all modules
+            def resultModules = []
+
+            StudyModule.withTransaction {
+                resultModules = StudyModule.list()
+            }
+
+            DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+
+            // root elements
+            Document doc = docBuilder.newDocument();
+
+            Element rootElement = doc.createElement("modules");
+            doc.appendChild(rootElement);
+
+
+            int count = 0;
+            resultModules.each { module ->
+                count++;
+                //individuals
+                Element element = createModule(doc, module);
+                rootElement.appendChild(element);
+            }
+
+            // write the content into xml file
+            TransformerFactory transformerFactory = TransformerFactory.newInstance();
+            Transformer transformer = transformerFactory.newTransformer();
+            DOMSource source = new DOMSource(doc);
+            StreamResult result = new StreamResult(new File(SystemPath.getGeneratedFilesPath() + "/modules.xml"));
+
+            // Output to console for testing
+            // StreamResult result = new StreamResult(System.out);
+            transformer.transform(source, result);
+
+            System.out.println("File saved! - modules.xml");
+            output.println("File saved! - modules.xml");
+
+            //zip file
+            ZipMaker zipMaker = new ZipMaker(SystemPath.getGeneratedFilesPath() + "/modules.zip")
+            zipMaker.addFile(SystemPath.getGeneratedFilesPath() + "/modules.xml")
+            def b = zipMaker.makeZip()
+
+            println "creating zip - modules.zip - success="+b
+
+            processed = 1
+
+        } catch (Exception ex) {
+            ex.printStackTrace()
+            processed = 0
+            errors = 1
+            output.println(ex.toString())
+        }
+
+        LogReport.withTransaction {
+            LogReport logReport = LogReport.findByReportId(logReportId)
+            logReport.start = start
+            logReport.end = new Date()
+            logReport.status = LogStatus.findByName(LogStatus.FINISHED)
+            logReport.save()
+
+            println "error 1: ${logReport.errors}, ${logReport.start}"
+
+            LogReportFile reportFile = new LogReportFile(creationDate: logReport.start, fileName: log.logFileName, logReport: logReport)
+            reportFile.processedCount = processed
+            reportFile.errorsCount = errors
+            logReport.addToLogFiles(reportFile)
+            logReport.save()
+
+            println "error 2: ${logReport.errors}"
+        }
+
+
+        output.close();
+
+    }
+
     private Element createUser(Document doc, User user) {
         Element userElement = doc.createElement("user");
 
@@ -127,6 +221,16 @@ class ExportFilesService {
 
 
         return userElement;
+    }
+
+    private Element createModule(Document doc, StudyModule module) {
+        Element element = doc.createElement("module");
+
+        element.appendChild(createAttribute(doc, "code", module.getCode()));
+        element.appendChild(createAttribute(doc, "name", module.getName()));
+        element.appendChild(createAttribute(doc, "description", module.getDescription()));
+
+        return element;
     }
 
     private Element createAttribute(Document doc, String name, String value){
