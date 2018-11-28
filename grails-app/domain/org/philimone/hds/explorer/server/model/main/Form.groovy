@@ -6,8 +6,6 @@ package org.philimone.hds.explorer.server.model.main
  */
 class Form {
 
-    FormGroup group
-    RedcapApi redcapApi
     String formId
     String formName
     String formDescription
@@ -21,6 +19,9 @@ class Form {
 
     boolean enabled
 
+    //FormGroup group
+    RedcapApi redcapApi
+
     static hasMany = [
             modules:StudyModule, /* Modules that have access to the Form - this data will be converted to comma separated names */
             dependencies:Form,   /* The list of forms that must be collected first before this Form */
@@ -28,8 +29,24 @@ class Form {
             redcapMappings:RedcapMapping  /* The list of all variables that will be uploaded to a REDCap Form */
     ]
 
+    String getModulesAsText() {
+        String mds = ""
+        modules.each {
+            mds += (mds.empty ? "":",") + it.code
+        }
+        return mds
+    }
+
+    String getDependenciesAsText() {
+        String deps = ""
+        dependencies.each {
+            deps += (deps.empty ? "":",") + it.formId
+        }
+        return deps
+    }
+
     static constraints = {
-        group nullable: true
+        //group nullable: true
         redcapApi nullable: true
         formId blank: false, unique: true
         formName blank: false
@@ -49,7 +66,7 @@ class Form {
     static mapping = {
         table 'form'
 
-        group column: 'form_group_id'
+        //group column: 'form_group_id'
         redcapApi column: 'redcap_api'
         formId column: 'form_id'
         formName column: 'form_name'
