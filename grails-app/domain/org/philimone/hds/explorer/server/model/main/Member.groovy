@@ -1,5 +1,7 @@
 package org.philimone.hds.explorer.server.model.main
 
+import net.betainteractive.utilities.StringUtil
+
 /**
  * This table represents Individuals or Household Members stored in the system, identified by code/extId, name and others
  */
@@ -12,6 +14,11 @@ class Member {
     Integer age
     Integer ageAtDeath
 
+    String motherCode
+    String motherName
+    String fatherCode
+    String fatherName
+
     String spouseCode
     String spouseName
     String spouseType  /* Relationship Type */
@@ -21,10 +28,6 @@ class Member {
                           WID = Widowed            = 4
                           LIV = Living Together    = 5  */
 
-    String motherCode
-    String motherName
-    String fatherCode
-    String fatherName
     /**
      * Current HouseHold Status
      */
@@ -52,6 +55,47 @@ class Member {
     Double sinLatitude
     Double cosLongitude
     Double sinLongitude
+
+    String toXML(){
+        return  ("<member>") +
+                ((code==null || code.isEmpty()) ?                    "<code />" : "<code>${code}</code>") +
+                ((name==null || name.isEmpty()) ?                    "<name />" : "<name>${name}</name>") +
+                ((gender==null || gender.isEmpty()) ?                "<gender />" : "<gender>${gender}</gender>") +
+                ((dob==null) ?                                       "<dob />" : "<dob>${StringUtil.format(dob, "yyyy-MM-dd")}</dob>") +
+                ((age==null) ?                                       "<age />" : "<age>${age}</age>") +
+
+                ((ageAtDeath==null) ?                                "<ageAtDeath />" : "<ageAtDeath>${ageAtDeath}</ageAtDeath>") +
+
+                ((motherCode==null || motherCode.isEmpty()) ?        "<motherCode />" : "<motherCode>${motherCode}</motherCode>") +
+                ((motherName==null || motherName.isEmpty()) ?        "<motherName />" : "<motherName>${motherName}</motherName>") +
+                ((fatherCode==null || fatherCode.isEmpty()) ?        "<fatherCode />" : "<fatherCode>${fatherCode}</fatherCode>") +
+                ((fatherName==null || fatherName.isEmpty()) ?        "<fatherName />" : "<fatherName>${fatherName}</fatherName>") +
+
+                ((spouseCode==null || spouseCode.isEmpty()) ?        "<spouseCode />" : "<spouseCode>${spouseCode}</spouseCode>") +
+                ((spouseName==null || spouseName.isEmpty()) ?        "<spouseName />" : "<spouseName>${spouseName}</spouseName>") +
+                ((spouseType==null || spouseType.isEmpty()) ?        "<spouseType />" : "<spouseType>${spouseType}</spouseType>") +
+
+                ((householdCode==null || householdCode.isEmpty()) ?  "<householdCode />" : "<householdCode>${householdCode}</householdCode>") +
+                ((householdName==null || householdName.isEmpty()) ?  "<householdName />" : "<householdName>${householdName}</householdName>") +
+
+                ((startType==null || startType.isEmpty()) ?          "<startType />" : "<startType>${startType}</startType>") +
+                ((startDate==null)                        ?          "<startDate />" : "<startDate>${StringUtil.format(startDate, "yyyy-MM-dd")}</startDate>") +
+                ((endType==null || endType.isEmpty())     ?          "<endType />"   : "<endType>${endType}</endType>") +
+                ((endDate==null)                          ?          "<endDate />"   : "<endDate>${StringUtil.format(endDate, "yyyy-MM-dd")}</endDate>") +
+
+                ((entryHousehold==null || entryHousehold.isEmpty()) ? "<entryHousehold />" : "<entryHousehold>${entryHousehold}</entryHousehold>") +
+                ((entryType==null || entryType.isEmpty())           ? "<entryType />" : "<entryType>${entryType}</entryType>") +
+                ((entryDate==null)                                  ? "<entryDate />" : "<entryDate>${StringUtil.format(entryDate, "yyyy-MM-dd")}</entryDate>") +
+
+                ((isHouseholdHead==null)                            ? "<isHouseholdHead />" : "<isHouseholdHead>${isHouseholdHead}</isHouseholdHead>") +
+                ((isSecHouseholdHead==null)                         ? "<isSecHouseholdHead />" : "<isSecHouseholdHead>${isSecHouseholdHead}</isSecHouseholdHead>") +
+
+                ((gpsAccuracy == null)                              ? "<gpsAccuracy />" : "<gpsAccuracy>${gpsAccuracy}</gpsAccuracy>") +
+                ((gpsAltitude == null)                              ? "<gpsAltitude />" : "<gpsAltitude>${gpsAltitude}</gpsAltitude>") +
+                ((gpsLatitude == null)                              ? "<gpsLatitude />" : "<gpsLatitude>${gpsLatitude}</gpsLatitude>") +
+                ((gpsLongitude == null)                             ? "<gpsLongitude />" : "<gpsLongitude>${gpsLongitude}</gpsLongitude>") +
+                ("</member>")
+    }
 
     static constraints = {
         code unique: true, blank: false

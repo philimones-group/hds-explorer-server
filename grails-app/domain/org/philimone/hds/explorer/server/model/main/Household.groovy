@@ -31,6 +31,30 @@ class Household {
     Double cosLongitude;
     Double sinLongitude;
 
+    String toXML() {
+        return ("<household>") +
+                ((code == null || code.isEmpty()) ?               "<code />"   : "<code>${code}</code>") +
+                ((region == null || region.isEmpty()) ?           "<region />" : "<region>${code}</region>") +
+                ((name == null || name.isEmpty()) ?               "<name />"   : "<name>${name}</name>") +
+                ((headCode == null || headCode.isEmpty()) ?       "<headCode />" : "<headCode>${headCode}</headCode>") +
+                ((secHeadCode == null || secHeadCode.isEmpty()) ? "<secHeadCode />" : "<secHeadCode>${secHeadCode}</secHeadCode>") +
+
+                ((hierarchy1 == null || hierarchy1.isEmpty()) ? "<hierarchy1 />" : "<hierarchy1>${hierarchy1}</hierarchy1>") +
+                ((hierarchy2 == null || hierarchy2.isEmpty()) ? "<hierarchy2 />" : "<hierarchy2>${hierarchy2}</hierarchy2>") +
+                ((hierarchy3 == null || hierarchy3.isEmpty()) ? "<hierarchy3 />" : "<hierarchy3>${hierarchy3}</hierarchy3>") +
+                ((hierarchy4 == null || hierarchy4.isEmpty()) ? "<hierarchy4 />" : "<hierarchy4>${hierarchy4}</hierarchy4>") +
+                ((hierarchy5 == null || hierarchy5.isEmpty()) ? "<hierarchy5 />" : "<hierarchy5>${hierarchy5}</hierarchy5>") +
+                ((hierarchy6 == null || hierarchy6.isEmpty()) ? "<hierarchy6 />" : "<hierarchy6>${hierarchy6}</hierarchy6>") +
+                ((hierarchy7 == null || hierarchy7.isEmpty()) ? "<hierarchy7 />" : "<hierarchy7>${hierarchy7}</hierarchy7>") +
+                ((hierarchy8 == null || hierarchy8.isEmpty()) ? "<hierarchy8 />" : "<hierarchy8>${hierarchy8}</hierarchy8>") +
+
+                ((gpsAccuracy == null) ?   "<gpsAccuracy />" : "<gpsAccuracy>${gpsAccuracy}</gpsAccuracy>") +
+                ((gpsAltitude == null) ?   "<gpsAltitude />" : "<gpsAltitude>${gpsAltitude}</gpsAltitude>") +
+                ((gpsLatitude == null) ?   "<gpsLatitude />" : "<gpsLatitude>${gpsLatitude}</gpsLatitude>") +
+                ((gpsLongitude == null) ? "<gpsLongitude />" : "<gpsLongitude>${gpsLongitude}</gpsLongitude>") +
+                ("</household>")
+    }
+
     static constraints = {
         code unique: true
         region nullable: false

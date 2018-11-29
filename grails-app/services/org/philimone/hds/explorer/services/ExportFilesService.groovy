@@ -10,6 +10,8 @@ import org.philimone.hds.explorer.server.model.logs.LogReportFile
 import org.philimone.hds.explorer.server.model.logs.LogStatus
 import org.philimone.hds.explorer.server.model.main.Form
 import org.philimone.hds.explorer.server.model.main.FormMapping
+import org.philimone.hds.explorer.server.model.main.Household
+import org.philimone.hds.explorer.server.model.main.Member
 import org.philimone.hds.explorer.server.model.main.RedcapApi
 import org.philimone.hds.explorer.server.model.main.RedcapMapping
 import org.philimone.hds.explorer.server.model.main.StudyModule
@@ -300,6 +302,163 @@ class ExportFilesService {
             println "error 2: ${logReport.errors}"
         }
 
+        output.close();
+
+    }
+
+    def generateHouseHoldsXML(long logReportId) {
+
+        LogOutput log = generalUtilitiesService.getOutput(SystemPath.logsPath, "/generate-households-xml");
+        PrintStream output = log.output
+        if (output == null) return;
+
+        def start = new Date();
+
+        int processed = 0
+        int errors = 0
+
+        try {
+            //Ler todas dIndividuos
+            def households = []
+
+            Household.withTransaction {
+                households = Household.executeQuery("select h.id from Household h")
+            }
+
+            println "creating xml file ${households.size()}"
+            PrintStream outputFile = new PrintStream(new FileOutputStream(SystemPath.generatedFilesPath + "/households.xml"), true)
+
+            outputFile.print("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?><households>")
+
+            Household.withTransaction {
+                households.each { id ->
+
+                    def h = Household.get(id)
+                    outputFile.print(h.toXML())
+                    h = null
+                }
+            }
+
+            outputFile.print("</households>")
+            outputFile.close()
+
+            System.out.println("File saved! - households.xml");
+            output.println("File saved! - households.xml");
+
+            //zip file
+            ZipMaker zipMaker = new ZipMaker(SystemPath.generatedFilesPath + "/households.zip")
+            zipMaker.addFile(SystemPath.generatedFilesPath + "/households.xml")
+            def b = zipMaker.makeZip()
+
+            println "creating zip - households.zip - success="+b
+
+            processed = 1
+
+        } catch (Exception ex) {
+            ex.printStackTrace()
+            processed = 0
+            errors = 1
+            output.println(ex.toString())
+        }
+
+        LogReport.withTransaction {
+            LogReport logReport = LogReport.findByReportId(logReportId)
+            logReport.start = start
+            logReport.end = new Date()
+            logReport.status = LogStatus.findByName(LogStatus.FINISHED)
+            logReport.save()
+
+            println "error 1: ${logReport.errors}, ${logReport.start}"
+
+            LogReportFile reportFile = new LogReportFile(creationDate: logReport.start, fileName: log.logFileName, logReport: logReport)
+            reportFile.processedCount = processed
+            reportFile.errorsCount = errors
+            logReport.addToLogFiles(reportFile)
+            logReport.save()
+
+            println "error 2: ${logReport.errors}"
+        }
+
+        output.close();
+
+    }
+
+    def generateMembersXML(long logReportId) {
+
+        LogOutput log = generalUtilitiesService.getOutput(SystemPath.logsPath, "/generate-members-xml");
+        PrintStream output = log.output
+        if (output == null) return;
+
+        def start = new Date();
+
+        int processed = 0
+        int errors = 0
+
+        try {
+            //Ler todas dIndividuos
+            println "reading members"
+            def members = []
+            Member.withTransaction {
+                members = Member.executeQuery("select m.id from Member m")
+            }
+
+            println "creating xml file ${members.size()}"
+            PrintStream outputFile = new PrintStream(new FileOutputStream(SystemPath.generatedFilesPath + "/members.xml"), true)
+
+            outputFile.print("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?><members>")
+
+            Member.withTransaction {
+                members.each { id ->
+
+                    def m = Member.get(id)
+                    outputFile.print(m.toXML())
+                    m = null
+                }
+
+                //println "" + (m as XML)
+            }
+            outputFile.print("</members>")
+            outputFile.close()
+
+            //StreamResult result = new StreamResult(new File(SystemPath.DSS_XML_RESOURCES_PATH + "/members.xml"));
+
+            println("File saved! - members.xml");
+            output.println("File saved! - members.xml");
+
+            //zip file
+            ZipMaker zipMaker = new ZipMaker(SystemPath.generatedFilesPath + "/members.zip")
+            zipMaker.addFile(SystemPath.generatedFilesPath + "/members.xml")
+            def b = zipMaker.makeZip()
+
+            println "creating zip - members.zip - success="+b
+
+            processed = 1
+
+        } catch (Exception ex) {
+            ex.printStackTrace()
+            processed = 0
+            errors = 1
+            println ""+ex.toString()
+            output.println(ex.toString())
+        }
+
+        LogReport.withTransaction {
+            LogReport logReport = LogReport.findByReportId(logReportId)
+            logReport.start = start
+            logReport.end = new Date()
+            logReport.status = LogStatus.findByName(LogStatus.FINISHED)
+            logReport.save()
+
+            println "error 1: ${logReport.errors}, ${logReport.start}"
+
+            LogReportFile reportFile = new LogReportFile(creationDate: logReport.start, fileName: log.logFileName, logReport: logReport)
+            reportFile.processedCount = processed
+            reportFile.errorsCount = errors
+            logReport.addToLogFiles(reportFile)
+            logReport.save()
+
+            println "error 2: ${logReport.errors}"
+        }
         output.close();
 
     }
