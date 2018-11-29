@@ -8,6 +8,10 @@ import org.philimone.hds.explorer.io.SystemPath
 import org.philimone.hds.explorer.server.model.logs.LogReport
 import org.philimone.hds.explorer.server.model.logs.LogReportFile
 import org.philimone.hds.explorer.server.model.logs.LogStatus
+import org.philimone.hds.explorer.server.model.main.Form
+import org.philimone.hds.explorer.server.model.main.FormMapping
+import org.philimone.hds.explorer.server.model.main.RedcapApi
+import org.philimone.hds.explorer.server.model.main.RedcapMapping
 import org.philimone.hds.explorer.server.model.main.StudyModule
 import org.w3c.dom.Document
 import org.w3c.dom.Element
@@ -117,6 +121,7 @@ class ExportFilesService {
 
     def generateSettingsXML(long logReportId){
         generateModulesXML(logReportId)
+        generateFormsXML(logReportId)
     }
 
     def generateModulesXML(long logReportId) {
@@ -208,6 +213,97 @@ class ExportFilesService {
 
     }
 
+    def generateFormsXML(long logReportId) { //read forms
+
+        LogOutput log = generalUtilitiesService.getOutput(SystemPath.getLogsPath(), "generate-exp-settings-xml");
+        PrintStream output = log.output
+        if (output == null) return;
+
+        def start = new Date();
+
+        int processed = 0
+        int errors = 0
+
+        try {
+            //read forms
+            def resultForms = []
+
+            Form.withTransaction {
+                resultForms = Form.findAllByEnabled(true) //get only the enabled forms
+            }
+
+            DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+
+            // root elements
+            Document doc = docBuilder.newDocument();
+
+            Element rootElement = doc.createElement("forms");
+            doc.appendChild(rootElement);
+
+            int count = 0;
+            resultForms.each { Form form ->
+                count++;
+
+                def formMappingList = form.mappings
+                def redcapMappingList = form.redcapMappings
+                def redcapApi = form.redcapApi
+
+                Element element = createForm(doc, form, formMappingList, redcapApi, redcapMappingList);
+                rootElement.appendChild(element);
+            }
+
+            // write the content into xml file
+            TransformerFactory transformerFactory = TransformerFactory.newInstance();
+            Transformer transformer = transformerFactory.newTransformer();
+            DOMSource source = new DOMSource(doc);
+            StreamResult result = new StreamResult(new File(SystemPath.getGeneratedFilesPath() + "/forms.xml"));
+
+            // Output to console for testing
+            // StreamResult result = new StreamResult(System.out);
+            transformer.transform(source, result);
+
+            System.out.println("File saved! - forms.xml");
+            output.println("File saved! - forms.xml");
+
+            //zip file
+            ZipMaker zipMaker = new ZipMaker(SystemPath.getGeneratedFilesPath() + "/forms.zip")
+            zipMaker.addFile(SystemPath.getGeneratedFilesPath() + "/forms.xml")
+            def b = zipMaker.makeZip()
+
+            println "creating zip - forms.zip - success="+b
+
+            processed = 1
+
+        } catch (Exception ex) {
+            ex.printStackTrace()
+            processed = 0
+            errors = 1
+            output.println(ex.toString())
+        }
+
+        LogReport.withTransaction {
+            LogReport logReport = LogReport.findByReportId(logReportId)
+            logReport.start = start
+            logReport.end = new Date()
+            logReport.status = LogStatus.findByName(LogStatus.FINISHED)
+            logReport.save()
+
+            println "error 1: ${logReport.errors}, ${logReport.start}"
+
+            LogReportFile reportFile = new LogReportFile(creationDate: logReport.start, fileName: log.logFileName, logReport: logReport)
+            reportFile.processedCount = processed
+            reportFile.errorsCount = errors
+            logReport.addToLogFiles(reportFile)
+            logReport.save()
+
+            println "error 2: ${logReport.errors}"
+        }
+
+        output.close();
+
+    }
+
     private Element createUser(Document doc, User user) {
         Element userElement = doc.createElement("user");
 
@@ -229,6 +325,54 @@ class ExportFilesService {
         element.appendChild(createAttribute(doc, "code", module.getCode()));
         element.appendChild(createAttribute(doc, "name", module.getName()));
         element.appendChild(createAttribute(doc, "description", module.getDescription()));
+
+        return element;
+    }
+
+    private Element createForm(Document doc, Form form, Collection<FormMapping> formMappingList, RedcapApi redcapApi, Collection<RedcapMapping> redcapMappingList) {
+        Element element = doc.createElement("form");
+
+        String formMap = "";
+        String redcapMap = "";
+        String redcapApiStr = "";
+
+        formMappingList.each {
+            if (formMap.isEmpty()){
+                formMap = it.toString()
+            }else{
+                formMap += ";" + it.toString()
+            }
+        }
+
+        redcapMappingList.each {
+            if (redcapMap.isEmpty()){
+                redcapMap = it.toString()
+            }else{
+                redcapMap += ";" + it.toString()
+            }
+        }
+
+        if (redcapApi != null){
+            redcapApiStr = redcapApi.toString()
+        }
+
+        //group is disabled
+        element.appendChild(createAttribute(doc, "formId", form.getFormId()));
+        element.appendChild(createAttribute(doc, "formName", form.getFormName()));
+        element.appendChild(createAttribute(doc, "formDescription", form.getFormDescription()));
+        element.appendChild(createAttribute(doc, "formDependencies", form.getDependenciesAsText()));
+        element.appendChild(createAttribute(doc, "gender", form.getGender()));
+        element.appendChild(createAttribute(doc, "minAge", form.getMinAge()+""));
+        element.appendChild(createAttribute(doc, "maxAge", form.getMaxAge()+""));
+        element.appendChild(createAttribute(doc, "modules", form.getModulesAsText()));
+        element.appendChild(createAttribute(doc, "isHouseholdForm", ""+form.getIsHouseholdForm().toString()));
+        element.appendChild(createAttribute(doc, "isHouseholdHeadForm", ""+form.getIsHouseholdHeadForm().toString()));
+        element.appendChild(createAttribute(doc, "isMemberForm", ""+form.getIsMemberForm().toString()));
+        element.appendChild(createAttribute(doc, "isFollowUpForm", ""+form.isFollowUpForm.toString())); //println "is follow up only"
+        element.appendChild(createAttribute(doc, "formMap", formMap));
+        element.appendChild(createAttribute(doc, "redcapApi", redcapApiStr));
+        element.appendChild(createAttribute(doc, "redcapMap", redcapMap));
+
 
         return element;
     }

@@ -10,9 +10,13 @@ import org.philimone.hds.explorer.server.Codes
 import org.philimone.hds.explorer.server.model.logs.LogGroup
 import org.philimone.hds.explorer.server.model.logs.LogReport
 import org.philimone.hds.explorer.server.model.logs.LogStatus
+import org.philimone.hds.explorer.server.model.main.Form
+import org.philimone.hds.explorer.server.model.main.FormMapping
 import org.philimone.hds.explorer.server.model.main.MappingFormatType
 import org.philimone.hds.explorer.server.model.main.StudyModule
 import org.philimone.hds.explorer.server.model.settings.ApplicationParam
+
+import java.util.concurrent.ForkJoinPool
 
 class BootStrap {
 
@@ -296,16 +300,78 @@ class BootStrap {
         //Insert Default StudyModule
         new StudyModule(code: StudyModule.DSS_SURVEY_MODULE, name: "DSS Surveillance", description: "The default module of HDS-Explorer that allows you to navigate the system").save(flush: true)
 
+    }
+
+    def insertTestData(){
+        //insert modules, form mappings, tracking lists
+        def module = StudyModule.findByCode(StudyModule.DSS_SURVEY_MODULE)
+
+        def form1 = new Form()
+        form1.formId = "Eligv1"
+        form1.formName = "Eligibity Form"
+        form1.formDescription = ""
+        form1.gender  = "ALL"          /*  M, F, ALL, if HouseholdForm is true, gender should be ALL */
+        form1.minAge  = 0
+        form1.maxAge  = 120
+        form1.isHouseholdForm = false
+        form1.isMemberForm = true
+        form1.isHouseholdHeadForm = false
+        form1.isFollowUpForm = false
+        form1.enabled = true
+        form1.addToModules(module)
+
+
+        def form2 = new Form()
+        form2.formId = "Form1"
+        form2.formName = "ODK Form 1 Test"
+        form2.formDescription = ""
+        form2.gender  = "ALL"          /*  M, F, ALL, if HouseholdForm is true, gender should be ALL */
+        form2.minAge  = 0
+        form2.maxAge  = 120
+        form2.isHouseholdForm = false
+        form2.isMemberForm = true
+        form2.isHouseholdHeadForm = true
+        form2.isFollowUpForm = false
+        form2.enabled = true
+        form2.addToModules(module)
+
+
+        def form3 = new Form()
+        form3.formId = "Form2"
+        form3.formName = "ODK Form 1 Test"
+        form3.formDescription = ""
+        form3.gender  = "ALL"          /*  M, F, ALL, if HouseholdForm is true, gender should be ALL */
+        form3.minAge  = 0
+        form3.maxAge  = 120
+        form3.isHouseholdForm = false
+        form3.isMemberForm = true
+        form3.isHouseholdHeadForm = false
+        form3.isFollowUpForm = false
+        form3.enabled = true
+        form3.addToModules(module)
+        form3.addToDependencies(form2)
+
+        form1.save(flush:true)
+        form2.save(flush:true)
+        form3.save(flush:true)
+
+        //add mapping and dependencies
+        new FormMapping(form: form1, formVariableName: 'individualId', tableName: 'Member', columnName: 'code').save(flush:true)
+
+
 
     }
 
     def testApp(){
 
+        insertTestData();
+
         //importDataFromOpenHDSService.importFieldWorkers(Codes.REPORT_IMPORT_FROM_OPENHDS_FIELDWORKERS)
         //importDataFromOpenHDSService.importHouseholds(Codes.REPORT_IMPORT_FROM_OPENHDS_HOUSEHOLDS)
         //importDataFromOpenHDSService.importIndividuals(Codes.REPORT_IMPORT_FROM_OPENHDS_INDIVIDUALS)
 
-        exportFilesService.generateUsersXML(Codes.REPORT_GENERATE_USERS_ZIP_XML_FILES)
+        //exportFilesService.generateUsersXML(Codes.REPORT_GENERATE_USERS_ZIP_XML_FILES)
+        exportFilesService.generateSettingsXML(Codes.REPORT_GENERATE_SETTINGS_ZIP_XML_FILES)
 
 
 /*
