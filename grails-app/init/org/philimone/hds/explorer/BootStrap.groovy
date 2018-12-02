@@ -364,6 +364,54 @@ class BootStrap {
         new FormMapping(form: form1, formVariableName: 'individualId', tableName: 'Member', columnName: 'code').save(flush:true)
 */
 
+        //Insert Tracking Lists Sample
+
+        trackingListService.copySampleFilesToExternalDocsPath()
+
+        def trackList1 = TrackingList.findOrCreateByCode('E01')
+        trackList1.code = 'E01'
+        trackList1.name = 'Eligibility Follow-up'
+        trackList1.filename = '/var/lib/hds-explorer/tracking_list_sample_1.xlsx'
+        trackList1.module = module
+        trackList1.hasExtraData = false
+        trackList1.enabled = true
+        trackList1.createdBy = null
+        trackList1.creationDate = null
+        trackList1.updatedBy = null
+        trackList1.updatedDate = null
+
+        trackList1.save()
+
+
+        def trackList2 = TrackingList.findOrCreateByCode('E02')
+        trackList2.code = 'E02'
+        trackList2.name = 'Eligibility Follow-up EX'
+        trackList2.filename = '/var/lib/hds-explorer/tracking_list_sample_2.xlsx'
+        trackList2.module = module
+        trackList2.hasExtraData = true
+        trackList2.enabled = true
+        trackList2.createdBy = null
+        trackList2.creationDate = null
+        trackList2.updatedBy = null
+        trackList2.updatedDate = null
+
+        trackList2.save()
+
+        //trackList2.addToMappings(new TrackingListMapping( list: trackList2, name: 'data.religion', label:'Religion' ))
+        //trackList2.addToMappings(new TrackingListMapping( list: trackList2, name: 'data.education', label:'Education' ))
+        //trackList2.addToMappings(new TrackingListMapping( list: trackList2, name: 'data.has_hiv', label:'Has HIV' ))
+
+        def m1 = new TrackingListMapping( list: trackList2, name: 'data.religion', label:'Religion')
+        def m2 = new TrackingListMapping( list: trackList2, name: 'data.education', label:'Education')
+        def m3 = new TrackingListMapping( list: trackList2, name: 'data.has_hiv', label:'Has HIV')
+
+        m1.save(fluh: true)
+        m2.save(fluh: true)
+        m3.save(fluh: true)
+
+        println "error: ${m1.errors}"
+
+        //trackList2.save()
     }
 
     def testApp(){

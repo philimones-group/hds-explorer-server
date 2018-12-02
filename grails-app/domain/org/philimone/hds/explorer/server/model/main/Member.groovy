@@ -33,13 +33,15 @@ class Member {
      */
     String householdCode
     String householdName
-    String entryHousehold
-    String entryType
-    Date   entryDate
     String startType
     Date   startDate
     String endType
     Date   endDate
+
+    String entryHousehold
+    String entryType
+    Date   entryDate
+
 
     Boolean isHouseholdHead = false
     Boolean isSecHouseholdHead = false
