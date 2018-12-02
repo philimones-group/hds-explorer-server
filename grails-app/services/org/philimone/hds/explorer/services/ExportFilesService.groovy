@@ -158,7 +158,7 @@ class ExportFilesService {
             int count = 0;
             resultModules.each { module ->
                 count++;
-                //individuals
+                //members
                 Element element = createModule(doc, module);
                 rootElement.appendChild(element);
             }

@@ -20,6 +20,11 @@ spring:
         template:
             check-template-location: false
 
+environments:
+    development:
+        server:
+            contextPath: /hds-explorer-server
+
 # Spring Actuator Endpoints are Disabled by Default
 endpoints:
     enabled: false

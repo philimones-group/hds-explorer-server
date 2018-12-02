@@ -25,9 +25,10 @@ import org.philimone.hds.explorer.server.model.main.StudyModule
 import static grails.async.Promises.task
 import static grails.async.Promises.waitAll
 
-@Transactional
 class ImportDataFromOpenHDSService {
     static datasource = ['openhds']
+
+    static transactional = false
 
     def generalUtilitiesService
     def sessionFactory
@@ -212,8 +213,8 @@ class ImportDataFromOpenHDSService {
                     household.sinLongitude = household.gpsLongitude==null ? null : Math.sin(household.gpsLongitude*Math.PI / 180.0)
 
 
-                    if (mapHeads.containsKey(obj[1] + "00")){
-                        household.headCode = mapHeads.get(obj[1] + "00")
+                    if (mapHeads.containsKey(obj[0] + "00")){
+                        household.headCode = mapHeads.get(obj[0] + "00")
                     }
 
                     boolean result = household.save(flush: true)
@@ -254,7 +255,7 @@ class ImportDataFromOpenHDSService {
     }
 
     def importIndividuals(long logReportId){
-        LogOutput log = generalUtilitiesService.getOutput(SystemPath.getLogsPath(), "db-individuals-from-openhds");
+        LogOutput log = generalUtilitiesService.getOutput(SystemPath.getLogsPath(), "db-members-from-openhds");
         PrintStream output = log.output
 
         if (output == null) return;
@@ -263,8 +264,8 @@ class ImportDataFromOpenHDSService {
         int errors = 0
         def start = new Date()
 
-        println "starting copy of individuals - ${start}"
-        println "reading existing individuals - ${TimeCategory.minus(new Date(), start)}"
+        println "starting copy of members - ${start}"
+        println "reading existing members - ${TimeCategory.minus(new Date(), start)}"
 
 
         /* Import Functions here */
@@ -346,7 +347,7 @@ class ImportDataFromOpenHDSService {
         waitAll(p1, p2, p3, p4, p5, p6)
 
 
-        println("finished creating/updating individuals!! - ${TimeCategory.minus(new Date(), start)}")
+        println("finished creating/updating members!! - ${TimeCategory.minus(new Date(), start)}")
 
 
         LogReport.withTransaction {
@@ -424,6 +425,10 @@ class ImportDataFromOpenHDSService {
                         member.sinLatitude = household.sinLatitude
                         member.cosLongitude = household.cosLongitude
                         member.sinLongitude = household.sinLongitude
+
+                        if (household.headCode.equals(member.code)){
+                            member.isHouseholdHead = true
+                        }
                     }
 
                     if (memberSpouses.containsKey(member.code)){

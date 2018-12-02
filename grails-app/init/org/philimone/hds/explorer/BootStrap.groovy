@@ -14,6 +14,8 @@ import org.philimone.hds.explorer.server.model.main.Form
 import org.philimone.hds.explorer.server.model.main.FormMapping
 import org.philimone.hds.explorer.server.model.main.MappingFormatType
 import org.philimone.hds.explorer.server.model.main.StudyModule
+import org.philimone.hds.explorer.server.model.main.TrackingList
+import org.philimone.hds.explorer.server.model.main.TrackingListMapping
 import org.philimone.hds.explorer.server.model.settings.ApplicationParam
 
 import java.util.concurrent.ForkJoinPool
@@ -25,6 +27,7 @@ class BootStrap {
     def applicationParamService
     def importDataFromOpenHDSService
     def exportFilesService
+    def trackingListService
 
     def init = { servletContext ->
 
@@ -33,7 +36,7 @@ class BootStrap {
         defaultAppUser()
         insertDefaults()
 
-        testApp()
+        //testApp()
     }
 
     def destroy = {
@@ -103,8 +106,8 @@ class BootStrap {
             new SecurityMap(url: "/user/*/**", configAttribute: "${Role.ROLE_ADMINISTRATOR}").save(flush: true)
 
 
-            //new SecurityMap(url: "/exportFiles/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
-            //new SecurityMap(url: "/generalUtilities/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
+            new SecurityMap(url: "/exportFiles/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
+            new SecurityMap(url: "/generalUtilities/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
             //new SecurityMap(url: "/importData/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
             //new SecurityMap(url: "/export/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
             //new SecurityMap(url: "/updates/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
@@ -121,6 +124,8 @@ class BootStrap {
             new SecurityMap(url: "/api/export/households/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
             new SecurityMap(url: "/api/export/members/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
             new SecurityMap(url: "/api/export/settings/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
+            new SecurityMap(url: "/api/export/modules/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
+            new SecurityMap(url: "/api/export/forms/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
             new SecurityMap(url: "/api/export/users/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
             new SecurityMap(url: "/api/export/trackinglists/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
             new SecurityMap(url: "/api/export/stats/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
@@ -305,12 +310,12 @@ class BootStrap {
     def insertTestData(){
         //insert modules, form mappings, tracking lists
         def module = StudyModule.findByCode(StudyModule.DSS_SURVEY_MODULE)
-
+/*
         def form1 = new Form()
         form1.formId = "Eligv1"
         form1.formName = "Eligibity Form"
         form1.formDescription = ""
-        form1.gender  = "ALL"          /*  M, F, ALL, if HouseholdForm is true, gender should be ALL */
+        form1.gender  = "ALL"          //  M, F, ALL, if HouseholdForm is true, gender should be ALL
         form1.minAge  = 0
         form1.maxAge  = 120
         form1.isHouseholdForm = false
@@ -325,7 +330,7 @@ class BootStrap {
         form2.formId = "Form1"
         form2.formName = "ODK Form 1 Test"
         form2.formDescription = ""
-        form2.gender  = "ALL"          /*  M, F, ALL, if HouseholdForm is true, gender should be ALL */
+        form2.gender  = "ALL"          //  M, F, ALL, if HouseholdForm is true, gender should be ALL
         form2.minAge  = 0
         form2.maxAge  = 120
         form2.isHouseholdForm = false
@@ -340,7 +345,7 @@ class BootStrap {
         form3.formId = "Form2"
         form3.formName = "ODK Form 1 Test"
         form3.formDescription = ""
-        form3.gender  = "ALL"          /*  M, F, ALL, if HouseholdForm is true, gender should be ALL */
+        form3.gender  = "ALL"          //  M, F, ALL, if HouseholdForm is true, gender should be ALL
         form3.minAge  = 0
         form3.maxAge  = 120
         form3.isHouseholdForm = false
@@ -357,8 +362,7 @@ class BootStrap {
 
         //add mapping and dependencies
         new FormMapping(form: form1, formVariableName: 'individualId', tableName: 'Member', columnName: 'code').save(flush:true)
-
-
+*/
 
     }
 
@@ -367,11 +371,11 @@ class BootStrap {
         //insertTestData();
 
         //importDataFromOpenHDSService.importFieldWorkers(Codes.REPORT_IMPORT_FROM_OPENHDS_FIELDWORKERS)
-        //importDataFromOpenHDSService.importHouseholds(Codes.REPORT_IMPORT_FROM_OPENHDS_HOUSEHOLDS)
-        //importDataFromOpenHDSService.importIndividuals(Codes.REPORT_IMPORT_FROM_OPENHDS_INDIVIDUALS)
+        importDataFromOpenHDSService.importHouseholds(Codes.REPORT_IMPORT_FROM_OPENHDS_HOUSEHOLDS)
+        importDataFromOpenHDSService.importIndividuals(Codes.REPORT_IMPORT_FROM_OPENHDS_INDIVIDUALS)
 
-        //exportFilesService.generateUsersXML(Codes.REPORT_GENERATE_USERS_ZIP_XML_FILES)
-        //exportFilesService.generateSettingsXML(Codes.REPORT_GENERATE_SETTINGS_ZIP_XML_FILES)
+        exportFilesService.generateUsersXML(Codes.REPORT_GENERATE_USERS_ZIP_XML_FILES)
+        exportFilesService.generateSettingsXML(Codes.REPORT_GENERATE_SETTINGS_ZIP_XML_FILES)
         exportFilesService.generateHouseHoldsXML(Codes.REPORT_GENERATE_HOUSEHOLDS_ZIP_XML_FILES)
         exportFilesService.generateMembersXML(Codes.REPORT_GENERATE_INDIVIDUALS_ZIP_XML_FILES)
 

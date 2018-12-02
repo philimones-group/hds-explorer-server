@@ -16,13 +16,23 @@ class ExportFilesController {
         render file: file
     }
 
-    def individuals = {
-        def file = new File(SystemPath.getGeneratedFilesPath() + File.separator + "individuals.xml")
+    def members = {
+        def file = new File(SystemPath.getGeneratedFilesPath() + File.separator + "members.xml")
         render file: file
     }
 
     def settings = {
         def file = new File(SystemPath.getGeneratedFilesPath() + File.separator + "settings.xml")
+        render file: file
+    }
+
+    def modules = {
+        def file = new File(SystemPath.getGeneratedFilesPath() + File.separator + "modules.xml")
+        render file: file
+    }
+
+    def forms = {
+        def file = new File(SystemPath.getGeneratedFilesPath() + File.separator + "forms.xml")
         render file: file
     }
 
@@ -48,14 +58,24 @@ class ExportFilesController {
         render file: file, fileName: "households.zip"
     }
 
-    def individualsZip = {
-        def file = new File(SystemPath.getGeneratedFilesPath() + File.separator + "individuals.zip")
-        render file: file, fileName: "individuals.zip"
+    def membersZip = {
+        def file = new File(SystemPath.getGeneratedFilesPath() + File.separator + "members.zip")
+        render file: file, fileName: "members.zip"
     }
 
     def settingsZip = {
         def file = new File(SystemPath.getGeneratedFilesPath() + File.separator + "settings.zip")
         render file: file, fileName: "settings.zip"
+    }
+
+    def modulesZip = {
+        def file = new File(SystemPath.getGeneratedFilesPath() + File.separator + "modules.zip")
+        render file: file, fileName: "modules.zip"
+    }
+
+    def formsZip = {
+        def file = new File(SystemPath.getGeneratedFilesPath() + File.separator + "forms.zip")
+        render file: file, fileName: "forms.zip"
     }
 
     def usersZip = {
