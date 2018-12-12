@@ -1,6 +1,9 @@
 package org.philimone.hds.explorer.controllers
 
 import org.philimone.hds.explorer.io.SystemPath
+import org.philimone.hds.explorer.server.Codes
+import org.philimone.hds.explorer.server.model.logs.LogReport
+import org.philimone.hds.explorer.server.model.logs.LogStatus
 
 /**
  * This controller exposes the generated XML/Zip files to be downloaded and controls the export views tasks
@@ -94,5 +97,80 @@ class ExportFilesController {
     }
 
 
+    /**/
+    def index = {
+
+        def logReports = LogReport.executeQuery("select lr from LogReport lr where lr.group.groupId=?", [Codes.GROUP_GENERATE_FILES])
+
+        render view: "index", model: [logReports : logReports]
+    }
+
+    def export = {
+        LogReport logReport = null
+
+        LogReport.withTransaction {
+            logReport = LogReport.get(params.id)
+            logReport.status = LogStatus.findByName(LogStatus.STARTED)
+            logReport.start = new Date();
+            logReport.save(flush: true)
+        }
+
+
+        println "log ${logReport.errors}"
+
+        def id = logReport.reportId
+
+        if (logReport.reportId==Codes.REPORT_GENERATE_USERS_ZIP_XML_FILES){
+            new Thread(new Runnable() {
+                @Override
+                void run() {
+                    println "executing export files to user xml/zip"
+                    exportFilesService.generateUsersXML(id)
+                }
+            }).start()
+        }
+
+        if (logReport.reportId==Codes.REPORT_GENERATE_HOUSEHOLDS_ZIP_XML_FILES){
+            new Thread(new Runnable() {
+                @Override
+                void run() {
+                    println "executing export files to households xml/zip"
+                    exportFilesService.generateHouseHoldsXML(id)
+                }
+            }).start()
+        }
+
+        if (logReport.reportId==Codes.REPORT_GENERATE_MEMBERS_ZIP_XML_FILES){
+            new Thread(new Runnable() {
+                @Override
+                void run() {
+                    println "executing export files to members xml/zip"
+                    exportFilesService.generateMembersXML(id)
+                }
+            }).start()
+        }
+
+        if (logReport.reportId==Codes.REPORT_GENERATE_SETTINGS_ZIP_XML_FILES){
+            new Thread(new Runnable() {
+                @Override
+                void run() {
+                    println "executing export files to individuals xml/zip"
+                    exportFilesService.generateSettingsXML(id)
+                }
+            }).start()
+        }
+
+        if (logReport.reportId==Codes.REPORT_GENERATE_TRACKING_LISTS_ZIP_XML_FILES){
+            new Thread(new Runnable() {
+                @Override
+                void run() {
+                    println "executing export files to tracking lists xml/zip"
+                    //exportFilesService.generateTrackingListsXML(id)
+                }
+            }).start()
+        }
+
+        redirect action:'index'
+    }
 
 }
