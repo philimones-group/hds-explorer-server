@@ -107,11 +107,13 @@ class ImportDataFromOpenHDSService {
 
                     //println("saving ${processed}, ${individual.errors}")
                 }
+
+                println("${processed}/${max} reached clearing session - ${TimeCategory.minus(new Date(), start)}")
+                sessionFactory.currentSession.flush() //clearing cache save us a lot of time
+                sessionFactory.currentSession.clear()
             }
 
-            println("${max} reached clearing session - ${TimeCategory.minus(new Date(), start)}")
-            sessionFactory.currentSession.flush() //clearing cache save us a lot of time
-            sessionFactory.currentSession.clear()
+
         }
 
         println("finished creating/updating fieldworkers!! - ${TimeCategory.minus(new Date(), start)}")
@@ -171,7 +173,7 @@ class ImportDataFromOpenHDSService {
 
         int from = 0;
         int to = 0;
-        int max = 100
+        int max = 500
 
         while (processed < houses.size()) {
             from = to
@@ -227,11 +229,15 @@ class ImportDataFromOpenHDSService {
                         log.output.println "${household.code}/${household.name}: errors: ${household.errors}"
                     }
                 }
+
+                println("${processed}/${max} reached clearing session - ${TimeCategory.minus(new Date(), start)}")
+                sessionFactory.currentSession.flush() //clearing cache save us a lot of time
+                sessionFactory.currentSession.clear()
+
             }
 
-            println("${processed}/${max} reached clearing session - ${TimeCategory.minus(new Date(), start)}")
-            sessionFactory.currentSession.flush() //clearing cache save us a lot of time
-            sessionFactory.currentSession.clear()
+
+
         }
 
 
@@ -373,7 +379,7 @@ class ImportDataFromOpenHDSService {
         def start = new Date()
         int from = 0;
         int to = 0;
-        int max = 100
+        int max = 500
         while (processed < members.size()) {
             from = to
             to = (members.size() > to + max) ? (to + max) : members.size();
@@ -457,8 +463,11 @@ class ImportDataFromOpenHDSService {
                 //session.clear()
 
                 println("thread-${threadNumber}: ${processed}/${max} reached clearing session - ${TimeCategory.minus(new Date(), start)}")
-                sessionFactory.currentSession.flush() //clearing cache save us a lot of time
-                sessionFactory.currentSession.clear()
+                Member.withSession {
+                    sessionFactory.currentSession.flush() //clearing cache save us a lot of time
+                    sessionFactory.currentSession.clear()
+                }
+
             }
 
 
@@ -479,22 +488,25 @@ class ImportDataFromOpenHDSService {
 
     HierarchyRegion getHierarchies(String lastHiearchyUuid){
         def hierarchy = new HierarchyRegion()
-        def lh = Locationhierarchy.findByUuid(lastHiearchyUuid)
 
-        if (lh != null){
-            hierarchy.region = lh.extId
+        Locationhierarchy.withTransaction {
+            def lh = Locationhierarchy.findByUuid(lastHiearchyUuid)
 
-            def parent = lh
-            while (parent != null){
+            if (lh != null){
+                hierarchy.region = lh.extId
 
-                def level = parent.level
+                def parent = lh
+                while (parent != null){
 
-                if (level != null){
-                    //println "${parent.extId}, parent=${parent.parent}, ${level}"
-                    hierarchy."hierarchy${level.keyIdentifier}" = parent.extId
+                    def level = parent.level
+
+                    if (level != null){
+                        //println "${parent.extId}, parent=${parent.parent}, ${level}"
+                        hierarchy."hierarchy${level.keyIdentifier}" = parent.extId
+                    }
+
+                    parent = parent.parent // get the previous hierarchy level
                 }
-                
-                parent = parent.parent // get the previous hierarchy level
             }
         }
 
