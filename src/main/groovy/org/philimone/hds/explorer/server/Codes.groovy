@@ -32,7 +32,7 @@ class Codes {
     /*Codes for events of Generating ZIP XML Files */
     static final int REPORT_GENERATE_USERS_ZIP_XML_FILES = 50
     static final int REPORT_GENERATE_HOUSEHOLDS_ZIP_XML_FILES = 51
-    static final int REPORT_GENERATE_INDIVIDUALS_ZIP_XML_FILES = 52
+    static final int REPORT_GENERATE_MEMBERS_ZIP_XML_FILES = 52
     static final int REPORT_GENERATE_SETTINGS_ZIP_XML_FILES = 53
     static final int REPORT_GENERATE_TRACKING_LISTS_ZIP_XML_FILES = 54
 

@@ -39,11 +39,11 @@
             </div>
             <bi:menuBar>
                 <bi:menu label="${g.message(code: 'default.menu.home.label')}"  link="${createLinkTo(dir: '')}" />
-                <bi:menu label="${g.message(code: 'default.menu.users.label')}"  />
+                <bi:menu label="${g.message(code: 'default.menu.users.label')}" link="${createLink(controller: 'user', action: 'index')}" />
 
                 <bi:dropmenu label="${g.message(code: 'default.menu.updates.label')} ">
-                    <bi:menu label="${g.message(code: 'default.menu.updates.modules.label')}" />
-                    <bi:menu label="${g.message(code: 'default.menu.updates.forms.label')}" />
+                    <bi:menu label="${g.message(code: 'default.menu.updates.modules.label')}" link="${createLink(controller: 'studyModule', action: 'index')}" />
+                    <bi:menu label="${g.message(code: 'default.menu.updates.forms.label')}" link="${createLink(controller: 'form', action: 'index')}" />
                     <bi:menuseparator />
                     <bi:menu label="${g.message(code: 'default.menu.updates.households.label')}" />
                     <bi:menu label="${g.message(code: 'default.menu.updates.members.label')}" />
@@ -52,9 +52,9 @@
                     <bi:menu label="${g.message(code: 'default.menu.lists.trackinglists.label')}" />
                 </bi:dropmenu>
                 <bi:dropmenu label="${g.message(code: 'default.menu.sync.label')}">
-                    <bi:menu label="${g.message(code: 'default.menu.sync.import_openhds.label')}" link="#" />
+                    <bi:menu label="${g.message(code: 'default.menu.sync.import_openhds.label')}" link="${createLink(controller: 'importOpenHDS', action: 'index')}" />
                     <bi:menu label="${g.message(code: 'default.menu.sync.import_xls')}" link="#" />
-                    <bi:menu label="${g.message(code: 'default.menu.sync.export.label')}" link="#" />
+                    <bi:menu label="${g.message(code: 'default.menu.sync.export.label')}"  link="${createLink(controller: 'exportFiles', action: 'index')}" />
                 </bi:dropmenu>
             </bi:menuBar>
         </div>

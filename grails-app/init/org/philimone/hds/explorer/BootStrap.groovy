@@ -5,20 +5,15 @@ import org.philimone.hds.explorer.authentication.SecurityMap
 import org.philimone.hds.explorer.authentication.User
 import org.philimone.hds.explorer.authentication.UserRole
 import org.philimone.hds.explorer.io.SystemPath
-import org.philimone.hds.explorer.openhds.model.Relationship
 import org.philimone.hds.explorer.server.Codes
 import org.philimone.hds.explorer.server.model.logs.LogGroup
 import org.philimone.hds.explorer.server.model.logs.LogReport
 import org.philimone.hds.explorer.server.model.logs.LogStatus
-import org.philimone.hds.explorer.server.model.main.Form
-import org.philimone.hds.explorer.server.model.main.FormMapping
 import org.philimone.hds.explorer.server.model.main.MappingFormatType
 import org.philimone.hds.explorer.server.model.main.StudyModule
 import org.philimone.hds.explorer.server.model.main.TrackingList
 import org.philimone.hds.explorer.server.model.main.TrackingListMapping
 import org.philimone.hds.explorer.server.model.settings.ApplicationParam
-
-import java.util.concurrent.ForkJoinPool
 
 class BootStrap {
 
@@ -108,8 +103,9 @@ class BootStrap {
 
             new SecurityMap(url: "/exportFiles/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
             new SecurityMap(url: "/generalUtilities/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
-            //new SecurityMap(url: "/importData/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
-            //new SecurityMap(url: "/export/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
+            new SecurityMap(url: "/importOpenHDS/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
+            new SecurityMap(url: "/studyModule/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
+            new SecurityMap(url: "/form/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
             //new SecurityMap(url: "/updates/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
 
             //new SecurityMap(url: "/household/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
@@ -117,7 +113,7 @@ class BootStrap {
 
             //new SecurityMap(url: "/settings/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
             //new SecurityMap(url: "/reports/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
-            //new SecurityMap(url: "/logReport/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
+            new SecurityMap(url: "/logReport/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
 
             //rest api access
             new SecurityMap(url: "/api/login", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
@@ -252,7 +248,7 @@ class BootStrap {
         ).save(flush: true)
 
         new LogReport(
-                reportId: Codes.REPORT_GENERATE_INDIVIDUALS_ZIP_XML_FILES,
+                reportId: Codes.REPORT_GENERATE_MEMBERS_ZIP_XML_FILES,
                 group: LogGroup.findByGroupId(Codes.GROUP_GENERATE_FILES),
                 status: LogStatus.findByName(LogStatus.NOT_STARTED),
                 description: 'logreport.export.individuals.zip_xml_files.label'
@@ -425,7 +421,7 @@ class BootStrap {
         exportFilesService.generateUsersXML(Codes.REPORT_GENERATE_USERS_ZIP_XML_FILES)
         exportFilesService.generateSettingsXML(Codes.REPORT_GENERATE_SETTINGS_ZIP_XML_FILES)
         //exportFilesService.generateHouseHoldsXML(Codes.REPORT_GENERATE_HOUSEHOLDS_ZIP_XML_FILES)
-        //exportFilesService.generateMembersXML(Codes.REPORT_GENERATE_INDIVIDUALS_ZIP_XML_FILES)
+        //exportFilesService.generateMembersXML(Codes.REPORT_GENERATE_MEMBERS_ZIP_XML_FILES)
 
 
 /*

@@ -155,7 +155,7 @@ img {
     text-decoration: underline;
 }
 
-.nav a.home, .nav a.list, .nav a.create {
+.nav a.home, .nav a.list, .nav a.create, .nav a.search, .nav a.import, .nav a.export {
     background-position: 0.7em center;
     background-repeat: no-repeat;
     text-indent: 25px;
@@ -171,6 +171,18 @@ img {
 
 .nav a.create {
     background-image: url(../images/skin/database_add.png);
+}
+
+.nav a.search {
+    background-image: url(../images/skin/database_search.png);
+}
+
+.nav a.import {
+    background-image: url(../images/skin/database_import.png);
+}
+
+.nav a.export {
+    background-image: url(../images/skin/database_export.png);
 }
 
 .nav li.dropdown.open ul.dropdown-menu {
