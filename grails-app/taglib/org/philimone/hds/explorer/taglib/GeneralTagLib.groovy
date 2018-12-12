@@ -3,14 +3,13 @@ package org.philimone.hds.explorer.taglib
 class GeneralTagLib {
 
     static namespace = "bi"
-    static defaultEncodeAs = [taglib:'html']
 
     def generalUtilitiesService
 
     /*Menu*/
-    def horizontalMenuBar = {attrs, body ->
-        out << '<div class="navbar-collapse collapse">'
-        out << '    <ul class="nav navbar-nav">'
+    def menuBar = {attrs, body ->
+        out << '<div class="navbar-collapse collapse" aria-expanded="false" style="height: 0.8px;">'
+        out << '    <ul class="nav navbar-nav navbar-right">'
 
         out << '        ' + body()
 
@@ -34,7 +33,7 @@ class GeneralTagLib {
         out << '</li>'
     }
 
-    def submenu = {attrs, body ->
+    def dropmenu = {attrs, body ->
         out << '<li class="dropdown">'
         out << "    <a href=\"#\" class=\"dropdown-toggle\" data-toggle=\"dropdown\" role=\"button\" aria-haspopup=\"true\" aria-expanded=\"false\">${attrs.label} <span class=\"caret\"></span></a>"
         out << "    <ul class=\"dropdown-menu\">"
@@ -43,7 +42,7 @@ class GeneralTagLib {
         out << '</li>'
     }
 
-    def menudivider = { attrs, body ->
+    def menuseparator = { attrs, body ->
         out << "<li role=\"separator\" class=\"divider\"></li>"
     }
 

@@ -3,13 +3,20 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <title>
-        <g:layoutTitle default="Grails"/>
-    </title>
+    <title><g:message code="default.application.name"/></title>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <asset:link rel="icon" href="favicon.ico" type="image/x-ico" />
 
     <asset:stylesheet src="application.css"/>
+
+    <style type="text/css" media="screen">
+        #headerLeft{
+            float: left;
+            height: 40px;
+            margin-left: 0px;
+            margin-right: 10px;
+        }
+    </style>
 
     <g:layoutHead/>
 </head>
@@ -18,31 +25,58 @@
     <div class="navbar navbar-default navbar-static-top" role="navigation">
         <div class="container">
             <div class="navbar-header">
+                <div id="headerLeft">
+                    <asset:image src="hds_explorer_logo.png" />
+                </div>
+
                 <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
                     <span class="sr-only">Toggle navigation</span>
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="/#">
-		            <asset:image src="grails.svg" alt="Grails Logo"/>
-                </a>
+
             </div>
-            <div class="navbar-collapse collapse" aria-expanded="false" style="height: 0.8px;">
-                <ul class="nav navbar-nav navbar-right">
-                    <g:pageProperty name="page.nav" />
-                </ul>
-            </div>
+            <bi:menuBar>
+                <bi:menu label="${g.message(code: 'default.menu.home.label')}"  link="${createLinkTo(dir: '')}" />
+                <bi:menu label="${g.message(code: 'default.menu.users.label')}"  />
+
+                <bi:dropmenu label="${g.message(code: 'default.menu.updates.label')} ">
+                    <bi:menu label="${g.message(code: 'default.menu.updates.modules.label')}" />
+                    <bi:menu label="${g.message(code: 'default.menu.updates.forms.label')}" />
+                    <bi:menuseparator />
+                    <bi:menu label="${g.message(code: 'default.menu.updates.households.label')}" />
+                    <bi:menu label="${g.message(code: 'default.menu.updates.members.label')}" />
+                </bi:dropmenu>
+                <bi:dropmenu label="${g.message(code: 'default.menu.lists.label')}">
+                    <bi:menu label="${g.message(code: 'default.menu.lists.trackinglists.label')}" />
+                </bi:dropmenu>
+                <bi:dropmenu label="${g.message(code: 'default.menu.sync.label')}">
+                    <bi:menu label="${g.message(code: 'default.menu.sync.import_openhds.label')}" link="#" />
+                    <bi:menu label="${g.message(code: 'default.menu.sync.import_xls')}" link="#" />
+                    <bi:menu label="${g.message(code: 'default.menu.sync.export.label')}" link="#" />
+                </bi:dropmenu>
+            </bi:menuBar>
         </div>
     </div>
 
     <g:layoutBody/>
+
 
     <div class="footer" role="contentinfo"></div>
 
     <div id="spinner" class="spinner" style="display:none;">
         <g:message code="spinner.alt" default="Loading&hellip;"/>
     </div>
+
+    <section id="footer">
+        <div id="footerMenu">
+            <div id="siteInfo" class="siteInfo" align="right">
+                <a href="#">Paulo Filimone </a> | &copy;2018 HDS-Explorer <g:message code="default.application.version" />
+            </div>
+
+        </div>
+    </section>
 
     <asset:javascript src="application.js"/>
 
