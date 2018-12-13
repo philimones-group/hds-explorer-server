@@ -112,4 +112,6 @@ class Household {
         cosLongitude column: 'cos_longitude'
         sinLongitude column: 'sin_longitude'
     }
+
+    def static ALL_COLUMNS = ['code', 'region', 'name', 'headCode', 'secHeadCode', 'hierarchy1', 'hierarchy2', 'hierarchy3', 'hierarchy4', 'hierarchy5', 'hierarchy6', 'hierarchy7', 'hierarchy8', 'gpsAccuracy', 'gpsAltitude', 'gpsLatitude', 'gpsLongitude']
 }

@@ -584,3 +584,96 @@ img.grails-logo {
     height:340px;
     margin-top:-10px;
 }
+
+/* Extras */
+
+.label2 {
+    cursor: pointer;
+    display: inline-block;
+    margin: 0 0.25em 0 0;
+    color: #666666;
+    text-align: left;
+    width: 50%;
+}
+
+.nav2 {
+    /*background-color: #efefef;*/
+    padding: 0.5em 0.75em;
+    -moz-box-shadow: 0 0 2px 1px #aaaaaa;
+    -webkit-box-shadow: 0 0 2px 1px #aaaaaa;
+    box-shadow: 0 0 2px 1px #aaaaaa;
+    zoom: 1;
+    font-size: 14px;
+    border: 0px solid #ccc;
+    /*
+        background-color: #efefef;
+        background-image: -moz-linear-gradient(top, #ffffff, #eaeaea);
+        background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #ffffff), color-stop(1, #eaeaea));
+        filter: progid:DXImageTransform.Microsoft.gradient(startColorStr = '#ffffff', EndColorStr = '#eaeaea');
+        -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='#ffffff', EndColorStr='#eaeaea')";
+        */
+}
+
+.buttons2 {
+    background-color: #efefef;
+    overflow: hidden;
+    padding: 0.3em;
+    -moz-box-shadow: 0 0 3px 1px #aaaaaa;
+    -webkit-box-shadow: 0 0 3px 1px #aaaaaa;
+    box-shadow: 0 0 3px 1px #aaaaaa;
+    margin: 0.1em 0 0 0;
+    border: none;
+}
+
+.buttons2 input,
+.buttons2 a {
+    background-color: transparent;
+    border: 0;
+    color: #666666;
+    cursor: pointer;
+    display: inline-block;
+    margin: 0 0.25em 0;
+    overflow: visible;
+    padding: 0.25em 0.7em;
+    text-decoration: none;
+
+    -moz-border-radius: 0.3em;
+    -webkit-border-radius: 0.3em;
+    border-radius: 0.3em;
+}
+
+.buttons2 input:hover, .buttons2 input:focus,
+.buttons2 a:hover, .buttons2 a:focus {
+    background-color: #999999;
+    color: #ffffff;
+    outline: none;
+    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.8);
+    -moz-box-shadow: none;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+}
+
+.no-borderradius .buttons2 input:hover, .no-borderradius .buttons2 input:focus,
+.no-borderradius .buttons2 a:hover, .no-borderradius .buttons2 a:focus {
+    background-color: transparent;
+    color: #444444;
+    text-decoration: underline;
+}
+
+.buttons2 .delete, .buttons2 .edit, .buttons2 .save {
+    background-position: 0.7em center;
+    background-repeat: no-repeat;
+    text-indent: 25px;
+}
+
+.buttons2 .delete {
+    background-image: url(../images/skin/database_delete.png);
+}
+
+.buttons2 .edit {
+    background-image: url(../images/skin/database_edit.png);
+}
+
+.buttons2 .save {
+    background-image: url(../images/skin/database_save.png);
+}

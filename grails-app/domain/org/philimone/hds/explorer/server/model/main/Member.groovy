@@ -182,4 +182,8 @@ class Member {
         cosLongitude column: 'cos_longitude'
         sinLongitude column: 'sin_longitude'
     }
+
+    def static ALL_COLUMNS = ['code', 'name', 'gender', 'dob', 'age', 'ageAtDeath', 'motherCode', 'motherName', 'fatherCode', 'fatherName', 'spouseCode', 'spouseName',
+                              'householdCode', 'householdName', 'startType', 'startDate', 'endType', 'endDate', 'entryHousehold', 'entryType', 'entryDate',
+                              'gpsAccuracy', 'gpsAltitude', 'gpsLatitude', 'gpsLongitude']
 }

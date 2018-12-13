@@ -9,6 +9,8 @@ import org.philimone.hds.explorer.server.Codes
 import org.philimone.hds.explorer.server.model.logs.LogGroup
 import org.philimone.hds.explorer.server.model.logs.LogReport
 import org.philimone.hds.explorer.server.model.logs.LogStatus
+import org.philimone.hds.explorer.server.model.main.Form
+import org.philimone.hds.explorer.server.model.main.FormMapping
 import org.philimone.hds.explorer.server.model.main.MappingFormatType
 import org.philimone.hds.explorer.server.model.main.StudyModule
 import org.philimone.hds.explorer.server.model.main.TrackingList
@@ -106,6 +108,7 @@ class BootStrap {
             new SecurityMap(url: "/importOpenHDS/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
             new SecurityMap(url: "/studyModule/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
             new SecurityMap(url: "/form/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
+            new SecurityMap(url: "/formMapping/*/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
             //new SecurityMap(url: "/updates/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
 
             //new SecurityMap(url: "/household/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
@@ -412,14 +415,14 @@ class BootStrap {
 
     def testApp(){
 
-        //insertTestData();
+        insertTestData();
 
         //importDataFromOpenHDSService.importFieldWorkers(Codes.REPORT_IMPORT_FROM_OPENHDS_FIELDWORKERS)
         //importDataFromOpenHDSService.importHouseholds(Codes.REPORT_IMPORT_FROM_OPENHDS_HOUSEHOLDS)
         //importDataFromOpenHDSService.importIndividuals(Codes.REPORT_IMPORT_FROM_OPENHDS_INDIVIDUALS)
 
-        exportFilesService.generateUsersXML(Codes.REPORT_GENERATE_USERS_ZIP_XML_FILES)
-        exportFilesService.generateSettingsXML(Codes.REPORT_GENERATE_SETTINGS_ZIP_XML_FILES)
+        //exportFilesService.generateUsersXML(Codes.REPORT_GENERATE_USERS_ZIP_XML_FILES)
+        //exportFilesService.generateSettingsXML(Codes.REPORT_GENERATE_SETTINGS_ZIP_XML_FILES)
         //exportFilesService.generateHouseHoldsXML(Codes.REPORT_GENERATE_HOUSEHOLDS_ZIP_XML_FILES)
         //exportFilesService.generateMembersXML(Codes.REPORT_GENERATE_MEMBERS_ZIP_XML_FILES)
 

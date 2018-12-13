@@ -29,6 +29,10 @@ class Form {
             redcapMappings:RedcapMapping  /* The list of all variables that will be uploaded to a REDCap Form */
     ]
 
+    String toString(){
+        formName
+    }
+
     String getModulesAsText() {
         String mds = ""
         modules.each {

@@ -83,4 +83,6 @@ class User implements Serializable {
     static mapping = {
 	    password column: '`password`'
     }
+
+    def static ALL_COLUMNS = ['firstName', 'lastName', 'username', 'password', 'email']
 }

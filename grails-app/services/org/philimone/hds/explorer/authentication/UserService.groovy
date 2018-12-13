@@ -1,9 +1,10 @@
 package org.philimone.hds.explorer.authentication
 
+import grails.gorm.services.Service
 import grails.gorm.transactions.Transactional
 import org.philimone.hds.explorer.services.GeneralUtilitiesService
 
-@Transactional
+@Service(User)
 class UserService {
 
     def GeneralUtilitiesService generalUtilitiesService
@@ -22,8 +23,8 @@ class UserService {
         def svc = generalUtilitiesService
 
         svc.sendTextEmail(user.email,
-                          svc.getMessage("default.mail.user.subject.created", ""),
-                          svc.getMessage("default.mail.user.message.created", [ username, password ] as String[] , "") )
+                svc.getMessage("default.mail.user.subject.created", ""),
+                svc.getMessage("default.mail.user.message.created", [ username, password ] as String[] , "") )
 
         //println "error ${result.errors}"
         result
@@ -38,4 +39,22 @@ class UserService {
 
         //println "error ${user.errors}"
     }
+
+    User get(Serializable id){
+        User.get(id)
+    }
+
+    List<User> list(Map args){
+        User.list(args)
+    }
+
+    Long count(){
+        User.count()
+    }
+
+    void delete(Serializable id){
+        User.get(id).delete()
+    }
+
+
 }
