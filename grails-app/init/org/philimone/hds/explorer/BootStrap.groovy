@@ -48,6 +48,7 @@ class BootStrap {
         def binDir = "${SystemPath.binariesPath}"
         def logDir = "${SystemPath.logsPath}"
         def extDir = "${SystemPath.externalDocsPath}"
+        def apkDir = "${SystemPath.apksPath}"
 
 
         println "Homepath: ${SystemPath.HOME_PATH}"
@@ -67,6 +68,10 @@ class BootStrap {
         //create resources dir
         println "Creating dir "+extDir
         println "created: " + new File(extDir).mkdirs()
+
+        //create apks dir
+        println "Creating dir "+apkDir
+        println "created: " + new File(apkDir).mkdirs()
     }
 
     def configSecurityMap(){
@@ -128,6 +133,10 @@ class BootStrap {
             new SecurityMap(url: "/api/export/users/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
             new SecurityMap(url: "/api/export/trackinglists/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
             new SecurityMap(url: "/api/export/stats/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
+
+            //File downloads
+            new SecurityMap(url: "/download/free/android/apk", configAttribute: "permitAll").save(flush: true)
+            new SecurityMap(url: "/exportFiles/downloadAndroidApk", configAttribute: "permitAll").save(flush: true)
 
 
         }

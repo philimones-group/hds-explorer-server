@@ -96,6 +96,13 @@ class ExportFilesController {
         render file: file, fileName: "stats.zip"
     }
 
+    /**
+     * Free APK Download - we can think on creating an controller only for this
+     */
+    def downloadAndroidApk = {
+        def file = new File(SystemPath.getApksPath() + File.separator + "hds-explorer-tablet.apk")
+        render file: file, fileName: "hds-explorer-tablet.apk", contentType:"application/octet-stream"
+    }
 
     /**/
     def index = {

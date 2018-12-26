@@ -9,6 +9,7 @@ class SystemPath {
     static String BIN_PATH = "bin"
     static String LOG_PATH = "logs"
     static String EXT_PATH = "a-docs" /* uploaded files or attachments docs directory */
+    static String APK_PATH = "apks" /* uploaded files or attachments docs directory */
 
     static String getGeneratedFilesPath(){
         return "${HOME_PATH}${File.separator}${GEN_PATH}"
@@ -24,6 +25,10 @@ class SystemPath {
 
     static String getExternalDocsPath(){
         return "${HOME_PATH}${File.separator}${EXT_PATH}"
+    }
+
+    static String getApksPath(){
+        return "${HOME_PATH}${File.separator}${APK_PATH}"
     }
 }
 
