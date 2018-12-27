@@ -1,5 +1,6 @@
 package org.philimone.hds.explorer.server.model.main
 
+import com.lowagie.text.html.HtmlTagMap
 import net.betainteractive.utilities.StringUtil
 
 /**
@@ -183,7 +184,7 @@ class Member {
         sinLongitude column: 'sin_longitude'
     }
 
-    def static ALL_COLUMNS = ['code', 'name', 'gender', 'dob', 'age', 'ageAtDeath', 'motherCode', 'motherName', 'fatherCode', 'fatherName', 'spouseCode', 'spouseName',
-                              'householdCode', 'householdName', 'startType', 'startDate', 'endType', 'endDate', 'entryHousehold', 'entryType', 'entryDate',
+    def static ALL_COLUMNS = ['code', 'name', 'gender', 'dob', 'age', 'ageAtDeath', 'motherCode', 'motherName', 'fatherCode', 'fatherName', 'spouseCode', 'spouseName', 'spouseType',
+                              'householdCode', 'householdName', 'isHouseholdHead', 'isSecHouseholdHead', 'startType', 'startDate', 'endType', 'endDate', 'entryHousehold', 'entryType', 'entryDate',
                               'gpsAccuracy', 'gpsAltitude', 'gpsLatitude', 'gpsLongitude']
 }

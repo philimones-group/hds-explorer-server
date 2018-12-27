@@ -11,9 +11,10 @@ class FormMapping {
     String tableName
     String columnName
     MappingFormatType columnFormat
+    String columnFormatValue
 
     String toString(){
-        "${tableName}.${columnName}:${formVariableName}->${columnFormat==null ? 'None': columnFormat }"
+        "${tableName}.${columnName}:${formVariableName}->${columnFormat==null ? 'None': columnFormat.getValue(columnFormatValue) }"
     }
 
     static constraints = {
@@ -22,6 +23,7 @@ class FormMapping {
         tableName blank: false
         columnName blank: false
         columnFormat nullable: true
+        columnFormatValue nullable: true
     }
 
     static mapping = {
@@ -32,7 +34,7 @@ class FormMapping {
         tableName column: "table_name"
         columnName column: "column_name"
         columnFormat column: "column_format_type"
-
+        columnFormatValue column: "column_format_value"
     }
 
 }

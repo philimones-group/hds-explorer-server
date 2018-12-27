@@ -216,10 +216,13 @@ class FormController {
 
         def formatType = formMapping.columnFormat
         if (formatType != null){
-            formatType.format = formMapping.columnFormat
-            formMapping.columnFormat = formatType.getValue()
 
-            formatType.discard()
+            if (formMapping.columnFormatValue == null || formMapping.columnFormatValue.isEmpty()){
+                formMapping.columnFormatValue = formatType.format
+            }
+
+            //formMapping.columnFormat = formatType.getValue()
+            //formatType.discard()
         }
 
         if (formMapping.hasErrors()) {
@@ -261,20 +264,17 @@ class FormController {
 
     def modelFormatTypes = {
         Long id = params.id=="" ? null : Long.parseLong(params.id)
-        def format = []
+        def format = ""
 
-        println "id = ${id}, ${params.id}"
+        //println "id = ${id}, ${params.id}"
 
         def formatType = MappingFormatType.get(id)
 
-        println "${formatType}"
-
         if (formatType != null){
-            format.add formatType.format
+            format = formatType.format
         }
 
-        render format as JSON
-
+        render format
     }
 
 }

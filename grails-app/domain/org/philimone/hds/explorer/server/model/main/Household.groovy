@@ -9,6 +9,7 @@ class Household {
     String region;      /* Last Location Hierarchy */
     String name;
     String headCode;    /* Head of Houeshold Code*/
+    String headName     /* Head of Household Name*/
     String secHeadCode; /* Secondary Head of Household */
 
     String hierarchy1
@@ -36,7 +37,9 @@ class Household {
                 ((code == null || code.isEmpty()) ?               "<code />"   : "<code>${code}</code>") +
                 ((region == null || region.isEmpty()) ?           "<region />" : "<region>${code}</region>") +
                 ((name == null || name.isEmpty()) ?               "<name />"   : "<name>${name}</name>") +
+
                 ((headCode == null || headCode.isEmpty()) ?       "<headCode />" : "<headCode>${headCode}</headCode>") +
+                ((headName == null || headName.isEmpty()) ?       "<headName />" : "<headName>${headName}</headName>") +
                 ((secHeadCode == null || secHeadCode.isEmpty()) ? "<secHeadCode />" : "<secHeadCode>${secHeadCode}</secHeadCode>") +
 
                 ((hierarchy1 == null || hierarchy1.isEmpty()) ? "<hierarchy1 />" : "<hierarchy1>${hierarchy1}</hierarchy1>") +
@@ -60,6 +63,7 @@ class Household {
         region nullable: false
         name blank: false
         headCode blank: false, unique: 'code'
+        headName blank: false
         secHeadCode blank: true, nullable: true
 
         hierarchy1 nullable: true
@@ -90,6 +94,7 @@ class Household {
         region column: 'region'
         name column: 'name'
         headCode column: 'head_code'
+        headName column: 'head_name'
         secHeadCode column: 'sec_head_code'
 
         hierarchy1 column: 'hierarchy1'
@@ -113,5 +118,5 @@ class Household {
         sinLongitude column: 'sin_longitude'
     }
 
-    def static ALL_COLUMNS = ['code', 'region', 'name', 'headCode', 'secHeadCode', 'hierarchy1', 'hierarchy2', 'hierarchy3', 'hierarchy4', 'hierarchy5', 'hierarchy6', 'hierarchy7', 'hierarchy8', 'gpsAccuracy', 'gpsAltitude', 'gpsLatitude', 'gpsLongitude']
+    def static ALL_COLUMNS = ['code', 'region', 'name', 'headCode', 'headName', 'secHeadCode', 'hierarchy1', 'hierarchy2', 'hierarchy3', 'hierarchy4', 'hierarchy5', 'hierarchy6', 'hierarchy7', 'hierarchy8', 'gpsAccuracy', 'gpsAltitude', 'gpsLatitude', 'gpsLongitude']
 }

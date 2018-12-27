@@ -24,6 +24,24 @@
                     }
                 });
             });
+
+            $("#columnFormat").change(function() {
+
+                $.ajax({
+                    url: "${createLink(controller: "form", action: "modelFormatTypes")}",
+                    data: "id=" + this.value,
+                    cache: false,
+                    success: function(html) {
+
+                        var element = document.getElementById("columnFormatValue");
+                        element.text = html;
+                        element.value = html;
+
+                    }
+                });
+            });
+
+
         });
 
     </g:javascript>
@@ -84,28 +102,21 @@
 
                         <div class="fieldcontain ">
                             <label class="label2"><g:message code="formMapping.columnFormat.label" default="Column Format Type" /></label>
-                            <g:select id="columnFormat" name="columnFormat" optionKey="id" from="${org.philimone.hds.explorer.server.model.main.MappingFormatType.list()}"
-                                      value="${formMappingInstance?.columnFormat}" noSelection="['': '']" />
+                            <g:select id="columnFormat" name="columnFormat" optionKey="id" from="${org.philimone.hds.explorer.server.model.main.MappingFormatType.list()}" value="${formMappingInstance?.columnFormat}" noSelection="['': '']" />
+                        </div>
+
+                        <div class="fieldcontain ">
+                            <label class="label2"><g:message code="formMapping.columnFormatValue.label" default="Column Format Value" /></label>
+                            <g:textField id="columnFormatValue" name="columnFormatValue" from="${formMappingInstance?.columnFormatValue}"  />
                         </div>
 
                         <!--
-                        <div class="fieldcontain ">
-                            <label class="label2"><g:message code="formMapping.columnFormatlabel" default="Column Format" /></label>
-                            <g:textField id="columnFormat" name="columnFormat" value="" />
-                        </div>
-                        -->
-
                         <div id="divColumnConstValue" class="fieldcontain " style="display: none">
                             <label class="label2"><g:message code="formMapping.columnConstantValue.label" default="Column Constant Value" /></label>
                             <g:textField name="columnConstantValue" value="" />
                         </div>
-
-                        <!--
-                        <div class="fieldcontain ">
-                            <label class="label2"><g:message code="formMapping.splittable.label" default="Split Index" /> (Value is splittable by commas)</label>
-                            <g:select id="columnSplitIndex" name="columnSplitIndex" from="${0..30}" noSelection="['':'Not Applicable']" />
-                        </div>
                         -->
+
                         <br>
 
                         <div class="fieldcontain ">

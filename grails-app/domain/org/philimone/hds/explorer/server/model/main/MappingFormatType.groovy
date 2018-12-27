@@ -17,6 +17,10 @@ class MappingFormatType {
         "${type}[${format}]"
     }
 
+    String getValue(String customFormat){
+        "${type}[${customFormat==null ? format : customFormat}]"
+    }
+
     static constraints = {
         description nullable: false
         type nullable: false

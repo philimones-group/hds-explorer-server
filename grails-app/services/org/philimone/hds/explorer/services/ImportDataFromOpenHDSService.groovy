@@ -157,14 +157,14 @@ class ImportDataFromOpenHDSService {
 
         Location.withTransaction {
             houses = Location.executeQuery("select l.extId, l.locationName, l.accuracy, l.latitude, l.longitude, l.altitude, l.locationhierarchy.uuid from Location l")
-            heads = Socialgroup.executeQuery("select s.extId, s.individual.extId from Socialgroup s")
+            heads = Socialgroup.executeQuery("select s.extId, s.individual.extId, s.individual.firstName, s.individual.middleName, s.individual.lastName  from Socialgroup s")
         }
 
         println  "houses to process ${houses.size()}"
         println  "heads found ${heads.size()}"
 
         heads.each {
-            mapHeads.put(it[0], it[1]) // save socialgroup id and extid
+            mapHeads.put(it[0], [it[1], it[2], it[3], it[4]]) // save socialgroup id and extid,fName,mName,lName
         }
 
         Household.withTransaction {
@@ -190,6 +190,7 @@ class ImportDataFromOpenHDSService {
                     household.code = obj[0]
                     household.name = obj[1]
                     household.headCode = "UNK"
+                    household.headName = "Unknown Individual"
                     household.secHeadCode = "UNK"
 
                     household.region = hierarchy.region
@@ -216,7 +217,9 @@ class ImportDataFromOpenHDSService {
 
 
                     if (mapHeads.containsKey(obj[0] + "00")){
-                        household.headCode = mapHeads.get(obj[0] + "00")
+                        def objhead = mapHeads.get(obj[0] + "00")
+                        household.headCode = objhead[0]
+                        household.headName = StringUtil.getFullname(objhead[1], objhead[2], objhead[3])
                     }
 
                     boolean result = household.save(flush: true)
