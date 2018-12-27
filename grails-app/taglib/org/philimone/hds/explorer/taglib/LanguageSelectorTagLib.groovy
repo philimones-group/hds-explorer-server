@@ -7,9 +7,8 @@ import org.springframework.web.servlet.support.RequestContextUtils
 class LanguageSelectorTagLib {
 
     static namespace = 'language'
-    static defaultEncodeAs = [taglib:'html']
 
-    List<Locale> locales = [new Locale("pt"), Locale.ENGLISH]
+    List<Locale> locales = [new Locale("pt", ), Locale.ENGLISH]
 
     /**
      * Renders a locale selector.
@@ -30,6 +29,20 @@ class LanguageSelectorTagLib {
                 }
             }
         }
+    }
+
+    def selectMenu = {
+        Locale requestLocale = RequestContextUtils.getLocale(request)
+
+        out << '<li>'
+
+        locales.each { Locale locale ->
+            def link = "${request.forwardURI}?lang=${locale.language}"
+            def label = StringUtil.capitalize(locale.getDisplayLanguage(locale))
+            out << "<a href=\"${link}\" ${requestLocale.language == locale.language ? 'style="background-color: #4e8908;"' : ''}>${label}</a>"
+        }
+
+        out << '</li>'
     }
 
 

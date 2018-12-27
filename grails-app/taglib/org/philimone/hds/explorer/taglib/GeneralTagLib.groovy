@@ -26,7 +26,7 @@ class GeneralTagLib {
         if (strClass == null || strClass.isEmpty()){
             out << '<li>'
         }else{
-            out << "<li class=\"${strClass}\">"
+            out << "<li class=\"${strClass}\"  style=\"background-color: #4e8908;\" >"
         }
 
         out << "<a href=\"${link}\">${label}</a>"

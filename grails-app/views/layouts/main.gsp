@@ -12,10 +12,10 @@
     <style type="text/css" media="screen">
         #headerLeft{
             float: left;
-            height: 40px;
             margin-left: 0px;
             margin-right: 10px;
         }
+
     </style>
 
     <g:layoutHead/>
@@ -26,19 +26,25 @@
         <div class="container">
             <div class="navbar-header">
                 <div id="headerLeft">
-                    <asset:image src="hds_explorer_logo.png" />
+                    <asset:image src="hds_explorer_logo.png" width="283" height="70" />
                 </div>
 
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                    <span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
 
             </div>
+
             <bi:menuBar>
-                <bi:menu label="${g.message(code: 'default.menu.home.label')}"  link="${createLinkTo(dir: '')}" />
+
+                <sec:ifLoggedIn>
+                    <!-- <g:message code="login.as.label"/>: <b><bi:showLoggedUser/></b> (<g:link controller="logout"><g:message code="login.logout.label"/></g:link>) -->
+
+                    <bi:menu label="${g.message(code: 'login.logout.label')}"  link="${createLink(controller: 'logout')}"  style="active"/>
+
+                </sec:ifLoggedIn>
+                <sec:ifNotLoggedIn>
+                    <bi:menu label="${g.message(code: 'login.button.label')}"  link="${createLink(controller: 'login', action: 'auth')}"  style="active" />
+                </sec:ifNotLoggedIn>
+
+                <bi:menu label="${g.message(code: 'default.menu.home.label')}"  link="${createLink(uri: '/')}" />
                 <bi:menu label="${g.message(code: 'default.menu.users.label')}" link="${createLink(controller: 'user', action: 'index')}" />
 
                 <bi:dropmenu label="${g.message(code: 'default.menu.updates.label')} ">
@@ -55,6 +61,9 @@
                     <bi:menu label="${g.message(code: 'default.menu.sync.import_openhds.label')}" link="${createLink(controller: 'importOpenHDS', action: 'index')}" />
                     <bi:menu label="${g.message(code: 'default.menu.sync.import_xls')}" link="#" />
                     <bi:menu label="${g.message(code: 'default.menu.sync.export.label')}"  link="${createLink(controller: 'exportFiles', action: 'index')}" />
+                </bi:dropmenu>
+                <bi:dropmenu label="${g.message(code: 'default.language.select')}">
+                    <language:selectMenu />
                 </bi:dropmenu>
             </bi:menuBar>
         </div>
