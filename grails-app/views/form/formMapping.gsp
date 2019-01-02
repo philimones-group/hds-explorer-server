@@ -149,8 +149,9 @@
 
                         <g:sortableColumn property="columnName" title="${message(code: 'formMapping.columnName.label', default: 'Column Name')}" />
 
-                        <g:sortableColumn property="columnName" title="${message(code: 'formMapping.columnFormat.label', default: 'Column Format')}" />
+                        <g:sortableColumn property="columnFormat" title="${message(code: 'formMapping.columnFormat.label', default: 'Column Format')}" />
 
+                        <th><g:message code="" default="" /></th>
 
                     </tr>
                     </thead>
@@ -167,6 +168,12 @@
                             <td>${fieldValue(bean: formMappingInstance, field: "columnName")}</td>
 
                             <td>${fieldValue(bean: formMappingInstance, field: "columnFormat")}</td>
+
+                            <td>
+                                <g:link class="delete" action="deleteFormMapping" id="${formMappingInstance.id}" onclick="return confirm('${message(code: 'form.button.delete.confirm.message', default: 'Are you sure?')}');">
+                                    <g:message code="formMapping.delete.label" />
+                                </g:link>
+                            </td>
 
                         </tr>
                     </g:each>

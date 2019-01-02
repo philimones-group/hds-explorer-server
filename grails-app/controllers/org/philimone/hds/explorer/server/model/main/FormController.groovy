@@ -3,6 +3,7 @@ package org.philimone.hds.explorer.server.model.main
 import grails.converters.JSON
 import grails.validation.ValidationException
 import org.philimone.hds.explorer.authentication.User
+import org.springframework.dao.DataIntegrityViolationException
 
 import static org.springframework.http.HttpStatus.*
 
@@ -145,7 +146,7 @@ class FormController {
     /* Form Mapping Variables */
 
     def formMapping(Form formInstance){
-        def mappings = FormMapping.findAllByForm(formInstance)
+        def mappings = FormMapping.executeQuery("select m from FormMapping m where m.form=? order by m.id", [formInstance]) //FormMapping.findAllByForm(formInstance)
 
         def tableList = ["Household","Member","User"]
 
@@ -197,6 +198,7 @@ class FormController {
             return
         }
 
+        /*
         if (constValue.length()>0){
             formMapping.tableName = "#"
             formMapping.columnName = constValue
@@ -206,6 +208,7 @@ class FormController {
                 formMapping.columnName = constValue.replace("\$","")
             }
         }
+        */
 
         /*
         if (splitIndex != null && splitIndex.matches("[0-9]+")){
@@ -238,6 +241,36 @@ class FormController {
 
         flash.message = message(code: 'default.created.message', args: [message(code: 'formMapping.label', default: 'Form Mapping'), formMapping.formVariableName])
         redirect action: "formMapping", id: formMapping.form.id
+    }
+
+    def deleteFormMapping(Long id) {
+        def formMapping = FormMapping.get(id)
+
+        def form = formMapping?.form
+
+        if (!formMapping) {
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'formMapping.label', default: 'Form Mapping'), id])
+
+            if (form){
+                redirect action: "formMapping", id: form.id
+            }else
+                redirect(action: "index")
+
+            return
+        }
+
+        try {
+
+            formMapping.delete(flush: true)
+            flash.message = message(code: 'default.deleted.message', args: [message(code: 'formMapping.label', default: 'Form Mapping'), id])
+
+            redirect action: "formMapping", id: form.id
+
+        } catch (DataIntegrityViolationException e) {
+
+            flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'formMapping.label', default: 'Form Mapping'), id])
+            redirect action: "formMapping", id: form.id
+        }
     }
 
     def modelVariables = {
