@@ -120,6 +120,7 @@ dataSources:
         username: hds_explorer
         password: your_password
         url: jdbc:mysql://localhost/hds_explorer_db?createDatabaseIfNotExist=true&autoReconnect=true&zeroDateTimeBehavior=convertToNull
+        #logSql: true
     openhds:
         pooled: true
         dbCreate: none

@@ -14,7 +14,9 @@ import org.philimone.hds.explorer.server.model.main.Household
 import org.philimone.hds.explorer.server.model.main.Member
 import org.philimone.hds.explorer.server.model.main.RedcapApi
 import org.philimone.hds.explorer.server.model.main.RedcapMapping
+import org.philimone.hds.explorer.server.model.main.Region
 import org.philimone.hds.explorer.server.model.main.StudyModule
+import org.philimone.hds.explorer.server.model.settings.ApplicationParam
 import org.w3c.dom.Document
 import org.w3c.dom.Element
 
@@ -122,6 +124,8 @@ class ExportFilesService {
     }
 
     def generateSettingsXML(long logReportId){
+        generateAppParametersXML(logReportId)
+        generateRegionsXML(logReportId)
         generateModulesXML(logReportId)
         generateFormsXML(logReportId)
     }
@@ -463,6 +467,182 @@ class ExportFilesService {
 
     }
 
+    def generateAppParametersXML(long logReportId) {
+
+        LogOutput log = generalUtilitiesService.getOutput(SystemPath.getLogsPath(), "generate-app-param-xml-zip");
+        PrintStream output = log.output
+        if (output == null) return;
+
+        def start = new Date();
+
+        int processed = 0
+        int errors = 0
+
+        try {
+            //Ler todos users
+            def resultParams = []
+
+            ApplicationParam.withTransaction {
+                resultParams = ApplicationParam.list()
+            }
+
+            DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+
+            // root elements
+            Document doc = docBuilder.newDocument();
+            Element rootElement = doc.createElement("applicationParams");
+            doc.appendChild(rootElement);
+
+
+            int count = 0;
+
+            resultParams.each { param ->
+                count++;
+                Element element = createAppParameter(doc, param);
+                rootElement.appendChild(element);
+            }
+
+            // write the content into xml file
+            TransformerFactory transformerFactory = TransformerFactory.newInstance();
+            Transformer transformer = transformerFactory.newTransformer();
+            DOMSource source = new DOMSource(doc);
+            StreamResult result = new StreamResult(new File(SystemPath.getGeneratedFilesPath() + File.separator + "params.xml"));
+
+            // Output to console for testing
+            //StreamResult result = new StreamResult(System.out);
+
+            transformer.transform(source, result);
+
+            System.out.println("File saved! - params.xml");
+            output.println("File saved! - params.xml");
+
+            //zip file
+            ZipMaker zipMaker = new ZipMaker(SystemPath.getGeneratedFilesPath() + File.separator + "params.zip")
+            zipMaker.addFile(SystemPath.getGeneratedFilesPath() + File.separator + "params.xml")
+            def b = zipMaker.makeZip()
+
+            println "creating zip - params.zip - success="+b
+
+            processed = 1
+
+        } catch (Exception ex) {
+            ex.printStackTrace()
+            processed = 0
+            errors = 1
+            output.println(ex.toString())
+        }
+
+        LogReport.withTransaction {
+            LogReport logReport = LogReport.findByReportId(logReportId)
+            logReport.start = start
+            logReport.end = new Date()
+            logReport.status = LogStatus.findByName(LogStatus.FINISHED)
+            logReport.save()
+
+            println "error 1: ${logReport.errors}, ${logReport.start}"
+
+            LogReportFile reportFile = new LogReportFile(creationDate: logReport.start, fileName: log.logFileName, logReport: logReport)
+            reportFile.processedCount = processed
+            reportFile.errorsCount = errors
+            logReport.addToLogFiles(reportFile)
+            logReport.save()
+
+            println "error 2: ${logReport.errors}"
+        }
+
+        output.close();
+
+    }
+
+    def generateRegionsXML(long logReportId) {
+
+        LogOutput log = generalUtilitiesService.getOutput(SystemPath.getLogsPath(), "generate-regions-xml-zip");
+        PrintStream output = log.output
+        if (output == null) return;
+
+        def start = new Date();
+
+        int processed = 0
+        int errors = 0
+
+        try {
+            //Ler todos users
+            def resultRegions = []
+
+            Region.withTransaction {
+                resultRegions = Region.list()
+            }
+
+            DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+
+            // root elements
+            Document doc = docBuilder.newDocument();
+            Element rootElement = doc.createElement("regions");
+            doc.appendChild(rootElement);
+
+
+            int count = 0;
+
+            resultRegions.each { region ->
+                count++;
+                Element element = createRegion(doc, region);
+                rootElement.appendChild(element);
+            }
+
+            // write the content into xml file
+            TransformerFactory transformerFactory = TransformerFactory.newInstance();
+            Transformer transformer = transformerFactory.newTransformer();
+            DOMSource source = new DOMSource(doc);
+            StreamResult result = new StreamResult(new File(SystemPath.getGeneratedFilesPath() + File.separator + "regions.xml"));
+
+            // Output to console for testing
+            //StreamResult result = new StreamResult(System.out);
+
+            transformer.transform(source, result);
+
+            System.out.println("File saved! - regions.xml");
+            output.println("File saved! - regions.xml");
+
+            //zip file
+            ZipMaker zipMaker = new ZipMaker(SystemPath.getGeneratedFilesPath() + File.separator + "regions.zip")
+            zipMaker.addFile(SystemPath.getGeneratedFilesPath() + File.separator + "regions.xml")
+            def b = zipMaker.makeZip()
+
+            println "creating zip - regions.zip - success="+b
+
+            processed = 1
+
+        } catch (Exception ex) {
+            ex.printStackTrace()
+            processed = 0
+            errors = 1
+            output.println(ex.toString())
+        }
+
+        LogReport.withTransaction {
+            LogReport logReport = LogReport.findByReportId(logReportId)
+            logReport.start = start
+            logReport.end = new Date()
+            logReport.status = LogStatus.findByName(LogStatus.FINISHED)
+            logReport.save()
+
+            println "error 1: ${logReport.errors}, ${logReport.start}"
+
+            LogReportFile reportFile = new LogReportFile(creationDate: logReport.start, fileName: log.logFileName, logReport: logReport)
+            reportFile.processedCount = processed
+            reportFile.errorsCount = errors
+            logReport.addToLogFiles(reportFile)
+            logReport.save()
+
+            println "error 2: ${logReport.errors}"
+        }
+
+        output.close();
+
+    }
+
     private Element createUser(Document doc, User user) {
         Element userElement = doc.createElement("user");
 
@@ -532,6 +712,27 @@ class ExportFilesService {
         element.appendChild(createAttribute(doc, "redcapApi", redcapApiStr));
         element.appendChild(createAttribute(doc, "redcapMap", redcapMap));
 
+
+        return element;
+    }
+
+    private Element createAppParameter(Document doc, ApplicationParam appParam) {
+        Element element = doc.createElement("applicationParam");
+
+        element.appendChild(createAttributeNonNull(doc, "name", appParam.name));
+        element.appendChild(createAttributeNonNull(doc, "type", appParam.type));
+        element.appendChild(createAttributeNonNull(doc, "value", appParam.value));
+
+        return element;
+    }
+
+    private Element createRegion(Document doc, Region region) {
+        Element element = doc.createElement("region");
+
+        element.appendChild(createAttributeNonNull(doc, "code", region.code));
+        element.appendChild(createAttributeNonNull(doc, "name", region.name));
+        element.appendChild(createAttributeNonNull(doc, "hierarchyLevel", region.hierarchyLevel));
+        element.appendChild(createAttributeNonNull(doc, "parent", region.parentCode ));
 
         return element;
     }

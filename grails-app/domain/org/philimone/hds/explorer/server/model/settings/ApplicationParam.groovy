@@ -18,8 +18,8 @@ class ApplicationParam {
 
     static constraints = {
         name blank:false, unique: true
-        type blank:true
-        value blank:true
+        type blank:true, nullable: true
+        value blank:true, nullable: true
 
         createdBy nullable: true
         creationDate nullable: true

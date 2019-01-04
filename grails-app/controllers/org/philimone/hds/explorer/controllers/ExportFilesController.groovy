@@ -54,6 +54,16 @@ class ExportFilesController {
         render file: file
     }
 
+    def appParams = {
+        def file = new File(SystemPath.getGeneratedFilesPath() + File.separator + "params.xml")
+        render file: file
+    }
+
+    def regions = {
+        def file = new File(SystemPath.getGeneratedFilesPath() + File.separator + "regions.xml")
+        render file: file
+    }
+
     /* ZIP Files*/
 
     def householdsZip = {
@@ -94,6 +104,16 @@ class ExportFilesController {
     def statsZip = {
         def file = new File(SystemPath.getGeneratedFilesPath() + File.separator + "stats.zip")
         render file: file, fileName: "stats.zip"
+    }
+
+    def appParamsZip = {
+        def file = new File(SystemPath.getGeneratedFilesPath() + File.separator + "params.zip")
+        render file: file, fileName: "params.zip"
+    }
+
+    def regionsZip = {
+        def file = new File(SystemPath.getGeneratedFilesPath() + File.separator + "regions.zip")
+        render file: file, fileName: "regions.zip"
     }
 
     /**

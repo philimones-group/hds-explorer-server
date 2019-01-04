@@ -134,6 +134,10 @@ class BootStrap {
             new SecurityMap(url: "/api/export/trackinglists/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
             new SecurityMap(url: "/api/export/stats/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
 
+            new SecurityMap(url: "/api/export/params/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
+
+            new SecurityMap(url: "/api/export/regions/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
+
             //File downloads
             new SecurityMap(url: "/download/free/android/apk", configAttribute: "permitAll").save(flush: true)
             new SecurityMap(url: "/exportFiles/downloadAndroidApk", configAttribute: "permitAll").save(flush: true)
@@ -424,9 +428,10 @@ class BootStrap {
 
     def testApp(){
 
-        insertTestData();
+        //insertTestData();
 
         //importDataFromOpenHDSService.importFieldWorkers(Codes.REPORT_IMPORT_FROM_OPENHDS_FIELDWORKERS)
+        importDataFromOpenHDSService.importRegions(Codes.REPORT_IMPORT_FROM_OPENHDS_HOUSEHOLDS)
         //importDataFromOpenHDSService.importHouseholds(Codes.REPORT_IMPORT_FROM_OPENHDS_HOUSEHOLDS)
         //importDataFromOpenHDSService.importIndividuals(Codes.REPORT_IMPORT_FROM_OPENHDS_INDIVIDUALS)
 

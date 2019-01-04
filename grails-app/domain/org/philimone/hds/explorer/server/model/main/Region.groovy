@@ -10,8 +10,12 @@ class Region {
     String hierarchyLevel
     Region parent
 
+    String getParentCode(){
+        parent==null ? "" : parent.code
+    }
+
     static constraints = {
-        code unique: true
+        code(unique: true, maxSize: 32)
         name blank: false
         hierarchyLevel blank: false
         parent nullable: true
@@ -20,9 +24,8 @@ class Region {
     static mapping = {
         table 'region'
 
-        id name: 'code', generator: "assigned"
+        id name: 'code', column: 'code', generator: 'assigned'
         version false
-
         name column: 'name'
         hierarchyLevel column: 'level'
         parent column: 'parent_region_code'

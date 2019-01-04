@@ -14,6 +14,7 @@ import org.philimone.hds.explorer.openhds.model.Fieldworker
 import org.philimone.hds.explorer.openhds.model.Individual
 import org.philimone.hds.explorer.openhds.model.Location
 import org.philimone.hds.explorer.openhds.model.Locationhierarchy
+import org.philimone.hds.explorer.openhds.model.Locationhierarchylevel
 import org.philimone.hds.explorer.openhds.model.Relationship
 import org.philimone.hds.explorer.openhds.model.Socialgroup
 import org.philimone.hds.explorer.server.model.logs.LogReport
@@ -21,7 +22,10 @@ import org.philimone.hds.explorer.server.model.logs.LogReportFile
 import org.philimone.hds.explorer.server.model.logs.LogStatus
 import org.philimone.hds.explorer.server.model.main.Household
 import org.philimone.hds.explorer.server.model.main.Member
+import org.philimone.hds.explorer.server.model.main.Region
 import org.philimone.hds.explorer.server.model.main.StudyModule
+import org.philimone.hds.explorer.server.model.settings.ApplicationParam
+
 import static grails.async.Promises.task
 import static grails.async.Promises.waitAll
 
@@ -32,6 +36,90 @@ class ImportDataFromOpenHDSService {
 
     def generalUtilitiesService
     def sessionFactory
+
+    def importRegions(long logReportId){
+        LogOutput log = generalUtilitiesService.getOutput(SystemPath.getLogsPath(), "db-hierarchies-from-openhds");
+        PrintStream output = log.output
+
+        if (output == null) return;
+
+        int processed = 0
+        int errors = 0
+
+        def locationHiearachies = []
+
+
+        //Update hierarchy levels
+        Locationhierarchylevel.withTransaction {
+            Locationhierarchylevel.list().each { hierarchy ->
+                def level = getHierarchyLevel(hierarchy.uuid)
+
+                ApplicationParam.withTransaction {
+                    ApplicationParam.executeUpdate("update ApplicationParam p set p.value=? where p.name=?", [hierarchy.name, level])
+                }
+            }
+        }
+
+        println "reading location hierarchies"
+        Locationhierarchy.withTransaction {
+            //                                                              0       1        2           3              4
+            locationHiearachies = Locationhierarchy.executeQuery("select l.uuid, l.extId, l.name, l.parent.extId, l.level.uuid from Locationhierarchy l")
+        }
+
+        println "total location_hierarchies ${locationHiearachies.size()}"
+
+        int from = 0;
+        int to = 0;
+        int max = 50
+
+        while (processed < locationHiearachies.size()) {
+            from = to
+            to = (locationHiearachies.size() > to + max) ? (to + max) : locationHiearachies.size();
+            //reading only some records to speed up the process
+
+            Region.withNewTransaction {
+
+                locationHiearachies.subList(from, to).each {
+
+                    def region = new Region()
+
+                    region.code = it[1]
+                    region.name = it[2]
+                    region.hierarchyLevel = getHierarchyLevel(it[4])
+                    region.parent = Region.findByCode(it[3])
+
+                    processed++
+
+                    if (!region.save(flush: true)) {
+                        errors++
+                        def msg = "Couldnt create/save Region copied from OpenHDS Location Hiearchy with uuid=${fw.uuid}"
+                        def msgErr = "Errors: ${user.errors}"
+
+                        output.println(msg)
+                        output.println(msgErr)
+                        println(msg)
+                        println(msgErr)
+                    }
+                }
+            }
+        }
+
+
+        LogReport.withTransaction {
+            LogReport logReport = LogReport.findByReportId(logReportId)
+            LogReportFile reportFile = new LogReportFile(creationDate: new Date(), fileName: log.logFileName, logReport: logReport)
+            reportFile.creationDate = new Date()
+            reportFile.processedCount = processed
+            reportFile.errorsCount = errors
+
+            logReport.end = new Date()
+            logReport.status = LogStatus.findByName(LogStatus.FINISHED)
+            logReport.addToLogFiles(reportFile)
+            logReport.save()
+        }
+
+        output.close()
+    }
 
     def importFieldWorkers(long logReportId){
         LogOutput log = generalUtilitiesService.getOutput(SystemPath.getLogsPath(), "db-fieldworkers-from-openhds");
@@ -523,6 +611,21 @@ class ImportDataFromOpenHDSService {
     Double getDoubleValue(String str){
         str = getDoubleStringOrNull(str)
         return str==null ? null : Double.parseDouble(str)
+    }
+
+    def String getHierarchyLevel(String openhdsLevelId){
+        switch (openhdsLevelId){
+            case "hierarchyLevelId1" : return "hierarchy1"
+            case "hierarchyLevelId2" : return "hierarchy2"
+            case "hierarchyLevelId3" : return "hierarchy3"
+            case "hierarchyLevelId4" : return "hierarchy4"
+            case "hierarchyLevelId5" : return "hierarchy5"
+            case "hierarchyLevelId6" : return "hierarchy6"
+            case "hierarchyLevelId7" : return "hierarchy7"
+            case "hierarchyLevelId8" : return "hierarchy8"
+        }
+
+        return "not_supported"
     }
 
     public class HierarchyRegion {

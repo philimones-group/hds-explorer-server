@@ -40,7 +40,8 @@ class ImportOpenHDSController {
             new Thread(new Runnable() {
                 @Override
                 void run() {
-                    println "executing transfer from openhds locations/socialgroups to household table"
+                    println "executing transfer from openhds hierarchies and locations/socialgroups to household table"
+                    importDataFromOpenHDSService.importRegions(id)
                     importDataFromOpenHDSService.importHouseholds(id)
                 }
             }).start()
