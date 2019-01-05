@@ -35,7 +35,7 @@ class Household {
     String toXML() {
         return ("<household>") +
                 ((code == null || code.isEmpty()) ?               "<code />"   : "<code>${code}</code>") +
-                ((region == null || region.isEmpty()) ?           "<region />" : "<region>${code}</region>") +
+                ((region == null || region.isEmpty()) ?           "<region />" : "<region>${region}</region>") +
                 ((name == null || name.isEmpty()) ?               "<name />"   : "<name>${name}</name>") +
 
                 ((headCode == null || headCode.isEmpty()) ?       "<headCode />" : "<headCode>${headCode}</headCode>") +
