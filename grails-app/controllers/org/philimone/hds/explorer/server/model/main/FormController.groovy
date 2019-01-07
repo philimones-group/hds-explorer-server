@@ -10,6 +10,7 @@ import static org.springframework.http.HttpStatus.*
 class FormController {
 
     FormService formService
+    DataSetService dataSetService
 
     static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
 
@@ -149,6 +150,7 @@ class FormController {
         def mappings = FormMapping.executeQuery("select m from FormMapping m where m.form=? order by m.id", [formInstance]) //FormMapping.findAllByForm(formInstance)
 
         def tableList = ["Household","Member","User"]
+        tableList.addAll(dataSetService.datasetNames)
 
         def formMapping = new FormMapping(form: formInstance)
 
@@ -280,14 +282,12 @@ class FormController {
 
         if (modelName.equals("Household")){
             list = Household.ALL_COLUMNS
-        }
-
-        if (modelName.equals("Member")){
+        } else if (modelName.equals("Member")){
             list = Member.ALL_COLUMNS
-        }
-
-        if (modelName.equals("User")){
+        } else if (modelName.equals("User")){
             list = User.ALL_COLUMNS
+        } else if (dataSetService.containsDatasetWith(modelName)){
+            list = dataSetService.getDatasetColumnsWith(modelName)
         }
 
         //println "list ${list}"

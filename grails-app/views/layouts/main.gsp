@@ -53,6 +53,7 @@
                     <bi:menuseparator />
                     <bi:menu label="${g.message(code: 'default.menu.updates.households.label')}" />
                     <bi:menu label="${g.message(code: 'default.menu.updates.members.label')}" />
+                    <bi:menu label="${g.message(code: 'default.menu.updates.datasets.label')}" link="${createLink(controller: 'dataSet', action: 'add')}" />
                 </bi:dropmenu>
                 <bi:dropmenu label="${g.message(code: 'default.menu.lists.label')}">
                     <bi:menu label="${g.message(code: 'default.menu.lists.trackinglists.label')}" />

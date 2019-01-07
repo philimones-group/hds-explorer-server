@@ -31,6 +31,9 @@ class UrlMappings {
         "/api/export/params"(controller:         "exportFiles", action: "appParams")
         "/api/export/regions"(controller:         "exportFiles", action: "regions")
 
+        "/api/export/datasets"(controller:         "exportFiles", action: "datasets")
+        "/api/export/dataset/${id}"(controller:         "exportFiles", action: "dataset", id: "${id}")
+
         "/api/export/households/zip"(controller:    "exportFiles", action: "householdsZip")
         "/api/export/members/zip"(controller:   "exportFiles", action: "membersZip")
         "/api/export/settings/zip"(controller:      "exportFiles", action: "settingsZip")
@@ -39,10 +42,11 @@ class UrlMappings {
         "/api/export/users/zip"(controller:         "exportFiles", action: "usersZip")
         "/api/export/trackinglists/zip"(controller: "exportFiles", action: "trackinglistsZip")
         "/api/export/stats/zip"(controller:         "exportFiles", action: "statsZip")
-
         "/api/export/params/zip"(controller:         "exportFiles", action: "appParamsZip")
-
         "/api/export/regions/zip"(controller:         "exportFiles", action: "regionsZip")
+
+        "/api/export/datasets/zip"(controller:         "exportFiles", action: "datasetsZip")
+        "/api/export/dataset/zip/${id}"(controller:         "exportFiles", action: "datasetZip", id: "${id}")
 
 
     }

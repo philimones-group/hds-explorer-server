@@ -4,6 +4,7 @@ import org.philimone.hds.explorer.io.SystemPath
 import org.philimone.hds.explorer.server.Codes
 import org.philimone.hds.explorer.server.model.logs.LogReport
 import org.philimone.hds.explorer.server.model.logs.LogStatus
+import org.philimone.hds.explorer.server.model.main.DataSet
 
 /**
  * This controller exposes the generated XML/Zip files to be downloaded and controls the export views tasks
@@ -64,6 +65,18 @@ class ExportFilesController {
         render file: file
     }
 
+    def datasets = {
+        def file = new File(SystemPath.getGeneratedFilesPath() + File.separator + "datasets.xml")
+        render file: file
+    }
+
+    def dataset(long id){
+        def dataset = DataSet.get(id)
+
+        def file = new File(dataset.filename)
+        render file: file, fileName: file.name
+    }
+
     /* ZIP Files*/
 
     def householdsZip = {
@@ -114,6 +127,18 @@ class ExportFilesController {
     def regionsZip = {
         def file = new File(SystemPath.getGeneratedFilesPath() + File.separator + "regions.zip")
         render file: file, fileName: "regions.zip"
+    }
+
+    def datasetsZip = {
+        def file = new File(SystemPath.getGeneratedFilesPath() + File.separator + "datasets.zip")
+        render file: file, fileName: "datasets.zip"
+    }
+
+    def datasetZip(long id){
+        def dataset = DataSet.get(id)
+
+        def file = new File(dataset.compressedFilename)
+        render file: file, fileName: file.name
     }
 
     /**

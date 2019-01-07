@@ -3,11 +3,13 @@ package org.philimone.hds.explorer.services
 import grails.gorm.transactions.Transactional
 import net.betainteractive.io.LogOutput
 import net.betainteractive.io.writers.ZipMaker
+import net.betainteractive.utilities.StringUtil
 import org.philimone.hds.explorer.authentication.User
 import org.philimone.hds.explorer.io.SystemPath
 import org.philimone.hds.explorer.server.model.logs.LogReport
 import org.philimone.hds.explorer.server.model.logs.LogReportFile
 import org.philimone.hds.explorer.server.model.logs.LogStatus
+import org.philimone.hds.explorer.server.model.main.DataSet
 import org.philimone.hds.explorer.server.model.main.Form
 import org.philimone.hds.explorer.server.model.main.FormMapping
 import org.philimone.hds.explorer.server.model.main.Household
@@ -128,6 +130,7 @@ class ExportFilesService {
         generateRegionsXML(logReportId)
         generateModulesXML(logReportId)
         generateFormsXML(logReportId)
+        generateDatasetsXML(logReportId)
     }
 
     def generateModulesXML(long logReportId) {
@@ -643,6 +646,93 @@ class ExportFilesService {
 
     }
 
+    def generateDatasetsXML(long logReportId) {
+
+        LogOutput log = generalUtilitiesService.getOutput(SystemPath.getLogsPath(), "generate-dataset-xml-zip");
+        PrintStream output = log.output
+        if (output == null) return;
+
+        def start = new Date();
+
+        int processed = 0
+        int errors = 0
+
+        try {
+            def resultDatasets = []
+
+            Region.withTransaction {
+                resultDatasets = DataSet.findAllByEnabled(true)
+            }
+
+            DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+
+            // root elements
+            Document doc = docBuilder.newDocument();
+            Element rootElement = doc.createElement("datasets");
+            doc.appendChild(rootElement);
+
+
+            int count = 0;
+
+            resultDatasets.each { dataSet ->
+                count++;
+                Element element = createDataSet(doc, dataSet);
+                rootElement.appendChild(element);
+            }
+
+            // write the content into xml file
+            TransformerFactory transformerFactory = TransformerFactory.newInstance();
+            Transformer transformer = transformerFactory.newTransformer();
+            DOMSource source = new DOMSource(doc);
+            StreamResult result = new StreamResult(new File(SystemPath.getGeneratedFilesPath() + File.separator + "datasets.xml"));
+
+            // Output to console for testing
+            //StreamResult result = new StreamResult(System.out);
+
+            transformer.transform(source, result);
+
+            System.out.println("File saved! - datasets.xml");
+            output.println("File saved! - datasets.xml");
+
+            //zip file
+            ZipMaker zipMaker = new ZipMaker(SystemPath.getGeneratedFilesPath() + File.separator + "datasets.zip")
+            zipMaker.addFile(SystemPath.getGeneratedFilesPath() + File.separator + "datasets.xml")
+            def b = zipMaker.makeZip()
+
+            println "creating zip - datasets.zip - success="+b
+
+            processed = 1
+
+        } catch (Exception ex) {
+            ex.printStackTrace()
+            processed = 0
+            errors = 1
+            output.println(ex.toString())
+        }
+
+        LogReport.withTransaction {
+            LogReport logReport = LogReport.findByReportId(logReportId)
+            logReport.start = start
+            logReport.end = new Date()
+            logReport.status = LogStatus.findByName(LogStatus.FINISHED)
+            logReport.save()
+
+            println "error 1: ${logReport.errors}, ${logReport.start}"
+
+            LogReportFile reportFile = new LogReportFile(creationDate: logReport.start, fileName: log.logFileName, logReport: logReport)
+            reportFile.processedCount = processed
+            reportFile.errorsCount = errors
+            logReport.addToLogFiles(reportFile)
+            logReport.save()
+
+            println "error 2: ${logReport.errors}"
+        }
+
+        output.close();
+
+    }
+
     private Element createUser(Document doc, User user) {
         Element userElement = doc.createElement("user");
 
@@ -733,6 +823,37 @@ class ExportFilesService {
         element.appendChild(createAttributeNonNull(doc, "name", region.name));
         element.appendChild(createAttributeNonNull(doc, "hierarchyLevel", region.hierarchyLevel));
         element.appendChild(createAttributeNonNull(doc, "parent", region.parentCode ));
+
+        return element;
+    }
+
+    private Element createDataSet(Document doc, DataSet dataSet) {
+        Element element = doc.createElement("dataSet");
+
+        String labels = "";
+
+        dataSet.mappingLabels.each {
+            if (labels.isEmpty()){
+                labels = it.toString()
+            }else{
+                labels += ";" + it.toString()
+            }
+        }
+
+        String creationDate = dataSet.creationDate==null ? null : StringUtil.format(dataSet.creationDate, "yyyy-MM-dd");
+        String updatedDate = dataSet.updatedDate==null ? null : StringUtil.format(dataSet.updatedDate, "yyyy-MM-dd");
+
+        //group is disabled
+        element.appendChild(createAttributeNonNull(doc, "dataSetId", dataSet.getId()+""));  //used to download the dataset zip file from the tablet
+        element.appendChild(createAttributeNonNull(doc, "keyColumn", dataSet.keyColumn));
+        element.appendChild(createAttributeNonNull(doc, "tableName", dataSet.tableName));
+        element.appendChild(createAttributeNonNull(doc, "tableColumn", dataSet.tableColumn));
+        element.appendChild(createAttributeNonNull(doc, "createdBy", dataSet.createdBy?.toString()));
+        element.appendChild(createAttributeNonNull(doc, "creationDate", creationDate));
+        element.appendChild(createAttributeNonNull(doc, "updatedBy", dataSet.updatedBy?.toString()));
+        element.appendChild(createAttributeNonNull(doc, "updatedDate", updatedDate));
+        element.appendChild(createAttributeNonNull(doc, "labels", labels));
+
 
         return element;
     }
