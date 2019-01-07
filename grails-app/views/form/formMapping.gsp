@@ -8,6 +8,7 @@
 		<title><g:message code="default.show.label" args="[entityName]" /></title>
 
         <asset:javascript src="application.js"/>
+        <asset:javascript src="bootstrap.js"/>
 	</head>
 	<body>
     <g:javascript>
