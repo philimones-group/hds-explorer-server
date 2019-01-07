@@ -677,3 +677,16 @@ img.grails-logo {
 .buttons2 .save {
     background-image: url(../images/skin/database_save.png);
 }
+
+/* Button to use in a link */
+.button_link {
+    text-decoration: none;
+    background-color: #EEEEEE;
+    background-repeat: no-repeat;
+    color: #333333;
+    padding: 2px 6px 2px 6px;
+    border-top: 1px solid #CCCCCC;
+    border-right: 1px solid #333333;
+    border-bottom: 1px solid #333333;
+    border-left: 1px solid #CCCCCC;
+}

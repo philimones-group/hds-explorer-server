@@ -402,6 +402,26 @@ public class StringUtil {
         return text;
     }
 
+    public static String removeCamelCaseAndCapitalize(String text){
+        String str = "";
+        boolean upperNext = false;
+
+        for (int i=0; i < text.length(); i++){
+            char c = text.charAt(i);
+
+            if (i==0) {  str += Character.toUpperCase(c); continue; }
+
+            if (c == ' ' || c == '_'){
+                upperNext = true;
+            }else {
+                str += upperNext ? Character.toUpperCase(c) : c;
+                upperNext = false;
+            }
+        }
+
+        return str;
+    }
+
     /**Numbers**/
     public static boolean isDouble(String str){
         final String Digits     = "(\\p{Digit}+)";

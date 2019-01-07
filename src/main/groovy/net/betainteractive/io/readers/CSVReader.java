@@ -1,10 +1,7 @@
 package net.betainteractive.io.readers;
 
 import java.io.*;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Scanner;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -21,6 +18,7 @@ public class CSVReader {
     private File filecsv;
     private String DELIMITER = ";";
     private Map<String, Integer> mapFields;
+    private List<String> fields = new ArrayList<>();
     private boolean hasHeader = false;
     private String currentLine = null;
     private boolean reading = false;
@@ -39,14 +37,14 @@ public class CSVReader {
 
     public CSVReader(String file) {
         filecsv = new File(file);
-        mapFields = new HashMap<String, Integer>();
+        mapFields = new LinkedHashMap<String, Integer>();
         start();
     }
 
     public CSVReader(File file, boolean hasFieldName) {
         filecsv = file;
         hasHeader = hasFieldName;
-        mapFields = new HashMap<String, Integer>();
+        mapFields = new LinkedHashMap<String, Integer>();
         start();
 
     }
@@ -54,20 +52,20 @@ public class CSVReader {
     public CSVReader(String file, boolean hasFieldName) {
         hasHeader = hasFieldName;
         filecsv = new File(file);
-        mapFields = new HashMap<String, Integer>();
+        mapFields = new LinkedHashMap<String, Integer>();
         start();
     }
 
     public CSVReader(File file, String delimiter) {
         filecsv = file;
-        mapFields = new HashMap<String, Integer>();
+        mapFields = new LinkedHashMap<String, Integer>();
         this.DELIMITER = delimiter;
         start();
     }
 
     public CSVReader(String file, String delimiter) {
         filecsv = new File(file);
-        mapFields = new HashMap<String, Integer>();
+        mapFields = new LinkedHashMap<String, Integer>();
         this.DELIMITER = delimiter;
         start();
 
@@ -76,7 +74,7 @@ public class CSVReader {
     public CSVReader(File file, boolean hasFieldName, String delimiter) {
         filecsv = file;
         hasHeader = hasFieldName;
-        mapFields = new HashMap<String, Integer>();
+        mapFields = new LinkedHashMap<String, Integer>();
         this.DELIMITER = delimiter;
         start();
 
@@ -85,10 +83,14 @@ public class CSVReader {
     public CSVReader(String file, boolean hasFieldName, String delimiter) {
         hasHeader = hasFieldName;
         filecsv = new File(file);
-        mapFields = new HashMap<String, Integer>();
+        mapFields = new LinkedHashMap<String, Integer>();
         this.DELIMITER = delimiter;
         start();
 
+    }
+
+    public List<String> getFieldNames(){
+        return fields;
     }
 
     public boolean hasField(String name) {
@@ -105,6 +107,7 @@ public class CSVReader {
         for (int i = 0; i < fields.length; i++) {
             String field = fields[i];
             mapFields.put(field, i);
+            this.fields.add(field);
         }
     }
 
@@ -151,12 +154,18 @@ public class CSVReader {
 
     }
 
-    private void close() {
+    public void close() {
         reading = false;
         mapFields.clear();
         currentLine = null;
         filecsv = null;
         currentLineNumber = -1;
+
+        try {
+            reader.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private boolean hasNextLine() {
