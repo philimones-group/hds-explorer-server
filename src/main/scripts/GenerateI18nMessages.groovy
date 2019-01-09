@@ -15,7 +15,7 @@
  */
 import grails.util.GrailsNameUtils
 import org.grails.validation.DomainClassPropertyComparator
-import grails.validation.ConstrainedProperty
+import grails.gorm.validation.ConstrainedProperty
 
 includeTargets << grailsScript("Init")
 includeTargets << grailsScript("_GrailsBootstrap")
