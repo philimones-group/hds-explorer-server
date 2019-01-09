@@ -73,6 +73,12 @@ class User implements Serializable {
         username nullable: false, blank: false, unique: true
         email blank: true, nullable: true
 
+
+        passwordExpired()
+        accountExpired()
+        accountLocked()
+        enabled()
+
         createdBy nullable: true
         creationDate nullable: true
         updatedBy nullable: true

@@ -47,7 +47,7 @@ class FormController {
         form.minAge = 0
         form.maxAge = 120
 
-        respond form
+        respond form, model: [regionLevels: formService.regionLevels]
     }
 
     def save(Form formInstance) {
@@ -122,8 +122,10 @@ class FormController {
             return
         }
 
-        formService.delete(id)
         /* delete dependencies*/
+        formService.deleteMappings(id)
+        formService.delete(id)
+
 
         request.withFormat {
             form multipartForm {
