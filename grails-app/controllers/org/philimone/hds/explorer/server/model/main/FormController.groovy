@@ -123,6 +123,7 @@ class FormController {
         }
 
         formService.delete(id)
+        /* delete dependencies*/
 
         request.withFormat {
             form multipartForm {
@@ -237,7 +238,7 @@ class FormController {
 
         if (!formMapping.save(flush:true)){
             flash.message = message(code: 'default.created.message', args: [message(code: 'formMapping.label', default: 'Form Mapping'), formMapping.id])
-            redirect action: "varBinder", id: formMapping.form.id
+            redirect action: "formMapping", id: formMapping.form.id
             return
         }
 

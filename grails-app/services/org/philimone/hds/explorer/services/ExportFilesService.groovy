@@ -828,7 +828,7 @@ class ExportFilesService {
     }
 
     private Element createDataSet(Document doc, DataSet dataSet) {
-        Element element = doc.createElement("dataSet");
+        Element element = doc.createElement("dataset");
 
         String labels = "";
 
@@ -844,7 +844,8 @@ class ExportFilesService {
         String updatedDate = dataSet.updatedDate==null ? null : StringUtil.format(dataSet.updatedDate, "yyyy-MM-dd");
 
         //group is disabled
-        element.appendChild(createAttributeNonNull(doc, "dataSetId", dataSet.getId()+""));  //used to download the dataset zip file from the tablet
+        element.appendChild(createAttributeNonNull(doc, "datasetId", dataSet.getId()+""));  //used to download the dataset zip file from the tablet
+        element.appendChild(createAttributeNonNull(doc, "name", dataSet.name));
         element.appendChild(createAttributeNonNull(doc, "keyColumn", dataSet.keyColumn));
         element.appendChild(createAttributeNonNull(doc, "tableName", dataSet.tableName));
         element.appendChild(createAttributeNonNull(doc, "tableColumn", dataSet.tableColumn));
