@@ -29,7 +29,7 @@
 				<li class="fieldcontain">
 					<span id="formId-label" class="property-label"><g:message code="form.formId.label" default="Form Id" /></span>
 					
-						<span class="property-value" aria-labelledby="formId-label"><g:fieldValue bean="${this.form}" field="formId"/></span>
+					<span class="property-value" aria-labelledby="formId-label"><g:fieldValue bean="${this.form}" field="formId"/></span>
 					
 				</li>
 				</g:if>

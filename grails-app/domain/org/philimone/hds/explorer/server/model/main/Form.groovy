@@ -9,9 +9,11 @@ class Form {
     String formId
     String formName
     String formDescription
+    String regionLevel      /* Should be hierahcyLevel */
     String gender           /*  M, F, ALL, if HouseholdForm is true, gender should be ALL */
     int minAge              //0
     int maxAge              //Default - 120
+    boolean isRegionForm    //Form for regions / location hierarchies (with this true - the variables gender,minAge,maxAge dont apply anymore)
     boolean isHouseholdForm
     boolean isMemberForm
     boolean isHouseholdHeadForm
@@ -59,6 +61,8 @@ class Form {
         minAge min: 0, max: 150
         maxAge min: 0, max: 150
 
+        isRegionForm()
+        regionLevel nullable: true
         isHouseholdForm()
         isHouseholdHeadForm()
         isMemberForm()

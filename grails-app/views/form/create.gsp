@@ -4,6 +4,9 @@
 		<meta name="layout" content="main">
 		<g:set var="entityName" value="${message(code: 'form.label', default: 'Form')}" />
 		<title><g:message code="form.create.label" args="[entityName]" /></title>
+
+		<asset:javascript src="application.js"/>
+		<asset:javascript src="bootstrap.js"/>
 	</head>
 	<body>
 		<a href="#create-form" class="skip" tabindex="-1"><g:message code="default.link.skip.label" default="Skip to content&hellip;"/></a>
