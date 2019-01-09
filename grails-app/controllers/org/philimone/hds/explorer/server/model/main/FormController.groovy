@@ -152,7 +152,7 @@ class FormController {
     def formMapping(Form formInstance){
         def mappings = FormMapping.executeQuery("select m from FormMapping m where m.form=? order by m.id", [formInstance]) //FormMapping.findAllByForm(formInstance)
 
-        def tableList = ["Household","Member","User"]
+        def tableList = ["Household","Member","User","Region"]
         tableList.addAll(dataSetService.datasetNames)
 
         def formMapping = new FormMapping(form: formInstance)
@@ -289,6 +289,8 @@ class FormController {
             list = Member.ALL_COLUMNS
         } else if (modelName.equals("User")){
             list = User.ALL_COLUMNS
+        } else if (modelName.equals("Region")){
+            list = Region.ALL_COLUMNS
         } else if (dataSetService.containsDatasetWith(modelName)){
             list = dataSetService.getDatasetColumnsWith(modelName)
         }

@@ -31,4 +31,6 @@ class Region {
         parent column: 'parent_region_code'
 
     }
+
+    def static ALL_COLUMNS = ['code', 'name', 'hierarchyLevel']
 }
