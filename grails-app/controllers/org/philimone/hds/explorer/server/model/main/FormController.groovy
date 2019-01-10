@@ -37,7 +37,7 @@ class FormController {
     }
 
     def show(Long id) {
-        respond Form.get(id)
+        respond Form.get(id), model: [formService: formService]
     }
 
     def create() {
@@ -159,7 +159,7 @@ class FormController {
 
         def formsList = Form.list()
 
-        [formInstance: formInstance, formMappingInstance:formMapping, formMappingList: mappings, tableList: tableList, formsList: formsList]
+        [formInstance: formInstance, formMappingInstance:formMapping, formMappingList: mappings, tableList: tableList, formsList: formsList, formService: formService]
     }
 
     def copyFrom = {
@@ -203,17 +203,23 @@ class FormController {
             return
         }
 
-        /*
-        if (constValue.length()>0){
-            formMapping.tableName = "#"
+
+
+        if (constValue && constValue.length()>0){
+            //formMapping.tableName = "#"
+            //formMapping.columnName = constValue
+
+            //if (constValue.startsWith("\$")){
+            //    formMapping.tableName = "\$"
+            //    formMapping.columnName = constValue.replace("\$","")
+            //}
+
+            /* We will deal only with special constants */
+            formMapping.tableName = "\$"
             formMapping.columnName = constValue
 
-            if (constValue.startsWith("\$")){
-                formMapping.tableName = "\$"
-                formMapping.columnName = constValue.replace("\$","")
-            }
         }
-        */
+
 
         /*
         if (splitIndex != null && splitIndex.matches("[0-9]+")){
@@ -221,6 +227,15 @@ class FormController {
             formMapping.columnName += "[${index}]"
         }
         */
+        /*
+        if (true){
+            params.each{
+                println(it)
+            }
+
+            render ""
+            return
+        }*/
 
         def formatType = formMapping.columnFormat
         if (formatType != null){
@@ -243,6 +258,7 @@ class FormController {
             redirect action: "formMapping", id: formMapping.form.id
             return
         }
+
 
         flash.message = message(code: 'default.created.message', args: [message(code: 'formMapping.label', default: 'Form Mapping'), formMapping.formVariableName])
         redirect action: "formMapping", id: formMapping.form.id

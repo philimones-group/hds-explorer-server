@@ -5,19 +5,19 @@
         $(document).ready(function() {
 
             $(window).load(
-			function () {
-				//alert("testing jquery");
+				function () {
+					//alert("testing jquery");
 
-				var regchk = $("#isRegionForm").prop('checked');
-				var hhdchk = $("#isHouseholdHeadForm").prop('checked');
-				var memchk = $("#isMemberForm").prop('checked') || $("#isHouseholdHeadForm").prop('checked');
+					var regchk = $("#isRegionForm").prop('checked');
+					var hhdchk = $("#isHouseholdHeadForm").prop('checked');
+					var memchk = $("#isMemberForm").prop('checked') || $("#isHouseholdHeadForm").prop('checked');
 
-				regchk ? $("#divRegion").show() : $("#divRegion").hide();
-				memchk ? $("#divMemberFilters").show() : $("#divMemberFilters").hide();
-				if (hhdchk) { $("#divRegion").hide(); $("#divMemberFilters").hide(); }
+					regchk ? $("#divRegion").show() : $("#divRegion").hide();
+					memchk ? $("#divMemberFilters").show() : $("#divMemberFilters").hide();
+					if (hhdchk) { $("#divRegion").hide(); $("#divMemberFilters").hide(); }
 
-			}
-		);
+				}
+			);
 
             $("#isRegionForm").change(function() {
 				var checked = $("#isRegionForm").prop('checked');
@@ -143,7 +143,7 @@
 			<g:message code="form.regionLevel.label" default="regionLevel" />
 			<span class="required-indicator">*</span>
 		</label>
-		<g:select name="gender" optionKey="level" optionValue="name" from="${regionLevels}" value="${this.form?.regionLevel}"/>
+		<g:select name="regionLevel" optionKey="level" optionValue="name" from="${regionLevels}" value="${this.form?.regionLevel}"/>
 	</div>
 </div>
 

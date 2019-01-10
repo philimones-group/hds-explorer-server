@@ -89,6 +89,16 @@
 				</g:if>
 
 				<li class="fieldcontain">
+					<span id="isRegionForm-label" class="property-label"><g:message code="form.isRegionForm.label" default="Is Region Form" /></span>
+					<span class="property-value" aria-labelledby="isRegionForm-label"><g:formatBoolean boolean="${this.form?.isRegionForm}" /></span>
+				</li>
+
+				<li class="fieldcontain">
+					<span id="regionLevel-label" class="property-label"><g:message code="form.regionLevel.label" default="Region Level" /></span>
+					<span class="property-value" aria-labelledby="regionLevel-label">${formService.getRegionLevelName(this.form.regionLevel)}</span>
+				</li>
+
+				<li class="fieldcontain">
 					<span id="isHouseholdForm-label" class="property-label"><g:message code="form.isHouseholdForm.label" default="Is Household Form" /></span>
 					<span class="property-value" aria-labelledby="isHouseholdForm-label"><g:formatBoolean boolean="${this.form?.isHouseholdForm}" /></span>
 				</li>

@@ -13,6 +13,45 @@
 	<body>
     <g:javascript>
 
+            $(window).load(
+				function () {
+					//alert("testing jquery");
+
+                    if (!$("#tableName").val()){ //if tableName is null or not selected
+                        $("#divColumnName").hide();
+                        $("#divColumnConstValue").show();
+                    }else{
+                        $("#divColumnName").show();
+                        $("#divColumnConstValue").hide();
+                        $("#columnConstantValue").val("");
+                    }
+
+
+                    if(!$("#columnFormat").val()){ //if columnFormat is null or not selected
+                        $("#divColumnFormatValue").hide();
+                    }else{
+                        $("#divColumnFormatValue").show();
+                    }
+
+				}
+			);
+
+            $("#isRegionForm").change(function() {
+				var checked = $("#isRegionForm").prop('checked');
+
+				if (checked) {
+					$("#isHouseholdForm").prop('checked', false);
+					$("#isHouseholdHeadForm").prop('checked', false);
+					$("#isMemberForm").prop('checked', false);
+					//$("#isFollowUpForm").prop('checked', false);
+
+					$("#divRegion").show();
+					$("#divMemberFilters").hide();
+				} else {
+					$("#divRegion").hide();
+				}
+            });
+
         $(document).ready(function() {
             $("#tableName").change(function() {
 
@@ -24,6 +63,18 @@
                         $("#columnName").html(html);
                     }
                 });
+
+                if(!$("#tableName").val()){
+                    //hide columnName, show divColumnConstValue
+                    $("#divColumnName").hide();
+                    $("#divColumnConstValue").show();
+                    $("#columnConstantValue").val("Timestamp"); //select default value
+                }else{
+                    $("#divColumnName").show();
+                    $("#divColumnConstValue").hide();
+                    $("#columnConstantValue").val("");
+                }
+
             });
 
             $("#columnFormat").change(function() {
@@ -40,6 +91,13 @@
 
                     }
                 });
+
+                if(!$("#columnFormat").val()){
+                    //hide columnName, show divColumnConstValue
+                    $("#divColumnFormatValue").hide();
+                }else{
+                    $("#divColumnFormatValue").show();
+                }
             });
 
 
@@ -88,7 +146,7 @@
                         <g:hiddenField id="form" name="form.id" from="${[formInstance]}" optionKey="id" required="" value="${formMappingInstance?.form?.id}" class="many-to-one"/>
                         <div class="fieldcontain ">
                             <label class="label2"><g:message code="formMapping.formVariableName.label" default="Form Variable Name" /></label>
-                            <g:textField name="formVariableName" value="${formMappingInstance?.formVariableName}"/>
+                            <g:textField name="formVariableName" value="${formMappingInstance?.formVariableName}" required=""/>
                         </div>
 
                         <div class="fieldcontain ">
@@ -96,9 +154,14 @@
                             <g:select id="tableName" name="tableName" from="${tableList}"  class="many-to-one"  noSelection="['': '']" />
                         </div>
 
-                        <div class="fieldcontain ">
+                        <div class="fieldcontain " id="divColumnName">
                             <label class="label2"><g:message code="formMapping.columnName.label" default="Column Name" /></label>
                             <g:select id="columnName" name="columnName" from="" value="${formMappingInstance?.columnName}" />
+                        </div>
+
+                        <div id="divColumnConstValue" class="fieldcontain " style="display: none">
+                            <label class="label2"><g:message code="formMapping.columnConstantValue.label" default="Column Constant Value" /></label>
+                            <g:select id="columnConstantValue" name="columnConstantValue" optionKey="value" optionValue="name" from="${formService.specialConstants}" value="" />
                         </div>
 
                         <div class="fieldcontain ">
@@ -106,17 +169,11 @@
                             <g:select id="columnFormat" name="columnFormat" optionKey="id" from="${org.philimone.hds.explorer.server.model.main.MappingFormatType.list()}" value="${formMappingInstance?.columnFormat}" noSelection="['': '']" />
                         </div>
 
-                        <div class="fieldcontain ">
+                        <div id="divColumnFormatValue" class="fieldcontain ">
                             <label class="label2"><g:message code="formMapping.columnFormatValue.label" default="Column Format Value" /></label>
                             <g:textField id="columnFormatValue" name="columnFormatValue" from="${formMappingInstance?.columnFormatValue}"  />
                         </div>
 
-                        <!--
-                        <div id="divColumnConstValue" class="fieldcontain " style="display: none">
-                            <label class="label2"><g:message code="formMapping.columnConstantValue.label" default="Column Constant Value" /></label>
-                            <g:textField name="columnConstantValue" value="" />
-                        </div>
-                        -->
 
                         <br>
 

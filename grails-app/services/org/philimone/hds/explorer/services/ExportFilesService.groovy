@@ -790,12 +790,12 @@ class ExportFilesService {
         element.appendChild(createAttribute(doc, "formName", form.getFormName()));
         element.appendChild(createAttribute(doc, "formDescription", form.getFormDescription()));
         element.appendChild(createAttribute(doc, "formDependencies", form.getDependenciesAsText()));
+        element.appendChild(createAttribute(doc, "regionLevel", ""+form.getRegionLevel()));
         element.appendChild(createAttribute(doc, "gender", form.getGender()));
         element.appendChild(createAttribute(doc, "minAge", form.getMinAge()+""));
         element.appendChild(createAttribute(doc, "maxAge", form.getMaxAge()+""));
         element.appendChild(createAttribute(doc, "modules", form.getModulesAsText()));
         element.appendChild(createAttribute(doc, "isRegionForm", ""+form.getIsRegionForm().toString()));
-        element.appendChild(createAttribute(doc, "regionLevel", ""+form.getRegionLevel()));
         element.appendChild(createAttribute(doc, "isHouseholdForm", ""+form.getIsHouseholdForm().toString()));
         element.appendChild(createAttribute(doc, "isHouseholdHeadForm", ""+form.getIsHouseholdHeadForm().toString()));
         element.appendChild(createAttribute(doc, "isMemberForm", ""+form.getIsMemberForm().toString()));
