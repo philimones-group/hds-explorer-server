@@ -639,7 +639,7 @@ class ExportFilesService {
             logReport.addToLogFiles(reportFile)
             logReport.save()
 
-            println "error 2: ${logReport.errors}"
+            println "error 2: ${logReport.errors}"not
         }
 
         output.close();
@@ -751,9 +751,9 @@ class ExportFilesService {
     private Element createModule(Document doc, StudyModule module) {
         Element element = doc.createElement("module");
 
-        element.appendChild(createAttribute(doc, "code", module.getCode()));
-        element.appendChild(createAttribute(doc, "name", module.getName()));
-        element.appendChild(createAttribute(doc, "description", module.getDescription()));
+        element.appendChild(createAttributeNonNull(doc, "code", module.getCode()));
+        element.appendChild(createAttributeNonNull(doc, "name", module.getName()));
+        element.appendChild(createAttributeNonNull(doc, "description", module.getDescription()));
 
         return element;
     }
@@ -786,23 +786,23 @@ class ExportFilesService {
         }
 
         //group is disabled
-        element.appendChild(createAttribute(doc, "formId", form.getFormId()));
-        element.appendChild(createAttribute(doc, "formName", form.getFormName()));
-        element.appendChild(createAttribute(doc, "formDescription", form.getFormDescription()));
-        element.appendChild(createAttribute(doc, "formDependencies", form.getDependenciesAsText()));
-        element.appendChild(createAttribute(doc, "regionLevel", ""+form.getRegionLevel()));
-        element.appendChild(createAttribute(doc, "gender", form.getGender()));
-        element.appendChild(createAttribute(doc, "minAge", form.getMinAge()+""));
-        element.appendChild(createAttribute(doc, "maxAge", form.getMaxAge()+""));
-        element.appendChild(createAttribute(doc, "modules", form.getModulesAsText()));
-        element.appendChild(createAttribute(doc, "isRegionForm", ""+form.getIsRegionForm().toString()));
-        element.appendChild(createAttribute(doc, "isHouseholdForm", ""+form.getIsHouseholdForm().toString()));
-        element.appendChild(createAttribute(doc, "isHouseholdHeadForm", ""+form.getIsHouseholdHeadForm().toString()));
-        element.appendChild(createAttribute(doc, "isMemberForm", ""+form.getIsMemberForm().toString()));
-        element.appendChild(createAttribute(doc, "isFollowUpForm", ""+form.isFollowUpForm.toString())); //println "is follow up only"
-        element.appendChild(createAttribute(doc, "formMap", formMap));
-        element.appendChild(createAttribute(doc, "redcapApi", redcapApiStr));
-        element.appendChild(createAttribute(doc, "redcapMap", redcapMap));
+        element.appendChild(createAttributeNonNull(doc, "formId", form.getFormId()));
+        element.appendChild(createAttributeNonNull(doc, "formName", form.getFormName()));
+        element.appendChild(createAttributeNonNull(doc, "formDescription", form.getFormDescription()));
+        element.appendChild(createAttributeNonNull(doc, "formDependencies", form.getDependenciesAsText()));
+        element.appendChild(createAttributeNonNull(doc, "regionLevel", ""+form.getRegionLevel()));
+        element.appendChild(createAttributeNonNull(doc, "gender", form.getGender()));
+        element.appendChild(createAttributeNonNull(doc, "minAge", form.getMinAge()+""));
+        element.appendChild(createAttributeNonNull(doc, "maxAge", form.getMaxAge()+""));
+        element.appendChild(createAttributeNonNull(doc, "modules", form.getModulesAsText()));
+        element.appendChild(createAttributeNonNull(doc, "isRegionForm", ""+form.getIsRegionForm().toString()));
+        element.appendChild(createAttributeNonNull(doc, "isHouseholdForm", ""+form.getIsHouseholdForm().toString()));
+        element.appendChild(createAttributeNonNull(doc, "isHouseholdHeadForm", ""+form.getIsHouseholdHeadForm().toString()));
+        element.appendChild(createAttributeNonNull(doc, "isMemberForm", ""+form.getIsMemberForm().toString()));
+        element.appendChild(createAttributeNonNull(doc, "isFollowUpForm", ""+form.isFollowUpForm.toString())); //println "is follow up only"
+        element.appendChild(createAttributeNonNull(doc, "formMap", formMap));
+        element.appendChild(createAttributeNonNull(doc, "redcapApi", redcapApiStr));
+        element.appendChild(createAttributeNonNull(doc, "redcapMap", redcapMap));
 
 
         return element;

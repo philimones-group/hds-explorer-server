@@ -5,7 +5,7 @@
 	<head>
 		<meta name="layout" content="main">
 		<g:set var="entityName" value="${message(code: 'dataSet.label', default: 'DataSet')}" />
-		<title><g:message code="default.create.label" args="[entityName]" /></title>
+		<title><g:message code="dataSet.add.label" args="[entityName]" /></title>
 
 		<asset:javascript src="application.js"/>
 		<asset:javascript src="bootstrap.js"/>

@@ -11,7 +11,7 @@ class DataSetController {
 
     def dataSetService
 
-    def tableList = ["Household","Member","User"]
+    def tableList = ["Household","Member","Region","User"]
 
     def index(Integer max) {
         params.max = Math.min(max ?: 10, 100)
@@ -20,6 +20,10 @@ class DataSetController {
 
     def show(Long id) {
         [dataSetInstance:  DataSet.get(id)]
+    }
+
+    def create = {
+        redirect action: "add"
     }
 
     def add() {
