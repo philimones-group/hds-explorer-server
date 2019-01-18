@@ -18,6 +18,19 @@ class TrackingList {
     User updatedBy
     Date updatedDate
 
+    String getFilenameOnly(){
+        new File(filename).name
+    }
+
+    String getCompressedFilename(){
+        def f = new File(filename)
+        def fn = f.name
+        int i = fn.lastIndexOf(".")
+        def nfn = (i==-1 ? fn : fn.substring(0,i)) +".zip"
+
+        return f.parent + File.separator + nfn
+    }
+
     static hasMany = [mappings:TrackingListMapping]
 
     static constraints = {

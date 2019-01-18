@@ -56,7 +56,7 @@
                     <bi:menu label="${g.message(code: 'default.menu.updates.datasets.label')}" link="${createLink(controller: 'dataSet', action: 'add')}" />
                 </bi:dropmenu>
                 <bi:dropmenu label="${g.message(code: 'default.menu.lists.label')}">
-                    <bi:menu label="${g.message(code: 'default.menu.lists.trackinglists.label')}" />
+                    <bi:menu label="${g.message(code: 'default.menu.lists.trackinglists.label')}" link="${createLink(controller: 'trackingList', action: 'add')}" />
                 </bi:dropmenu>
                 <bi:dropmenu label="${g.message(code: 'default.menu.sync.label')}">
                     <bi:menu label="${g.message(code: 'default.menu.sync.import_openhds.label')}" link="${createLink(controller: 'importOpenHDS', action: 'index')}" />

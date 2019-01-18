@@ -18,6 +18,7 @@ import org.philimone.hds.explorer.server.model.main.RedcapApi
 import org.philimone.hds.explorer.server.model.main.RedcapMapping
 import org.philimone.hds.explorer.server.model.main.Region
 import org.philimone.hds.explorer.server.model.main.StudyModule
+import org.philimone.hds.explorer.server.model.main.TrackingList
 import org.philimone.hds.explorer.server.model.settings.ApplicationParam
 import org.w3c.dom.Document
 import org.w3c.dom.Element
@@ -36,6 +37,7 @@ import javax.xml.transform.stream.StreamResult
 class ExportFilesService {
 
     def generalUtilitiesService
+    def trackingListService
 
     def generateUsersXML(long logReportId) {
 
@@ -701,6 +703,74 @@ class ExportFilesService {
             def b = zipMaker.makeZip()
 
             println "creating zip - datasets.zip - success="+b
+
+            processed = 1
+
+        } catch (Exception ex) {
+            ex.printStackTrace()
+            processed = 0
+            errors = 1
+            output.println(ex.toString())
+        }
+
+        LogReport.withTransaction {
+            LogReport logReport = LogReport.findByReportId(logReportId)
+            logReport.start = start
+            logReport.end = new Date()
+            logReport.status = LogStatus.findByName(LogStatus.FINISHED)
+            logReport.save()
+
+            println "error 1: ${logReport.errors}, ${logReport.start}"
+
+            LogReportFile reportFile = new LogReportFile(creationDate: logReport.start, fileName: log.logFileName, logReport: logReport)
+            reportFile.processedCount = processed
+            reportFile.errorsCount = errors
+            logReport.addToLogFiles(reportFile)
+            logReport.save()
+
+            println "error 2: ${logReport.errors}"
+        }
+
+        output.close();
+
+    }
+
+    def generateTrackingListsXML(long logReportId) {
+
+        LogOutput log = generalUtilitiesService.getOutput(SystemPath.getLogsPath(), "generate-tracklist-xml-zip");
+        PrintStream output = log.output
+        if (output == null) return;
+
+        def start = new Date();
+
+        int processed = 0
+        int errors = 0
+
+        try {
+            List<TrackingList> resultLists = []
+
+            TrackingList.withTransaction {
+                resultLists = TrackingList.findAllByEnabled(true)
+            }
+
+            println "creating xml file ${resultLists.size()}"
+            PrintStream outputFile = new PrintStream(new FileOutputStream(SystemPath.generatedFilesPath + "/trackinglists.xml"), true)
+
+            outputFile.print("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>")
+
+            outputFile.print(trackingListService.createXMLfrom(resultLists))
+
+            outputFile.close()
+
+            System.out.println("File saved! - trackinglists.xml");
+            output.println("File saved! - trackinglists.xml");
+
+            //zip file
+            ZipMaker zipMaker = new ZipMaker(SystemPath.getGeneratedFilesPath() + File.separator + "trackinglists.zip")
+            zipMaker.addFile(SystemPath.getGeneratedFilesPath() + File.separator + "trackinglists.xml")
+            def b = zipMaker.makeZip()
+
+            println "creating zip - trackinglists.zip - success="+b
 
             processed = 1
 

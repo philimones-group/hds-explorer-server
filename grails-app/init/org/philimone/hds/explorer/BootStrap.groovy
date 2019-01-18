@@ -115,6 +115,7 @@ class BootStrap {
             new SecurityMap(url: "/form/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
             new SecurityMap(url: "/formMapping/*/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
             new SecurityMap(url: "/dataSet/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
+            new SecurityMap(url: "/trackingList/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
 
             //new SecurityMap(url: "/household/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
             //new SecurityMap(url: "/member/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
@@ -432,8 +433,11 @@ class BootStrap {
 
         //insertTestData();
 
+        String xml = trackingListService.createXMLfromFile("/home/paul/snap/tracking_list_sample_1.xlsx")
+        println(xml)
+
         //importDataFromOpenHDSService.importFieldWorkers(Codes.REPORT_IMPORT_FROM_OPENHDS_FIELDWORKERS)
-        importDataFromOpenHDSService.importRegions(Codes.REPORT_IMPORT_FROM_OPENHDS_HOUSEHOLDS)
+        //importDataFromOpenHDSService.importRegions(Codes.REPORT_IMPORT_FROM_OPENHDS_HOUSEHOLDS)
         //importDataFromOpenHDSService.importHouseholds(Codes.REPORT_IMPORT_FROM_OPENHDS_HOUSEHOLDS)
         //importDataFromOpenHDSService.importIndividuals(Codes.REPORT_IMPORT_FROM_OPENHDS_INDIVIDUALS)
 

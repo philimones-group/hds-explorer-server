@@ -217,7 +217,7 @@ class ExportFilesController {
                 @Override
                 void run() {
                     println "executing export files to tracking lists xml/zip"
-                    //exportFilesService.generateTrackingListsXML(id)
+                    exportFilesService.generateTrackingListsXML(id)
                 }
             }).start()
         }
