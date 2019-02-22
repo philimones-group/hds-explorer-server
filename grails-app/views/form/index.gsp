@@ -53,9 +53,13 @@
 					
 						<g:sortableColumn property="gender" title="${message(code: 'form.gender.label', default: 'Gender')}" />
 					
-						<g:sortableColumn property="minAge" title="${message(code: 'form.minAge.label', default: 'Min Age')}" />
+						<g:sortableColumn property="isRegionForm" title="${message(code: 'form.isRegionForm.label', default: 'Is Region Form')}" />
 					
-						<g:sortableColumn property="maxAge" title="${message(code: 'form.maxAge.label', default: 'Max Age')}" />
+						<g:sortableColumn property="isHouseholdForm" title="${message(code: 'form.isHouseholdForm.label', default: 'Is Household Form')}" />
+
+						<g:sortableColumn property="isMemberForm" title="${message(code: 'form.isMemberForm.label', default: 'Is Member Form')}" />
+
+						<g:sortableColumn property="isFollowUpForm" title="${message(code: 'form.isFollowUpForm.label', default: 'Is FollowUp Form')}" />
 					
 					</tr>
 				</thead>
@@ -71,9 +75,13 @@
 					
 						<td>${fieldValue(bean: formInstance, field: "gender")}</td>
 					
-						<td>${fieldValue(bean: formInstance, field: "minAge")}</td>
+						<td>${fieldValue(bean: formInstance, field: "isRegionForm")}</td>
 					
-						<td>${fieldValue(bean: formInstance, field: "maxAge")}</td>
+						<td>${fieldValue(bean: formInstance, field: "isHouseholdForm")}</td>
+
+						<td>${fieldValue(bean: formInstance, field: "isMemberForm")}</td>
+
+						<td>${fieldValue(bean: formInstance, field: "isFollowUpForm")}</td>
 					
 					</tr>
 				</g:each>

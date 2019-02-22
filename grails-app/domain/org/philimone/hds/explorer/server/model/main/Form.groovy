@@ -19,6 +19,8 @@ class Form {
     boolean isHouseholdHeadForm
     boolean isFollowUpForm
 
+    boolean multiCollPerSession
+
     boolean enabled
 
     //FormGroup group
@@ -68,6 +70,8 @@ class Form {
         isMemberForm()
         isFollowUpForm()
 
+        multiCollPerSession()
+
         enabled nullable:false
     }
 
@@ -87,6 +91,8 @@ class Form {
         isMemberForm column: 'is_member'
         isHouseholdHeadForm column: 'is_household_head'
         isFollowUpForm column: 'is_followup_only'
+
+        multiCollPerSession column: "multi_coll_per_session"
 
         enabled column: 'enabled'
 

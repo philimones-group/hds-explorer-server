@@ -38,7 +38,7 @@ class TrackingListService {
         def xml = "<trackinglists>"+"\n"
 
         lists.each {
-            xml += createXMLfromFile(it.filename)
+            xml += createXMLfromFile(it, it.filename)
         }
 
         xml += "</trackinglists>"
@@ -46,11 +46,11 @@ class TrackingListService {
         return xml
     }
 
-    def String createXMLfromFile(String xlsFile){
-        return createXMLfromFile(new File(xlsFile))
+    def String createXMLfromFile(TrackingList trackingList, String xlsFile){
+        return createXMLfromFile(trackingList, new File(xlsFile))
     }
 
-    def String createXMLfromFile(File xlsFile){
+    def String createXMLfromFile(TrackingList trackingList, File xlsFile){
         def xml = ""
 
         //OPEN FILE
@@ -81,10 +81,10 @@ class TrackingListService {
             def cellListId = row.getCell(5)
             def cellListTitle = row.getCell(6)
             def cellListForms = row.getCell(7)
-            def cellMemberCode = row.getCell(8)
-            def cellMemberStudyCcode = row.getCell(9)
-            def cellMemberForms = row.getCell(10)
-            def cellMemberVisit = row.getCell(11)
+            def cellSubjectCode = row.getCell(8)
+            def cellSubjectType = row.getCell(9)
+            def cellSubjectForms = row.getCell(10)
+            def cellSubjectVisit = row.getCell(11)
 
             
             if (row.getRowNum()==0){
@@ -94,14 +94,14 @@ class TrackingListService {
                 def name = getStringCellValue(cellName)
                 def title = getStringCellValue(cellTitle)
                 def details = getStringCellValue(cellDetails)
-                def module = getStringCellValue(cellModule)
+                def module = trackingList.module.code //getStringCellValue(cellModule)
                 def listid = getStringCellValue(cellListId)
                 def listtitle = getStringCellValue(cellListTitle)
                 def listforms = getStringCellValue(cellListForms)
-                def mem_code = getStringCellValue(cellMemberCode)
-                def mem_studyccode = getStringCellValue(cellMemberStudyCcode)
-                def mem_forms = getStringCellValue(cellMemberForms)
-                def mem_visit = getStringCellValue(cellMemberVisit)
+                def sub_code = getStringCellValue(cellSubjectCode)
+                def sub_type = getStringCellValue(cellSubjectType)
+                def sub_forms = getStringCellValue(cellSubjectForms)
+                def sub_visit = getStringCellValue(cellSubjectVisit)
 
                 if (code==null || code.isEmpty()) {
                     //println "last row - ${lastCode}, ${lastListId}"
@@ -115,8 +115,8 @@ class TrackingListService {
                 if (!listforms.isEmpty()){
                     listforms = listforms.replaceAll("\\s+", "")
                 }
-                if (!mem_forms.isEmpty()){
-                    mem_forms = mem_forms.replaceAll("\\s+", "")
+                if (!sub_forms.isEmpty()){
+                    sub_forms = sub_forms.replaceAll("\\s+", "")
                 }
 
 
@@ -149,8 +149,8 @@ class TrackingListService {
                     lastListId = listid
                 }
 
-                if (mem_code != null || !mem_code.isEmpty()){
-                    xml += "<member code=\"${mem_code}\" studycode=\"${mem_studyccode}\" forms=\"${mem_forms}\" visit=\"${mem_visit}\"/>" + "\n"
+                if (sub_code != null || !sub_code.isEmpty()){
+                    xml += "<subject code=\"${sub_code}\" type=\"${sub_type}\" forms=\"${sub_forms}\" visit=\"${sub_visit}\"/>" + "\n"
                 }
 
             }
@@ -199,10 +199,10 @@ class TrackingListService {
             def cellListId = row.getCell(5)
             def cellListTitle = row.getCell(6)
             def cellListForms = row.getCell(7)
-            def cellMemberCode = row.getCell(8)
-            def cellMemberStudyCcode = row.getCell(9)
-            def cellMemberForms = row.getCell(10)
-            def cellMemberVisit = row.getCell(11)
+            def cellSubjectCode = row.getCell(8)
+            def cellSubjectType = row.getCell(9)
+            def cellSubjectForms = row.getCell(10)
+            def cellSubjectVisit = row.getCell(11)
 
 
             if (row.getRowNum()==1){
@@ -215,10 +215,10 @@ class TrackingListService {
                 def listid = getStringCellValue(cellListId)
                 def listtitle = getStringCellValue(cellListTitle)
                 def listforms = getStringCellValue(cellListForms)
-                def mem_code = getStringCellValue(cellMemberCode)
-                def mem_studyccode = getStringCellValue(cellMemberStudyCcode)
-                def mem_forms = getStringCellValue(cellMemberForms)
-                def mem_visit = getStringCellValue(cellMemberVisit)
+                def sub_code = getStringCellValue(cellSubjectCode)
+                def sub_type = getStringCellValue(cellSubjectType)
+                def sub_forms = getStringCellValue(cellSubjectForms)
+                def sub_visit = getStringCellValue(cellSubjectVisit)
 
                 trackingList.code = code
                 trackingList.name = name

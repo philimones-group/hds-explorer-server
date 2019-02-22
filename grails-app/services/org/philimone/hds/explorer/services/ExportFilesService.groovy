@@ -641,7 +641,7 @@ class ExportFilesService {
             logReport.addToLogFiles(reportFile)
             logReport.save()
 
-            println "error 2: ${logReport.errors}"not
+            println "error 2: ${logReport.errors}"
         }
 
         output.close();
@@ -870,6 +870,7 @@ class ExportFilesService {
         element.appendChild(createAttributeNonNull(doc, "isHouseholdHeadForm", ""+form.getIsHouseholdHeadForm().toString()));
         element.appendChild(createAttributeNonNull(doc, "isMemberForm", ""+form.getIsMemberForm().toString()));
         element.appendChild(createAttributeNonNull(doc, "isFollowUpForm", ""+form.isFollowUpForm.toString())); //println "is follow up only"
+        element.appendChild(createAttributeNonNull(doc, "multiCollPerSession", form.multiCollPerSession.toString()));
         element.appendChild(createAttributeNonNull(doc, "formMap", formMap));
         element.appendChild(createAttributeNonNull(doc, "redcapApi", redcapApiStr));
         element.appendChild(createAttributeNonNull(doc, "redcapMap", redcapMap));

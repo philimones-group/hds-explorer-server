@@ -48,6 +48,7 @@ class FormService {
         def list = []
 
         list << new JConstant(name: "Timestamp     : Date[Y-M-D H:M:S]", value: "Timestamp")
+        list << new JConstant(name: "Household Members <repeat group>", value: "HouseholdMembers")
         list << new JConstant(name: "Member Exists : Boolean[true, false]]", value: "MemberExists")
 
         return list

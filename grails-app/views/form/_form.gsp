@@ -201,6 +201,13 @@
 	</div>
 </div>
 
+<div class="fieldcontain ${hasErrors(bean: this.form, field: 'multiCollPerSession', 'error')} ">
+	<label for="multiCollPerSession">
+		<g:message code="form.multiCollPerSession.label" default="Multi Coll Per Session" />
+	</label>
+	<g:checkBox name="multiCollPerSession" value="${this.form?.multiCollPerSession}" />
+</div>
+
 <div class="fieldcontain ${hasErrors(bean: this.form, field: 'enabled', 'error')} ">
 	<label for="enabled">
 		<g:message code="form.enabled.label" default="Enabled" />
