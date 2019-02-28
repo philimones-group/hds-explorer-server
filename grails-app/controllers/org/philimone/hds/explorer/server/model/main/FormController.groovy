@@ -159,7 +159,11 @@ class FormController {
 
         def formsList = Form.list()
 
-        [formInstance: formInstance, formMappingInstance:formMapping, formMappingList: mappings, tableList: tableList, formsList: formsList, formService: formService]
+        //get form repeat group variables
+        def repeatGroups = formService.getRegisteredRepeatGroupVar(formInstance)
+
+
+        [formInstance: formInstance, repeatGroups: repeatGroups, formMappingInstance:formMapping, formMappingList: mappings, tableList: tableList, formsList: formsList, formService: formService]
     }
 
     def copyFrom = {
@@ -314,6 +318,28 @@ class FormController {
         //println "list ${list}"
 
         render g.select(id: 'columnName', name: "columnName", from: list)
+    }
+
+    def modelMemberTable = {
+        def tableList = ["Member"]
+
+        render g.select(id: 'tableName', name: "tableName", from: tableList)
+    }
+
+    def modelTableList = {
+
+        def modelName = params.name
+        def tableList = ["Member"]
+
+        println "model ${modelName}"
+
+        if (modelName == "" || modelName==null){
+            tableList = ["Household","Member","User","Region"]
+            tableList.addAll(dataSetService.datasetNames)
+        }
+
+
+        render g.select(id: 'tableName', name: "tableName", from: tableList, noSelection : ['': ''])
     }
 
     def modelFormatTypes = {

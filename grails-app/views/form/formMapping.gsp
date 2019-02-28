@@ -100,6 +100,18 @@
                 }
             });
 
+            $("#formRepeatGroup").change(function() {
+                $.ajax({
+                    url: "${createLink(controller: "form", action: "modelTableList")}",
+                    data: "name=" + this.value,
+                    cache: false,
+                    success: function(html) {
+                        $("#tableName").html(html);
+                    }
+                });
+
+            });
+
 
         });
 
@@ -148,6 +160,13 @@
                             <label class="label2"><g:message code="formMapping.formVariableName.label" default="Form Variable Name" /></label>
                             <g:textField name="formVariableName" value="${formMappingInstance?.formVariableName}" required=""/>
                         </div>
+
+                        <g:if test="${repeatGroups.size()>0}">
+                            <div class="fieldcontain ">
+                                <label class="label2"><g:message code="formMapping.formRepeatGroup.label" default="Repeat Group" /></label>
+                                <g:select id="formRepeatGroup" name="formRepeatGroup" from="${repeatGroups}" value="${formMappingInstance?.formRepeatGroup}"  class="many-to-one"  noSelection="['': '']" />
+                            </div>
+                        </g:if>
 
                         <div class="fieldcontain ">
                             <label class="label2"><g:message code="formMapping.tableName.label" default="Table Name" /></label>
@@ -203,6 +222,8 @@
 
                         <g:sortableColumn property="formVariableName" title="${message(code: 'formMapping.formVariableName.label', default: 'Form Variable Name')}" />
 
+                        <g:sortableColumn property="formRepeatGroup" title="${message(code: 'formMapping.formRepeatGroup.label', default: 'Repeat Group')}" />
+
                         <g:sortableColumn property="tableName" title="${message(code: 'formMapping.tableName.label', default: 'Table Name')}" />
 
                         <g:sortableColumn property="columnName" title="${message(code: 'formMapping.columnName.label', default: 'Column Name')}" />
@@ -220,6 +241,8 @@
                             <td><g:link controller="formMapping" action="show" id="${formMappingInstance.id}">${fieldValue(bean: formMappingInstance, field: "form")}</g:link></td>
 
                             <td>${fieldValue(bean: formMappingInstance, field: "formVariableName")}</td>
+
+                            <td>${fieldValue(bean: formMappingInstance, field: "formRepeatGroup")}</td>
 
                             <td>${fieldValue(bean: formMappingInstance, field: "tableName")}</td>
 

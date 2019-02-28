@@ -8,18 +8,28 @@ class FormMapping {
 
     Form form
     String formVariableName
+    String formRepeatGroup /* If has any value it belongs to an Repeat Group within ODK */
     String tableName
     String columnName
     MappingFormatType columnFormat
     String columnFormatValue
 
+    String getRepeatGroup(){
+        formRepeatGroup==null ? "" : "${formRepeatGroup}."
+    }
+
+    String getRepeatGroupAsConstant(){
+        formRepeatGroup==null ? "" : "\$."
+    }
+
     String toString(){
-        "${tableName}.${columnName}:${formVariableName}->${columnFormat==null ? 'None': columnFormat.getValue(columnFormatValue) }"
+        "${getRepeatGroupAsConstant()}${tableName}.${columnName}:${getRepeatGroup()}${formVariableName}->${columnFormat==null ? 'None': columnFormat.getValue(columnFormatValue) }"
     }
 
     static constraints = {
         form nullable: false
         formVariableName blank: false, unique: 'form'
+        formRepeatGroup nullable: true, blank: true
         tableName blank: false
         columnName blank: false
         columnFormat nullable: true
@@ -31,6 +41,7 @@ class FormMapping {
 
         form column: "form_id"
         formVariableName column: "form_variable_name"
+        formRepeatGroup column: "form_repeat_group"
         tableName column: "table_name"
         columnName column: "column_name"
         columnFormat column: "column_format_type"
