@@ -16,4 +16,20 @@ class LogReportController {
 
         render view:"showLogReport", model : [logReportInstance : logReportInstance, logFiles: logFiles]
     }
+
+    def downloadLogFile = {
+
+        def logReportFile = LogReportFile.get(params.id)
+
+        File file = new File(logReportFile.fileName)
+
+        if (file.exists()) {
+            response.setContentType("text/plain") // or or image/JPEG or text/xml or whatever type the file is
+            response.setHeader("Content-disposition", "attachment;filename=\"${file.name}\"")
+            response.outputStream << file.bytes
+        } else {
+            render "${message(code: "default.file.not.found")} - ${logReportFile.fileName}"
+        }
+
+    }
 }
