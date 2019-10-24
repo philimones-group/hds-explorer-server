@@ -27,7 +27,7 @@ class UserPasswordEncoderListener {
     private void encodePasswordForEvent(AbstractPersistenceEvent event) {
         if (event.entityObject instanceof User) {
             User u = event.entityObject as User
-            if (u.password && ( ((event instanceof PreInsertEvent) && !u.isPasswordEncoded) || (event instanceof PreUpdateEvent && u.isDirty('password')))) { // do not encode password with isPasswordEncoded=true - they are imported from OpenHDS
+            if (u.password && u.isPasswordEncoded==false && ( (event instanceof PreInsertEvent) || (event instanceof PreUpdateEvent && u.isDirty('password')))) { // do not encode password with isPasswordEncoded=true - they are imported from OpenHDS
                 event.getEntityAccess().setProperty('password', encodePassword(u.password))
             }
         }

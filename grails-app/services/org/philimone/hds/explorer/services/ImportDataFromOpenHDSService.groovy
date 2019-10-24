@@ -158,19 +158,27 @@ class ImportDataFromOpenHDSService {
 
                 fieldworkers.subList(from, to).each { Fieldworker fw ->
                     //perform saves
+                    def newUser = false
                     def extid = fw.extId
                     def firstName = fw.firstName
                     def lastName = fw.lastName
                     def password = fw.passwordHash
 
-                    User user = User.findOrCreateByUsername(extid)
+                    User user = User.findByUsername(extid)
+
+                    newUser = user==null;
+
+                    if (newUser){
+                        user = new User()
+                    }
+
                     //User user = new User()
                     user.firstName = firstName
                     user.lastName = lastName
                     user.username = extid
                     user.password = password
                     user.isPasswordEncoded = true
-                    user.enabled = true
+                    user.enabled = newUser ? true : user.enabled
 
 
                     if (user.modules == null || user.modules.size()==0){
