@@ -42,9 +42,9 @@ class ImportDataFromOpenHDSService {
         PrintStream output = log.output
 
         if (output == null) return;
-
         int processed = 0
         int errors = 0
+        def logStatusValue = LogStatus.FINISHED
 
         def locationHiearachies = []
 
@@ -108,12 +108,15 @@ class ImportDataFromOpenHDSService {
         LogReport.withTransaction {
             LogReport logReport = LogReport.findByReportId(logReportId)
             LogReportFile reportFile = new LogReportFile(creationDate: new Date(), fileName: log.logFileName, logReport: logReport)
+            reportFile.keyTimestamp = logReport.keyTimestamp
+            reportFile.start = start
+            reportFile.end = new Date()
             reportFile.creationDate = new Date()
             reportFile.processedCount = processed
             reportFile.errorsCount = errors
 
             logReport.end = new Date()
-            logReport.status = LogStatus.findByName(LogStatus.FINISHED)
+            logReport.status = LogStatus.findByName(logStatusValue)
             logReport.addToLogFiles(reportFile)
             logReport.save()
         }
@@ -126,10 +129,11 @@ class ImportDataFromOpenHDSService {
         PrintStream output = log.output
 
         if (output == null) return;
-
+        
         int processed = 0
         int errors = 0
         def start = new Date()
+        def logStatusValue = LogStatus.FINISHED
 
         println "starting copy of fieldworkers - ${start}"
 
@@ -218,12 +222,15 @@ class ImportDataFromOpenHDSService {
         LogReport.withTransaction {
             LogReport logReport = LogReport.findByReportId(logReportId)
             LogReportFile reportFile = new LogReportFile(creationDate: new Date(), fileName: log.logFileName, logReport: logReport)
+            reportFile.keyTimestamp = logReport.keyTimestamp
+            reportFile.start = start
+            reportFile.end = new Date()
             reportFile.creationDate = new Date()
             reportFile.processedCount = processed
             reportFile.errorsCount = errors
 
             logReport.end = new Date()
-            logReport.status = LogStatus.findByName(LogStatus.FINISHED)
+            logReport.status = LogStatus.findByName(logStatusValue)
             logReport.addToLogFiles(reportFile)
             logReport.save()
         }
@@ -240,6 +247,7 @@ class ImportDataFromOpenHDSService {
         int processed = 0
         int errors = 0
         def start = new Date()
+        def logStatusValue = LogStatus.FINISHED
 
         println "starting copy of households - ${start}"
 
@@ -346,12 +354,15 @@ class ImportDataFromOpenHDSService {
         LogReport.withTransaction {
             LogReport logReport = LogReport.findByReportId(logReportId)
             LogReportFile reportFile = new LogReportFile(creationDate: new Date(), fileName: log.logFileName, logReport: logReport)
+            reportFile.keyTimestamp = logReport.keyTimestamp
+            reportFile.start = start
+            reportFile.end = new Date()
             reportFile.creationDate = new Date()
             reportFile.processedCount = processed
             reportFile.errorsCount = errors
 
             logReport.end = new Date()
-            logReport.status = LogStatus.findByName(LogStatus.FINISHED)
+            logReport.status = LogStatus.findByName(logStatusValue)
             logReport.addToLogFiles(reportFile)
             logReport.save()
         }
@@ -368,6 +379,7 @@ class ImportDataFromOpenHDSService {
         int processed = 0
         int errors = 0
         def start = new Date()
+        def logStatusValue = LogStatus.FINISHED
 
         println "starting copy of members - ${start}"
         println "reading existing members - ${TimeCategory.minus(new Date(), start)}"
@@ -458,12 +470,15 @@ class ImportDataFromOpenHDSService {
         LogReport.withTransaction {
             LogReport logReport = LogReport.findByReportId(logReportId)
             LogReportFile reportFile = new LogReportFile(creationDate: new Date(), fileName: log.logFileName, logReport: logReport)
+            reportFile.keyTimestamp = logReport.keyTimestamp
+            reportFile.start = start
+            reportFile.end = new Date()
             reportFile.creationDate = new Date()
             reportFile.processedCount = processed
             reportFile.errorsCount = errors
 
             logReport.end = new Date()
-            logReport.status = LogStatus.findByName(LogStatus.FINISHED)
+            logReport.status = LogStatus.findByName(logStatusValue)
             logReport.addToLogFiles(reportFile)
             logReport.save()
         }

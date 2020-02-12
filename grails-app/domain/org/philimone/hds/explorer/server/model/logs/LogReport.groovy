@@ -10,6 +10,7 @@ class LogReport {
     LogGroup group
     LogStatus status
     String description
+    long keyTimestamp /* temporary - every time its executed it creates a code with the timestamp */
     Date start
     Date end
 
@@ -20,6 +21,7 @@ class LogReport {
         group nullable: true
         description blank: true
         status nullable: false
+        keyTimestamp nullable:false
         start nullable: true
         end nullable: true
     }

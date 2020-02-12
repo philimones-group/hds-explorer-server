@@ -79,7 +79,7 @@
 
 				<li class="fieldcontain">
 
-					<g:set var="startDate" value="${ (logReportInstance.start!=null) ? logReportInstance.start.time : "" }" />
+					<g:set var="keyGroup" value="${ (logReportInstance.keyTimestamp!=null) ? logReportInstance.keyTimestamp : "" }" />
 
 					<table>
 						<thead>
@@ -92,18 +92,22 @@
 
 							<g:sortableColumn property="syncDate" title="${message(code: 'logReportFile.creationDate.label', default: 'Creation Date')}" />
 
+							<g:sortableColumn property="start" title="${message(code: 'logReportFile.start.label', default: 'Process Started')}" />
+
+							<g:sortableColumn property="end" title="${message(code: 'logReportFile.end.label', default: 'Process Ended')}" />
+
 						</tr>
 						</thead>
 						<tbody>
 						<g:each in="${logFiles}" status="i" var="logFileInstance">
 
-							<g:if test="${logFileInstance.creationDate != startDate}">
+							<g:if test="${logFileInstance.keyTimestamp != keyGroup}">
 								<tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
-									<td><b>Synched on: ${logFileInstance.creationDate}</b></td>
+									<td><b>Synched on: ${logFileInstance.start}</b></td>
 								</tr>
 							</g:if>
 
-							<g:set var="startDate" value="${ logFileInstance.creationDate.time }" />
+							<g:set var="keyGroup" value="${ logFileInstance.keyTimestamp }" />
 
 							<tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
 
@@ -113,7 +117,11 @@
 
 								<td>${fieldValue(bean: logFileInstance, field: "errorsCount")}</td>
 
-								<td><g:formatDate date="${logFileInstance.creationDate}" format="yyyy-MM-dd HH:mm" /></td>
+								<td><g:formatDate date="${logFileInstance.creationDate}" format="yyyy-MM-dd HH:mm:ss" /></td>
+
+								<td><g:formatDate date="${logFileInstance.start}" format="yyyy-MM-dd HH:mm:ss" /></td>
+
+								<td><g:formatDate date="${logFileInstance.end}" format="yyyy-MM-dd HH:mm:ss" /></td>
 
 							</tr>
 

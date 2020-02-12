@@ -19,6 +19,7 @@ class ImportOpenHDSController {
 
         LogReport.withTransaction {
             logReport = LogReport.get(params.id)
+            logReport.keyTimestamp = System.currentTimeMillis() //CREATE timestamp code
             logReport.status = LogStatus.findByName(LogStatus.STARTED)
             logReport.start = new Date();
             logReport.save(flush: true)

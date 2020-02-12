@@ -46,9 +46,9 @@ class ExportFilesService {
         if (output == null) return;
 
         def start = new Date();
-
         int processed = 0
         int errors = 0
+        def logStatusValue = LogStatus.FINISHED
 
         try {
             //Ler todos users
@@ -103,20 +103,22 @@ class ExportFilesService {
             processed = 0
             errors = 1
             output.println(ex.toString())
+
+            logStatusValue = LogStatus.ERROR
         }
 
         LogReport.withTransaction {
             LogReport logReport = LogReport.findByReportId(logReportId)
-            logReport.start = start
-            logReport.end = new Date()
-            logReport.status = LogStatus.findByName(LogStatus.FINISHED)
-            logReport.save()
-
-            println "error 1: ${logReport.errors}, ${logReport.start}"
-
-            LogReportFile reportFile = new LogReportFile(creationDate: logReport.start, fileName: log.logFileName, logReport: logReport)
+            LogReportFile reportFile = new LogReportFile(creationDate: new Date(), fileName: log.logFileName, logReport: logReport)
+            reportFile.keyTimestamp = logReport.keyTimestamp
+            reportFile.start = start
+            reportFile.end = new Date()
+            reportFile.creationDate = new Date()
             reportFile.processedCount = processed
             reportFile.errorsCount = errors
+
+            logReport.end = new Date()
+            logReport.status = LogStatus.findByName(logStatusValue)
             logReport.addToLogFiles(reportFile)
             logReport.save()
 
@@ -142,9 +144,9 @@ class ExportFilesService {
         if (output == null) return;
 
         def start = new Date();
-
         int processed = 0
         int errors = 0
+        def logStatusValue = LogStatus.FINISHED
 
         try {
             //read all modules
@@ -199,24 +201,26 @@ class ExportFilesService {
             processed = 0
             errors = 1
             output.println(ex.toString())
+
+            logStatusValue = LogStatus.ERROR
         }
 
         LogReport.withTransaction {
             LogReport logReport = LogReport.findByReportId(logReportId)
-            logReport.start = start
-            logReport.end = new Date()
-            logReport.status = LogStatus.findByName(LogStatus.FINISHED)
-            logReport.save()
-
-            println "error 1: ${logReport.errors}, ${logReport.start}"
-
-            LogReportFile reportFile = new LogReportFile(creationDate: logReport.start, fileName: log.logFileName, logReport: logReport)
+            LogReportFile reportFile = new LogReportFile(creationDate: new Date(), fileName: log.logFileName, logReport: logReport)
+            reportFile.keyTimestamp = logReport.keyTimestamp
+            reportFile.start = start
+            reportFile.end = new Date()
+            reportFile.creationDate = new Date()
             reportFile.processedCount = processed
             reportFile.errorsCount = errors
+
+            logReport.end = new Date()
+            logReport.status = LogStatus.findByName(logStatusValue)
             logReport.addToLogFiles(reportFile)
             logReport.save()
 
-            println "error 2: ${logReport.errors}"
+            //println("errors: ${logReport.errors}")
         }
 
 
@@ -231,9 +235,9 @@ class ExportFilesService {
         if (output == null) return;
 
         def start = new Date();
-
         int processed = 0
         int errors = 0
+        def logStatusValue = LogStatus.FINISHED
 
         try {
             //read forms
@@ -291,24 +295,26 @@ class ExportFilesService {
             processed = 0
             errors = 1
             output.println(ex.toString())
+
+            logStatusValue = LogStatus.ERROR
         }
 
         LogReport.withTransaction {
             LogReport logReport = LogReport.findByReportId(logReportId)
-            logReport.start = start
-            logReport.end = new Date()
-            logReport.status = LogStatus.findByName(LogStatus.FINISHED)
-            logReport.save()
-
-            println "error 1: ${logReport.errors}, ${logReport.start}"
-
-            LogReportFile reportFile = new LogReportFile(creationDate: logReport.start, fileName: log.logFileName, logReport: logReport)
+            LogReportFile reportFile = new LogReportFile(creationDate: new Date(), fileName: log.logFileName, logReport: logReport)
+            reportFile.keyTimestamp = logReport.keyTimestamp
+            reportFile.start = start
+            reportFile.end = new Date()
+            reportFile.creationDate = new Date()
             reportFile.processedCount = processed
             reportFile.errorsCount = errors
+
+            logReport.end = new Date()
+            logReport.status = LogStatus.findByName(logStatusValue)
             logReport.addToLogFiles(reportFile)
             logReport.save()
 
-            println "error 2: ${logReport.errors}"
+            //println("errors: ${logReport.errors}")
         }
 
         output.close();
@@ -322,9 +328,9 @@ class ExportFilesService {
         if (output == null) return;
 
         def start = new Date();
-
         int processed = 0
         int errors = 0
+        def logStatusValue = LogStatus.FINISHED
 
         try {
             //Ler todas dIndividuos
@@ -368,24 +374,26 @@ class ExportFilesService {
             processed = 0
             errors = 1
             output.println(ex.toString())
+
+            logStatusValue = LogStatus.ERROR
         }
 
         LogReport.withTransaction {
             LogReport logReport = LogReport.findByReportId(logReportId)
-            logReport.start = start
-            logReport.end = new Date()
-            logReport.status = LogStatus.findByName(LogStatus.FINISHED)
-            logReport.save()
-
-            println "error 1: ${logReport.errors}, ${logReport.start}"
-
-            LogReportFile reportFile = new LogReportFile(creationDate: logReport.start, fileName: log.logFileName, logReport: logReport)
+            LogReportFile reportFile = new LogReportFile(creationDate: new Date(), fileName: log.logFileName, logReport: logReport)
+            reportFile.keyTimestamp = logReport.keyTimestamp
+            reportFile.start = start
+            reportFile.end = new Date()
+            reportFile.creationDate = new Date()
             reportFile.processedCount = processed
             reportFile.errorsCount = errors
+
+            logReport.end = new Date()
+            logReport.status = LogStatus.findByName(logStatusValue)
             logReport.addToLogFiles(reportFile)
             logReport.save()
 
-            println "error 2: ${logReport.errors}"
+            //println("errors: ${logReport.errors}")
         }
 
         output.close();
@@ -399,9 +407,9 @@ class ExportFilesService {
         if (output == null) return;
 
         def start = new Date();
-
         int processed = 0
         int errors = 0
+        def logStatusValue = LogStatus.FINISHED
 
         try {
             //Ler todas dIndividuos
@@ -449,24 +457,26 @@ class ExportFilesService {
             errors = 1
             println ""+ex.toString()
             output.println(ex.toString())
+
+            logStatusValue = LogStatus.ERROR
         }
 
         LogReport.withTransaction {
             LogReport logReport = LogReport.findByReportId(logReportId)
-            logReport.start = start
-            logReport.end = new Date()
-            logReport.status = LogStatus.findByName(LogStatus.FINISHED)
-            logReport.save()
-
-            println "error 1: ${logReport.errors}, ${logReport.start}"
-
-            LogReportFile reportFile = new LogReportFile(creationDate: logReport.start, fileName: log.logFileName, logReport: logReport)
+            LogReportFile reportFile = new LogReportFile(creationDate: new Date(), fileName: log.logFileName, logReport: logReport)
+            reportFile.keyTimestamp = logReport.keyTimestamp
+            reportFile.start = start
+            reportFile.end = new Date()
+            reportFile.creationDate = new Date()
             reportFile.processedCount = processed
             reportFile.errorsCount = errors
+
+            logReport.end = new Date()
+            logReport.status = LogStatus.findByName(logStatusValue)
             logReport.addToLogFiles(reportFile)
             logReport.save()
 
-            println "error 2: ${logReport.errors}"
+            //println("errors: ${logReport.errors}")
         }
         output.close();
 
@@ -479,9 +489,9 @@ class ExportFilesService {
         if (output == null) return;
 
         def start = new Date();
-
         int processed = 0
         int errors = 0
+        def logStatusValue = LogStatus.FINISHED
 
         try {
             //Ler todos users
@@ -536,24 +546,26 @@ class ExportFilesService {
             processed = 0
             errors = 1
             output.println(ex.toString())
+
+            logStatusValue = LogStatus.ERROR
         }
 
         LogReport.withTransaction {
             LogReport logReport = LogReport.findByReportId(logReportId)
-            logReport.start = start
-            logReport.end = new Date()
-            logReport.status = LogStatus.findByName(LogStatus.FINISHED)
-            logReport.save()
-
-            println "error 1: ${logReport.errors}, ${logReport.start}"
-
-            LogReportFile reportFile = new LogReportFile(creationDate: logReport.start, fileName: log.logFileName, logReport: logReport)
+            LogReportFile reportFile = new LogReportFile(creationDate: new Date(), fileName: log.logFileName, logReport: logReport)
+            reportFile.keyTimestamp = logReport.keyTimestamp
+            reportFile.start = start
+            reportFile.end = new Date()
+            reportFile.creationDate = new Date()
             reportFile.processedCount = processed
             reportFile.errorsCount = errors
+
+            logReport.end = new Date()
+            logReport.status = LogStatus.findByName(logStatusValue)
             logReport.addToLogFiles(reportFile)
             logReport.save()
 
-            println "error 2: ${logReport.errors}"
+            //println("errors: ${logReport.errors}")
         }
 
         output.close();
@@ -567,9 +579,9 @@ class ExportFilesService {
         if (output == null) return;
 
         def start = new Date();
-
         int processed = 0
         int errors = 0
+        def logStatusValue = LogStatus.FINISHED
 
         try {
             //Ler todos users
@@ -624,24 +636,26 @@ class ExportFilesService {
             processed = 0
             errors = 1
             output.println(ex.toString())
+
+            logStatusValue = LogStatus.ERROR
         }
 
         LogReport.withTransaction {
             LogReport logReport = LogReport.findByReportId(logReportId)
-            logReport.start = start
-            logReport.end = new Date()
-            logReport.status = LogStatus.findByName(LogStatus.FINISHED)
-            logReport.save()
-
-            println "error 1: ${logReport.errors}, ${logReport.start}"
-
-            LogReportFile reportFile = new LogReportFile(creationDate: logReport.start, fileName: log.logFileName, logReport: logReport)
+            LogReportFile reportFile = new LogReportFile(creationDate: new Date(), fileName: log.logFileName, logReport: logReport)
+            reportFile.keyTimestamp = logReport.keyTimestamp
+            reportFile.start = start
+            reportFile.end = new Date()
+            reportFile.creationDate = new Date()
             reportFile.processedCount = processed
             reportFile.errorsCount = errors
+
+            logReport.end = new Date()
+            logReport.status = LogStatus.findByName(logStatusValue)
             logReport.addToLogFiles(reportFile)
             logReport.save()
 
-            println "error 2: ${logReport.errors}"
+            //println("errors: ${logReport.errors}")
         }
 
         output.close();
@@ -655,9 +669,9 @@ class ExportFilesService {
         if (output == null) return;
 
         def start = new Date();
-
         int processed = 0
         int errors = 0
+        def logStatusValue = LogStatus.FINISHED
 
         try {
             def resultDatasets = []
@@ -711,24 +725,26 @@ class ExportFilesService {
             processed = 0
             errors = 1
             output.println(ex.toString())
+
+            logStatusValue = LogStatus.ERROR
         }
 
         LogReport.withTransaction {
             LogReport logReport = LogReport.findByReportId(logReportId)
-            logReport.start = start
-            logReport.end = new Date()
-            logReport.status = LogStatus.findByName(LogStatus.FINISHED)
-            logReport.save()
-
-            println "error 1: ${logReport.errors}, ${logReport.start}"
-
-            LogReportFile reportFile = new LogReportFile(creationDate: logReport.start, fileName: log.logFileName, logReport: logReport)
+            LogReportFile reportFile = new LogReportFile(creationDate: new Date(), fileName: log.logFileName, logReport: logReport)
+            reportFile.keyTimestamp = logReport.keyTimestamp
+            reportFile.start = start
+            reportFile.end = new Date()
+            reportFile.creationDate = new Date()
             reportFile.processedCount = processed
             reportFile.errorsCount = errors
+
+            logReport.end = new Date()
+            logReport.status = LogStatus.findByName(logStatusValue)
             logReport.addToLogFiles(reportFile)
             logReport.save()
 
-            println "error 2: ${logReport.errors}"
+            //println("errors: ${logReport.errors}")
         }
 
         output.close();
@@ -742,9 +758,9 @@ class ExportFilesService {
         if (output == null) return;
 
         def start = new Date();
-
         int processed = 0
         int errors = 0
+        def logStatusValue = LogStatus.FINISHED
 
         try {
             List<TrackingList> resultLists = []
@@ -779,24 +795,26 @@ class ExportFilesService {
             processed = 0
             errors = 1
             output.println(ex.toString())
+
+            logStatusValue = LogStatus.ERROR
         }
 
         LogReport.withTransaction {
             LogReport logReport = LogReport.findByReportId(logReportId)
-            logReport.start = start
-            logReport.end = new Date()
-            logReport.status = LogStatus.findByName(LogStatus.FINISHED)
-            logReport.save()
-
-            println "error 1: ${logReport.errors}, ${logReport.start}"
-
-            LogReportFile reportFile = new LogReportFile(creationDate: logReport.start, fileName: log.logFileName, logReport: logReport)
+            LogReportFile reportFile = new LogReportFile(creationDate: new Date(), fileName: log.logFileName, logReport: logReport)
+            reportFile.keyTimestamp = logReport.keyTimestamp
+            reportFile.start = start
+            reportFile.end = new Date()
+            reportFile.creationDate = new Date()
             reportFile.processedCount = processed
             reportFile.errorsCount = errors
+
+            logReport.end = new Date()
+            logReport.status = LogStatus.findByName(logStatusValue)
             logReport.addToLogFiles(reportFile)
             logReport.save()
 
-            println "error 2: ${logReport.errors}"
+            //println("errors: ${logReport.errors}")
         }
 
         output.close();

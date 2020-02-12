@@ -25,6 +25,7 @@ class BootStrap {
     def importDataFromOpenHDSService
     def exportFilesService
     def trackingListService
+    def testDataService
 
     def init = { servletContext ->
 
@@ -380,7 +381,7 @@ class BootStrap {
 */
 
         //Insert Tracking Lists Sample
-
+/*
         trackingListService.copySampleFilesToExternalDocsPath()
 
         def trackList1 = TrackingList.findOrCreateByCode('E01')
@@ -427,14 +428,20 @@ class BootStrap {
         println "error: ${m1.errors}"
 
         //trackList2.save()
+        */
+
+
+
     }
 
     def testApp(){
 
         //insertTestData();
 
-        String xml = trackingListService.createXMLfromFile("/home/paul/snap/tracking_list_sample_1.xlsx")
-        println(xml)
+        testDataService.repairKeyTimestamp()
+
+        //String xml = trackingListService.createXMLfromFile("/home/paul/snap/tracking_list_sample_1.xlsx")
+        //println(xml)
 
         //importDataFromOpenHDSService.importFieldWorkers(Codes.REPORT_IMPORT_FROM_OPENHDS_FIELDWORKERS)
         //importDataFromOpenHDSService.importRegions(Codes.REPORT_IMPORT_FROM_OPENHDS_HOUSEHOLDS)
