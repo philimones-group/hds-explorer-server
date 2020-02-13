@@ -4,7 +4,7 @@ hds.explorer.mail.configured: true
 hds.explorer.trackinglists.max_data_columns: 25
 
 # Access to OpenHDS Web Application
-hds.explorer.openhds_web.url: http://localhost:8080/openhds
+hds.explorer.openhds_web.url: http://localhost:8081/openhds
 hds.explorer.openhds_web.username: username
 hds.explorer.openhds_web.password: password
 
@@ -24,6 +24,15 @@ dataSources:
   openhds.username: hds_explorer
   openhds.password: your_password
   openhds.url: jdbc:mysql://localhost/openhds?autoReconnect=true&zeroDateTimeBehavior=convertToNull
+
+# Datasource properties for ODK Aggregate database - to be able to access odk tables - optional
+  openhds.pooled: true
+  openhds.driverClassName: com.mysql.jdbc.Driver
+  openhds.dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+  openhds.username: hds_explorer
+  openhds.password: your_password
+  openhds.url: jdbc:mysql://localhost/odk_prod?autoReconnect=true&zeroDateTimeBehavior=convertToNull
+
 
 # Don't forget to turn on access from a less secure app in your Gmail account configuration, otherwise, google will block it and return this error.
 #

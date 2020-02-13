@@ -127,6 +127,9 @@ dataSources:
     openhds:
         pooled: true
         dbCreate: none
+    odk:
+        pooled: true
+        dbCreate: none
 
 environments:
     development:
@@ -135,6 +138,8 @@ environments:
                 dbCreate: update
             openhds:
                 dbCreate: none
+            odk:
+              dbCreate: none
     test:
         dataSources:
             dataSource:
@@ -142,6 +147,8 @@ environments:
                 url: jdbc:h2:mem:testDb;MVCC=TRUE;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=FALSE
             openhds:
                 dbCreate: none
+            odk:
+              dbCreate: none
     production:
         dataSources:
             dataSource:
@@ -186,3 +193,24 @@ environments:
                     testOnReturn: false
                     jdbcInterceptors: ConnectionState
                     defaultTransactionIsolation: 2 # TRANSACTION_READ_COMMITTED
+            odk:  # this datasource is optional
+              dbCreate: none
+              polled: true
+              properties:
+                jmxEnabled: true
+                initialSize: 5
+                maxActive: 50
+                minIdle: 5
+                maxIdle: 50
+                maxWait: 10000
+                maxAge: 600000
+                timeBetweenEvictionRunsMillis: 1800000
+                minEvictableIdleTimeMillis: 1800000
+                validationQuery: SELECT 1
+                validationQueryTimeout: 3
+                validationInterval: 15000
+                testOnBorrow: true
+                testWhileIdle: true
+                testOnReturn: false
+                jdbcInterceptors: ConnectionState
+                defaultTransactionIsolation: 2 # TRANSACTION_READ_COMMITTED
