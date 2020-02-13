@@ -26,12 +26,12 @@ dataSources:
   openhds.url: jdbc:mysql://localhost/openhds?autoReconnect=true&zeroDateTimeBehavior=convertToNull
 
 # Datasource properties for ODK Aggregate database - to be able to access odk tables - optional
-  openhds.pooled: true
-  openhds.driverClassName: com.mysql.jdbc.Driver
-  openhds.dialect: org.hibernate.dialect.MySQL5InnoDBDialect
-  openhds.username: hds_explorer
-  openhds.password: your_password
-  openhds.url: jdbc:mysql://localhost/odk_prod?autoReconnect=true&zeroDateTimeBehavior=convertToNull
+  odk.pooled: true
+  odk.driverClassName: com.mysql.jdbc.Driver
+  odk.dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+  odk.username: hds_explorer
+  odk.password: your_password
+  odk.url: jdbc:mysql://localhost/odk_prod?autoReconnect=true&zeroDateTimeBehavior=convertToNull
 
 
 # Don't forget to turn on access from a less secure app in your Gmail account configuration, otherwise, google will block it and return this error.
