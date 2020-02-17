@@ -60,6 +60,7 @@
                 </bi:dropmenu>
                 <bi:dropmenu label="${g.message(code: 'default.menu.sync.label')}">
                     <bi:menu label="${g.message(code: 'default.menu.sync.import_openhds.label')}" link="${createLink(controller: 'importOpenHDS', action: 'index')}" />
+                    <bi:menu label="${g.message(code: 'default.menu.sync.syncdss.label')}" link="${createLink(controller: 'dssSynchronization', action: 'index')}" />
                     <bi:menu label="${g.message(code: 'default.menu.sync.import_xls')}" link="#" />
                     <bi:menu label="${g.message(code: 'default.menu.sync.export.label')}"  link="${createLink(controller: 'exportFiles', action: 'index')}" />
                 </bi:dropmenu>

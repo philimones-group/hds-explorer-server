@@ -2,7 +2,9 @@ package net.betainteractive.utilities;
 
 import java.text.Normalizer;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.regex.Pattern;
 
 /**
@@ -50,6 +52,10 @@ public class StringUtil {
         return time;
     }
 
+    public static String getTimeStr(){
+        return new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss").format(new Date());
+    }
+
     public static String removeAcentuation(String text) {
 
         String converted = Normalizer.normalize(text, Normalizer.Form.NFD);
@@ -61,6 +67,22 @@ public class StringUtil {
     public static String removeLetters(String text){
         String converted = text.replaceAll("[^\\d.,]", "");
         return converted;
+    }
+
+    public static String remove(String allText, String[] textsToRemove){
+        for (String t : textsToRemove){
+            allText = allText.replace(t, "");
+        }
+
+        return allText;
+    }
+
+    public static String remove(String allText, List<String> textsToRemove){
+        for (String t : textsToRemove){
+            allText = allText.replace(t, "");
+        }
+
+        return allText;
     }
 
     public static String getStringValueOrZero(String text){
@@ -392,6 +414,23 @@ public class StringUtil {
         return names;
     }
 
+    public static Name splitName(String fullName){
+        fullName = fullName.trim();
+        int index = fullName.lastIndexOf(" ");
+
+        Name name = new Name();
+
+        if (index != -1){
+            name.firstName = fullName.substring(0, index);
+            name.lastName = fullName.substring(index+1);
+        }else{
+            name.firstName = fullName;
+            name.lastName = "";
+        }
+
+        return name;
+    }
+
     public static String capitalize(String text) {
         try {
             text = text.substring(0,1).toUpperCase() + text.toLowerCase().substring(1);
@@ -475,6 +514,35 @@ public class StringUtil {
 
     public static interface StringConverter {
         public String convert(String value);
+    }
+
+    public static class Name {
+        private String firstName;
+        private String lastName;
+
+        public Name() {
+        }
+
+        public Name(String firstName, String lastName) {
+            this.firstName = firstName;
+            this.lastName = lastName;
+        }
+
+        public String getFirstName() {
+            return firstName;
+        }
+
+        public void setFirstName(String firstName) {
+            this.firstName = firstName;
+        }
+
+        public String getLastName() {
+            return lastName;
+        }
+
+        public void setLastName(String lastName) {
+            this.lastName = lastName;
+        }
     }
 
 }

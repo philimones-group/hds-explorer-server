@@ -9,12 +9,8 @@ import org.philimone.hds.explorer.server.Codes
 import org.philimone.hds.explorer.server.model.logs.LogGroup
 import org.philimone.hds.explorer.server.model.logs.LogReport
 import org.philimone.hds.explorer.server.model.logs.LogStatus
-import org.philimone.hds.explorer.server.model.main.Form
-import org.philimone.hds.explorer.server.model.main.FormMapping
 import org.philimone.hds.explorer.server.model.main.MappingFormatType
 import org.philimone.hds.explorer.server.model.main.StudyModule
-import org.philimone.hds.explorer.server.model.main.TrackingList
-import org.philimone.hds.explorer.server.model.main.TrackingListMapping
 import org.philimone.hds.explorer.server.model.settings.ApplicationParam
 
 class BootStrap {
@@ -112,6 +108,7 @@ class BootStrap {
             new SecurityMap(url: "/exportFiles/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
             new SecurityMap(url: "/generalUtilities/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
             new SecurityMap(url: "/importOpenHDS/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
+            new SecurityMap(url: "/dssSynchronization/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
             new SecurityMap(url: "/studyModule/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
             new SecurityMap(url: "/form/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
             new SecurityMap(url: "/formMapping/*/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
@@ -183,10 +180,11 @@ class BootStrap {
         }
 
         //Inserting Log Groups
-        new LogGroup(groupId: Codes.GROUP_IMPORT_DATA_OPENHDS,   name: "OPENHDS",    description: "").save(flush: true)
-        new LogGroup(groupId: Codes.GROUP_IMPORT_DATA_XLSHDS,    name: "XLSHDS",     description: "").save(flush: true)
-        new LogGroup(groupId: Codes.GROUP_UPLOAD_TRACKING_LISTS, name: "TRACKLISTS", description: "").save(flush: true)
-        new LogGroup(groupId: Codes.GROUP_GENERATE_FILES,        name: "GENFILES",   description: "").save(flush: true)
+        new LogGroup(groupId: Codes.GROUP_IMPORT_DATA_OPENHDS,       name: "OPENHDS",    description: "").save(flush: true)
+        new LogGroup(groupId: Codes.GROUP_IMPORT_DATA_XLSHDS,        name: "XLSHDS",     description: "").save(flush: true)
+        new LogGroup(groupId: Codes.GROUP_UPLOAD_TRACKING_LISTS,     name: "TRACKLISTS", description: "").save(flush: true)
+        new LogGroup(groupId: Codes.GROUP_GENERATE_FILES,            name: "GENFILES",   description: "").save(flush: true)
+        new LogGroup(groupId: Codes.GROUP_SYNC_DSS_DATA_FROM_CLIENT, name: "SYNCDSS",    description: "").save(flush: true)
 
 
         //Inserting Log Reports
@@ -250,6 +248,14 @@ class BootStrap {
                 group: LogGroup.findByGroupId(Codes.GROUP_UPLOAD_TRACKING_LISTS),
                 status: LogStatus.findByName(LogStatus.NOT_STARTED),
                 description: 'logreport.upload.trackinglists.with_extradata.label'
+        ).save(flush: true)
+
+        /* Group Sync DSS Data from Client (odk, etc) */
+        new LogReport(
+                reportId: Codes.REPORT_DSS_ODK_CENSUS_SYNC,
+                group: LogGroup.findByGroupId(Codes.GROUP_SYNC_DSS_DATA_FROM_CLIENT),
+                status: LogStatus.findByName(LogStatus.NOT_STARTED),
+                description: 'logreport.sync.syncdss.odk.census.label'
         ).save(flush: true)
 
         /* Group Generate Files */
@@ -438,7 +444,7 @@ class BootStrap {
 
         //insertTestData();
 
-        testDataService.repairKeyTimestamp()
+        //testDataService.repairKeyTimestamp()
 
         //String xml = trackingListService.createXMLfromFile("/home/paul/snap/tracking_list_sample_1.xlsx")
         //println(xml)
@@ -480,7 +486,40 @@ class BootStrap {
             }
         }
 */
+/*
+        def webAccess = new WebApiAccess("http://localhost:8081/openhds2/api/rest/", "admin", "Simple123!")
 
+        def individual = new org.philimone.hds.explorer.server.openhds.xml.model.Individual();
+
+        individual.setCollectedBy("UNK");
+        individual.setExtId("MHD000001999"); //MHD000001001
+        individual.setDob(new Date());
+        individual.setFirstName("X-47X-47-X47");
+        individual.setLastName("4747-4646-47");
+        //individual.setMiddleName(womenRelation);
+        individual.setGender("M");
+        individual.setFather("UNK");
+        individual.setMother("UNK");
+
+        WebApiAccess.Response result = webAccess.send("individual", individual);
+
+        if (result.getStatus()=="ErrorIO"){
+            System.out.println("\nErrorIO: ");
+            System.out.println(result.getBodyText());
+
+            System.out.println("ErrorIO: \n");
+            System.out.println(result.getBodyText());
+
+            return;
+        }
+
+        if (!result.getStatus().toString().contains("201 Created")){
+            System.out.println(""+result.getStatus());
+            System.out.println(result.getBodyText()+"\n");
+        }
+
+        System.out.println(" ["+result.getStatus()+"]");
+*/
 
         assert 1==0
 

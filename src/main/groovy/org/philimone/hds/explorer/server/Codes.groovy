@@ -9,6 +9,8 @@ class Codes {
     static final int GROUP_IMPORT_DATA_XLSHDS = 2 /* Import Data from HDS-XLS files - excel files with HDS DataSet */
     static final int GROUP_UPLOAD_TRACKING_LISTS = 3
     static final int GROUP_GENERATE_FILES = 4
+    static final int GROUP_SYNC_DSS_DATA_FROM_CLIENT = 5
+
 
 
     /*Codes for events of Data Import from OpenHDS */
@@ -28,6 +30,8 @@ class Codes {
     static final int REPORT_UPLOAD_TRACKING_LISTS_BASIC = 30
     static final int REPORT_UPLOAD_TRACKING_LISTS_W_EXTRA_DATA = 31
 
+    /*Codes for events that export data to OpenHDS or HDS Explorer from ODK*/
+    static final int REPORT_DSS_ODK_CENSUS_SYNC = 40
 
     /*Codes for events of Generating ZIP XML Files */
     static final int REPORT_GENERATE_USERS_ZIP_XML_FILES = 50

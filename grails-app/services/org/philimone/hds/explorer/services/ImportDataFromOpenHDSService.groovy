@@ -44,6 +44,7 @@ class ImportDataFromOpenHDSService {
         if (output == null) return;
         int processed = 0
         int errors = 0
+        def start = new Date()
         def logStatusValue = LogStatus.FINISHED
 
         def locationHiearachies = []
