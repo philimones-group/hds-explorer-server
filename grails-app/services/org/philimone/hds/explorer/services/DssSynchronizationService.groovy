@@ -293,6 +293,7 @@ class DssSynchronizationService {
 
                         def msg = "${error_msg}\nError Details:\n${result.getBodyText()}\n"
                         println msg
+                        output.println msg
 
                         //def msg = "Expected Error -> (Visit Id = ${xml.extId})\nDetails: ${result.getBodyText()}"
                         //println msg
