@@ -1,0 +1,11 @@
+Creating i18n Messages Command
+
+1. Creation
+grails create-command messages
+
+2. How to use
+grails run-command messages [LANGUAGE] [Domain Class]
+
+messages       = is the script/command that generates the messages
+[LANGUAGE]     = is the language with which messages will be generated. Eg: [en, pt]
+[Domain Class] = the domain class name with package included: Eg: [org.philimone.hds.explorer.authentication.User]
