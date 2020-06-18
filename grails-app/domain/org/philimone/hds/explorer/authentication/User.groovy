@@ -40,6 +40,10 @@ class User implements Serializable {
         return StringUtil.getFullname(firstName, "", lastName)
     }
 
+    String getFullname(){
+        return StringUtil.getFullname(firstName, "", lastName)
+    }
+
     Set<Role> getAuthorities() {
         (UserRole.findAllByUser(this) as List<UserRole>)*.role as Set<Role>
     }
@@ -63,7 +67,7 @@ class User implements Serializable {
         return mds
     }
 
-    static transients = ['isPasswordEncoded']
+    static transients = ['isPasswordEncoded', 'getFullname']
 
     static constraints = {
 
@@ -71,7 +75,7 @@ class User implements Serializable {
         lastName blank: false
         password nullable: false, blank: false, password: true
         username nullable: false, blank: false, unique: true
-        email blank: true, nullable: true
+        email blank: true, nullable: true, unique: true
 
 
         passwordExpired()
