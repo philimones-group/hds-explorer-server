@@ -33,7 +33,6 @@
                     <f:field bean="user" property="firstName" />
                     <f:field bean="user" property="lastName" />
                     <f:field bean="user" property="username" />
-                    <f:field bean="user" property="password" />
                     <f:field bean="user" property="email"/>
 
                     <f:field bean="user" property="modules" input-domainList="${org.philimone.hds.explorer.server.model.main.StudyModule.list()}">
@@ -48,6 +47,7 @@
                 </fieldset>
                 <fieldset class="buttons">
                     <input class="save" type="submit" value="${message(code: 'default.button.update.label', default: 'Update')}" />
+                    <g:link class="edit" action="changePassword" resource="${this.user}"><g:message code="user.changePassword.label" /></g:link>
                 </fieldset>
             </g:form>
         </div>

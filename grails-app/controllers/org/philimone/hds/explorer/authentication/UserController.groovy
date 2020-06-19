@@ -49,6 +49,10 @@ class UserController {
         respond userService.get(id)
     }
 
+    def changePassword(Long id){
+        respond userService.get(id)
+    }
+
     def update(User user) {
         if (user == null) {
             notFound()
@@ -69,6 +73,47 @@ class UserController {
             }
             '*'{ respond user, [status: OK] }
         }
+    }
+
+    def updatePassword(User user){
+
+        def newPassword = params.newPassword
+        def confirmPassword = params.confirmPassword
+
+        //check if password is equal to old password
+        if (userService.passwordEquals(user, newPassword)){
+            //same password
+
+            flash.message = message(code: 'user.password.used.recently')
+            respond user, view: "changePassword"
+            return
+        }
+
+        //check if password 1 is equal to password 2
+        if (!newPassword.equals(confirmPassword)){
+            //not equal
+
+            flash.message = message(code: 'user.passwords.dont.match')
+            respond user, view: "changePassword"
+            return
+        }
+
+
+        try {
+            userService.updatePassword(user, newPassword)
+        } catch (ValidationException e) {
+            respond user.errors, view:'changePassword'
+            return
+        }
+
+        request.withFormat {
+            form multipartForm {
+                flash.message = message(code: 'user.password.updated.label')
+                redirect user
+            }
+            '*'{ respond user, [status: OK] }
+        }
+
     }
 
     def delete(Long id) {

@@ -10,6 +10,7 @@ import org.philimone.hds.explorer.services.GeneralUtilitiesService
 class UserService {
 
     def GeneralUtilitiesService generalUtilitiesService
+    def springSecurityService
 
     LinkGenerator grailsLinkGenerator
 
@@ -34,7 +35,7 @@ class UserService {
 
         svc.sendTextEmail(user.email,
                 svc.getMessage("default.mail.user.subject.created", ""),
-                svc.getMessage("default.mail.user.message.created", [ url, username, password ] as String[] , "") )
+                svc.getMessage("default.mail.user.message.updated_password", [ url, username, password ] as String[] , "") )
 
         //println "error ${result.errors}"
         result
@@ -46,8 +47,40 @@ class UserService {
         user.updatedDate = new Date()
 
         user.save(flush: true)
-
         //println "error ${user.errors}"
+    }
+
+    def User updatePassword(User user, String newPassword){
+
+        //timestamp
+        user.password = newPassword
+        user.updatedBy = generalUtilitiesService.currentUser()
+        user.updatedDate = new Date()
+
+        def result = user.save(flush: true)
+
+        //CONTINUE TOMORROW
+        def svc = generalUtilitiesService
+
+        def url = grailsLinkGenerator.serverBaseURL
+
+        svc.sendTextEmail(user.email,
+                svc.getMessage("default.mail.user.subject.updated_password", ""),
+                svc.getMessage("default.mail.user.message.updated_password", [ url, user.username, newPassword ] as String[] , "") )
+
+
+        return result
+    }
+
+    boolean passwordEquals(User user, String newPassword){
+
+        def pe = springSecurityService.passwordEncoder
+
+        return pe.isPasswordValid(user.password, newPassword, null)
+    }
+
+    String encodePassword(String password) {
+        springSecurityService.encodePassword(password, "8")
     }
 
     User get(Serializable id){
