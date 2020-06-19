@@ -8,6 +8,9 @@
 		<g:set var="entityName" value="${message(code: 'logReport.label', default: 'LogReport')}" />
 
 		<title><g:message code="default.show.label" args="[entityName]" /></title>
+
+		<dt:defaultResources />
+
 	</head>
 	<body>
 		<a href="#show-logReport" class="skip" tabindex="-1"><g:message code="default.link.skip.label" default="Skip to content&hellip;"/></a>
@@ -76,12 +79,9 @@
 
 				<g:if test="${logReportInstance?.logFiles}">
 
-
-				<li class="fieldcontain">
-
 					<g:set var="keyGroup" value="${ (logReportInstance.keyTimestamp!=null) ? logReportInstance.keyTimestamp : "" }" />
 
-					<table>
+					<table id="reportsTable" class="display nowrap compact cell-border" style="width:100%" cellpadding="0">
 						<thead>
 						<tr>
 							<g:sortableColumn property="fileName" title="${message(code: 'logReportFile.fileName.label', default: 'File Name')}" />
@@ -101,11 +101,18 @@
 						<tbody>
 						<g:each in="${logFiles}" status="i" var="logFileInstance">
 
+
 							<g:if test="${logFileInstance.keyTimestamp != keyGroup}">
 								<tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
 									<td><b>Synched on: ${logFileInstance.start}</b></td>
+									<td></td>
+									<td></td>
+									<td></td>
+									<td></td>
+									<td></td>
 								</tr>
 							</g:if>
+
 
 							<g:set var="keyGroup" value="${ logFileInstance.keyTimestamp }" />
 
@@ -128,8 +135,7 @@
 						</g:each>
 						</tbody>
 					</table>
-					
-				</li>
+
 				</g:if>
 			
 			</ol>
@@ -139,5 +145,8 @@
 				</fieldset>
 			</g:form>
 		</div>
+
+		<dt:loadDatatable name="reportsTable" nosort="true" />
+
 	</body>
 </html>

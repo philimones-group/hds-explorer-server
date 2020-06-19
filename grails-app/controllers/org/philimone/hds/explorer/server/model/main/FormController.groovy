@@ -23,13 +23,13 @@ class FormController {
         List<Form> list = null
 
         if (module != null){
-            list = Form.createCriteria().list(params){
+            list = Form.createCriteria().list(){ //Form.createCriteria().list(params){
                 modules{
                     eq('id', module.id)
                 }
             }
         }else{
-            list = Form.list(params)
+            list = Form.list() //Form.list(params)
         }
 
 

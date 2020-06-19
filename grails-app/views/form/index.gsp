@@ -7,6 +7,9 @@
 		<meta name="layout" content="main">
 		<g:set var="entityName" value="${message(code: 'form.label', default: 'Form')}" />
 		<title><g:message code="default.list.label" args="[entityName]" /></title>
+
+		<dt:defaultResources />
+
 	</head>
 	<body>
 		<a href="#list-form" class="skip" tabindex="-1"><g:message code="default.link.skip.label" default="Skip to content&hellip;"/></a>
@@ -41,7 +44,7 @@
 
 			<br>
 
-			<table>
+			<table id="formsTable" class="display nowrap compact cell-border" style="width:99%" cellpadding="0">
 			<thead>
 					<tr>
 					
@@ -87,11 +90,17 @@
 				</g:each>
 				</tbody>
 			</table>
+
+			<!--
 			<div class="pagination">
 				<g:paginate total="${formCount}" id="${currentModule}"  />
 			</div>
+			-->
 
 			</g:form>
 		</div>
+
+		<dt:loadDatatable name="formsTable" />
+
 	</body>
 </html>
