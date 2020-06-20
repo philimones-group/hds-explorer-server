@@ -44,6 +44,13 @@
                     <f:field bean="user" property="passwordExpired" />
                     <f:field bean="user" property="enabled" />
 
+                    <div class="fieldcontain ${hasErrors(bean: this.user, field: 'authorities', 'error')} ">
+                        <label for="roles">
+                            <g:message code="user.authorities.label" />
+                        </label>
+                        <g:select name="roles.id" id="roles.id" multiple="multiple" optionKey="id" from="${org.philimone.hds.explorer.authentication.Role.list()}" value="${userRoles}" />
+                    </div>
+
                 </fieldset>
                 <fieldset class="buttons">
                     <input class="save" type="submit" value="${message(code: 'default.button.update.label', default: 'Update')}" />

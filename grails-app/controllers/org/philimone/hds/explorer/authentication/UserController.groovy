@@ -29,8 +29,12 @@ class UserController {
             return
         }
 
+        def userRoles = Role.getAll(params.list("roles.id"))
+        params.remove("roles.id")
+
         try {
             userService.addUser(user)
+            UserRole.create(user, userRoles, true)
         } catch (ValidationException e) {
             respond user.errors, view:'create'
             return
@@ -46,7 +50,10 @@ class UserController {
     }
 
     def edit(Long id) {
-        respond userService.get(id)
+        def user = userService.get(id)
+        def userRoles = user.authorities.asList()
+
+        respond user, model: [userRoles: userRoles]
     }
 
     def changePassword(Long id){
@@ -59,12 +66,20 @@ class UserController {
             return
         }
 
+        def userRoles = Role.getAll(params.list("roles.id")) //selected roles
+
         try {
             userService.updateUser(user)
         } catch (ValidationException e) {
-            respond user.errors, view:'edit'
+            respond user.errors, view:'edit', model: [userRoles: userRoles]
             return
         }
+
+        println "${userRoles}"
+
+        //update user roles
+        UserRole.removeAll(user)
+        UserRole.create(user, userRoles, true)
 
         request.withFormat {
             form multipartForm {

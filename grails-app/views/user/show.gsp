@@ -78,18 +78,6 @@
                     </li>
                 </g:if>
 
-                <g:if test="${this.user?.modules}">
-                    <li class="fieldcontain">
-                        <span id="modules-label" class="property-label">
-                            <g:message code="user.modules.label" default="Modules" />
-                        </span>
-                        <span class="property-value" aria-labelledby="modules-label">
-                            <g:fieldValue bean="${this.user}" field="modules" />
-                        </span>
-                    </li>
-                </g:if>
-
-
                     <li class="fieldcontain">
                         <span id="passwordExpired-label" class="property-label">
                             <g:message code="user.passwordExpired.label" default="Password Expired" />
@@ -127,6 +115,27 @@
                         </span>
                     </li>
 
+                <g:if test="${this.user?.modules}">
+                    <li class="fieldcontain">
+                        <span id="modules-label" class="property-label">
+                            <g:message code="user.modules.label" default="Modules" />
+                        </span>
+                        <span class="property-value" aria-labelledby="modules-label">
+                            <g:fieldValue bean="${this.user}" field="modules" />
+                        </span>
+                    </li>
+                </g:if>
+
+                <g:if test="${this.user?.authorities}">
+                    <li class="fieldcontain">
+                        <span id="authorities-label" class="property-label">
+                            <g:message code="user.authorities.label" />
+                        </span>
+                        <span class="property-value" aria-labelledby="authorities-label">
+                            <g:fieldValue bean="${this.user}" field="authoritiesText" />
+                        </span>
+                    </li>
+                </g:if>
 
                 <g:if test="${this.user?.createdBy}">
                     <li class="fieldcontain">

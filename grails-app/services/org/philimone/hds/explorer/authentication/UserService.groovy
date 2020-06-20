@@ -96,7 +96,18 @@ class UserService {
     }
 
     void delete(Serializable id){
-        User.get(id).delete()
+
+        //remove all the roles first - we dont delete users, just lock and disable
+
+        def user = User.get(id)
+        user.accountLocked = true
+        user.accountLocked = true
+        user.enabled = true
+
+        //User.get(id).delete()
+
+        user.save(flush: true)
+
     }
 
 
