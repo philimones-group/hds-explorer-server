@@ -3,7 +3,7 @@ package org.philimone.hds.explorer.controllers
 import grails.testing.web.controllers.ControllerUnitTest
 import spock.lang.Specification
 
-class ExportFilesControllerSpec extends Specification implements ControllerUnitTest<ExportFilesController> {
+class SyncFilesControllerSpec extends Specification implements ControllerUnitTest<SyncFilesController> {
 
     def setup() {
     }

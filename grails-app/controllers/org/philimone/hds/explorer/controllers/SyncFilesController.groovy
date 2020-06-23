@@ -9,11 +9,11 @@ import org.philimone.hds.explorer.server.model.main.DataSet
 /**
  * This controller exposes the generated XML/Zip files to be downloaded and controls the export views tasks
  */
-class ExportFilesController {
+class SyncFilesController {
 
     static responseFormats = ['xml']
 
-    def exportFilesService
+    def syncFilesService
 
     def households = {
         def file = new File(SystemPath.getGeneratedFilesPath() + File.separator + "households.xml")
@@ -178,7 +178,7 @@ class ExportFilesController {
                 @Override
                 void run() {
                     println "executing export files to user xml/zip"
-                    exportFilesService.generateUsersXML(id)
+                    syncFilesService.generateUsersXML(id)
                 }
             }).start()
         }
@@ -188,7 +188,7 @@ class ExportFilesController {
                 @Override
                 void run() {
                     println "executing export files to households xml/zip"
-                    exportFilesService.generateHouseHoldsXML(id)
+                    syncFilesService.generateHouseHoldsXML(id)
                 }
             }).start()
         }
@@ -198,7 +198,7 @@ class ExportFilesController {
                 @Override
                 void run() {
                     println "executing export files to members xml/zip"
-                    exportFilesService.generateMembersXML(id)
+                    syncFilesService.generateMembersXML(id)
                 }
             }).start()
         }
@@ -208,7 +208,7 @@ class ExportFilesController {
                 @Override
                 void run() {
                     println "executing export files to individuals xml/zip"
-                    exportFilesService.generateSettingsXML(id)
+                    syncFilesService.generateSettingsXML(id)
                 }
             }).start()
         }
@@ -218,7 +218,7 @@ class ExportFilesController {
                 @Override
                 void run() {
                     println "executing export files to tracking lists xml/zip"
-                    exportFilesService.generateTrackingListsXML(id)
+                    syncFilesService.generateTrackingListsXML(id)
                 }
             }).start()
         }

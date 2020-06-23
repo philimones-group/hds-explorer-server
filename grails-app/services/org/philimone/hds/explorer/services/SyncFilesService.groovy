@@ -34,7 +34,7 @@ import javax.xml.transform.stream.StreamResult
  *  Responsible for generating XML/Zip Files to be exported - eg. Households, Members, Users...
  */
 @Transactional
-class ExportFilesService {
+class SyncFilesService {
 
     def generalUtilitiesService
     def trackingListService

@@ -46,7 +46,7 @@
 						<td><g:message code="${logReport.status}" default="${logReport.status}" /></td>
 
 						<td>
-							<g:link class="edit" controller="exportFiles" action="export" id="${logReport.id}">
+							<g:link class="edit" controller="syncFiles" action="export" id="${logReport.id}">
 								<g:message code="default.execute.label" default="Execute" />
 							</g:link>
 						</td>

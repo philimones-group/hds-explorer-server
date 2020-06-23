@@ -19,7 +19,7 @@ class BootStrap {
     def userService
     def applicationParamService
     def importDataFromOpenHDSService
-    def exportFilesService
+    def syncFilesService
     def trackingListService
     def testDataService
 
@@ -105,7 +105,7 @@ class BootStrap {
             new SecurityMap(url: "/user/*/**", configAttribute: "${Role.ROLE_ADMINISTRATOR}").save(flush: true)
 
 
-            new SecurityMap(url: "/exportFiles/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
+            new SecurityMap(url: "/syncFiles/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
             new SecurityMap(url: "/generalUtilities/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
             new SecurityMap(url: "/importOpenHDS/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
             new SecurityMap(url: "/dssSynchronization/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
@@ -141,7 +141,7 @@ class BootStrap {
 
             //File downloads
             new SecurityMap(url: "/download/free/android/apk", configAttribute: "permitAll").save(flush: true)
-            new SecurityMap(url: "/exportFiles/downloadAndroidApk", configAttribute: "permitAll").save(flush: true)
+            new SecurityMap(url: "/syncFiles/downloadAndroidApk", configAttribute: "permitAll").save(flush: true)
 
 
         }

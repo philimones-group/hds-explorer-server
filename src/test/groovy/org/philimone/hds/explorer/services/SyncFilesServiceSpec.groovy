@@ -3,7 +3,7 @@ package org.philimone.hds.explorer.services
 import grails.testing.services.ServiceUnitTest
 import spock.lang.Specification
 
-class ExportFilesServiceSpec extends Specification implements ServiceUnitTest<ExportFilesService>{
+class SyncFilesServiceSpec extends Specification implements ServiceUnitTest<SyncFilesService>{
 
     def setup() {
     }

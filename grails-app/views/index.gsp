@@ -25,7 +25,7 @@
                 <h2>Philimone's Group News:</h2>
                 <ul>
                     <li class="controller"> <g:link url="https://bitbucket.com/HDSExplorer">HDS Explorer Public repository (soon)</g:link></li>
-                    <li class="controller"> <g:link controller="exportFiles" action="downloadAndroidApk">Download HDS-Explorer for Android (APK)</g:link></li>
+                    <li class="controller"> <g:link controller="syncFiles" action="downloadAndroidApk">Download HDS-Explorer for Android (APK)</g:link></li>
                 </ul>
             </div>
 
