@@ -14,6 +14,7 @@ class SyncFilesController {
     static responseFormats = ['xml']
 
     def syncFilesService
+    def syncFilesReportService
 
     def households = {
         def file = new File(SystemPath.getGeneratedFilesPath() + File.separator + "households.xml")
@@ -81,64 +82,122 @@ class SyncFilesController {
 
     def householdsZip = {
         def file = new File(SystemPath.getGeneratedFilesPath() + File.separator + "households.zip")
-        render file: file, fileName: "households.zip"
+        //render file: file, fileName: "households.zip"
+
+        response.setContentLengthLong(file.size())
+        response.setContentType("application/zip")
+        response.outputStream << file.bytes
     }
 
     def membersZip = {
         def file = new File(SystemPath.getGeneratedFilesPath() + File.separator + "members.zip")
-        render file: file, fileName: "members.zip"
+        //render file: file, fileName: "members.zip"
+
+        response.setContentLengthLong(file.size())
+        response.setContentType("application/zip")
+        response.outputStream << file.bytes
     }
 
     def settingsZip = {
         def file = new File(SystemPath.getGeneratedFilesPath() + File.separator + "settings.zip")
-        render file: file, fileName: "settings.zip"
+        //render file: file, fileName: "settings.zip"
+
+        response.setContentLengthLong(file.size())
+        response.setContentType("application/zip")
+        response.outputStream << file.bytes
     }
 
     def modulesZip = {
         def file = new File(SystemPath.getGeneratedFilesPath() + File.separator + "modules.zip")
-        render file: file, fileName: "modules.zip"
+        //render file: file, fileName: "modules.zip"
+
+        response.setContentLengthLong(file.size())
+        response.setContentType("application/zip")
+        response.outputStream << file.bytes
     }
 
     def formsZip = {
         def file = new File(SystemPath.getGeneratedFilesPath() + File.separator + "forms.zip")
-        render file: file, fileName: "forms.zip"
+        //render file: file, fileName: "forms.zip"
+
+        response.setContentLengthLong(file.size())
+        response.setContentType("application/zip")
+        response.outputStream << file.bytes
     }
 
     def usersZip = {
         def file = new File(SystemPath.getGeneratedFilesPath() + File.separator + "users.zip")
-        render file: file, fileName: "users.zip"
+        //render file: file, fileName: "users.zip"
+
+        response.setContentLengthLong(file.size())
+        response.setContentType("application/zip")
+        response.outputStream << file.bytes
     }
 
     def trackinglistsZip = {
         def file = new File(SystemPath.getGeneratedFilesPath() + File.separator + "trackinglists.zip")
-        render file: file, fileName: "trackinglists.zip"
+        //render file: file, fileName: "trackinglists.zip"
+
+        response.setContentLengthLong(file.size())
+        response.setContentType("application/zip")
+        response.outputStream << file.bytes
     }
 
     def statsZip = {
         def file = new File(SystemPath.getGeneratedFilesPath() + File.separator + "stats.zip")
-        render file: file, fileName: "stats.zip"
+        //render file: file, fileName: "stats.zip"
+
+        response.setContentLengthLong(file.size())
+        response.setContentType("application/zip")
+        response.outputStream << file.bytes
     }
 
     def appParamsZip = {
         def file = new File(SystemPath.getGeneratedFilesPath() + File.separator + "params.zip")
-        render file: file, fileName: "params.zip"
+        //render file: file, fileName: "params.zip"
+
+        response.setContentLengthLong(file.size())
+        response.setContentType("application/zip")
+        response.outputStream << file.bytes
     }
 
     def regionsZip = {
         def file = new File(SystemPath.getGeneratedFilesPath() + File.separator + "regions.zip")
-        render file: file, fileName: "regions.zip"
+        //render file: file, fileName: "regions.zip"
+
+        response.setContentLengthLong(file.size())
+        response.setContentType("application/zip")
+        response.outputStream << file.bytes
     }
 
     def datasetsZip = {
         def file = new File(SystemPath.getGeneratedFilesPath() + File.separator + "datasets.zip")
-        render file: file, fileName: "datasets.zip"
+        //render file: file, fileName: "datasets.zip"
+
+        response.setContentLengthLong(file.size())
+        response.setContentType("application/zip")
+        response.outputStream << file.bytes
     }
 
     def datasetZip(long id){
         def dataset = DataSet.get(id)
 
         def file = new File(dataset.compressedFilename)
-        render file: file, fileName: file.name
+        //render file: file, fileName: file.name
+
+        response.setContentLengthLong(file.size())
+        response.setContentType("application/zip")
+        response.outputStream << file.bytes
+    }
+
+    def syncFilesReport(int id){
+        def report = syncFilesReportService.get(id)
+
+        if (report == null){
+            render -1
+        } else {
+            render report.records
+        }
     }
 
     /**

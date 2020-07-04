@@ -1,9 +1,9 @@
 package org.philimone.hds.explorer
 
-import org.philimone.hds.explorer.authentication.Role
-import org.philimone.hds.explorer.authentication.SecurityMap
-import org.philimone.hds.explorer.authentication.User
-import org.philimone.hds.explorer.authentication.UserRole
+import org.philimone.hds.explorer.server.model.authentication.Role
+import org.philimone.hds.explorer.server.model.authentication.SecurityMap
+import org.philimone.hds.explorer.server.model.authentication.User
+import org.philimone.hds.explorer.server.model.authentication.UserRole
 import org.philimone.hds.explorer.io.SystemPath
 import org.philimone.hds.explorer.server.Codes
 import org.philimone.hds.explorer.server.model.logs.LogGroup
@@ -12,6 +12,8 @@ import org.philimone.hds.explorer.server.model.logs.LogStatus
 import org.philimone.hds.explorer.server.model.main.MappingFormatType
 import org.philimone.hds.explorer.server.model.main.StudyModule
 import org.philimone.hds.explorer.server.model.settings.ApplicationParam
+import org.philimone.hds.explorer.server.model.settings.SyncEntity
+import org.philimone.hds.explorer.server.model.settings.SyncFilesReport
 
 class BootStrap {
 
@@ -106,6 +108,7 @@ class BootStrap {
 
 
             new SecurityMap(url: "/syncFiles/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
+            new SecurityMap(url: "/syncFilesReport/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
             new SecurityMap(url: "/generalUtilities/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
             new SecurityMap(url: "/importOpenHDS/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
             new SecurityMap(url: "/dssSynchronization/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
@@ -138,6 +141,8 @@ class BootStrap {
 
             new SecurityMap(url: "/api/export/datasets/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
             new SecurityMap(url: "/api/export/dataset/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
+
+            new SecurityMap(url: "/api/export/sync-report/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
 
             //File downloads
             new SecurityMap(url: "/download/free/android/apk", configAttribute: "permitAll").save(flush: true)
@@ -327,6 +332,18 @@ class BootStrap {
         //Insert Default StudyModule
         new StudyModule(code: StudyModule.DSS_SURVEY_MODULE, name: "DSS Surveillance", description: "The default module of HDS-Explorer that allows you to navigate the system").save(flush: true)
 
+
+        //Insert Sync Reports
+        new SyncFilesReport(name: SyncEntity.PARAMETERS).save(flush:true)
+        new SyncFilesReport(name: SyncEntity.MODULES).save(flush:true)
+        new SyncFilesReport(name: SyncEntity.FORMS).save(flush:true)
+        new SyncFilesReport(name: SyncEntity.DATASETS).save(flush:true)
+        new SyncFilesReport(name: SyncEntity.DATASETS_CSV_FILES).save(flush:true)
+        new SyncFilesReport(name: SyncEntity.TRACKING_LISTS).save(flush:true)
+        new SyncFilesReport(name: SyncEntity.USERS).save(flush:true)
+        new SyncFilesReport(name: SyncEntity.REGIONS).save(flush:true)
+        new SyncFilesReport(name: SyncEntity.HOUSEHOLDS).save(flush:true)
+        new SyncFilesReport(name: SyncEntity.MEMBERS).save(flush:true)
     }
 
     def insertTestData(){

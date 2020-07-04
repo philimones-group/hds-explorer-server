@@ -48,6 +48,8 @@ class UrlMappings {
         "/api/export/datasets/zip"(controller:         "syncFiles", action: "datasetsZip")
         "/api/export/dataset/zip/${id}"(controller:         "syncFiles", action: "datasetZip", id: "${id}")
 
+        "/api/export/sync-report/${id}"(controller: "syncFiles", action: "syncFilesReport", id: "${id}")
+
 
     }
 }
