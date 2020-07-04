@@ -1,9 +1,7 @@
-package org.philimone.hds.explorer.authentication
+package org.philimone.hds.explorer.server.model.authentication
 
 import grails.gorm.services.Service
-import grails.gorm.transactions.Transactional
 import grails.web.mapping.LinkGenerator
-import org.grails.web.util.WebUtils
 import org.philimone.hds.explorer.services.GeneralUtilitiesService
 
 @Service(User)

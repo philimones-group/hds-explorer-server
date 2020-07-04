@@ -2,7 +2,7 @@ package org.philimone.hds.explorer.server.model.main
 
 import grails.converters.JSON
 import grails.validation.ValidationException
-import org.philimone.hds.explorer.authentication.User
+import org.philimone.hds.explorer.server.model.authentication.User
 import org.springframework.dao.DataIntegrityViolationException
 
 import static org.springframework.http.HttpStatus.*

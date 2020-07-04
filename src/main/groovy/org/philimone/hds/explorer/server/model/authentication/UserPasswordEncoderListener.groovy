@@ -1,4 +1,4 @@
-package org.philimone.hds.explorer.authentication
+package org.philimone.hds.explorer.server.model.authentication
 
 import grails.plugin.springsecurity.SpringSecurityService
 import org.grails.datastore.mapping.engine.event.AbstractPersistenceEvent

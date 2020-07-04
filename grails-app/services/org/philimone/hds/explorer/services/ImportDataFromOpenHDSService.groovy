@@ -5,9 +5,9 @@ import groovy.time.TimeCategory
 import net.betainteractive.io.LogOutput
 import net.betainteractive.utilities.GeneralUtil
 import net.betainteractive.utilities.StringUtil
-import org.philimone.hds.explorer.authentication.Role
-import org.philimone.hds.explorer.authentication.User
-import org.philimone.hds.explorer.authentication.UserRole
+import org.philimone.hds.explorer.server.model.authentication.Role
+import org.philimone.hds.explorer.server.model.authentication.User
+import org.philimone.hds.explorer.server.model.authentication.UserRole
 import org.philimone.hds.explorer.io.SystemPath
 import org.philimone.hds.explorer.openhds.model.Death
 import org.philimone.hds.explorer.openhds.model.Fieldworker

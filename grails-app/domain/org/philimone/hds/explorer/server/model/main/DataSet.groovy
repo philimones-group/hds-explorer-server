@@ -1,6 +1,6 @@
 package org.philimone.hds.explorer.server.model.main
 
-import org.philimone.hds.explorer.authentication.User
+import org.philimone.hds.explorer.server.model.authentication.User
 
 /**
  * Represents an External DataSet that can be linked with our core domain tables (Household, Member, User)

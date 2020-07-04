@@ -4,10 +4,10 @@ grails.databinding.dateFormats = ['yyyy-MM-dd HH:mm:ss']
 grails.plugins.twitterbootstrap.fixtaglib = true
 
 // Added by the Spring Security Core plugin:
-grails.plugin.springsecurity.userLookup.userDomainClassName = 'org.philimone.hds.explorer.authentication.User'
-grails.plugin.springsecurity.userLookup.authorityJoinClassName = 'org.philimone.hds.explorer.authentication.UserRole'
-grails.plugin.springsecurity.authority.className = 'org.philimone.hds.explorer.authentication.Role'
-grails.plugin.springsecurity.requestMap.className = 'org.philimone.hds.explorer.authentication.SecurityMap'
+grails.plugin.springsecurity.userLookup.userDomainClassName = 'org.philimone.hds.explorer.server.model.authentication.User'
+grails.plugin.springsecurity.userLookup.authorityJoinClassName = 'org.philimone.hds.explorer.server.model.authentication.UserRole'
+grails.plugin.springsecurity.authority.className = 'org.philimone.hds.explorer.server.model.authentication.Role'
+grails.plugin.springsecurity.requestMap.className = 'org.philimone.hds.explorer.server.model.authentication.SecurityMap'
 grails.plugin.springsecurity.securityConfigType = 'Requestmap'
 grails.plugin.springsecurity.controllerAnnotations.staticRules = [
 	[pattern: '/',               access: ['permitAll']],
@@ -35,10 +35,10 @@ grails.plugin.springsecurity.filterChain.chainMap = [
 grails.plugin.springsecurity.password.algorithm = 'bcrypt'
 
 // Added by the Spring Security Core plugin:
-grails.plugin.springsecurity.userLookup.userDomainClassName = 'org.philimone.hds.explorer.authentication.User'
-grails.plugin.springsecurity.userLookup.authorityJoinClassName = 'org.philimone.hds.explorer.authentication.UserRole'
-grails.plugin.springsecurity.authority.className = 'org.philimone.hds.explorer.authentication.Role'
-grails.plugin.springsecurity.requestMap.className = 'org.philimone.hds.explorer.authentication.SecurityMap'
+grails.plugin.springsecurity.userLookup.userDomainClassName = 'org.philimone.hds.explorer.server.model.authentication.User'
+grails.plugin.springsecurity.userLookup.authorityJoinClassName = 'org.philimone.hds.explorer.server.model.authentication.UserRole'
+grails.plugin.springsecurity.authority.className = 'org.philimone.hds.explorer.server.model.authentication.Role'
+grails.plugin.springsecurity.requestMap.className = 'org.philimone.hds.explorer.server.model.authentication.SecurityMap'
 grails.plugin.springsecurity.securityConfigType = 'Requestmap'
 grails.plugin.springsecurity.controllerAnnotations.staticRules = [
 	[pattern: '/',               access: ['permitAll']],

@@ -1,4 +1,4 @@
-package org.philimone.hds.explorer.authentication
+package org.philimone.hds.explorer.server.model.authentication
 
 import grails.testing.mixin.integration.Integration
 import grails.gorm.transactions.Rollback

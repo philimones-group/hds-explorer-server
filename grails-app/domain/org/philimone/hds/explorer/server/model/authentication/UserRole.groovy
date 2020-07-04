@@ -1,4 +1,4 @@
-package org.philimone.hds.explorer.authentication
+package org.philimone.hds.explorer.server.model.authentication
 
 import grails.gorm.DetachedCriteria
 import groovy.transform.ToString

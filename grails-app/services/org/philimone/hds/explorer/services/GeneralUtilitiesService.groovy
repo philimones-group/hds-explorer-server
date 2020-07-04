@@ -2,8 +2,8 @@ package org.philimone.hds.explorer.services
 
 import grails.gorm.transactions.Transactional
 import net.betainteractive.io.LogOutput
-import org.philimone.hds.explorer.authentication.Notification
-import org.philimone.hds.explorer.authentication.User
+import org.philimone.hds.explorer.server.model.authentication.Notification
+import org.philimone.hds.explorer.server.model.authentication.User
 import org.springframework.context.i18n.LocaleContextHolder
 
 import java.text.SimpleDateFormat

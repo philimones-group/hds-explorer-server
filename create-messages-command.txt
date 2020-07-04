@@ -8,4 +8,4 @@ grails run-command messages [LANGUAGE] [Domain Class]
 
 messages       = is the script/command that generates the messages
 [LANGUAGE]     = is the language with which messages will be generated. Eg: [en, pt]
-[Domain Class] = the domain class name with package included: Eg: [org.philimone.hds.explorer.authentication.User]
+[Domain Class] = the domain class name with package included: Eg: [org.philimone.hds.explorer.server.model.authentication.User]

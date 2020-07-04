@@ -1,4 +1,4 @@
-package org.philimone.hds.explorer.authentication
+package org.philimone.hds.explorer.server.model.authentication
 
 /**
  * A Notification represents a message sent to a User, its part of the quick message system that keeps the Users notified about things of interest in the app
