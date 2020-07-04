@@ -34,23 +34,33 @@ class TrackingListService {
         Files.copy(file2, fileTo2 )
     }
 
-    def String createXMLfrom(List<TrackingList> lists){
+    def TrackListResult createXMLfrom(List<TrackingList> lists){
         def xml = "<trackinglists>"+"\n"
+        def count = 0
 
         lists.each {
-            xml += createXMLfromFile(it, it.filename)
+            TrackListResult result = createXMLfromFile(it, it.filename)
+            xml += result.xml
+            count += result.listCount
         }
 
         xml += "</trackinglists>"
 
-        return xml
+        def result = new TrackListResult()
+        result.xml = xml
+        result.listCount = count
+
+        return result
     }
 
-    def String createXMLfromFile(TrackingList trackingList, String xlsFile){
+    def TrackListResult createXMLfromFile(TrackingList trackingList, String xlsFile){
         return createXMLfromFile(trackingList, new File(xlsFile))
     }
 
-    def String createXMLfromFile(TrackingList trackingList, File xlsFile){
+    def TrackListResult createXMLfromFile(TrackingList trackingList, File xlsFile){
+
+        TrackListResult result = new TrackListResult()
+
         def xml = ""
 
         //OPEN FILE
@@ -66,6 +76,7 @@ class TrackingListService {
         // - verify if user exists
 
         int i = 0
+        int tlistCount=0
         String lastCode = ""
         int lastCodeCount = 0
         String lastListId = ""
@@ -134,6 +145,7 @@ class TrackingListService {
 
                     xml += "<tracking_list id=\"${i}\" code=\"${code}\" name=\"${name}\" details=\"${details}\" title=\"${title}\" module=\"${module}\">"  + "\n"
 
+                    tlistCount++
                     lastCode = code
                     lastListId = ""
                 }
@@ -176,8 +188,10 @@ class TrackingListService {
             ex.printStackTrace()
         }
 
+        result.listCount = tlistCount;
+        result.xml = xml
 
-        return xml
+        return result
     }
 
     TrackingList getFirstTrackingList(String filename){
@@ -245,5 +259,10 @@ class TrackingListService {
         DataFormatter df = new DataFormatter();
         String value = df.formatCellValue(cell);
         return value==null ? "" : value
+    }
+
+    class TrackListResult {
+        int listCount;
+        String xml;
     }
 }

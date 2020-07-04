@@ -4,7 +4,7 @@ import grails.gorm.transactions.Transactional
 import net.betainteractive.io.LogOutput
 import net.betainteractive.io.writers.ZipMaker
 import net.betainteractive.utilities.StringUtil
-import org.philimone.hds.explorer.authentication.User
+import org.philimone.hds.explorer.server.model.authentication.User
 import org.philimone.hds.explorer.io.SystemPath
 import org.philimone.hds.explorer.server.model.logs.LogReport
 import org.philimone.hds.explorer.server.model.logs.LogReportFile
@@ -20,6 +20,7 @@ import org.philimone.hds.explorer.server.model.main.Region
 import org.philimone.hds.explorer.server.model.main.StudyModule
 import org.philimone.hds.explorer.server.model.main.TrackingList
 import org.philimone.hds.explorer.server.model.settings.ApplicationParam
+import org.philimone.hds.explorer.server.model.settings.SyncEntity
 import org.w3c.dom.Document
 import org.w3c.dom.Element
 
@@ -38,6 +39,7 @@ class SyncFilesService {
 
     def generalUtilitiesService
     def trackingListService
+    def syncFilesReportService
 
     def generateUsersXML(long logReportId) {
 
@@ -97,6 +99,9 @@ class SyncFilesService {
             println "creating zip - users.zip - success="+b
 
             processed = 1
+
+            //Save number of records
+            syncFilesReportService.update(SyncEntity.USERS, count)
 
         } catch (Exception ex) {
             ex.printStackTrace()
@@ -196,6 +201,9 @@ class SyncFilesService {
 
             processed = 1
 
+            //Save number of records
+            syncFilesReportService.update(SyncEntity.MODULES, count)
+
         } catch (Exception ex) {
             ex.printStackTrace()
             processed = 0
@@ -290,6 +298,9 @@ class SyncFilesService {
 
             processed = 1
 
+            //Save number of records
+            syncFilesReportService.update(SyncEntity.FORMS, count)
+
         } catch (Exception ex) {
             ex.printStackTrace()
             processed = 0
@@ -345,9 +356,10 @@ class SyncFilesService {
 
             outputFile.print("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?><households>")
 
+            int count = 0
             Household.withTransaction {
                 households.each { id ->
-
+                    count++
                     def h = Household.get(id)
                     outputFile.print(h.toXML())
                     h = null
@@ -368,6 +380,9 @@ class SyncFilesService {
             println "creating zip - households.zip - success="+b
 
             processed = 1
+
+            //Save number of records
+            syncFilesReportService.update(SyncEntity.HOUSEHOLDS, count)
 
         } catch (Exception ex) {
             ex.printStackTrace()
@@ -424,8 +439,10 @@ class SyncFilesService {
 
             outputFile.print("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?><members>")
 
+            int count = 0
             Member.withTransaction {
                 members.each { id ->
+                    count++
 
                     def m = Member.get(id)
                     outputFile.print(m.toXML())
@@ -450,6 +467,9 @@ class SyncFilesService {
             println "creating zip - members.zip - success="+b
 
             processed = 1
+
+            //Save number of records
+            syncFilesReportService.update(SyncEntity.MEMBERS, count)
 
         } catch (Exception ex) {
             ex.printStackTrace()
@@ -541,6 +561,9 @@ class SyncFilesService {
 
             processed = 1
 
+            //Save number of records
+            syncFilesReportService.update(SyncEntity.PARAMETERS, count)
+
         } catch (Exception ex) {
             ex.printStackTrace()
             processed = 0
@@ -631,6 +654,9 @@ class SyncFilesService {
 
             processed = 1
 
+            //Save number of records
+            syncFilesReportService.update(SyncEntity.REGIONS, count)
+
         } catch (Exception ex) {
             ex.printStackTrace()
             processed = 0
@@ -720,6 +746,9 @@ class SyncFilesService {
 
             processed = 1
 
+            //Save number of records
+            syncFilesReportService.update(SyncEntity.DATASETS, count)
+
         } catch (Exception ex) {
             ex.printStackTrace()
             processed = 0
@@ -769,14 +798,17 @@ class SyncFilesService {
                 resultLists = TrackingList.findAllByEnabled(true)
             }
 
+            def result = trackingListService.createXMLfrom(resultLists)
+
             println "creating xml file ${resultLists.size()}"
             PrintStream outputFile = new PrintStream(new FileOutputStream(SystemPath.generatedFilesPath + "/trackinglists.xml"), true)
 
             outputFile.print("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>")
-
-            outputFile.print(trackingListService.createXMLfrom(resultLists))
+            outputFile.print(result.xml)
 
             outputFile.close()
+
+            int count = result.listCount
 
             System.out.println("File saved! - trackinglists.xml");
             output.println("File saved! - trackinglists.xml");
@@ -789,6 +821,9 @@ class SyncFilesService {
             println "creating zip - trackinglists.zip - success="+b
 
             processed = 1
+
+            //Save number of records
+            syncFilesReportService.update(SyncEntity.TRACKING_LISTS, count)
 
         } catch (Exception ex) {
             ex.printStackTrace()
