@@ -148,13 +148,13 @@
                     </li>
                 </g:if>
 
-                <g:if test="${this.user?.creationDate}">
+                <g:if test="${this.user?.createdDate}">
                     <li class="fieldcontain">
-                        <span id="creationDate-label" class="property-label">
-                            <g:message code="user.creationDate.label" default="Creation Date" />
+                        <span id="createdDate-label" class="property-label">
+                            <g:message code="user.createdDate.label" default="Created Date" />
                         </span>
-                        <span class="property-value" aria-labelledby="creationDate-label">
-                            <g:fieldValue bean="${this.user}" field="creationDate" />
+                        <span class="property-value" aria-labelledby="createdDate-label">
+                            <g:fieldValue bean="${this.user}" field="createdDate" />
                         </span>
                     </li>
                 </g:if>

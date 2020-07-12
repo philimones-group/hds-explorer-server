@@ -21,9 +21,6 @@ class UserService {
         def username = user.username
         def password = user.password
 
-        user.createdBy = generalUtilitiesService.currentUser()
-        user.creationDate = new Date()
-
         def result = user.save(flush: true)
 
         //test send emails
@@ -35,14 +32,11 @@ class UserService {
                 svc.getMessage("default.mail.user.subject.created", ""),
                 svc.getMessage("default.mail.user.message.updated_password", [ url, username, password ] as String[] , "") )
 
-        //println "error ${result.errors}"
+        println "error ${result.errors}"
         result
     }
 
     def User updateUser(User user){
-        //timestamp
-        user.updatedBy = generalUtilitiesService.currentUser()
-        user.updatedDate = new Date()
 
         user.save(flush: true)
         //println "error ${user.errors}"
@@ -52,8 +46,6 @@ class UserService {
 
         //timestamp
         user.password = newPassword
-        user.updatedBy = generalUtilitiesService.currentUser()
-        user.updatedDate = new Date()
 
         def result = user.save(flush: true)
 

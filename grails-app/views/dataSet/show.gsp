@@ -77,11 +77,11 @@
 				</li>
 				</g:if>
 			
-				<g:if test="${dataSetInstance?.creationDate}">
+				<g:if test="${dataSetInstance?.createdDate}">
 				<li class="fieldcontain">
-					<span id="creationDate-label" class="property-label"><g:message code="dataSet.creationDate.label" default="Creation Date" /></span>
+					<span id="createdDate-label" class="property-label"><g:message code="dataSet.createdDate.label" default="Created Date" /></span>
 					
-						<span class="property-value" aria-labelledby="creationDate-label"><g:formatDate date="${dataSetInstance?.creationDate}" /></span>
+						<span class="property-value" aria-labelledby="createdDate-label"><g:formatDate date="${dataSetInstance?.createdDate}" /></span>
 					
 				</li>
 				</g:if>

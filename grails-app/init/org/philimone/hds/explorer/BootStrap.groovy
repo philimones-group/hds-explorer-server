@@ -12,7 +12,7 @@ import org.philimone.hds.explorer.server.model.logs.LogStatus
 import org.philimone.hds.explorer.server.model.main.MappingFormatType
 import org.philimone.hds.explorer.server.model.main.StudyModule
 import org.philimone.hds.explorer.server.model.settings.ApplicationParam
-import org.philimone.hds.explorer.server.model.settings.SyncEntity
+import org.philimone.hds.explorer.server.model.enums.SyncEntity
 import org.philimone.hds.explorer.server.model.settings.SyncFilesReport
 
 class BootStrap {
@@ -415,7 +415,7 @@ class BootStrap {
         trackList1.hasExtraData = false
         trackList1.enabled = true
         trackList1.createdBy = null
-        trackList1.creationDate = null
+        trackList1.createdDate = null
         trackList1.updatedBy = null
         trackList1.updatedDate = null
 
@@ -430,7 +430,7 @@ class BootStrap {
         trackList2.hasExtraData = true
         trackList2.enabled = true
         trackList2.createdBy = null
-        trackList2.creationDate = null
+        trackList2.createdDate = null
         trackList2.updatedBy = null
         trackList2.updatedDate = null
 

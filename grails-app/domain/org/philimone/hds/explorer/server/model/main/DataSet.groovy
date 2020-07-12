@@ -1,12 +1,12 @@
 package org.philimone.hds.explorer.server.model.main
 
-import org.philimone.hds.explorer.server.model.authentication.User
+import org.philimone.hds.explorer.server.model.audit.AuditableEntity
 
 /**
  * Represents an External DataSet that can be linked with our core domain tables (Household, Member, User)
  * to provide dynamic datasets to the tablet application
  */
-class DataSet {
+class DataSet extends AuditableEntity {
     String name
     String keyColumn
     String tableName
@@ -14,11 +14,6 @@ class DataSet {
     String filename
 
     boolean enabled = false
-
-    User createdBy
-    Date creationDate
-    User updatedBy
-    Date updatedDate
 
     static hasMany = [mappingLabels:DataSetLabel]
 
@@ -42,11 +37,6 @@ class DataSet {
         tableColumn nullable: false, blank: false
 
         enabled nullable:false
-
-        createdBy nullable: true
-        creationDate nullable: true
-        updatedBy nullable: true
-        updatedDate nullable:true
     }
 
     static mapping = {
@@ -59,10 +49,5 @@ class DataSet {
         filename column: 'filename'
 
         enabled column: 'enabled'
-
-        createdBy column: 'createdBy'
-        creationDate column: 'creationDate'
-        updatedBy column: 'updatedBy'
-        updatedDate column: 'updatedDate'
     }
 }

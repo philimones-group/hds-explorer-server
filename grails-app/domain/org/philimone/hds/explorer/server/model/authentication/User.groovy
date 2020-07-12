@@ -4,6 +4,7 @@ import groovy.transform.EqualsAndHashCode
 import groovy.transform.ToString
 import grails.compiler.GrailsCompileStatic
 import net.betainteractive.utilities.StringUtil
+import org.philimone.hds.explorer.server.model.audit.AuditableEntity
 import org.philimone.hds.explorer.server.model.main.StudyModule
 
 /**
@@ -12,7 +13,7 @@ import org.philimone.hds.explorer.server.model.main.StudyModule
 @GrailsCompileStatic
 @EqualsAndHashCode(includes='username')
 @ToString(includes='username', includeNames=true, includePackage=false)
-class User implements Serializable {
+class User extends AuditableEntity {
 
     private static final long serialVersionUID = 1
 
@@ -28,11 +29,6 @@ class User implements Serializable {
     boolean passwordExpired
 
     boolean isPasswordEncoded
-
-    User createdBy
-    Date creationDate
-    User updatedBy
-    Date updatedDate
 
     static hasMany = [modules:StudyModule] /* Modules that the user has access */
 
@@ -82,11 +78,6 @@ class User implements Serializable {
         accountExpired()
         accountLocked()
         enabled()
-
-        createdBy nullable: true
-        creationDate nullable: true
-        updatedBy nullable: true
-        updatedDate nullable:true
 
     }
 

@@ -20,7 +20,7 @@ class TestDataService {
         long lastKey = 201910110001
         Date lastDate = null
 
-        def results = LogReportFile.executeQuery("select l from LogReportFile l order by l.logReport.id, l.creationDate")
+        def results = LogReportFile.executeQuery("select l from LogReportFile l order by l.logReport.id, l.createdDate")
 
         results.each { LogReportFile log ->
 

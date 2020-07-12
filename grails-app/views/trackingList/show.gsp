@@ -72,10 +72,10 @@
 				</li>
 				</g:if>
 			
-				<g:if test="${trackingListInstance?.creationDate}">
+				<g:if test="${trackingListInstance?.createdDate}">
 				<li class="fieldcontain">
-					<span id="creationDate-label" class="property-label"><g:message code="trackingList.creationDate.label" default="Creation Date" /></span>
-					<span class="property-value" aria-labelledby="creationDate-label"><g:formatDate date="${trackingListInstance?.creationDate}" /></span>
+					<span id="createdDate-label" class="property-label"><g:message code="trackingList.createdDate.label" default="Created Date" /></span>
+					<span class="property-value" aria-labelledby="createdDate-label"><g:formatDate date="${trackingListInstance?.createdDate}" /></span>
 				</li>
 				</g:if>
 			

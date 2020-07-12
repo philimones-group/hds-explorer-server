@@ -20,6 +20,8 @@ class Member {
     String fatherCode
     String fatherName
 
+    //maritalStatus
+
     String spouseCode
     String spouseName
     String spouseType  /* Relationship Type */

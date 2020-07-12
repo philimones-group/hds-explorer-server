@@ -20,7 +20,7 @@ import org.philimone.hds.explorer.server.model.main.Region
 import org.philimone.hds.explorer.server.model.main.StudyModule
 import org.philimone.hds.explorer.server.model.main.TrackingList
 import org.philimone.hds.explorer.server.model.settings.ApplicationParam
-import org.philimone.hds.explorer.server.model.settings.SyncEntity
+import org.philimone.hds.explorer.server.model.enums.SyncEntity
 import org.w3c.dom.Document
 import org.w3c.dom.Element
 
@@ -966,7 +966,7 @@ class SyncFilesService {
             }
         }
 
-        String creationDate = dataSet.creationDate==null ? null : StringUtil.format(dataSet.creationDate, "yyyy-MM-dd");
+        String createdDate = dataSet.createdDate==null ? null : StringUtil.format(dataSet.createdDate, "yyyy-MM-dd");
         String updatedDate = dataSet.updatedDate==null ? null : StringUtil.format(dataSet.updatedDate, "yyyy-MM-dd");
 
         //group is disabled
@@ -976,7 +976,7 @@ class SyncFilesService {
         element.appendChild(createAttributeNonNull(doc, "tableName", dataSet.tableName));
         element.appendChild(createAttributeNonNull(doc, "tableColumn", dataSet.tableColumn));
         element.appendChild(createAttributeNonNull(doc, "createdBy", dataSet.createdBy?.toString()));
-        element.appendChild(createAttributeNonNull(doc, "creationDate", creationDate));
+        element.appendChild(createAttributeNonNull(doc, "creationDate", createdDate));
         element.appendChild(createAttributeNonNull(doc, "updatedBy", dataSet.updatedBy?.toString()));
         element.appendChild(createAttributeNonNull(doc, "updatedDate", updatedDate));
         element.appendChild(createAttributeNonNull(doc, "labels", labels));
