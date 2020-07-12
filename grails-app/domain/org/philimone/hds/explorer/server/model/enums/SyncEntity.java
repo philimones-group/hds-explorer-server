@@ -1,4 +1,4 @@
-package org.philimone.hds.explorer.server.model.settings;
+package org.philimone.hds.explorer.server.model.enums;
 
 import groovy.transform.CompileStatic;
 

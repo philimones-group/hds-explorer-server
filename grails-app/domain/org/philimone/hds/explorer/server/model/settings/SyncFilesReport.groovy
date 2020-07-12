@@ -1,5 +1,7 @@
 package org.philimone.hds.explorer.server.model.settings
 
+import org.philimone.hds.explorer.server.model.enums.SyncEntity
+
 class SyncFilesReport {
 
     int code

@@ -1,6 +1,7 @@
 package org.philimone.hds.explorer.server.model.settings
 
 import grails.gorm.transactions.Transactional
+import org.philimone.hds.explorer.server.model.enums.SyncEntity
 
 @Transactional
 class SyncFilesReportService {
