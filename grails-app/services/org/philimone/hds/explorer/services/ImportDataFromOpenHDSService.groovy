@@ -116,8 +116,8 @@ class ImportDataFromOpenHDSService {
             reportFile.processedCount = processed
             reportFile.errorsCount = errors
 
-            logReport.end = new Date()
-            logReport.status = LogStatus.findByName(logStatusValue)
+            //logReport.end = new Date()
+            //logReport.status = LogStatus.findByName(logStatusValue) - Dont finish yet
             logReport.addToLogFiles(reportFile)
             logReport.save()
         }
