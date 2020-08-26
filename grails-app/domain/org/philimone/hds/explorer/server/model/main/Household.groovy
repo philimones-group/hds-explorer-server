@@ -1,9 +1,12 @@
 package org.philimone.hds.explorer.server.model.main
 
+import org.philimone.hds.explorer.server.model.audit.AuditableEntity
+import org.philimone.hds.explorer.server.model.audit.CollectableEntity
+
 /**
  * Represents an distinct Household in the system that belongs to a administrative division (region or hieararchy)
  */
-class Household {
+class Household extends CollectableEntity {
 
     String code
     String region;      /* Last Location Hierarchy */

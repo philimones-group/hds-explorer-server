@@ -2,11 +2,13 @@ package org.philimone.hds.explorer.server.model.main
 
 import com.lowagie.text.html.HtmlTagMap
 import net.betainteractive.utilities.StringUtil
+import org.philimone.hds.explorer.server.model.audit.AuditableEntity
+import org.philimone.hds.explorer.server.model.audit.CollectableEntity
 
 /**
  * This table represents Individuals or Household Members stored in the system, identified by code/extId, name and others
  */
-class Member {
+class Member extends CollectableEntity {
 
     String code
     String name

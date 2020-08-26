@@ -1,9 +1,11 @@
 package org.philimone.hds.explorer.server.model.main
 
+import org.philimone.hds.explorer.server.model.audit.AuditableEntity
+
 /**
  * A Study Module represents a specific module that can have its own users and access its own information
  */
-class StudyModule {
+class StudyModule extends AuditableEntity {
 
     static String DSS_SURVEY_MODULE = "DSS-SURVEY" /* Default Module */
 

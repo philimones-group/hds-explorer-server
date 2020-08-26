@@ -13,30 +13,30 @@ class CensusMemberCore {
 	Character isComplete
 	Date submissionDate
 	Date markedAsCompleteDate
+	String metaInstanceId
+	String metaInstanceName
 	Date start
 	Date end
 	String deviceid
 	Date visitDate
-	String spouseName
-	String metaInstanceId
-	String motherName
-	Date dob
-	String relationshipWithHead
-	String gender
-	String metaInstanceName
-	String fatherName
-	String spouseId
 	String fieldWorkerId
-	String fatherId
-	Date spouseDate
-	String spouseType
+	String householdId
 	String householdNo
-	String name
 	String code
+	String name
+	Date dob
+	String gender
+	String motherId
+	String motherName
+	String fatherId
+	String fatherName
+	String spouseType
+	String spouseId
+	String spouseName
+	Date spouseDate
+	String relationshipWithHead
 	Date residencyStartDate
 	String isHouseholdHead
-	String householdId
-	String motherId
 
 	Integer individualProcessed
 	Integer residencyProcessed

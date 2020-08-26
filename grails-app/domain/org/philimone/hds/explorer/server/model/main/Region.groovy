@@ -1,9 +1,12 @@
 package org.philimone.hds.explorer.server.model.main
 
+import org.philimone.hds.explorer.server.model.audit.AuditableEntity
+import org.philimone.hds.explorer.server.model.audit.CollectableEntity
+
 /**
  * Region represents an Administrative division in a country or study area, the Administrative Division or Location Hieararchy it stored here
  */
-class Region {
+class Region extends CollectableEntity {
 
     String code
     String name

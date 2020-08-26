@@ -1,9 +1,11 @@
 package org.philimone.hds.explorer.server.model.main
 
+import org.philimone.hds.explorer.server.model.audit.AuditableEntity
+
 /**
  * Represents a Group of Forms, can be used to specify different forms can will be collected for an specific situation
  */
-class FormGroup {
+class FormGroup extends AuditableEntity {
 
     String code
     String name

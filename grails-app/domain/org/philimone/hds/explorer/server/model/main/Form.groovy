@@ -1,10 +1,12 @@
 package org.philimone.hds.explorer.server.model.main
 
+import org.philimone.hds.explorer.server.model.audit.AuditableEntity
+
 /**
  * Represents a Form that will be opened for Data Collection, this table store the details of the Form and how it should be used and who will use it
  * Supported apps for now: ODK
  */
-class Form {
+class Form extends AuditableEntity {
 
     String formId
     String formName

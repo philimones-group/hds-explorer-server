@@ -1,9 +1,11 @@
 package org.philimone.hds.explorer.server.model.main
 
+import org.philimone.hds.explorer.server.model.audit.AuditableEntity
+
 /**
  * The REDCap API table stores credentials to access a REDCap Project Form (API Token) and relates it to an Mobile Form (eg. ODK) by whom the data will be collected and sent to REDCap
  */
-class RedcapApi {
+class RedcapApi extends AuditableEntity {
 
     String name
     String url
