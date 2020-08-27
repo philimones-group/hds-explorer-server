@@ -25,6 +25,7 @@ import org.philimone.hds.explorer.server.model.main.Member
 import org.philimone.hds.explorer.server.model.main.Region
 import org.philimone.hds.explorer.server.model.main.StudyModule
 import org.philimone.hds.explorer.server.model.settings.ApplicationParam
+import org.philimone.hds.explorer.server.report.ExecTaskReport
 
 import static grails.async.Promises.task
 import static grails.async.Promises.waitAll
@@ -35,6 +36,7 @@ class ImportDataFromOpenHDSService {
     static transactional = false
 
     def generalUtilitiesService
+    def errorMessageService
     def sessionFactory
 
     def importRegions(long logReportId){
@@ -94,7 +96,7 @@ class ImportDataFromOpenHDSService {
                     if (!region.save(flush: true)) {
                         errors++
                         def msg = "Couldnt create/save Region copied from OpenHDS Location Hiearchy with uuid=${fw.uuid}"
-                        def msgErr = "Errors: ${user.errors}"
+                        def msgErr = "Errors Details:\n${errorMessageService.formatErrors(region)}"
 
                         output.println(msg)
                         output.println(msgErr)
@@ -198,7 +200,7 @@ class ImportDataFromOpenHDSService {
                     }else{
                         errors++
                         def msg = "Couldnt create/save User copied from OpenHDS Fielworker with uuid=${fw.uuid}"
-                        def msgErr = "Errors: ${user.errors}"
+                        def msgErr = "Errors Details:\n${errorMessageService.formatErrors(user)}"
 
                         output.println(msg)
                         output.println(msgErr)
@@ -332,9 +334,15 @@ class ImportDataFromOpenHDSService {
                     //println "${processed} result ${result} - ${TimeCategory.minus(new Date(), start)}"
 
                     if (!result){
+
                         errors++
-                        println "errors: ${household.errors}"
-                        log.output.println "${household.code}/${household.name}: errors: ${household.errors}"
+                        def msg = "Couldnt create/save Household copied from OpenHDS Location with extId=${obj[0]}"
+                        def msgErr = "Errors Details:\n${errorMessageService.formatErrors(household)}"
+
+                        output.println(msg)
+                        output.println(msgErr)
+                        println(msg)
+                        println(msgErr)
                     }
                 }
 
@@ -453,13 +461,20 @@ class ImportDataFromOpenHDSService {
         //createMember(members, houses, membersExtIds, membersFirstHhs, memberSpouses, memberDeaths, 1, log)
 
         def listMembers = GeneralUtil.splitList(members, 6)
+        def r1 = new ExecTaskReport()
+        def r2 = new ExecTaskReport()
+        def r3 = new ExecTaskReport()
+        def r4 = new ExecTaskReport()
+        def r5 = new ExecTaskReport()
+        def r6 = new ExecTaskReport()
 
-        def p1 = task { createMember(listMembers[0], houses, membersExtIds, membersFirstHhs, memberSpouses, memberDeaths, 1, log) }
-        def p2 = task { createMember(listMembers[1], houses, membersExtIds, membersFirstHhs, memberSpouses, memberDeaths, 2, log) }
-        def p3 = task { createMember(listMembers[2], houses, membersExtIds, membersFirstHhs, memberSpouses, memberDeaths, 3, log) }
-        def p4 = task { createMember(listMembers[3], houses, membersExtIds, membersFirstHhs, memberSpouses, memberDeaths, 4, log) }
-        def p5 = task { createMember(listMembers[4], houses, membersExtIds, membersFirstHhs, memberSpouses, memberDeaths, 5, log) }
-        def p6 = task { createMember(listMembers[5], houses, membersExtIds, membersFirstHhs, memberSpouses, memberDeaths, 6, log) }
+
+        def p1 = task { r1 = createMember(listMembers[0], houses, membersExtIds, membersFirstHhs, memberSpouses, memberDeaths, 1, log) }
+        def p2 = task { r2 = createMember(listMembers[1], houses, membersExtIds, membersFirstHhs, memberSpouses, memberDeaths, 2, log) }
+        def p3 = task { r3 = createMember(listMembers[2], houses, membersExtIds, membersFirstHhs, memberSpouses, memberDeaths, 3, log) }
+        def p4 = task { r4 = createMember(listMembers[3], houses, membersExtIds, membersFirstHhs, memberSpouses, memberDeaths, 4, log) }
+        def p5 = task { r5 = createMember(listMembers[4], houses, membersExtIds, membersFirstHhs, memberSpouses, memberDeaths, 5, log) }
+        def p6 = task { r6 = createMember(listMembers[5], houses, membersExtIds, membersFirstHhs, memberSpouses, memberDeaths, 6, log) }
 
         println "executing multithread"
         waitAll(p1, p2, p3, p4, p5, p6)
@@ -467,6 +482,7 @@ class ImportDataFromOpenHDSService {
 
         println("finished creating/updating members!! - ${TimeCategory.minus(new Date(), start)}")
 
+        def execReport = ExecTaskReport.sum(r1, r2, r3, r4, r5, r6)
 
         LogReport.withTransaction {
             LogReport logReport = LogReport.findByReportId(logReportId)
@@ -475,8 +491,8 @@ class ImportDataFromOpenHDSService {
             reportFile.start = start
             reportFile.end = new Date()
             reportFile.creationDate = new Date()
-            reportFile.processedCount = processed
-            reportFile.errorsCount = errors
+            reportFile.processedCount = execReport.processed
+            reportFile.errorsCount = execReport.errors
 
             logReport.end = new Date()
             logReport.status = LogStatus.findByName(logStatusValue)
@@ -487,7 +503,7 @@ class ImportDataFromOpenHDSService {
         output.close()
     }
 
-    def createMember(def members, def List<Household> houses, Map membersExtIds, Map membersFirstHouses, Map memberSpouses, Map memberDeaths, int threadNumber, LogOutput log){
+    def ExecTaskReport createMember(def members, def List<Household> houses, Map membersExtIds, Map membersFirstHouses, Map memberSpouses, Map memberDeaths, int threadNumber, LogOutput log){
         def processed = 0
         def errors = 0
 
@@ -569,8 +585,13 @@ class ImportDataFromOpenHDSService {
 
                     if (!member.save()){
                         errors++
-                        println "${member.code}/${member.name}, errors: ${member.errors}"
-                        log.output.println "${member.code}/${member.name}: errors: ${member.errors}"
+                        def msg = "Couldnt create/save Member copied from OpenHDS Individual with extId=${mem[2]}"
+                        def msgErr = "Errors Details:\n${errorMessageService.formatErrors(member)}"
+
+                        output.println(msg)
+                        output.println(msgErr)
+                        println(msg)
+                        println(msgErr)
                     }
                 }
 
@@ -588,7 +609,7 @@ class ImportDataFromOpenHDSService {
 
         }
 
-
+        return new ExecTaskReport(errors: errors, processed: processed)
     }
 
     String getRelationshipType(String openhdsRelationshipType){
