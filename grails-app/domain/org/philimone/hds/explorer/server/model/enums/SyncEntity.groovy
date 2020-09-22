@@ -3,7 +3,7 @@ package org.philimone.hds.explorer.server.model.enums;
 import groovy.transform.CompileStatic;
 
 @CompileStatic
-public enum SyncEntity {
+enum SyncEntity {
 
     PARAMETERS         (1, "syncEntity.parameters.label"),
     MODULES            (2, "syncEntity.modules.label"),
@@ -22,5 +22,9 @@ public enum SyncEntity {
     SyncEntity(int code, String name){
         this.code = code;
         this.name = name;
+    }
+
+    int getId(){
+        return code
     }
 }
