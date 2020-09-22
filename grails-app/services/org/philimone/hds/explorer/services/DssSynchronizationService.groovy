@@ -8,7 +8,7 @@ import org.philimone.hds.explorer.odk.model.CensusMemberCore
 import org.philimone.hds.explorer.openhds.model.Round
 import org.philimone.hds.explorer.server.model.logs.LogReport
 import org.philimone.hds.explorer.server.model.logs.LogReportFile
-import org.philimone.hds.explorer.server.model.logs.LogStatus
+import org.philimone.hds.explorer.server.model.enums.LogStatus
 import org.philimone.hds.explorer.server.openhds.http.RestApiAccess
 
 import org.philimone.hds.explorer.server.openhds.xml.CensusData
@@ -230,7 +230,7 @@ class DssSynchronizationService {
             reportFile.errorsCount = errors
 
             logReport.end = new Date()
-            logReport.status = LogStatus.findByName(logStatusValue)
+            logReport.status = logStatusValue
             logReport.addToLogFiles(reportFile)
             logReport.save()
         }
@@ -331,7 +331,7 @@ class DssSynchronizationService {
             reportFile.errorsCount = errors
 
             logReport.end = new Date()
-            logReport.status = LogStatus.findByName(logStatusValue)
+            logReport.status = logStatusValue
             logReport.addToLogFiles(reportFile)
             logReport.save()
         }
@@ -426,7 +426,7 @@ class DssSynchronizationService {
             reportFile.errorsCount = errors
 
             logReport.end = new Date()
-            logReport.status = LogStatus.findByName(logStatusValue)
+            logReport.status = logStatusValue
             logReport.addToLogFiles(reportFile)
             logReport.save()
         }
@@ -521,7 +521,7 @@ class DssSynchronizationService {
             reportFile.errorsCount = errors
 
             logReport.end = new Date()
-            logReport.status = LogStatus.findByName(logStatusValue)
+            logReport.status = logStatusValue
             logReport.addToLogFiles(reportFile)
             logReport.save()
         }
@@ -616,7 +616,7 @@ class DssSynchronizationService {
             reportFile.errorsCount = errors
 
             logReport.end = new Date()
-            logReport.status = LogStatus.findByName(logStatusValue)
+            logReport.status = logStatusValue
             logReport.addToLogFiles(reportFile)
             logReport.save()
         }
@@ -711,7 +711,7 @@ class DssSynchronizationService {
             reportFile.errorsCount = errors
 
             logReport.end = new Date()
-            logReport.status = LogStatus.findByName(logStatusValue)
+            logReport.status = logStatusValue
             logReport.addToLogFiles(reportFile)
             logReport.save()
         }

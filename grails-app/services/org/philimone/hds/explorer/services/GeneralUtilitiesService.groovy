@@ -34,12 +34,19 @@ class GeneralUtilitiesService {
     def sendTextEmail(String toEmail, String subjectText, String message){
         if (isUsingMailService()){
             def sender = getDefaultMailSender()
-            mailService.sendMail {
-                from sender
-                to toEmail
-                subject subjectText
-                text message
+
+            try{
+                mailService.sendMail {
+                    from sender
+                    to toEmail
+                    subject subjectText
+                    text message
+                }
+            } catch (Exception ex){
+                ex.printStackTrace()
             }
+
+
         }
     }
 

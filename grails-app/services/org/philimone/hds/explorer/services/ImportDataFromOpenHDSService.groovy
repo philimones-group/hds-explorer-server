@@ -1,6 +1,6 @@
 package org.philimone.hds.explorer.services
 
-import grails.gorm.transactions.Transactional
+
 import groovy.time.TimeCategory
 import net.betainteractive.io.LogOutput
 import net.betainteractive.utilities.GeneralUtil
@@ -19,7 +19,7 @@ import org.philimone.hds.explorer.openhds.model.Relationship
 import org.philimone.hds.explorer.openhds.model.Socialgroup
 import org.philimone.hds.explorer.server.model.logs.LogReport
 import org.philimone.hds.explorer.server.model.logs.LogReportFile
-import org.philimone.hds.explorer.server.model.logs.LogStatus
+import org.philimone.hds.explorer.server.model.enums.LogStatus
 import org.philimone.hds.explorer.server.model.main.Household
 import org.philimone.hds.explorer.server.model.main.Member
 import org.philimone.hds.explorer.server.model.main.Region
@@ -47,7 +47,6 @@ class ImportDataFromOpenHDSService {
         int processed = 0
         int errors = 0
         def start = new Date()
-        def logStatusValue = LogStatus.FINISHED
 
         def locationHiearachies = []
 

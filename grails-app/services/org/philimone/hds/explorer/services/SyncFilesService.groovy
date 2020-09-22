@@ -8,7 +8,7 @@ import org.philimone.hds.explorer.server.model.authentication.User
 import org.philimone.hds.explorer.io.SystemPath
 import org.philimone.hds.explorer.server.model.logs.LogReport
 import org.philimone.hds.explorer.server.model.logs.LogReportFile
-import org.philimone.hds.explorer.server.model.logs.LogStatus
+import org.philimone.hds.explorer.server.model.enums.LogStatus
 import org.philimone.hds.explorer.server.model.main.DataSet
 import org.philimone.hds.explorer.server.model.main.Form
 import org.philimone.hds.explorer.server.model.main.FormMapping
@@ -123,7 +123,7 @@ class SyncFilesService {
             reportFile.errorsCount = errors
 
             logReport.end = new Date()
-            logReport.status = LogStatus.findByName(logStatusValue)
+            logReport.status = logStatusValue
             logReport.addToLogFiles(reportFile)
             logReport.save()
 
@@ -224,7 +224,7 @@ class SyncFilesService {
             reportFile.errorsCount = errors
 
             logReport.end = new Date()
-            logReport.status = LogStatus.findByName(logStatusValue)
+            logReport.status = logStatusValue
             logReport.addToLogFiles(reportFile)
             logReport.save()
 
@@ -321,7 +321,7 @@ class SyncFilesService {
             reportFile.errorsCount = errors
 
             logReport.end = new Date()
-            logReport.status = LogStatus.findByName(logStatusValue)
+            logReport.status = logStatusValue
             logReport.addToLogFiles(reportFile)
             logReport.save()
 
@@ -404,7 +404,7 @@ class SyncFilesService {
             reportFile.errorsCount = errors
 
             logReport.end = new Date()
-            logReport.status = LogStatus.findByName(logStatusValue)
+            logReport.status = logStatusValue
             logReport.addToLogFiles(reportFile)
             logReport.save()
 
@@ -492,7 +492,7 @@ class SyncFilesService {
             reportFile.errorsCount = errors
 
             logReport.end = new Date()
-            logReport.status = LogStatus.findByName(logStatusValue)
+            logReport.status = logStatusValue
             logReport.addToLogFiles(reportFile)
             logReport.save()
 
@@ -584,7 +584,7 @@ class SyncFilesService {
             reportFile.errorsCount = errors
 
             logReport.end = new Date()
-            logReport.status = LogStatus.findByName(logStatusValue)
+            logReport.status = logStatusValue
             logReport.addToLogFiles(reportFile)
             logReport.save()
 
@@ -677,7 +677,7 @@ class SyncFilesService {
             reportFile.errorsCount = errors
 
             logReport.end = new Date()
-            logReport.status = LogStatus.findByName(logStatusValue)
+            logReport.status = logStatusValue
             logReport.addToLogFiles(reportFile)
             logReport.save()
 
@@ -769,7 +769,7 @@ class SyncFilesService {
             reportFile.errorsCount = errors
 
             logReport.end = new Date()
-            logReport.status = LogStatus.findByName(logStatusValue)
+            logReport.status = logStatusValue
             logReport.addToLogFiles(reportFile)
             logReport.save()
 
@@ -845,7 +845,7 @@ class SyncFilesService {
             reportFile.errorsCount = errors
 
             logReport.end = new Date()
-            logReport.status = LogStatus.findByName(logStatusValue)
+            logReport.status = logStatusValue
             logReport.addToLogFiles(reportFile)
             logReport.save()
 

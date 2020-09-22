@@ -24,6 +24,7 @@ abstract class AuditableEntity {
     }
 
     static mapping = {
+        datasource 'main'
         //version false
 
         createdBy column:"created_by"

@@ -2,7 +2,7 @@ package org.philimone.hds.explorer.controllers
 
 import org.philimone.hds.explorer.server.Codes
 import org.philimone.hds.explorer.server.model.logs.LogReport
-import org.philimone.hds.explorer.server.model.logs.LogStatus
+import org.philimone.hds.explorer.server.model.enums.LogStatus
 
 class ImportOpenHDSController {
 
@@ -20,7 +20,7 @@ class ImportOpenHDSController {
         LogReport.withTransaction {
             logReport = LogReport.get(params.id)
             logReport.keyTimestamp = System.currentTimeMillis() //CREATE timestamp code
-            logReport.status = LogStatus.findByName(LogStatus.STARTED)
+            logReport.status = LogStatus.STARTED
             logReport.start = new Date();
             logReport.save(flush: true)
         }
