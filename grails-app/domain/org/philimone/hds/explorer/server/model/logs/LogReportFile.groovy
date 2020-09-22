@@ -38,4 +38,17 @@ class LogReportFile {
         processedCount min: 0
         errorsCount min: 0
     }
+
+    static mapping = {
+        logReport column: "log_report_id"
+        keyTimestamp column: "key_timestamp"
+        start column: "start_time"
+        end column: "end_time"
+
+        creationDate column: "creation_date"
+        fileName column: "filename"
+        processedCount column: "processed_count"
+        errorsCount column: "errors_count"
+    }
+
 }

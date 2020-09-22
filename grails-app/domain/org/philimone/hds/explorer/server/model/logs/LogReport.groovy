@@ -26,4 +26,14 @@ class LogReport {
         end nullable: true
     }
 
+    static mapping = {
+        reportId column: "report_id"
+        group column: "group_id"
+        description column: "description"
+        status column: "status_id"
+        keyTimestamp column: "key_timestamp"
+        start column: "start_time"
+        end column: "end_time"
+    }
+
 }

@@ -3,7 +3,6 @@ package org.philimone.hds.explorer.server.model.authentication
 import groovy.transform.EqualsAndHashCode
 import groovy.transform.ToString
 import grails.compiler.GrailsCompileStatic
-import org.philimone.hds.explorer.services.GeneralUtilitiesService
 
 /**
  * Role represents a user role within the system with specific system security acces
@@ -14,8 +13,6 @@ import org.philimone.hds.explorer.services.GeneralUtilitiesService
 class Role implements Serializable {
 
 	private static final long serialVersionUID = 1
-
-	transient GeneralUtilitiesService generalUtilitiesService
 
 	static String ROLE_ADMINISTRATOR = "ROLE_ADMINISTRATOR"
 	static String ROLE_DATA_MANAGER = "ROLE_DATA_MANAGER"
@@ -29,16 +26,11 @@ class Role implements Serializable {
 	String authority
 
 	String toString(){
-		generalUtilitiesService.getMessage(name, "")
+		name
 	}
 
 	static constraints = {
 		name nullable: false, blank: false
 		authority nullable: false, blank: false, unique: true
-	}
-
-	static mapping = {
-		cache true
-		autowire true
 	}
 }

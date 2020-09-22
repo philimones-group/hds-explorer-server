@@ -1,126 +1,155 @@
 package org.philimone.hds.explorer.server.model.main
 
-import com.lowagie.text.html.HtmlTagMap
-import net.betainteractive.utilities.StringUtil
-import org.philimone.hds.explorer.server.model.audit.AuditableEntity
+
 import org.philimone.hds.explorer.server.model.audit.CollectableEntity
+import org.philimone.hds.explorer.server.model.enums.Gender
+import org.philimone.hds.explorer.server.model.enums.HeadRelationshipType
+import org.philimone.hds.explorer.server.model.enums.MaritalStatus
+import org.philimone.hds.explorer.server.model.enums.temporal.ResidencyEndType
+import org.philimone.hds.explorer.server.model.enums.temporal.ResidencyStartType
 
 /**
  * This table represents Individuals or Household Members stored in the system, identified by code/extId, name and others
  */
 class Member extends CollectableEntity {
 
+    /**
+     * The Household Member unique code identification
+     */
     String code
+    /**
+     * The name of the Individual
+     */
     String name
-    String gender
+    /**
+     * Gender of the Individual
+     */
+    Gender gender
+    /*
+     * Date of birth of the Individual
+     */
     Date dob
+    /*
+     * Current Age of the Individual (calculated on every synchronization)
+     */
     Integer age
+    /*
+     * Age of the Individual when he died
+     */
     Integer ageAtDeath
-
+    /*
+     * The Mother of the Individual (other variables like motherCode/motherName for quick access)
+     */
+    Member mother
     String motherCode
     String motherName
+    /*
+     * The Mother of the Individual (other variables like motherCode/motherName for quick access)
+     */
+    Member father
     String fatherCode
     String fatherName
-
-    //maritalStatus
-
+    /*
+     * Marital Status of the Individual
+     */
+    MaritalStatus maritalStatus
+    /*
+     * The Spouser of the Individual (other variables like spouseCode/spouseName for quick access)
+     */
+    Member spouse
     String spouseCode
     String spouseName
-    String spouseType  /* Relationship Type */
-                       /*
-                          MAR = Married            = 2
-                          SEP = Separated/Divorced = 3
-                          WID = Widowed            = 4
-                          LIV = Living Together    = 5  */
+    //String spouseType /*Will no longer be used for the sake of maritalStatus*/
 
     /**
-     * Current HouseHold Status
+     * Current Household where the Individual is living
+     */
+    Household household
+    /*
+     * Current Household Code (for quick access)
      */
     String householdCode
+    /*
+     * Current Household Name (for quick access)
+     */
     String householdName
-    String startType
-    Date   startDate
-    String endType
-    Date   endDate
+    /*
+     * Residency Start Event Type (ENU/BIR/ENT/XEN) on Current Household
+     */
+    ResidencyStartType startType
+    /*
+     * The Date the Individual Started Living on Current Household
+     */
+    Date startDate
+    /*
+     * Residency End Event Type (NA/CHG/EXT/DTH) on Current Household
+     */
+    ResidencyEndType endType
+    /*
+     * The Date the Individual Ended Living on Current Household
+     */
+    Date endDate
+    /*
+     * The Type of Relationship with the Head of the Current Household
+     */
+    HeadRelationshipType headRelationshipType
 
+    /*
+     * The first Household that of the Individual in the study area
+     */
     String entryHousehold
-    String entryType
-    Date   entryDate
+    /*
+     * Residency Start Event Type (ENU/BIR/ENT/XEN) on the first Household that of the Individual in the study area
+     */
+    ResidencyStartType entryType
+    /*
+     * The Date the Individual Started Living on the first Household that in the study area
+     */
+    Date entryDate
 
+    //Boolean isHouseholdHead = false
+    //Boolean isSecHouseholdHead = false
 
-    Boolean isHouseholdHead = false
-    Boolean isSecHouseholdHead = false
-
-    /** GPS Status */
+    /** GPS Coordinates Columns **/
     Boolean gpsNull
     Double gpsAccuracy
     Double gpsAltitude
     Double gpsLatitude
     Double gpsLongitude
-
+    /** Cosine of GPS Coordinates */
     Double cosLatitude
     Double sinLatitude
     Double cosLongitude
     Double sinLongitude
 
-    String toXML(){
-        return  ("<member>") +
-                ((code==null || code.isEmpty()) ?                    "<code />" : "<code>${code}</code>") +
-                ((name==null || name.isEmpty()) ?                    "<name />" : "<name>${name}</name>") +
-                ((gender==null || gender.isEmpty()) ?                "<gender />" : "<gender>${gender}</gender>") +
-                ((dob==null) ?                                       "<dob />" : "<dob>${StringUtil.format(dob, "yyyy-MM-dd")}</dob>") +
-                ((age==null) ?                                       "<age />" : "<age>${age}</age>") +
-
-                ((ageAtDeath==null) ?                                "<ageAtDeath />" : "<ageAtDeath>${ageAtDeath}</ageAtDeath>") +
-
-                ((motherCode==null || motherCode.isEmpty()) ?        "<motherCode />" : "<motherCode>${motherCode}</motherCode>") +
-                ((motherName==null || motherName.isEmpty()) ?        "<motherName />" : "<motherName>${motherName}</motherName>") +
-                ((fatherCode==null || fatherCode.isEmpty()) ?        "<fatherCode />" : "<fatherCode>${fatherCode}</fatherCode>") +
-                ((fatherName==null || fatherName.isEmpty()) ?        "<fatherName />" : "<fatherName>${fatherName}</fatherName>") +
-
-                ((spouseCode==null || spouseCode.isEmpty()) ?        "<spouseCode />" : "<spouseCode>${spouseCode}</spouseCode>") +
-                ((spouseName==null || spouseName.isEmpty()) ?        "<spouseName />" : "<spouseName>${spouseName}</spouseName>") +
-                ((spouseType==null || spouseType.isEmpty()) ?        "<spouseType />" : "<spouseType>${spouseType}</spouseType>") +
-
-                ((householdCode==null || householdCode.isEmpty()) ?  "<householdCode />" : "<householdCode>${householdCode}</householdCode>") +
-                ((householdName==null || householdName.isEmpty()) ?  "<householdName />" : "<householdName>${householdName}</householdName>") +
-
-                ((startType==null || startType.isEmpty()) ?          "<startType />" : "<startType>${startType}</startType>") +
-                ((startDate==null)                        ?          "<startDate />" : "<startDate>${StringUtil.format(startDate, "yyyy-MM-dd")}</startDate>") +
-                ((endType==null || endType.isEmpty())     ?          "<endType />"   : "<endType>${endType}</endType>") +
-                ((endDate==null)                          ?          "<endDate />"   : "<endDate>${StringUtil.format(endDate, "yyyy-MM-dd")}</endDate>") +
-
-                ((entryHousehold==null || entryHousehold.isEmpty()) ? "<entryHousehold />" : "<entryHousehold>${entryHousehold}</entryHousehold>") +
-                ((entryType==null || entryType.isEmpty())           ? "<entryType />" : "<entryType>${entryType}</entryType>") +
-                ((entryDate==null)                                  ? "<entryDate />" : "<entryDate>${StringUtil.format(entryDate, "yyyy-MM-dd")}</entryDate>") +
-
-                ((isHouseholdHead==null)                            ? "<isHouseholdHead />" : "<isHouseholdHead>${isHouseholdHead}</isHouseholdHead>") +
-                ((isSecHouseholdHead==null)                         ? "<isSecHouseholdHead />" : "<isSecHouseholdHead>${isSecHouseholdHead}</isSecHouseholdHead>") +
-
-                ((gpsAccuracy == null)                              ? "<gpsAccuracy />" : "<gpsAccuracy>${gpsAccuracy}</gpsAccuracy>") +
-                ((gpsAltitude == null)                              ? "<gpsAltitude />" : "<gpsAltitude>${gpsAltitude}</gpsAltitude>") +
-                ((gpsLatitude == null)                              ? "<gpsLatitude />" : "<gpsLatitude>${gpsLatitude}</gpsLatitude>") +
-                ((gpsLongitude == null)                             ? "<gpsLongitude />" : "<gpsLongitude>${gpsLongitude}</gpsLongitude>") +
-                ("</member>")
+    boolean isHouseholdHead(){
+        headRelationshipType==HeadRelationshipType.HEAD_OF_HOUSEHOLD
     }
 
     static constraints = {
         code unique: true, blank: false
         name blank: false
-        gender blank: false
+        gender nullable: false
         dob nullable: false
         age min: 0
         ageAtDeath nullable: true
 
+        maritalStatus nullable: false
+
+        spouse nullable: true
         spouseCode blank: true, nullable: true
         spouseName blank: true, nullable: true
-        spouseType blank: true, nullable: true
+        //spouseType blank: true, nullable: true
 
+        mother nullable: true
         motherCode blank: true, nullable: true
         motherName blank: true, nullable: true
+
+        father nullable: true
         fatherCode blank: true, nullable: true
         fatherName blank: true, nullable: true
 
+        household nullable: true
         householdCode blank: false, nullable: false
         householdName blank: false, nullable: false
         entryHousehold nullable: true
@@ -131,8 +160,10 @@ class Member extends CollectableEntity {
         endType nullable: true
         endDate nullable: true
 
-        isHouseholdHead nullable: false
-        isSecHouseholdHead nullable: false
+        headRelationshipType nullable: true
+
+        //isHouseholdHead nullable: false
+        //isSecHouseholdHead nullable: false
 
         gpsNull nullable: false
         gpsAccuracy nullable: true
@@ -149,32 +180,42 @@ class Member extends CollectableEntity {
     static mapping = {
         code column: 'code'
         name column: 'name'
-        gender column: 'gender'
+        gender column: 'gender', enumType: 'identity'
         dob column: 'dob'
         age column: 'age'
         ageAtDeath column: 'age_at_death'
 
+        maritalStatus column: 'marital_status', enumType: 'identity'
+
+        spouse column: 'spouse_id'
         spouseCode column: 'spouse_code'
         spouseName column: 'spouse_name'
-        spouseType column: 'spouse_type'
+        //spouseType column: 'spouse_type'
 
+        mother column: 'mother_id'
         motherCode column: 'mother_code'
         motherName column: 'mother_name'
+
+        father column: 'father_id'
         fatherCode column: 'father_code'
         fatherName column: 'father_name'
 
+        household column: 'household_id'
         householdCode column: 'household_code'
         householdName column: 'household_name'
+
         entryHousehold column: 'entry_household'
-        entryType column: 'entry_type'
+        entryType column: 'entry_type', enumType: "identity"
         entryDate column: 'entry_date'
-        startType column: 'start_type'
+        startType column: 'start_type', enumType: "identity"
         startDate column: 'start_date'
-        endType column: 'end_type'
+        endType column: 'end_type', enumType: "identity"
         endDate column: 'end_date'
 
-        isHouseholdHead column: 'is_household_head'
-        isSecHouseholdHead column: 'is_sec_household_head'
+        headRelationshipType column: 'head_relationship_type', enumType: 'identity'
+
+        //isHouseholdHead column: 'is_household_head'
+        //isSecHouseholdHead column: 'is_sec_household_head'
 
         gpsNull column: 'gps_is_null'
         gpsAccuracy column: 'gps_accuracy'

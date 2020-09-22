@@ -361,7 +361,7 @@ class SyncFilesService {
                 households.each { id ->
                     count++
                     def h = Household.get(id)
-                    outputFile.print(h.toXML())
+                    outputFile.print(toXML(h))
                     h = null
                 }
             }
@@ -445,7 +445,7 @@ class SyncFilesService {
                     count++
 
                     def m = Member.get(id)
-                    outputFile.print(m.toXML())
+                    outputFile.print(toXML(m))
                     m = null
                 }
 
@@ -1001,5 +1001,73 @@ class SyncFilesService {
         Element element = doc.createElement(name);
         element.appendChild(doc.createTextNode(""+value));
         return element;
+    }
+
+    /* Convert to XML */
+    private String toXML(Household h){
+        return ("<household>") +
+                ((h.code == null || h.code.isEmpty()) ?               "<code />"   : "<code>${h.code}</code>") +
+                ((h.region == null || h.region.isEmpty()) ?           "<region />" : "<region>${h.region}</region>") +
+                ((h.name == null || h.name.isEmpty()) ?               "<name />"   : "<name>${h.name}</name>") +
+
+                ((h.headCode == null || h.headCode.isEmpty()) ?       "<headCode />" : "<headCode>${h.headCode}</headCode>") +
+                ((h.headName == null || h.headName.isEmpty()) ?       "<headName />" : "<headName>${h.headName}</headName>") +
+                ((h.secHeadCode == null || h.secHeadCode.isEmpty()) ? "<secHeadCode />" : "<secHeadCode>${h.secHeadCode}</secHeadCode>") +
+
+                ((h.hierarchy1 == null || h.hierarchy1.isEmpty()) ? "<hierarchy1 />" : "<hierarchy1>${h.hierarchy1}</hierarchy1>") +
+                ((h.hierarchy2 == null || h.hierarchy2.isEmpty()) ? "<hierarchy2 />" : "<hierarchy2>${h.hierarchy2}</hierarchy2>") +
+                ((h.hierarchy3 == null || h.hierarchy3.isEmpty()) ? "<hierarchy3 />" : "<hierarchy3>${h.hierarchy3}</hierarchy3>") +
+                ((h.hierarchy4 == null || h.hierarchy4.isEmpty()) ? "<hierarchy4 />" : "<hierarchy4>${h.hierarchy4}</hierarchy4>") +
+                ((h.hierarchy5 == null || h.hierarchy5.isEmpty()) ? "<hierarchy5 />" : "<hierarchy5>${h.hierarchy5}</hierarchy5>") +
+                ((h.hierarchy6 == null || h.hierarchy6.isEmpty()) ? "<hierarchy6 />" : "<hierarchy6>${h.hierarchy6}</hierarchy6>") +
+                ((h.hierarchy7 == null || h.hierarchy7.isEmpty()) ? "<hierarchy7 />" : "<hierarchy7>${h.hierarchy7}</hierarchy7>") +
+                ((h.hierarchy8 == null || h.hierarchy8.isEmpty()) ? "<hierarchy8 />" : "<hierarchy8>${h.hierarchy8}</hierarchy8>") +
+
+                ((h.gpsAccuracy == null) ?   "<gpsAccuracy />" : "<gpsAccuracy>${h.gpsAccuracy}</gpsAccuracy>") +
+                ((h.gpsAltitude == null) ?   "<gpsAltitude />" : "<gpsAltitude>${h.gpsAltitude}</gpsAltitude>") +
+                ((h.gpsLatitude == null) ?   "<gpsLatitude />" : "<gpsLatitude>${h.gpsLatitude}</gpsLatitude>") +
+                ((h.gpsLongitude == null) ? "<gpsLongitude />" : "<gpsLongitude>${h.gpsLongitude}</gpsLongitude>") +
+                ("</household>")
+    }
+
+    private String toXML(Member m){
+        return  ("<member>") +
+                ((m.code==null || m.code.isEmpty()) ?                   "<code />" : "<code>${m.code}</code>") +
+                ((m.name==null || m.name.isEmpty()) ?                   "<name />" : "<name>${m.name}</name>") +
+                ((m.gender==null ) ?                                    "<gender />" : "<gender>${m.gender.code}</gender>") +
+                ((m.dob==null) ?                                        "<dob />" : "<dob>${StringUtil.format(m.dob, "yyyy-MM-dd")}</dob>") +
+                ((m.age==null) ?                                        "<age />" : "<age>${m.age}</age>") +
+
+                ((m.ageAtDeath==null) ?                                 "<ageAtDeath />" : "<ageAtDeath>${m.ageAtDeath}</ageAtDeath>") +
+
+                ((m.motherCode==null || m.motherCode.isEmpty()) ?       "<motherCode />" : "<motherCode>${m.motherCode}</motherCode>") +
+                ((m.motherName==null || m.motherName.isEmpty()) ?       "<motherName />" : "<motherName>${m.motherName}</motherName>") +
+                ((m.fatherCode==null || m.fatherCode.isEmpty()) ?       "<fatherCode />" : "<fatherCode>${m.fatherCode}</fatherCode>") +
+                ((m.fatherName==null || m.fatherName.isEmpty()) ?       "<fatherName />" : "<fatherName>${m.fatherName}</fatherName>") +
+
+                ((m.spouseCode==null || m.spouseCode.isEmpty()) ?       "<spouseCode />" : "<spouseCode>${m.spouseCode}</spouseCode>") +
+                ((m.spouseName==null || m.spouseName.isEmpty()) ?       "<spouseName />" : "<spouseName>${m.spouseName}</spouseName>") +
+                /*((m.spouseType==null || m.spouseType.isEmpty()) ?       "<spouseType />" : "<spouseType>${m.spouseType}</spouseType>") + */
+                ((m.householdCode==null || m.householdCode.isEmpty()) ? "<householdCode />" : "<householdCode>${m.householdCode}</householdCode>") +
+                ((m.householdName==null || m.householdName.isEmpty()) ? "<householdName />" : "<householdName>${m.householdName}</householdName>") +
+
+                ((m.startType==null || m.startType.isEmpty()) ?         "<startType />" : "<startType>${m.startType.code}</startType>") +
+                ((m.startDate==null)                        ?           "<startDate />" : "<startDate>${StringUtil.format(m.startDate, "yyyy-MM-dd")}</startDate>") +
+                ((m.endType==null || m.endType.isEmpty())     ?         "<endType />"   : "<endType>${m.endType.code}</endType>") +
+                ((m.endDate==null)                          ?           "<endDate />"   : "<endDate>${StringUtil.format(m.endDate, "yyyy-MM-dd")}</endDate>") +
+
+                ((m.entryHousehold==null || m.entryHousehold.isEmpty()) ? "<entryHousehold />" : "<entryHousehold>${m.entryHousehold}</entryHousehold>") +
+                ((m.entryType==null || m.entryType.isEmpty())           ? "<entryType />" : "<entryType>${m.entryType.code}</entryType>") +
+                ((m.entryDate==null)                                  ? "<entryDate />" : "<entryDate>${StringUtil.format(m.entryDate, "yyyy-MM-dd")}</entryDate>") +
+
+                ((m.headRelationshipType==null)                       ? "<headRelationshipType />" : "<headRelationshipType>${m.headRelationshipType.code}</headRelationshipType>") +
+                ((m.headRelationshipType==null)                       ? "<isHouseholdHead />" : "<isHouseholdHead>${m.isHouseholdHead()}</isHouseholdHead>") +
+                ((m.isSecHouseholdHead==null)                         ? "<isSecHouseholdHead />" : "<isSecHouseholdHead>${m.isSecHouseholdHead}</isSecHouseholdHead>") +
+
+                ((m.gpsAccuracy == null)                              ? "<gpsAccuracy />" : "<gpsAccuracy>${m.gpsAccuracy}</gpsAccuracy>") +
+                ((m.gpsAltitude == null)                              ? "<gpsAltitude />" : "<gpsAltitude>${m.gpsAltitude}</gpsAltitude>") +
+                ((m.gpsLatitude == null)                              ? "<gpsLatitude />" : "<gpsLatitude>${m.gpsLatitude}</gpsLatitude>") +
+                ((m.gpsLongitude == null)                             ? "<gpsLongitude />" : "<gpsLongitude>${m.gpsLongitude}</gpsLongitude>") +
+                ("</member>")
     }
 }
