@@ -118,13 +118,26 @@ grails:
 dataSources:
     dataSource:
     main:
+        #MySQL Config
+        #pooled: true
+        #driverClassName: com.mysql.jdbc.Driver
+        #dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+        #username: hds_explorer
+        #password: your_password
+        #url: jdbc:mysql://localhost/hds_explorer_db?createDatabaseIfNotExist=true&autoReconnect=true&zeroDateTimeBehavior=convertToNull
+        #logSql: true
+
+        #PostgreSQL Config
         pooled: true
-        driverClassName: com.mysql.jdbc.Driver
-        dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+        jmxExport: true
+        driverClassName: org.postgresql.Driver
         username: hds_explorer
         password: your_password
-        url: jdbc:mysql://localhost/hds_explorer_db?createDatabaseIfNotExist=true&autoReconnect=true&zeroDateTimeBehavior=convertToNull
+        url: "jdbc:postgresql://localhost:5432/hds_explorer_db"
+        dialect: org.philimone.hds.explorer.server.io.database.postgresql.CustomPostgreSQLDialect #org.hibernate.dialect.PostgreSQLDialect
+        hibernate.default_schema: "hds_explorer_db"
         #logSql: true
+
     openhds:
         pooled: true
         dbCreate: none

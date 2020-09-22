@@ -62,7 +62,8 @@ dependencies {
     //plugins
     compile 'com.google.guava:guava:22.0'
     runtime 'mysql:mysql-connector-java:5.1.29'
-    runtime 'org.postgresql:postgresql:9.3-1101-jdbc41'
+    //runtime 'org.postgresql:postgresql:9.3-1101-jdbc41'
+    compile group: 'org.postgresql', name: 'postgresql', version: '42.2.16'
 
     runtime "org.grails.plugins:jquery:1.11.1"
     compile 'org.grails.plugins:jasper-reports:3.1.2'
