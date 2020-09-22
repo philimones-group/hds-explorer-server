@@ -178,6 +178,9 @@ class Member extends CollectableEntity {
     }
 
     static mapping = {
+        datasource 'main'
+        table 'member'
+
         code column: 'code'
         name column: 'name'
         gender column: 'gender', enumType: 'identity'

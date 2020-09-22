@@ -40,6 +40,8 @@ class LogReportFile {
     }
 
     static mapping = {
+        datasource 'main'
+
         logReport column: "log_report_id"
         keyTimestamp column: "key_timestamp"
         start column: "start_time"

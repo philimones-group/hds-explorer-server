@@ -33,4 +33,8 @@ class Role implements Serializable {
 		name nullable: false, blank: false
 		authority nullable: false, blank: false, unique: true
 	}
+
+	static mapping = {
+		datasource 'main'
+	}
 }

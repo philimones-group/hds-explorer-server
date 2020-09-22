@@ -78,6 +78,7 @@ class Form extends AuditableEntity {
     }
 
     static mapping = {
+        datasource 'main'
         table 'form'
 
         //group column: 'form_group_id'

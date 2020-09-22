@@ -14,6 +14,7 @@ class TrackingListMapping {
     }
 
     static mapping = {
+        datasource 'main'
         table 'tracking_list_mapping'
 
         list column: 'trackinglist_id'

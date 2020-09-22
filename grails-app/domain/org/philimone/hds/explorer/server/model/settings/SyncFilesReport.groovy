@@ -24,7 +24,9 @@ class SyncFilesReport {
     }
 
     static mapping = {
+        datasource 'main'
         table 'sync_report'
+
         code column: "code"
         name column: "name", enumType: "string"
         records column: "records", defaultValue: "'0'"

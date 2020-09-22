@@ -37,6 +37,7 @@ class TrackingList extends AuditableEntity {
     }
 
     static mapping = {
+        datasource 'main'
         table 'tracking_list'
 
         code column: 'code'

@@ -40,6 +40,7 @@ class DataSet extends AuditableEntity {
     }
 
     static mapping = {
+        datasource 'main'
         table 'ext_dataset'
 
         name column: 'name'

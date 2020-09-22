@@ -33,6 +33,7 @@ class Residency extends AuditableEntity {
     }
 
     static mapping = {
+        datasource 'main'
         table 'residency'
 
         household column: "household_id"

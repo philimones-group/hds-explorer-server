@@ -24,6 +24,7 @@ class StudyModule extends AuditableEntity {
     }
 
     static mapping = {
+        datasource 'main'
         table 'study_module'
 
         code column: "code"

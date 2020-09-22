@@ -28,6 +28,7 @@ class MappingFormatType {
     }
 
     static mapping = {
+        datasource 'main'
         table 'form_mapping_format'
 
         description column: 'description'

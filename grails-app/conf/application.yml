@@ -117,6 +117,7 @@ grails:
 
 dataSources:
     dataSource:
+    main:
         pooled: true
         driverClassName: com.mysql.jdbc.Driver
         dialect: org.hibernate.dialect.MySQL5InnoDBDialect
@@ -135,6 +136,7 @@ environments:
     development:
         dataSources:
             dataSource:
+            main:
                 dbCreate: update
             openhds:
                 dbCreate: none
@@ -143,6 +145,7 @@ environments:
     test:
         dataSources:
             dataSource:
+            main:
                 dbCreate: update
                 url: jdbc:h2:mem:testDb;MVCC=TRUE;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=FALSE
             openhds:
@@ -152,6 +155,7 @@ environments:
     production:
         dataSources:
             dataSource:
+            main:
                 dbCreate: update
                 polled: true
                 properties:

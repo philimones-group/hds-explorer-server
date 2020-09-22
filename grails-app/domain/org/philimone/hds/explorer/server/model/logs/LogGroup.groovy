@@ -18,4 +18,8 @@ class LogGroup {
         name blank: false, unique: true
         description nullable: true, blank: true
     }
+
+    static mapping = {
+        datasource 'main'
+    }
 }

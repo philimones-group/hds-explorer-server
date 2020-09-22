@@ -30,4 +30,8 @@ class Notification {
         message blank:false, nullable:false, widget: 'textarea'
         date nullable:false
     }
+
+    static mapping = {
+        datasource 'main'
+    }
 }

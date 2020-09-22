@@ -17,4 +17,8 @@ class ApplicationParam extends AuditableEntity {
         value blank:true, nullable: true
     }
 
+    static mapping = {
+        datasource 'main'
+    }
+
 }

@@ -37,6 +37,7 @@ class FormMapping {
     }
 
     static mapping = {
+        datasource 'main'
         table 'form_mapping'
 
         form column: "form_id"

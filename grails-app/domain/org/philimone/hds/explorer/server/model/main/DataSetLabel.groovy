@@ -18,6 +18,7 @@ class DataSetLabel {
     }
 
     static mapping = {
+        datasource 'main'
         table 'dataset_label'
 
         list column: 'dataset_id'

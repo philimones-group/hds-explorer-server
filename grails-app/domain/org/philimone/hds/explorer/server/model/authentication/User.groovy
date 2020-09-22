@@ -82,6 +82,8 @@ class User extends AuditableEntity {
     }
 
     static mapping = {
+        datasource 'main'
+
 	    password column: '`password`'
     }
 

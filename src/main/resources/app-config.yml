@@ -10,12 +10,12 @@ hds.explorer.openhds_web.password: password
 
 dataSources:
 # Default datasource for HDS-Database
-  dataSource.pooled: true
-  dataSource.driverClassName: com.mysql.jdbc.Driver
-  dataSource.dialect: org.hibernate.dialect.MySQL5InnoDBDialect
-  dataSource.username: hds_explorer
-  dataSource.password: your_password
-  dataSource.url: jdbc:mysql://localhost/hds_explorer_db?createDatabaseIfNotExist=true&autoReconnect=true&zeroDateTimeBehavior=convertToNull
+  main.pooled: true
+  main.driverClassName: com.mysql.jdbc.Driver
+  main.dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+  main.username: hds_explorer
+  main.password: your_password
+  main.url: jdbc:mysql://localhost/hds_explorer_db?createDatabaseIfNotExist=true&autoReconnect=true&zeroDateTimeBehavior=convertToNull
 
 # Datasource properties for OpenHDS - to be able to access openhds tables - optional
   openhds.pooled: true

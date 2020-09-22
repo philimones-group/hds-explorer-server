@@ -27,6 +27,7 @@ class SecurityMap implements Serializable {
 	}
 
 	static mapping = {
+		datasource 'main'
 		cache true
 	}
 }

@@ -70,6 +70,7 @@ class Household extends CollectableEntity {
     }
 
     static mapping = {
+        datasource 'main'
         table 'household'
 
         code column: 'code'

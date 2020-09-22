@@ -23,6 +23,7 @@ class RedcapMapping {
     }
 
     static mapping = {
+        datasource 'main'
         table 'redcap_mapping'
 
         form column: "form_id"

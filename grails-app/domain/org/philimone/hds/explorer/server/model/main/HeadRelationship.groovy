@@ -36,6 +36,7 @@ class HeadRelationship extends CollectableEntity {
     }
 
     static mapping = {
+        datasource 'main'
         table 'head_relationship'
 
         household column: "household_id"

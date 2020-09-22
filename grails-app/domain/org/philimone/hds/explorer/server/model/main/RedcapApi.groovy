@@ -30,6 +30,7 @@ class RedcapApi extends AuditableEntity {
     }
 
     static mapping = {
+        datasource 'main'
         table 'redcap_api'
 
         name column: "name"

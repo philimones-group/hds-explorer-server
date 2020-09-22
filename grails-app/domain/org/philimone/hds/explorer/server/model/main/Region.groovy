@@ -27,8 +27,9 @@ class Region extends CollectableEntity {
     static mapping = {
         table 'region'
 
-        id name: 'code', column: 'code', generator: 'assigned'
         version false
+
+        code column: 'code'
         name column: 'name'
         hierarchyLevel column: 'level'
         parent column: 'parent_region_code'

@@ -27,6 +27,7 @@ class MaritalRelationship extends CollectableEntity {
     }
 
     static mapping = {
+        datasource 'main'
         table 'marital_relationship'
 
         memberA column: "member_a_id"
