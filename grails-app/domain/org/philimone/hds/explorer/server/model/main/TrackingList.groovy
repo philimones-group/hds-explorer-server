@@ -4,6 +4,7 @@ import org.philimone.hds.explorer.server.model.audit.AuditableEntity
 
 class TrackingList extends AuditableEntity {
 
+    String id
     String code
     String name
     String filename
@@ -27,6 +28,7 @@ class TrackingList extends AuditableEntity {
     static hasMany = [mappings:TrackingListMapping]
 
     static constraints = {
+        id maxSize: 32
         code unique: true
         name blank: false
         filename unique: true
@@ -37,8 +39,9 @@ class TrackingList extends AuditableEntity {
     }
 
     static mapping = {
-        datasource 'main'
         table 'tracking_list'
+
+        id column: "uuid", generator: 'uuid'
 
         code column: 'code'
         name column: 'name'

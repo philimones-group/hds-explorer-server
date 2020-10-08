@@ -7,18 +7,21 @@ import org.philimone.hds.explorer.server.model.audit.AuditableEntity
  */
 class ApplicationParam extends AuditableEntity {
 
+    String id
     String name
     String type
     String value
 
     static constraints = {
+        id maxSize: 32
         name blank:false, unique: true
         type blank:true, nullable: true
         value blank:true, nullable: true
     }
 
     static mapping = {
-        datasource 'main'
-    }
+        table '_application_param'
 
+        id column: "uuid", generator: 'uuid'
+    }
 }

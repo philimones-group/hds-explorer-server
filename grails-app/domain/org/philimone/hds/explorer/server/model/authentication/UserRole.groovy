@@ -5,6 +5,7 @@ import groovy.transform.ToString
 
 import org.codehaus.groovy.util.HashCodeHelper
 import grails.compiler.GrailsCompileStatic
+import org.grails.datastore.mapping.core.connections.ConnectionSource
 
 /**
  * Store a mapping structure between a User and a Role, represents an associations between the two
@@ -15,6 +16,7 @@ class UserRole implements Serializable {
 
 	private static final long serialVersionUID = 1
 
+	String id
 	User user
 	Role role
 
@@ -37,15 +39,15 @@ class UserRole implements Serializable {
 		hashCode
 	}
 
-	static UserRole get(long userId, long roleId) {
+	static UserRole get(String userId, String roleId) {
 		criteriaFor(userId, roleId).get()
 	}
 
-	static boolean exists(long userId, long roleId) {
+	static boolean exists(String userId, String roleId) {
 		criteriaFor(userId, roleId).count()
 	}
 
-	private static DetachedCriteria criteriaFor(long userId, long roleId) {
+	private static DetachedCriteria criteriaFor(String userId, String roleId) {
 		UserRole.where {
 			user == User.load(userId) &&
 			role == Role.load(roleId)
@@ -81,6 +83,7 @@ class UserRole implements Serializable {
 	}
 
 	static constraints = {
+		id maxSize: 32
 	    user nullable: false
 		role nullable: false, validator: { Role r, UserRole ur ->
 			if (ur.user?.id) {
@@ -92,10 +95,10 @@ class UserRole implements Serializable {
 	}
 
 	static mapping = {
-		datasource 'main'
+		table '_user_role'
 
 		version false
-		id composite: ['user', 'role']
+		id column: 'uuid', generator: 'uuid'
 
 	}
 }

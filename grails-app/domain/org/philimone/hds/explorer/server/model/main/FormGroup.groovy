@@ -7,19 +7,22 @@ import org.philimone.hds.explorer.server.model.audit.AuditableEntity
  */
 class FormGroup extends AuditableEntity {
 
+    String id
     String code
     String name
     String description
 
     static constraints = {
+        id maxSize: 32
         code blank: true, unique: true
         name blank: false
         description nullable: true, blank: true
     }
 
     static mapping = {
-        datasource 'main'
         table 'form_group'
+
+        id column: "uuid", generator: 'uuid'
 
         code column: 'code'
         name column: 'name'

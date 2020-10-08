@@ -6,6 +6,7 @@ import org.philimone.hds.explorer.server.model.enums.MaritalStartStatus
 
 class MaritalRelationship extends CollectableEntity {
 
+    String id
     Member memberA
     Member memberB
     String memberA_code
@@ -16,6 +17,7 @@ class MaritalRelationship extends CollectableEntity {
     Date endDate
 
     static constraints = {
+        id maxSize: 32
         memberA nullable: false
         memberB nullable: false
         memberA_code nullable: false
@@ -27,8 +29,9 @@ class MaritalRelationship extends CollectableEntity {
     }
 
     static mapping = {
-        datasource 'main'
         table 'marital_relationship'
+
+        id column: "uuid", generator: 'uuid'
 
         memberA column: "member_a_id"
         memberB column: "member_b_id"

@@ -8,6 +8,7 @@ import org.philimone.hds.explorer.server.model.enums.LogStatus
  */
 class LogReport {
 
+    String id
     int reportId
     LogGroup group
     LogStatus status
@@ -16,9 +17,12 @@ class LogReport {
     Date start
     Date end
 
+    boolean enabled = true
+
     static hasMany = [logFiles:LogReportFile]
 
     static constraints = {
+        id maxSize: 32
         reportId unique: true
         group nullable: true
         description blank: true
@@ -26,10 +30,14 @@ class LogReport {
         keyTimestamp nullable:false
         start nullable: true
         end nullable: true
+
+        enabled nullable:false
     }
 
     static mapping = {
-        datasource 'main'
+        table '_log_report'
+
+        id column: "uuid", generator: 'uuid'
 
         reportId column: "report_id"
         group column: "group_id"
@@ -38,6 +46,8 @@ class LogReport {
         keyTimestamp column: "key_timestamp"
         start column: "start_time"
         end column: "end_time"
+
+        enabled column: 'enabled'
     }
 
 }

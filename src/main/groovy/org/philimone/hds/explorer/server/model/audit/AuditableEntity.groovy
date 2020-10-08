@@ -1,8 +1,6 @@
 package org.philimone.hds.explorer.server.model.audit
 
 import grails.gorm.dirty.checking.DirtyCheck
-import groovy.transform.SelfType
-import org.grails.datastore.gorm.GormEntity
 import org.philimone.hds.explorer.server.model.authentication.User
 
 @DirtyCheck
@@ -24,7 +22,6 @@ abstract class AuditableEntity {
     }
 
     static mapping = {
-        datasource 'main'
         //version false
 
         createdBy column:"created_by"

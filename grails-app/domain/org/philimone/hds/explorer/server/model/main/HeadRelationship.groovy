@@ -8,6 +8,7 @@ import org.philimone.hds.explorer.server.model.enums.temporal.HeadRelationshipSt
 
 class HeadRelationship extends CollectableEntity {
 
+    String id
     Household household
     Member member
     Member head
@@ -22,6 +23,7 @@ class HeadRelationship extends CollectableEntity {
     Date endDate
 
     static constraints = {
+        id maxSize: 32
         household nullable: false
         member nullable: false
         householdCode nullable: false
@@ -36,8 +38,9 @@ class HeadRelationship extends CollectableEntity {
     }
 
     static mapping = {
-        datasource 'main'
         table 'head_relationship'
+
+        id column: "uuid", generator: 'uuid'
 
         household column: "household_id"
         member column: "member_id"

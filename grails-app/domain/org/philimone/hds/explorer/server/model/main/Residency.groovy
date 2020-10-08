@@ -10,6 +10,7 @@ import org.philimone.hds.explorer.server.model.enums.temporal.ResidencyStartType
  */
 class Residency extends AuditableEntity {
 
+    String id
     Household household
     Member member
     String householdCode
@@ -21,6 +22,7 @@ class Residency extends AuditableEntity {
     Date endDate
 
     static constraints = {
+        id maxSize: 32
         household nullable: false
         member nullable: false
         householdCode blank: false
@@ -33,8 +35,9 @@ class Residency extends AuditableEntity {
     }
 
     static mapping = {
-        datasource 'main'
         table 'residency'
+
+        id column: "uuid", generator: 'uuid'
 
         household column: "household_id"
         member column: "member_id"

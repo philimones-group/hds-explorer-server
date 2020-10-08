@@ -4,6 +4,7 @@ import org.philimone.hds.explorer.server.model.enums.SyncEntity
 
 class SyncFilesReport {
 
+    String id
     int code
     SyncEntity name
     long records
@@ -18,14 +19,16 @@ class SyncFilesReport {
     }
 
     static constraints = {
+        id maxSize: 32
         code unique: true
         name unique: true
         syncDate nullable: true
     }
 
     static mapping = {
-        datasource 'main'
         table 'sync_report'
+
+        id column: "uuid", generator: 'uuid'
 
         code column: "code"
         name column: "name", enumType: "string"

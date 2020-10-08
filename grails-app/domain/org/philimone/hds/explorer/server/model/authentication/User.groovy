@@ -4,6 +4,7 @@ import groovy.transform.EqualsAndHashCode
 import groovy.transform.ToString
 import grails.compiler.GrailsCompileStatic
 import net.betainteractive.utilities.StringUtil
+import org.grails.datastore.mapping.core.connections.ConnectionSource
 import org.philimone.hds.explorer.server.model.audit.AuditableEntity
 import org.philimone.hds.explorer.server.model.main.StudyModule
 
@@ -17,6 +18,7 @@ class User extends AuditableEntity {
 
     private static final long serialVersionUID = 1
 
+    String id
     String firstName
     String lastName
     String username
@@ -66,7 +68,7 @@ class User extends AuditableEntity {
     static transients = ['isPasswordEncoded', 'getFullname']
 
     static constraints = {
-
+        id maxSize: 32
         firstName blank: false
         lastName blank: false
         password nullable: false, blank: false, password: true
@@ -82,7 +84,9 @@ class User extends AuditableEntity {
     }
 
     static mapping = {
-        datasource 'main'
+        table '_user'
+
+        id column: "uuid", generator: 'uuid'
 
 	    password column: '`password`'
     }

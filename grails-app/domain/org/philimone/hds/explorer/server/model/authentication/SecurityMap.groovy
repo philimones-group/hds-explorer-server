@@ -16,18 +16,23 @@ class SecurityMap implements Serializable {
 
 	private static final long serialVersionUID = 1
 
+	String id
 	String configAttribute
 	HttpMethod httpMethod
 	String url
 
 	static constraints = {
+		id maxSize: 32
 		configAttribute nullable: false, blank: false
 		httpMethod nullable: true
 		url nullable: false, blank: false, unique: 'httpMethod'
 	}
 
 	static mapping = {
-		datasource 'main'
+		table '_security_map'
+
+		id column: "uuid", generator: 'uuid'
+
 		cache true
 	}
 }

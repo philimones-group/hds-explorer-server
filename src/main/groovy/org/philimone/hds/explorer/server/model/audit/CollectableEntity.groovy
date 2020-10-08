@@ -15,8 +15,6 @@ abstract class CollectableEntity extends AuditableEntity {
     }
 
     static mapping = {
-        datasource 'main'
-
         collectedBy column: "collected_by"
         collectedDate column: "collected_date"
     }

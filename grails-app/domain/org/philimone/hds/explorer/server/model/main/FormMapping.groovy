@@ -6,6 +6,7 @@ package org.philimone.hds.explorer.server.model.main
  */
 class FormMapping {
 
+    String id
     Form form
     String formVariableName
     String formRepeatGroup /* If has any value it belongs to an Repeat Group within ODK */
@@ -27,6 +28,7 @@ class FormMapping {
     }
 
     static constraints = {
+        id maxSize: 32
         form nullable: false
         formVariableName blank: false, unique: 'form'
         formRepeatGroup nullable: true, blank: true
@@ -37,8 +39,9 @@ class FormMapping {
     }
 
     static mapping = {
-        datasource 'main'
         table 'form_mapping'
+
+        id column: "uuid", generator: 'uuid'
 
         form column: "form_id"
         formVariableName column: "form_variable_name"

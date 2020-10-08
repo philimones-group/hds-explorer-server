@@ -7,6 +7,7 @@ import org.philimone.hds.explorer.server.model.audit.AuditableEntity
  */
 class RedcapApi extends AuditableEntity {
 
+    String id
     String name
     String url
     String token
@@ -24,14 +25,16 @@ class RedcapApi extends AuditableEntity {
     }
 
     static constraints = {
+        id maxSize: 32
         name unique: true
         url blank: false
         token blank: false, unique: true
     }
 
     static mapping = {
-        datasource 'main'
         table 'redcap_api'
+
+        id column: "uuid", generator: 'uuid'
 
         name column: "name"
         url column: "url"

@@ -7,6 +7,7 @@ import org.philimone.hds.explorer.server.model.audit.CollectableEntity
  */
 class Household extends CollectableEntity {
 
+    String id
     String code
     String region;      /* Last Location Hierarchy */
     String name;
@@ -38,6 +39,7 @@ class Household extends CollectableEntity {
     Double sinLongitude;
 
     static constraints = {
+        id maxSize: 32
         code unique: true
         region nullable: false
         name blank: false
@@ -70,8 +72,9 @@ class Household extends CollectableEntity {
     }
 
     static mapping = {
-        datasource 'main'
         table 'household'
+
+        id column: "uuid", generator: 'uuid'
 
         code column: 'code'
         region column: 'region'

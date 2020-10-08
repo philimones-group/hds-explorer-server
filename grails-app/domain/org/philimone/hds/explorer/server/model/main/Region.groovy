@@ -8,6 +8,7 @@ import org.philimone.hds.explorer.server.model.audit.CollectableEntity
  */
 class Region extends CollectableEntity {
 
+    String id
     String code
     String name
     String hierarchyLevel
@@ -18,6 +19,7 @@ class Region extends CollectableEntity {
     }
 
     static constraints = {
+        id maxSize: 32
         code(unique: true, maxSize: 32)
         name blank: false
         hierarchyLevel blank: false
@@ -27,6 +29,7 @@ class Region extends CollectableEntity {
     static mapping = {
         table 'region'
 
+        id column: "uuid", generator: 'uuid'
         version false
 
         code column: 'code'

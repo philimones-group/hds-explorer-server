@@ -3,6 +3,7 @@ package org.philimone.hds.explorer.server.model.authentication
 import groovy.transform.EqualsAndHashCode
 import groovy.transform.ToString
 import grails.compiler.GrailsCompileStatic
+import org.grails.datastore.mapping.core.connections.ConnectionSource
 
 /**
  * Role represents a user role within the system with specific system security acces
@@ -22,6 +23,7 @@ class Role implements Serializable {
 	static String LABEL_DATA_MANAGER = "role.datamanager.label"
 	static String LABEL_FIELD_WORKER = "role.fieldworker.label"
 
+	String id
 	String name
 	String authority
 
@@ -30,11 +32,17 @@ class Role implements Serializable {
 	}
 
 	static constraints = {
+		id maxSize: 32
 		name nullable: false, blank: false
 		authority nullable: false, blank: false, unique: true
 	}
 
 	static mapping = {
-		datasource 'main'
+		table '_role'
+
+		id column: "uuid", generator: 'uuid'
+
+		cache true
+		autowire true
 	}
 }

@@ -5,6 +5,7 @@ package org.philimone.hds.explorer.server.model.main
  */
 class MappingFormatType {
 
+    String id
     String description
     String type
     String format
@@ -22,14 +23,16 @@ class MappingFormatType {
     }
 
     static constraints = {
+        id maxSize: 32
         description nullable: false
         type nullable: false
         format nullable: false, unique: true
     }
 
     static mapping = {
-        datasource 'main'
         table 'form_mapping_format'
+
+        id column: "uuid", generator: 'uuid'
 
         description column: 'description'
         type column: 'type'

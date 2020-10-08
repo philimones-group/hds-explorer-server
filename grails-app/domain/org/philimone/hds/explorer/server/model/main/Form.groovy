@@ -8,6 +8,7 @@ import org.philimone.hds.explorer.server.model.audit.AuditableEntity
  */
 class Form extends AuditableEntity {
 
+    String id
     String formId
     String formName
     String formDescription
@@ -57,6 +58,7 @@ class Form extends AuditableEntity {
 
     static constraints = {
         //group nullable: true
+        id maxSize: 32
         redcapApi nullable: true
         formId blank: false, unique: true
         formName blank: false
@@ -78,8 +80,9 @@ class Form extends AuditableEntity {
     }
 
     static mapping = {
-        datasource 'main'
         table 'form'
+
+        id column: "uuid", generator: 'uuid'
 
         //group column: 'form_group_id'
         redcapApi column: 'redcap_api'

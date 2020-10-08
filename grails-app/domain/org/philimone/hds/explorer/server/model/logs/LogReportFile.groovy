@@ -5,6 +5,7 @@ package org.philimone.hds.explorer.server.model.logs
  */
 class LogReportFile {
 
+    String id
     long keyTimestamp /* key that associate to a group of logs */
     Date start /* start time of the log */
     Date end   /* end time of the log */
@@ -29,6 +30,7 @@ class LogReportFile {
     static belongsTo = [logReport : LogReport]
 
     static constraints = {
+        id maxSize: 32
         keyTimestamp nullable: false
         start nullable: true
         end nullable: true
@@ -40,7 +42,9 @@ class LogReportFile {
     }
 
     static mapping = {
-        datasource 'main'
+        table '_log_report_file'
+
+        id column: "uuid", generator: 'uuid'
 
         logReport column: "log_report_id"
         keyTimestamp column: "key_timestamp"

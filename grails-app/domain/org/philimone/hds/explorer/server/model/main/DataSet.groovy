@@ -7,6 +7,8 @@ import org.philimone.hds.explorer.server.model.audit.AuditableEntity
  * to provide dynamic datasets to the tablet application
  */
 class DataSet extends AuditableEntity {
+
+    String id
     String name
     String keyColumn
     String tableName
@@ -31,6 +33,7 @@ class DataSet extends AuditableEntity {
     }
 
     static constraints = {
+        id maxSize: 32
         name nullable: true, unique: true
         keyColumn nullable: false, blank: false
         tableName nullable: false, blank: false
@@ -40,8 +43,9 @@ class DataSet extends AuditableEntity {
     }
 
     static mapping = {
-        datasource 'main'
         table 'ext_dataset'
+
+        id column: "uuid", generator: 'uuid'
 
         name column: 'name'
         keyColumn column: 'key_column'

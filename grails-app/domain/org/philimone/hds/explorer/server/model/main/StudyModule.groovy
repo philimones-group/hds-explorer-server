@@ -1,5 +1,6 @@
 package org.philimone.hds.explorer.server.model.main
 
+import org.grails.datastore.mapping.core.connections.ConnectionSource
 import org.philimone.hds.explorer.server.model.audit.AuditableEntity
 
 /**
@@ -9,6 +10,7 @@ class StudyModule extends AuditableEntity {
 
     static String DSS_SURVEY_MODULE = "DSS-SURVEY" /* Default Module */
 
+    String id
     String code
     String name
     String description
@@ -18,14 +20,16 @@ class StudyModule extends AuditableEntity {
     }
 
     static constraints = {
+        id maxSize: 32
         code unique: true
         name blank: false
         description blank: true
     }
 
     static mapping = {
-        datasource 'main'
         table 'study_module'
+
+        id column: "uuid", generator: 'uuid'
 
         code column: "code"
         name column: "name"

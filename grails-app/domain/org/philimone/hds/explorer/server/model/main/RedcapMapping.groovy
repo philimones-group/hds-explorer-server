@@ -6,6 +6,7 @@ package org.philimone.hds.explorer.server.model.main
  */
 class RedcapMapping {
 
+    String id
     Form form
     String formColumnName     /* ODK Variable Name */
     String redcapColumnName   /* REDCap mapped variable */
@@ -16,6 +17,7 @@ class RedcapMapping {
     }
 
     static constraints = {
+        id maxSize: 32
         form nullable: false
         formColumnName blank: false, unique: 'form'
         redcapColumnName blank: false
@@ -23,8 +25,9 @@ class RedcapMapping {
     }
 
     static mapping = {
-        datasource 'main'
         table 'redcap_mapping'
+
+        id column: "uuid", generator: 'uuid'
 
         form column: "form_id"
         formColumnName column: "odk_col_name"

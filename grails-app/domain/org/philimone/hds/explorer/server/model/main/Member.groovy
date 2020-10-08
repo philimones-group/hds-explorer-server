@@ -13,6 +13,7 @@ import org.philimone.hds.explorer.server.model.enums.temporal.ResidencyStartType
  */
 class Member extends CollectableEntity {
 
+    String id
     /**
      * The Household Member unique code identification
      */
@@ -127,6 +128,7 @@ class Member extends CollectableEntity {
     }
 
     static constraints = {
+        id maxSize: 32
         code unique: true, blank: false
         name blank: false
         gender nullable: false
@@ -178,8 +180,9 @@ class Member extends CollectableEntity {
     }
 
     static mapping = {
-        datasource 'main'
         table 'member'
+
+        id column: "uuid", generator: 'uuid'
 
         code column: 'code'
         name column: 'name'
@@ -232,7 +235,7 @@ class Member extends CollectableEntity {
         sinLongitude column: 'sin_longitude'
     }
 
-    def static ALL_COLUMNS = ['code', 'name', 'gender', 'dob', 'age', 'ageAtDeath', 'motherCode', 'motherName', 'fatherCode', 'fatherName', 'spouseCode', 'spouseName', 'spouseType',
+    def static ALL_COLUMNS = ['code', 'name', 'gender', 'dob', 'age', 'ageAtDeath', 'motherCode', 'motherName', 'fatherCode', 'fatherName', 'maritalStatus', 'spouseCode', 'spouseName', 'spouseType',
                               'householdCode', 'householdName', 'isHouseholdHead', 'isSecHouseholdHead', 'startType', 'startDate', 'endType', 'endDate', 'entryHousehold', 'entryType', 'entryDate',
-                              'gpsAccuracy', 'gpsAltitude', 'gpsLatitude', 'gpsLongitude']
+                              'headRelationshipType', 'gpsAccuracy', 'gpsAltitude', 'gpsLatitude', 'gpsLongitude']
 }

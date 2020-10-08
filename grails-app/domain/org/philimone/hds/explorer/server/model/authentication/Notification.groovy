@@ -7,6 +7,7 @@ class Notification {
 
     static String LABEL_STATUS = "notification.status.label"
 
+    String id
     User user
     String subject
     String message
@@ -25,6 +26,8 @@ class Notification {
     static transients = ['shortMessage']
 
     static constraints = {
+        id maxSize: 32
+
         user nullable:false
         subject blank:true, nullable:false
         message blank:false, nullable:false, widget: 'textarea'
@@ -32,6 +35,9 @@ class Notification {
     }
 
     static mapping = {
-        datasource 'main'
+        table '_notification'
+
+        id column: "uuid", generator: 'uuid'
     }
+
 }
