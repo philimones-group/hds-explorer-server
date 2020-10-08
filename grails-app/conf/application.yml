@@ -115,29 +115,27 @@ grails:
               mail.smtp.socketFactory.class: "javax.net.ssl.SSLSocketFactory"
               mail.smtp.socketFactory.fallback: "false"
 
+
+dataSource:
+    #MySQL Config
+    #pooled: true
+    #driverClassName: com.mysql.jdbc.Driver
+    #dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+    #username: hds_explorer
+    #password: your_password
+    #url: jdbc:mysql://localhost/hds_explorer_db?createDatabaseIfNotExist=true&autoReconnect=true&zeroDateTimeBehavior=convertToNull
+    #logSql: true
+
+    #PostgreSQL Config
+    pooled: true
+    jmxExport: true
+    driverClassName: org.postgresql.Driver
+    username: hds_explorer
+    password: your_password
+    url: jdbc:postgresql://localhost:5432/hds_explorer_db
+    dialect: org.hibernate.dialect.PostgreSQL94Dialect
+    logSql: true
 dataSources:
-    dataSource:
-    main:
-        #MySQL Config
-        #pooled: true
-        #driverClassName: com.mysql.jdbc.Driver
-        #dialect: org.hibernate.dialect.MySQL5InnoDBDialect
-        #username: hds_explorer
-        #password: your_password
-        #url: jdbc:mysql://localhost/hds_explorer_db?createDatabaseIfNotExist=true&autoReconnect=true&zeroDateTimeBehavior=convertToNull
-        #logSql: true
-
-        #PostgreSQL Config
-        pooled: true
-        jmxExport: true
-        driverClassName: org.postgresql.Driver
-        username: hds_explorer
-        password: your_password
-        url: "jdbc:postgresql://localhost:5432/hds_explorer_db"
-        dialect: org.philimone.hds.explorer.server.io.database.postgresql.CustomPostgreSQLDialect #org.hibernate.dialect.PostgreSQLDialect
-        hibernate.default_schema: "hds_explorer_db"
-        #logSql: true
-
     openhds:
         pooled: true
         dbCreate: none
@@ -147,17 +145,17 @@ dataSources:
 
 environments:
     development:
+        dataSource:
+            dbCreate: update
         dataSources:
-            dataSource:
-            main:
-                dbCreate: update
             openhds:
                 dbCreate: none
             odk:
               dbCreate: none
     test:
+        dataSource:
+            dbCreate: update
         dataSources:
-            dataSource:
             main:
                 dbCreate: update
                 url: jdbc:h2:mem:testDb;MVCC=TRUE;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=FALSE
@@ -166,29 +164,28 @@ environments:
             odk:
               dbCreate: none
     production:
+        dataSource:
+            dbCreate: update
+            polled: true
+            properties:
+              jmxEnabled: true
+              initialSize: 5
+              maxActive: 50
+              minIdle: 5
+              maxIdle: 50
+              maxWait: 10000
+              maxAge: 600000
+              timeBetweenEvictionRunsMillis: 1800000
+              minEvictableIdleTimeMillis: 1800000
+              validationQuery: SELECT 1
+              validationQueryTimeout: 3
+              validationInterval: 15000
+              testOnBorrow: true
+              testWhileIdle: true
+              testOnReturn: false
+              jdbcInterceptors: ConnectionState
+              defaultTransactionIsolation: 2 # TRANSACTION_READ_COMMITTED
         dataSources:
-            dataSource:
-            main:
-                dbCreate: update
-                polled: true
-                properties:
-                   jmxEnabled: true
-                   initialSize: 5
-                   maxActive: 50
-                   minIdle: 5
-                   maxIdle: 50
-                   maxWait: 10000
-                   maxAge: 600000
-                   timeBetweenEvictionRunsMillis: 1800000
-                   minEvictableIdleTimeMillis: 1800000
-                   validationQuery: SELECT 1
-                   validationQueryTimeout: 3
-                   validationInterval: 15000
-                   testOnBorrow: true
-                   testWhileIdle: true
-                   testOnReturn: false
-                   jdbcInterceptors: ConnectionState
-                   defaultTransactionIsolation: 2 # TRANSACTION_READ_COMMITTED
             openhds:  # this datasource is optional
                 dbCreate: none
                 polled: true
