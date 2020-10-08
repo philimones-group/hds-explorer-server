@@ -46,9 +46,14 @@
 						<td><g:message code="${logReport.status}" default="${logReport.status}" /></td>
 
 						<td>
-							<g:link class="edit" controller="syncFiles" action="export" id="${logReport.id}">
+							<g:if test="${logReport.enabled==true}">
+								<g:link class="edit" controller="syncFiles" action="export" id="${logReport.id}">
+									<g:message code="default.execute.label" default="Execute" />
+								</g:link>
+							</g:if>
+							<g:else>
 								<g:message code="default.execute.label" default="Execute" />
-							</g:link>
+							</g:else>
 						</td>
 					
 					</tr>

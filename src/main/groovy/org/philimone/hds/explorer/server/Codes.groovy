@@ -39,6 +39,9 @@ class Codes {
     static final int REPORT_GENERATE_MEMBERS_ZIP_XML_FILES = 52
     static final int REPORT_GENERATE_SETTINGS_ZIP_XML_FILES = 53
     static final int REPORT_GENERATE_TRACKING_LISTS_ZIP_XML_FILES = 54
+    static final int REPORT_GENERATE_RESIDENCIES_ZIP_XML_FILES = 55
+    static final int REPORT_GENERATE_HEAD_RELATIONSHIPS_ZIP_XML_FILES = 56
+    static final int REPORT_GENERATE_MARTIAL_RELATIONSHIPS_ZIP_XML_FILES = 57
 
 
     /* Application default parameters */

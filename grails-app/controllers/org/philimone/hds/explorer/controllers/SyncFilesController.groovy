@@ -2,6 +2,7 @@ package org.philimone.hds.explorer.controllers
 
 import org.philimone.hds.explorer.io.SystemPath
 import org.philimone.hds.explorer.server.Codes
+import org.philimone.hds.explorer.server.model.enums.SyncEntity
 import org.philimone.hds.explorer.server.model.logs.LogReport
 import org.philimone.hds.explorer.server.model.enums.LogStatus
 import org.philimone.hds.explorer.server.model.main.DataSet
@@ -76,6 +77,21 @@ class SyncFilesController {
 
         def file = new File(dataset.filename)
         render file: file, fileName: file.name
+    }
+
+    def residencies = {
+        def file = new File(SystemPath.getGeneratedFilesPath() + File.separator + "${SyncEntity.RESIDENCIES.xmlFilename}")
+        render file: file
+    }
+
+    def headRelationships = {
+        def file = new File(SystemPath.getGeneratedFilesPath() + File.separator + "${SyncEntity.HEAD_RELATIONSHIPS.xmlFilename}")
+        render file: file
+    }
+
+    def maritalRelationships = {
+        def file = new File(SystemPath.getGeneratedFilesPath() + File.separator + "${SyncEntity.MARITAL_RELATIONSHIPS.xmlFilename}")
+        render file: file
     }
 
     /* ZIP Files*/
@@ -190,6 +206,30 @@ class SyncFilesController {
         response.outputStream << file.bytes
     }
 
+    def residenciesZip = {
+        def file = new File(SystemPath.getGeneratedFilesPath() + File.separator + "${SyncEntity.RESIDENCIES.zipFilename}")
+
+        response.setContentLengthLong(file.size())
+        response.setContentType("application/zip")
+        response.outputStream << file.bytes
+    }
+
+    def headRelationshipsZip = {
+        def file = new File(SystemPath.getGeneratedFilesPath() + File.separator + "${SyncEntity.HEAD_RELATIONSHIPS.zipFilename}")
+
+        response.setContentLengthLong(file.size())
+        response.setContentType("application/zip")
+        response.outputStream << file.bytes
+    }
+
+    def maritalRelationshipsZip = {
+        def file = new File(SystemPath.getGeneratedFilesPath() + File.separator + "${SyncEntity.MARITAL_RELATIONSHIPS.zipFilename}")
+
+        response.setContentLengthLong(file.size())
+        response.setContentType("application/zip")
+        response.outputStream << file.bytes
+    }
+
     def syncFilesReport(int id){
         def report = syncFilesReportService.get(id)
 
@@ -278,6 +318,36 @@ class SyncFilesController {
                 void run() {
                     println "executing export files to tracking lists xml/zip"
                     syncFilesService.generateTrackingListsXML(id)
+                }
+            }).start()
+        }
+
+        if (logReport.reportId==Codes.REPORT_GENERATE_RESIDENCIES_ZIP_XML_FILES){
+            new Thread(new Runnable() {
+                @Override
+                void run() {
+                    println "executing export files to residencies xml/zip"
+                    syncFilesService.generateResidenciesXML(id)
+                }
+            }).start()
+        }
+
+        if (logReport.reportId==Codes.REPORT_GENERATE_HEAD_RELATIONSHIPS_ZIP_XML_FILES){
+            new Thread(new Runnable() {
+                @Override
+                void run() {
+                    println "executing export files to h.relationships xml/zip"
+                    syncFilesService.generateHeadRelationshipsXML(id)
+                }
+            }).start()
+        }
+
+        if (logReport.reportId==Codes.REPORT_GENERATE_MARTIAL_RELATIONSHIPS_ZIP_XML_FILES){
+            new Thread(new Runnable() {
+                @Override
+                void run() {
+                    println "executing export files to m.relationships xml/zip"
+                    syncFilesService.generateMaritalRelationshipsXML(id)
                 }
             }).start()
         }

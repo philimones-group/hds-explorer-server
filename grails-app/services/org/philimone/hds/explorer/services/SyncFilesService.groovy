@@ -12,11 +12,14 @@ import org.philimone.hds.explorer.server.model.enums.LogStatus
 import org.philimone.hds.explorer.server.model.main.DataSet
 import org.philimone.hds.explorer.server.model.main.Form
 import org.philimone.hds.explorer.server.model.main.FormMapping
+import org.philimone.hds.explorer.server.model.main.HeadRelationship
 import org.philimone.hds.explorer.server.model.main.Household
+import org.philimone.hds.explorer.server.model.main.MaritalRelationship
 import org.philimone.hds.explorer.server.model.main.Member
 import org.philimone.hds.explorer.server.model.main.RedcapApi
 import org.philimone.hds.explorer.server.model.main.RedcapMapping
 import org.philimone.hds.explorer.server.model.main.Region
+import org.philimone.hds.explorer.server.model.main.Residency
 import org.philimone.hds.explorer.server.model.main.StudyModule
 import org.philimone.hds.explorer.server.model.main.TrackingList
 import org.philimone.hds.explorer.server.model.settings.ApplicationParam
@@ -332,6 +335,99 @@ class SyncFilesService {
 
     }
 
+    def generateRegionsXML(long logReportId) {
+
+        LogOutput log = generalUtilitiesService.getOutput(SystemPath.getLogsPath(), "generate-regions-xml-zip");
+        PrintStream output = log.output
+        if (output == null) return;
+
+        def start = new Date();
+        int processed = 0
+        int errors = 0
+        def logStatusValue = LogStatus.FINISHED
+
+        try {
+            //Ler todos users
+            def resultRegions = []
+
+            Region.withTransaction {
+                resultRegions = Region.list()
+            }
+
+            DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+
+            // root elements
+            Document doc = docBuilder.newDocument();
+            Element rootElement = doc.createElement("regions");
+            doc.appendChild(rootElement);
+
+
+            int count = 0;
+
+            resultRegions.each { region ->
+                count++;
+                Element element = createRegion(doc, region);
+                rootElement.appendChild(element);
+            }
+
+            // write the content into xml file
+            TransformerFactory transformerFactory = TransformerFactory.newInstance();
+            Transformer transformer = transformerFactory.newTransformer();
+            DOMSource source = new DOMSource(doc);
+            StreamResult result = new StreamResult(new File(SystemPath.getGeneratedFilesPath() + File.separator + "regions.xml"));
+
+            // Output to console for testing
+            //StreamResult result = new StreamResult(System.out);
+
+            transformer.transform(source, result);
+
+            System.out.println("File saved! - regions.xml");
+            output.println("File saved! - regions.xml");
+
+            //zip file
+            ZipMaker zipMaker = new ZipMaker(SystemPath.getGeneratedFilesPath() + File.separator + "regions.zip")
+            zipMaker.addFile(SystemPath.getGeneratedFilesPath() + File.separator + "regions.xml")
+            def b = zipMaker.makeZip()
+
+            println "creating zip - regions.zip - success="+b
+
+            processed = 1
+
+            //Save number of records
+            syncFilesReportService.update(SyncEntity.REGIONS, count)
+
+        } catch (Exception ex) {
+            ex.printStackTrace()
+            processed = 0
+            errors = 1
+            output.println(ex.toString())
+
+            logStatusValue = LogStatus.ERROR
+        }
+
+        LogReport.withTransaction {
+            LogReport logReport = LogReport.findByReportId(logReportId)
+            LogReportFile reportFile = new LogReportFile(creationDate: new Date(), fileName: log.logFileName, logReport: logReport)
+            reportFile.keyTimestamp = logReport.keyTimestamp
+            reportFile.start = start
+            reportFile.end = new Date()
+            reportFile.creationDate = new Date()
+            reportFile.processedCount = processed
+            reportFile.errorsCount = errors
+
+            logReport.end = new Date()
+            logReport.status = logStatusValue
+            logReport.addToLogFiles(reportFile)
+            logReport.save()
+
+            //println("errors: ${logReport.errors}")
+        }
+
+        output.close();
+
+    }
+    
     def generateHouseHoldsXML(long logReportId) {
 
         LogOutput log = generalUtilitiesService.getOutput(SystemPath.logsPath, "/generate-households-xml");
@@ -502,6 +598,297 @@ class SyncFilesService {
 
     }
 
+    def generateResidenciesXML(long logReportId) {
+        String filename = SyncEntity.RESIDENCIES.filename
+        String xmlFilename = SyncEntity.RESIDENCIES.xmlFilename
+        String zipFilename = SyncEntity.RESIDENCIES.zipFilename
+
+
+        LogOutput log = generalUtilitiesService.getOutput(SystemPath.getLogsPath(), "generate-${filename}-xml-zip");
+        PrintStream output = log.output
+        if (output == null) return;
+
+        def start = new Date();
+        int processed = 0
+        int errors = 0
+        def logStatusValue = LogStatus.FINISHED
+
+        try {
+            //Ler todos users
+            def resultResidencies = []
+
+            Residency.withTransaction {
+                resultResidencies = Residency.list()
+            }
+
+            DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+
+            // root elements
+            Document doc = docBuilder.newDocument();
+            Element rootElement = doc.createElement("${filename}");
+            doc.appendChild(rootElement);
+
+
+            int count = 0;
+
+            resultResidencies.each { region ->
+                count++;
+                Element element = createResidency(doc, region);
+                rootElement.appendChild(element);
+            }
+
+            // write the content into xml file
+            TransformerFactory transformerFactory = TransformerFactory.newInstance();
+            Transformer transformer = transformerFactory.newTransformer();
+            DOMSource source = new DOMSource(doc);
+            StreamResult result = new StreamResult(new File(SystemPath.getGeneratedFilesPath() + File.separator + "${xmlFilename}"));
+
+            // Output to console for testing
+            //StreamResult result = new StreamResult(System.out);
+
+            transformer.transform(source, result);
+
+            System.out.println("File saved! - ${xmlFilename}");
+            output.println("File saved! - ${xmlFilename}");
+
+            //zip file
+            ZipMaker zipMaker = new ZipMaker(SystemPath.getGeneratedFilesPath() + File.separator + "${zipFilename}")
+            zipMaker.addFile(SystemPath.getGeneratedFilesPath() + File.separator + "${xmlFilename}")
+            def b = zipMaker.makeZip()
+
+            println "creating zip - ${zipFilename} - success="+b
+
+            processed = 1
+
+            //Save number of records
+            syncFilesReportService.update(SyncEntity.RESIDENCIES, count)
+
+        } catch (Exception ex) {
+            ex.printStackTrace()
+            processed = 0
+            errors = 1
+            output.println(ex.toString())
+
+            logStatusValue = LogStatus.ERROR
+        }
+
+        LogReport.withTransaction {
+            LogReport logReport = LogReport.findByReportId(logReportId)
+            LogReportFile reportFile = new LogReportFile(creationDate: new Date(), fileName: log.logFileName, logReport: logReport)
+            reportFile.keyTimestamp = logReport.keyTimestamp
+            reportFile.start = start
+            reportFile.end = new Date()
+            reportFile.creationDate = new Date()
+            reportFile.processedCount = processed
+            reportFile.errorsCount = errors
+
+            logReport.end = new Date()
+            logReport.status = logStatusValue
+            logReport.addToLogFiles(reportFile)
+            logReport.save()
+
+            //println("errors: ${logReport.errors}")
+        }
+
+        output.close();
+
+    }
+
+    def generateHeadRelationshipsXML(long logReportId) {
+        String filename = SyncEntity.HEAD_RELATIONSHIPS.filename
+        String xmlFilename = SyncEntity.HEAD_RELATIONSHIPS.xmlFilename
+        String zipFilename = SyncEntity.HEAD_RELATIONSHIPS.zipFilename
+
+
+        LogOutput log = generalUtilitiesService.getOutput(SystemPath.getLogsPath(), "generate-${filename}-xml-zip");
+        PrintStream output = log.output
+        if (output == null) return;
+
+        def start = new Date();
+        int processed = 0
+        int errors = 0
+        def logStatusValue = LogStatus.FINISHED
+
+        try {
+            //Ler todos users
+            def resultHeadRelationships = []
+
+            HeadRelationship.withTransaction {
+                resultHeadRelationships = HeadRelationship.list()
+            }
+
+            DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+
+            // root elements
+            Document doc = docBuilder.newDocument();
+            Element rootElement = doc.createElement("${filename}");
+            doc.appendChild(rootElement);
+
+
+            int count = 0;
+
+            resultHeadRelationships.each { region ->
+                count++;
+                Element element = createHeadRelationship(doc, region);
+                rootElement.appendChild(element);
+            }
+
+            // write the content into xml file
+            TransformerFactory transformerFactory = TransformerFactory.newInstance();
+            Transformer transformer = transformerFactory.newTransformer();
+            DOMSource source = new DOMSource(doc);
+            StreamResult result = new StreamResult(new File(SystemPath.getGeneratedFilesPath() + File.separator + "${xmlFilename}"));
+
+            // Output to console for testing
+            //StreamResult result = new StreamResult(System.out);
+
+            transformer.transform(source, result);
+
+            System.out.println("File saved! - ${xmlFilename}");
+            output.println("File saved! - ${xmlFilename}");
+
+            //zip file
+            ZipMaker zipMaker = new ZipMaker(SystemPath.getGeneratedFilesPath() + File.separator + "${zipFilename}")
+            zipMaker.addFile(SystemPath.getGeneratedFilesPath() + File.separator + "${xmlFilename}")
+            def b = zipMaker.makeZip()
+
+            println "creating zip - ${zipFilename} - success="+b
+
+            processed = 1
+
+            //Save number of records
+            syncFilesReportService.update(SyncEntity.HEAD_RELATIONSHIPS, count)
+
+        } catch (Exception ex) {
+            ex.printStackTrace()
+            processed = 0
+            errors = 1
+            output.println(ex.toString())
+
+            logStatusValue = LogStatus.ERROR
+        }
+
+        LogReport.withTransaction {
+            LogReport logReport = LogReport.findByReportId(logReportId)
+            LogReportFile reportFile = new LogReportFile(creationDate: new Date(), fileName: log.logFileName, logReport: logReport)
+            reportFile.keyTimestamp = logReport.keyTimestamp
+            reportFile.start = start
+            reportFile.end = new Date()
+            reportFile.creationDate = new Date()
+            reportFile.processedCount = processed
+            reportFile.errorsCount = errors
+
+            logReport.end = new Date()
+            logReport.status = logStatusValue
+            logReport.addToLogFiles(reportFile)
+            logReport.save()
+
+            //println("errors: ${logReport.errors}")
+        }
+
+        output.close();
+
+    }
+
+    def generateMaritalRelationshipsXML(long logReportId) {
+        String filename = SyncEntity.MARITAL_RELATIONSHIPS.filename
+        String xmlFilename = SyncEntity.MARITAL_RELATIONSHIPS.xmlFilename
+        String zipFilename = SyncEntity.MARITAL_RELATIONSHIPS.zipFilename
+
+
+        LogOutput log = generalUtilitiesService.getOutput(SystemPath.getLogsPath(), "generate-${filename}-xml-zip");
+        PrintStream output = log.output
+        if (output == null) return;
+
+        def start = new Date();
+        int processed = 0
+        int errors = 0
+        def logStatusValue = LogStatus.FINISHED
+
+        try {
+            //Ler todos users
+            def resultMaritalRelationships = []
+
+            MaritalRelationship.withTransaction {
+                resultMaritalRelationships = MaritalRelationship.list()
+            }
+
+            DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+
+            // root elements
+            Document doc = docBuilder.newDocument();
+            Element rootElement = doc.createElement("${filename}");
+            doc.appendChild(rootElement);
+
+
+            int count = 0;
+
+            resultMaritalRelationships.each { region ->
+                count++;
+                Element element = createMaritalRelationship(doc, region);
+                rootElement.appendChild(element);
+            }
+
+            // write the content into xml file
+            TransformerFactory transformerFactory = TransformerFactory.newInstance();
+            Transformer transformer = transformerFactory.newTransformer();
+            DOMSource source = new DOMSource(doc);
+            StreamResult result = new StreamResult(new File(SystemPath.getGeneratedFilesPath() + File.separator + "${xmlFilename}"));
+
+            // Output to console for testing
+            //StreamResult result = new StreamResult(System.out);
+
+            transformer.transform(source, result);
+
+            System.out.println("File saved! - ${xmlFilename}");
+            output.println("File saved! - ${xmlFilename}");
+
+            //zip file
+            ZipMaker zipMaker = new ZipMaker(SystemPath.getGeneratedFilesPath() + File.separator + "${zipFilename}")
+            zipMaker.addFile(SystemPath.getGeneratedFilesPath() + File.separator + "${xmlFilename}")
+            def b = zipMaker.makeZip()
+
+            println "creating zip - ${zipFilename} - success="+b
+
+            processed = 1
+
+            //Save number of records
+            syncFilesReportService.update(SyncEntity.MARITAL_RELATIONSHIPS, count)
+
+        } catch (Exception ex) {
+            ex.printStackTrace()
+            processed = 0
+            errors = 1
+            output.println(ex.toString())
+
+            logStatusValue = LogStatus.ERROR
+        }
+
+        LogReport.withTransaction {
+            LogReport logReport = LogReport.findByReportId(logReportId)
+            LogReportFile reportFile = new LogReportFile(creationDate: new Date(), fileName: log.logFileName, logReport: logReport)
+            reportFile.keyTimestamp = logReport.keyTimestamp
+            reportFile.start = start
+            reportFile.end = new Date()
+            reportFile.creationDate = new Date()
+            reportFile.processedCount = processed
+            reportFile.errorsCount = errors
+
+            logReport.end = new Date()
+            logReport.status = logStatusValue
+            logReport.addToLogFiles(reportFile)
+            logReport.save()
+
+            //println("errors: ${logReport.errors}")
+        }
+
+        output.close();
+
+    }
+
     def generateAppParametersXML(long logReportId) {
 
         LogOutput log = generalUtilitiesService.getOutput(SystemPath.getLogsPath(), "generate-app-param-xml-zip");
@@ -593,100 +980,7 @@ class SyncFilesService {
 
         output.close();
 
-    }
-
-    def generateRegionsXML(long logReportId) {
-
-        LogOutput log = generalUtilitiesService.getOutput(SystemPath.getLogsPath(), "generate-regions-xml-zip");
-        PrintStream output = log.output
-        if (output == null) return;
-
-        def start = new Date();
-        int processed = 0
-        int errors = 0
-        def logStatusValue = LogStatus.FINISHED
-
-        try {
-            //Ler todos users
-            def resultRegions = []
-
-            Region.withTransaction {
-                resultRegions = Region.list()
-            }
-
-            DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
-
-            // root elements
-            Document doc = docBuilder.newDocument();
-            Element rootElement = doc.createElement("regions");
-            doc.appendChild(rootElement);
-
-
-            int count = 0;
-
-            resultRegions.each { region ->
-                count++;
-                Element element = createRegion(doc, region);
-                rootElement.appendChild(element);
-            }
-
-            // write the content into xml file
-            TransformerFactory transformerFactory = TransformerFactory.newInstance();
-            Transformer transformer = transformerFactory.newTransformer();
-            DOMSource source = new DOMSource(doc);
-            StreamResult result = new StreamResult(new File(SystemPath.getGeneratedFilesPath() + File.separator + "regions.xml"));
-
-            // Output to console for testing
-            //StreamResult result = new StreamResult(System.out);
-
-            transformer.transform(source, result);
-
-            System.out.println("File saved! - regions.xml");
-            output.println("File saved! - regions.xml");
-
-            //zip file
-            ZipMaker zipMaker = new ZipMaker(SystemPath.getGeneratedFilesPath() + File.separator + "regions.zip")
-            zipMaker.addFile(SystemPath.getGeneratedFilesPath() + File.separator + "regions.xml")
-            def b = zipMaker.makeZip()
-
-            println "creating zip - regions.zip - success="+b
-
-            processed = 1
-
-            //Save number of records
-            syncFilesReportService.update(SyncEntity.REGIONS, count)
-
-        } catch (Exception ex) {
-            ex.printStackTrace()
-            processed = 0
-            errors = 1
-            output.println(ex.toString())
-
-            logStatusValue = LogStatus.ERROR
-        }
-
-        LogReport.withTransaction {
-            LogReport logReport = LogReport.findByReportId(logReportId)
-            LogReportFile reportFile = new LogReportFile(creationDate: new Date(), fileName: log.logFileName, logReport: logReport)
-            reportFile.keyTimestamp = logReport.keyTimestamp
-            reportFile.start = start
-            reportFile.end = new Date()
-            reportFile.creationDate = new Date()
-            reportFile.processedCount = processed
-            reportFile.errorsCount = errors
-
-            logReport.end = new Date()
-            logReport.status = logStatusValue
-            logReport.addToLogFiles(reportFile)
-            logReport.save()
-
-            //println("errors: ${logReport.errors}")
-        }
-
-        output.close();
-
-    }
+    }    
 
     def generateDatasetsXML(long logReportId) {
 
@@ -985,6 +1279,49 @@ class SyncFilesService {
         return element;
     }
 
+    private Element createResidency(Document doc, Residency residency) {
+        Element element = doc.createElement("residency");
+
+        element.appendChild(createAttributeNonNull(doc, "householdCode", residency.householdCode));
+        element.appendChild(createAttributeNonNull(doc, "memberCode", residency.memberCode));
+        element.appendChild(createAttributeNonNull(doc, "order", residency.order));
+        element.appendChild(createAttributeNonNull(doc, "startType", residency.startType.code ));
+        element.appendChild(createAttributeNonNull(doc, "startDate", residency.startDate));
+        element.appendChild(createAttributeNonNull(doc, "endType", residency.endType.code));
+        element.appendChild(createAttributeNonNull(doc, "endDate", residency.endDate ));
+
+        return element;
+    }
+
+    private Element createHeadRelationship(Document doc, HeadRelationship headRelationship) {
+        Element element = doc.createElement("headRelationship");
+        
+        element.appendChild(createAttributeNonNull(doc, "householdCode", headRelationship.householdCode));
+        element.appendChild(createAttributeNonNull(doc, "memberCode", headRelationship.memberCode));
+        element.appendChild(createAttributeNonNull(doc, "headCode", headRelationship.headCode));
+        element.appendChild(createAttributeNonNull(doc, "relationshipType", headRelationship.relationshipType.code));
+        element.appendChild(createAttributeNonNull(doc, "order", headRelationship.order));
+        element.appendChild(createAttributeNonNull(doc, "startType", headRelationship.startType.code ));
+        element.appendChild(createAttributeNonNull(doc, "startDate", headRelationship.startDate));
+        element.appendChild(createAttributeNonNull(doc, "endType", headRelationship.endType.code));
+        element.appendChild(createAttributeNonNull(doc, "endDate", headRelationship.endDate ));
+
+        return element;
+    }
+
+    private Element createMaritalRelationship(Document doc, MaritalRelationship maritalRelationship) {
+        Element element = doc.createElement("maritalRelationship");
+
+        element.appendChild(createAttributeNonNull(doc, "memberA_code", maritalRelationship.memberA_code));
+        element.appendChild(createAttributeNonNull(doc, "memberB_code", maritalRelationship.memberB_code));
+        element.appendChild(createAttributeNonNull(doc, "startStatus", maritalRelationship.startStatus.code));
+        element.appendChild(createAttributeNonNull(doc, "startDate", maritalRelationship.startDate));
+        element.appendChild(createAttributeNonNull(doc, "endStatus", maritalRelationship.endStatus.code));
+        element.appendChild(createAttributeNonNull(doc, "endDate", maritalRelationship.endDate ));
+
+        return element;
+    }
+
     private Element createAttribute(Document doc, String name, String value){
         Element element = doc.createElement(name);
         element.appendChild(doc.createTextNode(value));
@@ -995,6 +1332,15 @@ class SyncFilesService {
         Element element = doc.createElement(name);
         element.appendChild(doc.createTextNode(value==null ? "" : value));
         return element;
+    }
+
+    private Element createAttributeNonNull(Document doc, String name, Date value){
+        def date = StringUtil.format(value, "yyyy-MM-dd");
+        return createAttributeNonNull(doc, name, date);
+    }
+
+    private Element createAttributeNonNull(Document doc, String name, Integer value){
+        return createAttributeNonNull(doc, name, value.toString());
     }
 
     private Element createAttribute(Document doc, String name, int value){
@@ -1045,6 +1391,7 @@ class SyncFilesService {
                 ((m.fatherCode==null || m.fatherCode.isEmpty()) ?       "<fatherCode />" : "<fatherCode>${m.fatherCode}</fatherCode>") +
                 ((m.fatherName==null || m.fatherName.isEmpty()) ?       "<fatherName />" : "<fatherName>${m.fatherName}</fatherName>") +
 
+                ((m.maritalStatus==null) ?                              "<maritalStatus />" : "<maritalStatus>${m.maritalStatus.code}</maritalStatus>") +
                 ((m.spouseCode==null || m.spouseCode.isEmpty()) ?       "<spouseCode />" : "<spouseCode>${m.spouseCode}</spouseCode>") +
                 ((m.spouseName==null || m.spouseName.isEmpty()) ?       "<spouseName />" : "<spouseName>${m.spouseName}</spouseName>") +
                 /*((m.spouseType==null || m.spouseType.isEmpty()) ?       "<spouseType />" : "<spouseType>${m.spouseType}</spouseType>") + */
@@ -1058,11 +1405,11 @@ class SyncFilesService {
 
                 ((m.entryHousehold==null || m.entryHousehold.isEmpty()) ? "<entryHousehold />" : "<entryHousehold>${m.entryHousehold}</entryHousehold>") +
                 ((m.entryType==null || m.entryType.isEmpty())           ? "<entryType />" : "<entryType>${m.entryType.code}</entryType>") +
-                ((m.entryDate==null)                                  ? "<entryDate />" : "<entryDate>${StringUtil.format(m.entryDate, "yyyy-MM-dd")}</entryDate>") +
+                ((m.entryDate==null)                                    ? "<entryDate />" : "<entryDate>${StringUtil.format(m.entryDate, "yyyy-MM-dd")}</entryDate>") +
 
                 ((m.headRelationshipType==null)                       ? "<headRelationshipType />" : "<headRelationshipType>${m.headRelationshipType.code}</headRelationshipType>") +
                 ((m.headRelationshipType==null)                       ? "<isHouseholdHead />" : "<isHouseholdHead>${m.isHouseholdHead()}</isHouseholdHead>") +
-                ((m.isSecHouseholdHead==null)                         ? "<isSecHouseholdHead />" : "<isSecHouseholdHead>${m.isSecHouseholdHead}</isSecHouseholdHead>") +
+                //((m.isSecHouseholdHead==null)                         ? "<isSecHouseholdHead />" : "<isSecHouseholdHead>${m.isSecHouseholdHead}</isSecHouseholdHead>") +
 
                 ((m.gpsAccuracy == null)                              ? "<gpsAccuracy />" : "<gpsAccuracy>${m.gpsAccuracy}</gpsAccuracy>") +
                 ((m.gpsAltitude == null)                              ? "<gpsAltitude />" : "<gpsAltitude>${m.gpsAltitude}</gpsAltitude>") +

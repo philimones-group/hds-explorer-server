@@ -134,6 +134,9 @@ class BootStrap {
             new SecurityMap(url: "/api/export/forms/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
             new SecurityMap(url: "/api/export/users/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
             new SecurityMap(url: "/api/export/trackinglists/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
+            new SecurityMap(url: "/api/export/residencies/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
+            new SecurityMap(url: "/api/export/hrelationships/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
+            new SecurityMap(url: "/api/export/mrelationships/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
             new SecurityMap(url: "/api/export/stats/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
 
             new SecurityMap(url: "/api/export/params/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
@@ -292,6 +295,29 @@ class BootStrap {
                 description: 'logreport.export.trakinglists.zip_xml_files.label'
         ).save(flush: true)
 
+        new LogReport(
+                reportId: Codes.REPORT_GENERATE_RESIDENCIES_ZIP_XML_FILES,
+                group: LogGroup.findByGroupId(Codes.GROUP_GENERATE_FILES),
+                status: LogStatus.NOT_STARTED,
+                description: 'logreport.export.residencies.zip_xml_files.label',
+                enabled: false
+        ).save(flush: true)
+
+        new LogReport(
+                reportId: Codes.REPORT_GENERATE_HEAD_RELATIONSHIPS_ZIP_XML_FILES,
+                group: LogGroup.findByGroupId(Codes.GROUP_GENERATE_FILES),
+                status: LogStatus.NOT_STARTED,
+                description: 'logreport.export.head_relationships.zip_xml_files.label',
+                enabled: false
+        ).save(flush: true)
+
+        new LogReport(
+                reportId: Codes.REPORT_GENERATE_MARTIAL_RELATIONSHIPS_ZIP_XML_FILES,
+                group: LogGroup.findByGroupId(Codes.GROUP_GENERATE_FILES),
+                status: LogStatus.NOT_STARTED,
+                description: 'logreport.export.marital_relationships.zip_xml_files.label',
+                enabled: false
+        ).save(flush: true)
 
         //Inserting defaults system params
 
