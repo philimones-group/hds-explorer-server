@@ -27,7 +27,7 @@ class RedcapMapping {
     static mapping = {
         table 'redcap_mapping'
 
-        id column: "uuid", generator: 'uuid'
+        id column: "id", generator: 'uuid'
 
         form column: "form_id"
         formColumnName column: "odk_col_name"

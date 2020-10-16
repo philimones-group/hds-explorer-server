@@ -22,7 +22,7 @@ class DataSetLabel {
     static mapping = {
         table 'dataset_label'
 
-        id column: "uuid", generator: 'uuid'
+        id column: "id", generator: 'uuid'
 
         list column: 'dataset_id'
         name column: 'name'

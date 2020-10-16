@@ -24,7 +24,7 @@ class LogGroup {
     static mapping = {
         table '_log_group'
 
-        id column: "uuid", generator: 'uuid'
+        id column: "id", generator: 'uuid'
     }
 
 }

@@ -29,7 +29,7 @@ class Region extends CollectableEntity {
     static mapping = {
         table 'region'
 
-        id column: "uuid", generator: 'uuid'
+        id column: "id", generator: 'uuid'
         version false
 
         code column: 'code'

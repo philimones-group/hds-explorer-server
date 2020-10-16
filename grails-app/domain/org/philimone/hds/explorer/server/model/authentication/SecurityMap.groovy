@@ -31,7 +31,7 @@ class SecurityMap implements Serializable {
 	static mapping = {
 		table '_security_map'
 
-		id column: "uuid", generator: 'uuid'
+		id column: "id", generator: 'uuid'
 
 		cache true
 	}

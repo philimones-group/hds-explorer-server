@@ -44,7 +44,7 @@ class LogReportFile {
     static mapping = {
         table '_log_report_file'
 
-        id column: "uuid", generator: 'uuid'
+        id column: "id", generator: 'uuid'
 
         logReport column: "log_report_id"
         keyTimestamp column: "key_timestamp"

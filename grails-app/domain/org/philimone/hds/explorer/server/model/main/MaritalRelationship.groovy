@@ -31,7 +31,7 @@ class MaritalRelationship extends CollectableEntity {
     static mapping = {
         table 'marital_relationship'
 
-        id column: "uuid", generator: 'uuid'
+        id column: "id", generator: 'uuid'
 
         memberA column: "member_a_id"
         memberB column: "member_b_id"

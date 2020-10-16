@@ -182,7 +182,7 @@ class Member extends CollectableEntity {
     static mapping = {
         table 'member'
 
-        id column: "uuid", generator: 'uuid'
+        id column: "id", generator: 'uuid'
 
         code column: 'code'
         name column: 'name'

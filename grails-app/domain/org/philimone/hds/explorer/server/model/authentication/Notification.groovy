@@ -37,7 +37,7 @@ class Notification {
     static mapping = {
         table '_notification'
 
-        id column: "uuid", generator: 'uuid'
+        id column: "id", generator: 'uuid'
     }
 
 }

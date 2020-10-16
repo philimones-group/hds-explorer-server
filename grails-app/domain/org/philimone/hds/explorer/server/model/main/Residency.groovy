@@ -37,7 +37,7 @@ class Residency extends AuditableEntity {
     static mapping = {
         table 'residency'
 
-        id column: "uuid", generator: 'uuid'
+        id column: "id", generator: 'uuid'
 
         household column: "household_id"
         member column: "member_id"

@@ -18,7 +18,7 @@ class TrackingListMapping {
     static mapping = {
         table 'tracking_list_mapping'
 
-        id column: "uuid", generator: 'uuid'
+        id column: "id", generator: 'uuid'
 
         list column: 'trackinglist_id'
         name column: 'name'

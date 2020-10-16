@@ -41,7 +41,7 @@ class FormMapping {
     static mapping = {
         table 'form_mapping'
 
-        id column: "uuid", generator: 'uuid'
+        id column: "id", generator: 'uuid'
 
         form column: "form_id"
         formVariableName column: "form_variable_name"

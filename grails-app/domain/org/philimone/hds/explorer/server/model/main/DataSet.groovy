@@ -45,7 +45,7 @@ class DataSet extends AuditableEntity {
     static mapping = {
         table 'ext_dataset'
 
-        id column: "uuid", generator: 'uuid'
+        id column: "id", generator: 'uuid'
 
         name column: 'name'
         keyColumn column: 'key_column'

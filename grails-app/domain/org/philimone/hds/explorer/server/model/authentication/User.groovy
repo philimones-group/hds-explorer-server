@@ -86,7 +86,7 @@ class User extends AuditableEntity {
     static mapping = {
         table '_user'
 
-        id column: "uuid", generator: 'uuid'
+        id column: "id", generator: 'uuid'
 
 	    password column: '`password`'
     }

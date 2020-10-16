@@ -41,7 +41,7 @@ class TrackingList extends AuditableEntity {
     static mapping = {
         table 'tracking_list'
 
-        id column: "uuid", generator: 'uuid'
+        id column: "id", generator: 'uuid'
 
         code column: 'code'
         name column: 'name'

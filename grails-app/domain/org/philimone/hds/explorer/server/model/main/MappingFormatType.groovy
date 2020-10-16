@@ -32,7 +32,7 @@ class MappingFormatType {
     static mapping = {
         table 'form_mapping_format'
 
-        id column: "uuid", generator: 'uuid'
+        id column: "id", generator: 'uuid'
 
         description column: 'description'
         type column: 'type'

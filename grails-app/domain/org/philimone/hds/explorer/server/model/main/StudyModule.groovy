@@ -29,7 +29,7 @@ class StudyModule extends AuditableEntity {
     static mapping = {
         table 'study_module'
 
-        id column: "uuid", generator: 'uuid'
+        id column: "id", generator: 'uuid'
 
         code column: "code"
         name column: "name"

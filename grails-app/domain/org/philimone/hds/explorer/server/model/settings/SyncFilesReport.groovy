@@ -28,7 +28,7 @@ class SyncFilesReport {
     static mapping = {
         table 'sync_report'
 
-        id column: "uuid", generator: 'uuid'
+        id column: "id", generator: 'uuid'
 
         code column: "code"
         name column: "name", enumType: "string"

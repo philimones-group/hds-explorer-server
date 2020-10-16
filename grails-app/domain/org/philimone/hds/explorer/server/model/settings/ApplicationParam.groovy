@@ -22,6 +22,6 @@ class ApplicationParam extends AuditableEntity {
     static mapping = {
         table '_application_param'
 
-        id column: "uuid", generator: 'uuid'
+        id column: "id", generator: 'uuid'
     }
 }

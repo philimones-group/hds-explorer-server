@@ -82,7 +82,7 @@ class Form extends AuditableEntity {
     static mapping = {
         table 'form'
 
-        id column: "uuid", generator: 'uuid'
+        id column: "id", generator: 'uuid'
 
         //group column: 'form_group_id'
         redcapApi column: 'redcap_api'

@@ -40,7 +40,7 @@ class Role implements Serializable {
 	static mapping = {
 		table '_role'
 
-		id column: "uuid", generator: 'uuid'
+		id column: "id", generator: 'uuid'
 
 		cache true
 		autowire true

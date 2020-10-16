@@ -22,7 +22,7 @@ class FormGroup extends AuditableEntity {
     static mapping = {
         table 'form_group'
 
-        id column: "uuid", generator: 'uuid'
+        id column: "id", generator: 'uuid'
 
         code column: 'code'
         name column: 'name'

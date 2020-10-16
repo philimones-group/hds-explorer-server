@@ -74,7 +74,7 @@ class Household extends CollectableEntity {
     static mapping = {
         table 'household'
 
-        id column: "uuid", generator: 'uuid'
+        id column: "id", generator: 'uuid'
 
         code column: 'code'
         region column: 'region'

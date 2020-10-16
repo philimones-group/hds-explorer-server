@@ -34,7 +34,7 @@ class RedcapApi extends AuditableEntity {
     static mapping = {
         table 'redcap_api'
 
-        id column: "uuid", generator: 'uuid'
+        id column: "id", generator: 'uuid'
 
         name column: "name"
         url column: "url"
