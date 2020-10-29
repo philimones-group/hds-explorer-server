@@ -179,6 +179,7 @@ class ImportDataFromOpenHDSService {
                     }
 
                     //User user = new User()
+                    user.code = extid.replaceAll("FW","") //remove the openhds prefix FW and store as a code
                     user.firstName = firstName
                     user.lastName = lastName
                     user.username = extid

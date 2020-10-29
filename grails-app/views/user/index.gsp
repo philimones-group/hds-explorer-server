@@ -27,6 +27,8 @@
                 <tr>
                     <th><g:message code="user.id.label" default="Id"/></th>
 
+                    <th><g:message code="user.code.label" default="Code"/></th>
+
                     <th><g:message code="user.username.label" default="Username"/></th>
 
                     <th><g:message code="user.fullName.label" default="Full Name"/></th>
@@ -45,6 +47,8 @@
                     <tr>
 
                         <td><g:link action="show" id="${userInstance.id}">${fieldValue(bean: userInstance, field: "id")}</g:link></td>
+
+                        <td><g:link action="show" id="${userInstance.id}">${fieldValue(bean: userInstance, field: "code")}</g:link></td>
 
                         <td><g:link action="show" id="${userInstance.id}">${fieldValue(bean: userInstance, field: "username")}</g:link></td>
 

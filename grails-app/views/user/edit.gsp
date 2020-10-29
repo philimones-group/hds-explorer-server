@@ -48,7 +48,7 @@
                         <label for="roles">
                             <g:message code="user.authorities.label" />
                         </label>
-                        <g:select name="roles.id" id="roles.id" multiple="multiple" optionKey="id" from="${org.philimone.hds.explorer.server.model.authentication.Role.list()}" value="${userRoles}" />
+                        <g:select name="roles.id" id="roles.id" multiple="multiple" optionKey="id" optionValue="${{message(code: it.name)}}" from="${org.philimone.hds.explorer.server.model.authentication.Role.list()}" value="${userRoles}" />
                     </div>
 
                 </fieldset>

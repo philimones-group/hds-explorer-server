@@ -36,7 +36,7 @@ class FormController {
         respond list, model:[formCount: formService.count(), currentModule: module]
     }
 
-    def show(Long id) {
+    def show(String id) {
         respond Form.get(id), model: [formService: formService]
     }
 
@@ -82,7 +82,7 @@ class FormController {
         }
     }
 
-    def edit(Long id) {
+    def edit(String id) {
         respond formService.get(id)
     }
 
@@ -116,7 +116,7 @@ class FormController {
         }
     }
 
-    def delete(Long id) {
+    def delete(String id) {
         if (id == null) {
             notFound()
             return
@@ -268,7 +268,7 @@ class FormController {
         redirect action: "formMapping", id: formMapping.form.id
     }
 
-    def deleteFormMapping(Long id) {
+    def deleteFormMapping(String id) {
         def formMapping = FormMapping.get(id)
 
         def form = formMapping?.form
@@ -343,7 +343,7 @@ class FormController {
     }
 
     def modelFormatTypes = {
-        Long id = params.id=="" ? null : Long.parseLong(params.id)
+        String id = params.id
         def format = ""
 
         //println "id = ${id}, ${params.id}"

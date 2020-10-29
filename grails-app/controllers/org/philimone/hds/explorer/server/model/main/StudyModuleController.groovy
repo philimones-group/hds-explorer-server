@@ -14,7 +14,7 @@ class StudyModuleController {
         respond studyModuleService.list(params), model:[studyModuleCount: studyModuleService.count()]
     }
 
-    def show(Long id) {
+    def show(String id) {
         respond studyModuleService.get(id)
     }
 
@@ -44,7 +44,7 @@ class StudyModuleController {
         }
     }
 
-    def edit(Long id) {
+    def edit(String id) {
         respond studyModuleService.get(id)
     }
 
@@ -70,7 +70,7 @@ class StudyModuleController {
         }
     }
 
-    def delete(Long id) {
+    def delete(String id) {
         if (id == null) {
             notFound()
             return

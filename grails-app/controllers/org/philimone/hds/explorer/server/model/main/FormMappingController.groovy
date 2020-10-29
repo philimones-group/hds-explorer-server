@@ -14,7 +14,7 @@ class FormMappingController {
         respond formMappingService.list(params), model:[formMappingCount: formMappingService.count()]
     }
 
-    def show(Long id) {
+    def show(String id) {
         respond formMappingService.get(id)
     }
 
@@ -44,7 +44,7 @@ class FormMappingController {
         }
     }
 
-    def edit(Long id) {
+    def edit(String id) {
         respond formMappingService.get(id)
     }
 
@@ -70,7 +70,7 @@ class FormMappingController {
         }
     }
 
-    def delete(Long id) {
+    def delete(String id) {
         if (id == null) {
             notFound()
             return

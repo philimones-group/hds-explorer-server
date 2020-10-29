@@ -18,7 +18,7 @@ class DataSetController {
         respond DataSet.list(params), model:[dataSetInstanceCount: DataSet.count()]
     }
 
-    def show(Long id) {
+    def show(String id) {
         [dataSetInstance:  DataSet.get(id)]
     }
 

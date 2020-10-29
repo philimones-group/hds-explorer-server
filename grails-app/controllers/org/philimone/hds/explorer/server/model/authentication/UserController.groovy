@@ -15,7 +15,7 @@ class UserController {
         respond userService.list(), model:[userCount: userService.count()] //userService.list(params), [userList: userService.list(params)]
     }
 
-    def show(Long id) {
+    def show(String id) {
         respond userService.get(id)
     }
 
@@ -33,8 +33,7 @@ class UserController {
         params.remove("roles.id")
 
         try {
-            userService.addUser(user)
-            UserRole.create(user, userRoles, true)
+            userService.addUser(user, userRoles)
         } catch (ValidationException e) {
             respond user.errors, view:'create'
             return
@@ -49,14 +48,14 @@ class UserController {
         }
     }
 
-    def edit(Long id) {
+    def edit(String id) {
         def user = userService.get(id)
         def userRoles = user.authorities.asList()
 
         respond user, model: [userRoles: userRoles]
     }
 
-    def changePassword(Long id){
+    def changePassword(String id){
         respond userService.get(id)
     }
 
@@ -131,7 +130,7 @@ class UserController {
 
     }
 
-    def delete(Long id) {
+    def delete(String id) {
         if (id == null) {
             notFound()
             return
