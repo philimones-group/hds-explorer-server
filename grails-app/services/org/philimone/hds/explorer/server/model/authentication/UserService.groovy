@@ -2,6 +2,8 @@ package org.philimone.hds.explorer.server.model.authentication
 
 import grails.gorm.services.Service
 import grails.web.mapping.LinkGenerator
+import net.betainteractive.utilities.StringUtil
+import org.philimone.hds.explorer.server.model.main.Region
 import org.philimone.hds.explorer.services.GeneralUtilitiesService
 
 @Service(User)
@@ -12,54 +14,74 @@ class UserService {
 
     LinkGenerator grailsLinkGenerator
 
-    def test(){
-        //println grailsLinkGenerator.serverBaseURL
+    boolean exists(String username) {
+        User.countByUsername(username) > 0
     }
 
-    def User addUser(User user) {
-        //timestamp
-        def username = user.username
-        def password = user.password
-
-        def result = user.save(flush: true)
-
-        //test send emails
-        def svc = generalUtilitiesService
-
-        def url = grailsLinkGenerator.serverBaseURL
-
-        svc.sendTextEmail(user.email,
-                svc.getMessage("default.mail.user.subject.created", ""),
-                svc.getMessage("default.mail.user.message.updated_password", [ url, username, password ] as String[] , "") )
-
-        println "error ${result.errors}"
-        result
+    boolean existsByCode(String code) {
+        User.countByCode(code) > 0
     }
 
-    def User updateUser(User user){
+    User getUser(String username){
+        if (!StringUtil.isBlank(username)) {
+            User.findByUsername(username)
+        }
+        return null
+    }
+
+    User getUserByCode(String code){
+        if (!StringUtil.isBlank(code)) {
+            User.findByCode(code)
+        }
+        return null
+    }
+
+    User addUser(User user, List<Role> roles) {
+
+        //generate user code
+        user.code = generateCode(user)
+
+        user = user.save(flush: true)
+        UserRole.create(user, roles, true)
+
+        //send email
+        if (!StringUtil.isBlank(user.email)){ //send email with the credentials if mail address exists
+
+            def url = grailsLinkGenerator.serverBaseURL
+            def subject = generalUtilitiesService.getMessage("default.mail.user.subject.created", "")
+            def message = generalUtilitiesService.getMessage("default.mail.user.message.updated_password", [ url, user.username, user.password ] as String[] , "")
+
+            generalUtilitiesService.sendTextEmail(user.email, subject, message)
+        }
+
+        println "error ${user.errors}"
+
+        user
+    }
+
+    User updateUser(User user){
 
         user.save(flush: true)
         //println "error ${user.errors}"
     }
 
-    def User updatePassword(User user, String newPassword){
+    User updatePassword(User user, String newPassword){
 
         //timestamp
         user.password = newPassword
 
-        def result = user.save(flush: true)
+        user = user.save(flush: true)
 
-        //CONTINUE TOMORROW
-        def svc = generalUtilitiesService
+        //send email
+        if (!StringUtil.isBlank(user.email)) { //send email with the credentials if mail address exists
+            def url = grailsLinkGenerator.serverBaseURL
+            def subject = generalUtilitiesService.getMessage("default.mail.user.subject.updated_password", "")
+            def message = generalUtilitiesService.getMessage("default.mail.user.message.updated_password", [url, user.username, newPassword] as String[], "")
 
-        def url = grailsLinkGenerator.serverBaseURL
+            svc.sendTextEmail(user.email, subject, message)
+        }
 
-        svc.sendTextEmail(user.email,
-                svc.getMessage("default.mail.user.subject.updated_password", ""),
-                svc.getMessage("default.mail.user.message.updated_password", [ url, user.username, newPassword ] as String[] , "") )
-
-
-        return result
+        user
     }
 
     boolean passwordEquals(User user, String newPassword){
@@ -71,6 +93,49 @@ class UserService {
 
     String encodePassword(String password) {
         springSecurityService.encodePassword(password, "8")
+    }
+
+    String generateCode(User user){
+        def regexFw = '^FW[A-Za-z]{3}$'
+
+        if (user.username.matches(regexFw)){ //ohds fieldworker
+            return user.username.toUpperCase().replaceAll("FW")
+        }else {
+            def codes = User.list().collect{ t -> t.code}
+
+            def f = user.firstName.toUpperCase()
+            def l = user.lastName.toUpperCase()
+            def alist = f.chars.toList()
+            def blist = l.chars.toList()
+            def clist = ("1".."9") + (l.length()>1 ? l.substring(1).chars.toList() : []) + ("A".."Z")
+
+            for (def a : alist){
+                for (def b : blist){
+                    for (def c : clist){
+                        def test = "${a}${b}${c}" as String
+
+                        if (!codes.contains(test)){
+                            return test
+                        }
+                    }
+
+                }
+            }
+        }
+
+        return null
+    }
+
+    List<String> getAuthoritiesText(User user){
+        def list = new ArrayList<String>()
+
+        if (user != null){
+            user.authorities.each {
+                list << generalUtilitiesService.getMessage(it.name, "")
+            }
+        }
+
+        return list
     }
 
     User get(Serializable id){

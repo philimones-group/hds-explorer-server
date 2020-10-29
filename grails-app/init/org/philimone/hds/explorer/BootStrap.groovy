@@ -6,6 +6,7 @@ import org.philimone.hds.explorer.server.model.authentication.User
 import org.philimone.hds.explorer.server.model.authentication.UserRole
 import org.philimone.hds.explorer.io.SystemPath
 import org.philimone.hds.explorer.server.Codes
+import org.philimone.hds.explorer.server.model.enums.RegionLevel
 import org.philimone.hds.explorer.server.model.logs.LogGroup
 import org.philimone.hds.explorer.server.model.logs.LogReport
 import org.philimone.hds.explorer.server.model.enums.LogStatus
@@ -158,7 +159,11 @@ class BootStrap {
     def defaultAppUser (){
         //Default ApplicationUser
         if (User.count()==0){
+
+            Role admin = Role.findByAuthority(Role.ROLE_ADMINISTRATOR)
+
             User user = new User()
+
             user.firstName = "System"
             user.lastName = "Administrator"
             user.username = "admin";
@@ -166,13 +171,12 @@ class BootStrap {
             user.email = "youremail@domain.net"
 
             println ("admin user - hasErrors: "+user.hasErrors())
-            println ("admin user - saving: " + userService.addUser(user))
+            println ("admin user - saving: " + userService.addUser(user, [admin]))
 
-            Role admin = Role.findByAuthority(Role.ROLE_ADMINISTRATOR)
+
 
             println "admin role: ${admin}"
-
-            println "admin user role assign: ${UserRole.create(user, admin)}"
+            //println "admin user role assign: ${UserRole.create(user, [admin])}"
         }
     }
 
@@ -325,14 +329,16 @@ class BootStrap {
         println "code: ${maxCols}"
 
         aps.addApplicationParam(new ApplicationParam(name: Codes.PARAMS_TRACKING_LISTS_MAX_DATA_COLUMNS, type: "string", value: maxCols))
-        aps.addApplicationParam(new ApplicationParam(name: Codes.PARAMS_HIERARCHY_LEVEL_1, type: "string", value: ""))
-        aps.addApplicationParam(new ApplicationParam(name: Codes.PARAMS_HIERARCHY_LEVEL_2, type: "string", value: ""))
-        aps.addApplicationParam(new ApplicationParam(name: Codes.PARAMS_HIERARCHY_LEVEL_3, type: "string", value: ""))
-        aps.addApplicationParam(new ApplicationParam(name: Codes.PARAMS_HIERARCHY_LEVEL_4, type: "string", value: ""))
-        aps.addApplicationParam(new ApplicationParam(name: Codes.PARAMS_HIERARCHY_LEVEL_5, type: "string", value: ""))
-        aps.addApplicationParam(new ApplicationParam(name: Codes.PARAMS_HIERARCHY_LEVEL_6, type: "string", value: ""))
-        aps.addApplicationParam(new ApplicationParam(name: Codes.PARAMS_HIERARCHY_LEVEL_7, type: "string", value: ""))
-        aps.addApplicationParam(new ApplicationParam(name: Codes.PARAMS_HIERARCHY_LEVEL_8, type: "string", value: ""))
+        aps.addApplicationParam(new ApplicationParam(name: RegionLevel.HIERARCHY_1, type: "string", value: ""))
+        aps.addApplicationParam(new ApplicationParam(name: RegionLevel.HIERARCHY_2, type: "string", value: ""))
+        aps.addApplicationParam(new ApplicationParam(name: RegionLevel.HIERARCHY_3, type: "string", value: ""))
+        aps.addApplicationParam(new ApplicationParam(name: RegionLevel.HIERARCHY_4, type: "string", value: ""))
+        aps.addApplicationParam(new ApplicationParam(name: RegionLevel.HIERARCHY_5, type: "string", value: ""))
+        aps.addApplicationParam(new ApplicationParam(name: RegionLevel.HIERARCHY_6, type: "string", value: ""))
+        aps.addApplicationParam(new ApplicationParam(name: RegionLevel.HIERARCHY_7, type: "string", value: ""))
+        aps.addApplicationParam(new ApplicationParam(name: RegionLevel.HIERARCHY_8, type: "string", value: ""))
+        aps.addApplicationParam(new ApplicationParam(name: RegionLevel.HIERARCHY_9, type: "string", value: ""))
+        aps.addApplicationParam(new ApplicationParam(name: RegionLevel.HIERARCHY_10, type: "string", value: ""))
 
         //Inserting Default Mapping Formats
         new MappingFormatType(description: "Boolean [yes, no]", type: "Boolean", format:"yes,no").save(flush: true)

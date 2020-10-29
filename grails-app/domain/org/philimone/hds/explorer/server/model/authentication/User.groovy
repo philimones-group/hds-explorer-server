@@ -19,6 +19,7 @@ class User extends AuditableEntity {
     private static final long serialVersionUID = 1
 
     String id
+    String code
     String firstName
     String lastName
     String username
@@ -69,12 +70,12 @@ class User extends AuditableEntity {
 
     static constraints = {
         id maxSize: 32
-        firstName blank: false
-        lastName blank: false
+        code unique: true
+        firstName blank: false, nullable: false
+        lastName blank: false, nullable: false
         password nullable: false, blank: false, password: true
         username nullable: false, blank: false, unique: true
         email blank: true, nullable: true, unique: true
-
 
         passwordExpired()
         accountExpired()
@@ -88,8 +89,19 @@ class User extends AuditableEntity {
 
         id column: "id", generator: 'uuid'
 
-	    password column: '`password`'
+        code column: 'code'
+        firstName column: 'firstname'
+        lastName column: 'lastname'
+        username column: 'username'
+        password column: '`password`'
+        email column: 'email'
+
+        enabled column: 'enabled'
+        accountExpired column: 'account_expired'
+        accountLocked column: 'account_locked'
+        passwordExpired column: 'password_expired'
+
     }
 
-    def static ALL_COLUMNS = ['firstName', 'lastName', 'username', 'password', 'email']
+    def static ALL_COLUMNS = ['code','firstName', 'lastName', 'username', 'password', 'email']
 }
