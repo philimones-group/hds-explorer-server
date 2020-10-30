@@ -130,6 +130,10 @@ public class StringUtil {
         }
     }
 
+    public static boolean isBlank(String value){
+        return value==null || value.trim().isEmpty();
+    }
+
     //Search if a certain string is inside a text returning percentage
 
     //levenstein algorhytm
@@ -461,6 +465,16 @@ public class StringUtil {
         return str;
     }
 
+    public static String removePackageNames(String text){
+        String packageExpClass = "class ([a-zA-Z_]+\\.)+";
+        String packageExp = "([a-zA-Z_]+\\.)+";
+
+        text = text.replaceAll(packageExpClass, "");
+        text = text.replaceAll(packageExp, "");
+
+        return text;
+    }
+
     /**Numbers**/
     public static boolean isDouble(String str){
         final String Digits     = "(\\p{Digit}+)";
@@ -510,6 +524,14 @@ public class StringUtil {
         }*/
 
         return Pattern.matches(fpRegex, str);
+    }
+
+    public static Double getDouble(String value){
+        try{
+            return Double.parseDouble(value);
+        } catch (NumberFormatException ex){
+            return null;
+        }
     }
 
     public static interface StringConverter {

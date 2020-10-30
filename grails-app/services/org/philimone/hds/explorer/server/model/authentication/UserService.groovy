@@ -24,14 +24,14 @@ class UserService {
 
     User getUser(String username){
         if (!StringUtil.isBlank(username)) {
-            User.findByUsername(username)
+            return User.findByUsername(username)
         }
         return null
     }
 
     User getUserByCode(String code){
         if (!StringUtil.isBlank(code)) {
-            User.findByCode(code)
+            return User.findByCode(code)
         }
         return null
     }
@@ -56,7 +56,7 @@ class UserService {
 
         println "error ${user.errors}"
 
-        user
+        return user
     }
 
     User updateUser(User user){

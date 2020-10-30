@@ -43,12 +43,12 @@ class Household extends CollectableEntity {
         code unique: true
         region nullable: false
         name blank: false
-        headCode blank: false, unique: 'code'
-        headName blank: false
+        headCode  blank: false, nullable: true, unique: 'code'
+        headName blank: true, nullable: true
         secHeadCode blank: true, nullable: true
 
         parentRegion nullable: false
-        headMember nullable: false
+        headMember nullable: true
 
         hierarchy1 nullable: true
         hierarchy2 nullable: true

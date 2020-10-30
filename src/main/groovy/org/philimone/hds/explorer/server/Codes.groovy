@@ -12,7 +12,6 @@ class Codes {
     static final int GROUP_SYNC_DSS_DATA_FROM_CLIENT = 5
 
 
-
     /*Codes for events of Data Import from OpenHDS */
     static final int REPORT_IMPORT_FROM_OPENHDS_FIELDWORKERS = 10
     static final int REPORT_IMPORT_FROM_OPENHDS_HOUSEHOLDS = 11
@@ -56,6 +55,7 @@ class Codes {
     static final String PARAMS_HIERARCHY_LEVEL_7 = "hierarchy7"
     static final String PARAMS_HIERARCHY_LEVEL_8 = "hierarchy8"
 
-
-
+    static final String REGION_CODE_PATTERN = '^[A-Z0-9]{3}$'
+    static final String HOUSEHOLD_CODE_PATTERN = '^[A-Z0-9]{6}[0-9]{3}$'
+    static final String MEMBER_CODE_PATTERN = '^[A-Z0-9]{6}[0-9]{6}$'
 }

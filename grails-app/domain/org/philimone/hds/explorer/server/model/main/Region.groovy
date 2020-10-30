@@ -2,6 +2,7 @@ package org.philimone.hds.explorer.server.model.main
 
 import org.philimone.hds.explorer.server.model.audit.AuditableEntity
 import org.philimone.hds.explorer.server.model.audit.CollectableEntity
+import org.philimone.hds.explorer.server.model.enums.RegionLevel
 
 /**
  * Region represents an Administrative division in a country or study area, the Administrative Division or Location Hieararchy it stored here
@@ -11,11 +12,16 @@ class Region extends CollectableEntity {
     String id
     String code
     String name
-    String hierarchyLevel
+    RegionLevel hierarchyLevel
     Region parent
 
     String getParentCode(){
         parent==null ? "" : parent.code
+    }
+
+    @Override
+    String toString() {
+        "${code},${name},${hierarchyLevel},${parent?.code}"
     }
 
     static constraints = {
@@ -34,7 +40,7 @@ class Region extends CollectableEntity {
 
         code column: 'code'
         name column: 'name'
-        hierarchyLevel column: 'level'
+        hierarchyLevel column: 'level', enumType: "identity"
         parent column: 'parent_region_code'
 
     }
