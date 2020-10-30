@@ -2,8 +2,11 @@ package org.philimone.hds.explorer.services.errors
 
 import grails.artefact.DomainClass
 import grails.gorm.transactions.Transactional
+import net.betainteractive.utilities.StringUtil
 import org.grails.datastore.gorm.GormEntity
+import org.philimone.hds.explorer.server.model.main.collect.raw.RawMessage
 import org.springframework.context.i18n.LocaleContextHolder
+import org.springframework.validation.ObjectError
 
 @Transactional
 class ErrorMessageService {
@@ -27,15 +30,46 @@ class ErrorMessageService {
         return text
     }
 
+    String removeFromLastPoint(String text){
+        def packageExp = "([a-zA-Z_]+\\.[a-zA-Z_]+)*\\."
+
+        return text.replaceAll(packageExp, "")
+    }
+
     String formatErrors(GormEntity domain){
         def errors = ""
 
         domain.errors.allErrors.each { obj ->
             def err = messageSource.getMessage(obj, LocaleContextHolder.getLocale())
-            err = removeClassDefFromErrDetails(err)
+            //err = removeClassDefFromErrDetails(err)
+            err = StringUtil.removePackageNames(err)
             errors += err + "\n"
         }
 
         return errors
+    }
+
+    List<RawMessage> getRawMessages(GormEntity domain){
+        def errors = new ArrayList<RawMessage>()
+
+        domain.errors.fieldErrors.each { obj ->
+            def msg = messageSource.getMessage(obj, LocaleContextHolder.getLocale())
+            //err = removeClassDefFromErrDetails(err)
+            msg = StringUtil.removePackageNames(msg)
+
+            errors << new RawMessage(msg, [obj.field])
+        }
+
+        return errors
+    }
+
+    RawMessage getRawMessage(String messageCode, String[] args, String[] fields){
+        def msg = messageSource.getMessage(messageCode, args, LocaleContextHolder.getLocale())
+        new RawMessage(msg, fields)
+    }
+
+    RawMessage getRawMessage(String messageCode, List<String> args, List<String> fields){
+        def msg = messageSource.getMessage(messageCode, args.toArray(), LocaleContextHolder.getLocale())
+        new RawMessage(msg, fields)
     }
 }
