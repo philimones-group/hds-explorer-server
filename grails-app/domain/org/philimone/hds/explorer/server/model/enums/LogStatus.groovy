@@ -19,4 +19,5 @@ enum LogStatus {
     String toString(){
         name
     }
+
 }

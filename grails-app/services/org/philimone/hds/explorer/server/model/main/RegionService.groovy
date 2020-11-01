@@ -163,6 +163,7 @@ class RegionService {
         //set collected by info
         region.collectedBy = userService.getUser(rr.collectedBy)
         region.collectedDate = rr.collectedDate
+        region.updatedDate = rr.uploadedDate
 
         //println "parent: ${parent}\nlevel: ${nextLevel}"
 

@@ -23,4 +23,17 @@ enum ProcessedStatus {
     String toString(){
         name
     }
+
+    /* Finding Enum by code */
+    private static final Map<Integer, Gender> MAP = new HashMap<>();
+
+    static {
+        for (Gender e: values()) {
+            MAP.put(e.code, e);
+        }
+    }
+
+    public static Gender valueOf(Integer code) {
+        return code==null ? null : MAP.get(code);
+    }
 }

@@ -161,6 +161,7 @@ class HouseholdService {
         //set collected by info
         household.collectedBy = userService.getUser(rh.collectedBy)
         household.collectedDate = rh.collectedDate
+        household.updatedDate = rh.uploadedDate
 
         return household
 

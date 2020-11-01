@@ -18,4 +18,17 @@ enum ResidencyEndType {
     String getId(){
         return code
     }
+
+    /* Finding Enum by code */
+    private static final Map<String, ResidencyEndType> MAP = new HashMap<>();
+
+    static {
+        for (ResidencyEndType e: values()) {
+            MAP.put(e.code, e);
+        }
+    }
+
+    public static ResidencyEndType valueOf(String code) {
+        return code==null ? null : MAP.get(code);
+    }
 }

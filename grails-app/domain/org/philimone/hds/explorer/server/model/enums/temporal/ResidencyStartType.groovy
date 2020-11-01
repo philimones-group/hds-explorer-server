@@ -18,4 +18,17 @@ enum ResidencyStartType {
     String getId(){
         return code
     }
+
+    /* Finding Enum by code */
+    private static final Map<String, ResidencyStartType> MAP = new HashMap<>();
+
+    static {
+        for (ResidencyStartType e: values()) {
+            MAP.put(e.code, e);
+        }
+    }
+
+    public static ResidencyStartType valueOf(String code) {
+        return code==null ? null : MAP.get(code);
+    }
 }

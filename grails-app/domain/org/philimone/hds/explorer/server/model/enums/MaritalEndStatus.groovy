@@ -19,4 +19,17 @@ enum MaritalEndStatus {
         return code
     }
 
+    /* Finding Enum by code */
+    private static final Map<String, MaritalEndStatus> MAP = new HashMap<>();
+
+    static {
+        for (MaritalEndStatus e: values()) {
+            MAP.put(e.code, e);
+        }
+    }
+
+    public static MaritalEndStatus valueOf(String code) {
+        return code==null ? null : MAP.get(code);
+    }
+
 }

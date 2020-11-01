@@ -40,4 +40,17 @@ enum SyncEntity {
     String getZipFilename(){
         "${filename}.zip"
     }
+
+    /* Finding Enum by code */
+    private static final Map<Integer, SyncEntity> MAP = new HashMap<>();
+
+    static {
+        for (SyncEntity e: values()) {
+            MAP.put(e.code, e);
+        }
+    }
+
+    public static SyncEntity valueOf(Integer code) {
+        return code==null ? null : MAP.get(code);
+    }
 }

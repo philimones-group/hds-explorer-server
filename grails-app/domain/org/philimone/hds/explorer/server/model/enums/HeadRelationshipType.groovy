@@ -24,4 +24,17 @@ enum HeadRelationshipType {
         return code
     }
 
+    /* Finding Enum by code */
+    private static final Map<String, HeadRelationshipType> MAP = new HashMap<>();
+
+    static {
+        for (HeadRelationshipType e: values()) {
+            MAP.put(e.code, e);
+        }
+    }
+
+    public static HeadRelationshipType valueOf(String code) {
+        return code==null ? null : MAP.get(code);
+    }
+
 }
