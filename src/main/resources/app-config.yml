@@ -2,6 +2,11 @@
 hds.explorer.database.using_openhds: true
 hds.explorer.mail.configured: true
 hds.explorer.trackinglists.max_data_columns: 25
+hds.explorer.constraints.father.age.min: 12
+hds.explorer.constraints.mother.age.min: 12
+hds.explorer.constraints.head.age.min: 12
+hds.explorer.constraints.spouse.age.min: 16
+hds.explorer.constraints.gender.checking: true
 
 # Access to OpenHDS Web Application
 hds.explorer.openhds_web.url: http://localhost:8081/openhds

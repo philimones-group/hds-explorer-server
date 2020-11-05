@@ -7,6 +7,7 @@ class Codes {
     static final String PARAMS_MIN_AGE_OF_FATHER = "hds.explorer.constraints.father.age.min"
     static final String PARAMS_MIN_AGE_OF_MOTHER = "hds.explorer.constraints.mother.age.min"
     static final String PARAMS_MIN_AGE_OF_HEAD   = "hds.explorer.constraints.head.age.min"
+    static final String PARAMS_MIN_AGE_OF_SPOUSE   = "hds.explorer.constraints.spouse.age.min"
 
     static final String REGION_CODE_PATTERN = '^[A-Z0-9]{3}$'
     static final String HOUSEHOLD_CODE_PATTERN = '^[A-Z0-9]{6}[0-9]{3}$'
@@ -17,5 +18,6 @@ class Codes {
     static int MIN_MOTHER_AGE_VALUE = 12
     static int MIN_FATHER_AGE_VALUE = 12
     static int MIN_HEAD_AGE_VALUE = 12
+    static int MIN_SPOUSE_AGE_VALUE = 16
     static boolean GENDER_CHECKING = true
 }
