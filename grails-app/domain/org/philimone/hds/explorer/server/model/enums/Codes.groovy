@@ -1,4 +1,4 @@
-package org.philimone.hds.explorer.server
+package org.philimone.hds.explorer.server.model.enums
 
 /**
  * Created by paul on 4/5/17.

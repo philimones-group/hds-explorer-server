@@ -3,17 +3,14 @@ package org.philimone.hds.explorer
 import org.philimone.hds.explorer.server.model.authentication.Role
 import org.philimone.hds.explorer.server.model.authentication.SecurityMap
 import org.philimone.hds.explorer.server.model.authentication.User
-import org.philimone.hds.explorer.server.model.authentication.UserRole
 import org.philimone.hds.explorer.io.SystemPath
-import org.philimone.hds.explorer.server.Codes
+import org.philimone.hds.explorer.server.model.enums.Codes
 import org.philimone.hds.explorer.server.model.enums.RegionLevel
-import org.philimone.hds.explorer.server.model.enums.settings.ApplicationParamType
 import org.philimone.hds.explorer.server.model.logs.LogGroup
 import org.philimone.hds.explorer.server.model.logs.LogReport
 import org.philimone.hds.explorer.server.model.enums.LogStatus
 import org.philimone.hds.explorer.server.model.main.MappingFormatType
 import org.philimone.hds.explorer.server.model.main.StudyModule
-import org.philimone.hds.explorer.server.model.settings.ApplicationParam
 import org.philimone.hds.explorer.server.model.enums.SyncEntity
 import org.philimone.hds.explorer.server.model.settings.SyncFilesReport
 

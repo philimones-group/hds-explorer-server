@@ -1,7 +1,7 @@
 package org.philimone.hds.explorer.controllers
 
 import org.philimone.hds.explorer.io.SystemPath
-import org.philimone.hds.explorer.server.Codes
+import org.philimone.hds.explorer.server.model.enums.Codes
 import org.philimone.hds.explorer.server.model.enums.SyncEntity
 import org.philimone.hds.explorer.server.model.logs.LogReport
 import org.philimone.hds.explorer.server.model.enums.LogStatus
