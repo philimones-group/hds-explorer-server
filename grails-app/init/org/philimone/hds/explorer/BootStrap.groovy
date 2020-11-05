@@ -7,6 +7,7 @@ import org.philimone.hds.explorer.server.model.authentication.UserRole
 import org.philimone.hds.explorer.io.SystemPath
 import org.philimone.hds.explorer.server.Codes
 import org.philimone.hds.explorer.server.model.enums.RegionLevel
+import org.philimone.hds.explorer.server.model.enums.settings.ApplicationParamType
 import org.philimone.hds.explorer.server.model.logs.LogGroup
 import org.philimone.hds.explorer.server.model.logs.LogReport
 import org.philimone.hds.explorer.server.model.enums.LogStatus
@@ -325,20 +326,27 @@ class BootStrap {
 
         //Inserting defaults system params
 
-        def maxCols = svc.getConfigValue("hds.explorer.trackinglists.max_data_columns")
+        def maxCols = svc.getConfigValue("${Codes.PARAMS_TRACKING_LISTS_MAX_DATA_COLUMNS}")
+        def fmaxAge = svc.getConfigValue("${Codes.PARAMS_MIN_AGE_OF_FATHER}")
+        def mmaxAge = svc.getConfigValue("${Codes.PARAMS_MIN_AGE_OF_MOTHER}")
+        def hmaxAge = svc.getConfigValue("${Codes.PARAMS_MIN_AGE_OF_HEAD}")
         println "code: ${maxCols}"
 
-        aps.addApplicationParam(new ApplicationParam(name: Codes.PARAMS_TRACKING_LISTS_MAX_DATA_COLUMNS, type: "string", value: maxCols))
-        aps.addApplicationParam(new ApplicationParam(name: RegionLevel.HIERARCHY_1, type: "string", value: ""))
-        aps.addApplicationParam(new ApplicationParam(name: RegionLevel.HIERARCHY_2, type: "string", value: ""))
-        aps.addApplicationParam(new ApplicationParam(name: RegionLevel.HIERARCHY_3, type: "string", value: ""))
-        aps.addApplicationParam(new ApplicationParam(name: RegionLevel.HIERARCHY_4, type: "string", value: ""))
-        aps.addApplicationParam(new ApplicationParam(name: RegionLevel.HIERARCHY_5, type: "string", value: ""))
-        aps.addApplicationParam(new ApplicationParam(name: RegionLevel.HIERARCHY_6, type: "string", value: ""))
-        aps.addApplicationParam(new ApplicationParam(name: RegionLevel.HIERARCHY_7, type: "string", value: ""))
-        aps.addApplicationParam(new ApplicationParam(name: RegionLevel.HIERARCHY_8, type: "string", value: ""))
-        aps.addApplicationParam(new ApplicationParam(name: RegionLevel.HIERARCHY_9, type: "string", value: ""))
-        aps.addApplicationParam(new ApplicationParam(name: RegionLevel.HIERARCHY_10, type: "string", value: ""))
+        //Will not rewrite the existent
+        aps.addParam(Codes.PARAMS_TRACKING_LISTS_MAX_DATA_COLUMNS, Integer.parseInt(maxCols))
+        aps.addParam(Codes.PARAMS_MIN_AGE_OF_MOTHER, Integer.parseInt(mmaxAge))
+        aps.addParam(Codes.PARAMS_MIN_AGE_OF_FATHER, Integer.parseInt(fmaxAge))
+        aps.addParam(Codes.PARAMS_MIN_AGE_OF_HEAD, Integer.parseInt(hmaxAge))
+        aps.addParam(RegionLevel.HIERARCHY_1, "")
+        aps.addParam(RegionLevel.HIERARCHY_2, "")
+        aps.addParam(RegionLevel.HIERARCHY_3, "")
+        aps.addParam(RegionLevel.HIERARCHY_4, "")
+        aps.addParam(RegionLevel.HIERARCHY_5, "")
+        aps.addParam(RegionLevel.HIERARCHY_6, "")
+        aps.addParam(RegionLevel.HIERARCHY_7, "")
+        aps.addParam(RegionLevel.HIERARCHY_8, "")
+        aps.addParam(RegionLevel.HIERARCHY_9, "")
+        aps.addParam(RegionLevel.HIERARCHY_10, "")
 
         //Inserting Default Mapping Formats
         new MappingFormatType(description: "Boolean [yes, no]", type: "Boolean", format:"yes,no").save(flush: true)
@@ -369,6 +377,10 @@ class BootStrap {
         new SyncFilesReport(name: SyncEntity.REGIONS).save(flush:true)
         new SyncFilesReport(name: SyncEntity.HOUSEHOLDS).save(flush:true)
         new SyncFilesReport(name: SyncEntity.MEMBERS).save(flush:true)
+    }
+
+    def retrievePopulateStaticConstants(){
+
     }
 
     def insertTestData(){

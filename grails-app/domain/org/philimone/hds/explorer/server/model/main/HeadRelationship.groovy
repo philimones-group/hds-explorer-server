@@ -16,7 +16,6 @@ class HeadRelationship extends CollectableEntity {
     String memberCode
     String headCode
     HeadRelationshipType relationshipType
-    Integer order
     HeadRelationshipStartType startType
     Date startDate
     HeadRelationshipEndType endType
@@ -30,7 +29,6 @@ class HeadRelationship extends CollectableEntity {
         memberCode nullable: false
         headCode nullable: false
         relationshipType nullable: false
-        order min: 1
         startType nullable: false, blank:false
         startDate nullable: false
         endType nullable: false, blank:true
@@ -48,7 +46,6 @@ class HeadRelationship extends CollectableEntity {
         memberCode column: "member_code"
         headCode column: "head_code"
         relationshipType column: "relationship_type", enumType: "identity"
-        order column: "order"
         startType column: "start_type", enumType: "identity"
         startDate column: "start_date"
         endType column: "end_type", enumType: "identity"

@@ -45,15 +45,10 @@ class Codes {
 
     /* Application default parameters */
     static final String PARAMS_TRACKING_LISTS_MAX_DATA_COLUMNS = "hds.explorer.trackinglists.max_data_columns"
-
-    static final String PARAMS_HIERARCHY_LEVEL_1 = "hierarchy1"
-    static final String PARAMS_HIERARCHY_LEVEL_2 = "hierarchy2"
-    static final String PARAMS_HIERARCHY_LEVEL_3 = "hierarchy3"
-    static final String PARAMS_HIERARCHY_LEVEL_4 = "hierarchy4"
-    static final String PARAMS_HIERARCHY_LEVEL_5 = "hierarchy5"
-    static final String PARAMS_HIERARCHY_LEVEL_6 = "hierarchy6"
-    static final String PARAMS_HIERARCHY_LEVEL_7 = "hierarchy7"
-    static final String PARAMS_HIERARCHY_LEVEL_8 = "hierarchy8"
+    static final String PARAMS_GENDER_CHECKING = "hds.explorer.constraints.gender.checking"
+    static final String PARAMS_MIN_AGE_OF_FATHER = "hds.explorer.constraints.father.age.min"
+    static final String PARAMS_MIN_AGE_OF_MOTHER = "hds.explorer.constraints.mother.age.min"
+    static final String PARAMS_MIN_AGE_OF_HEAD   = "hds.explorer.constraints.head.age.min"
 
     static final String REGION_CODE_PATTERN = '^[A-Z0-9]{3}$'
     static final String HOUSEHOLD_CODE_PATTERN = '^[A-Z0-9]{6}[0-9]{3}$'

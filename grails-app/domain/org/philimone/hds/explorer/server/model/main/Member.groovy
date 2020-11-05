@@ -1,6 +1,6 @@
 package org.philimone.hds.explorer.server.model.main
 
-
+import net.betainteractive.utilities.GeneralUtil
 import org.philimone.hds.explorer.server.model.audit.CollectableEntity
 import org.philimone.hds.explorer.server.model.enums.Gender
 import org.philimone.hds.explorer.server.model.enums.HeadRelationshipType
@@ -33,7 +33,9 @@ class Member extends CollectableEntity {
     /*
      * Current Age of the Individual (calculated on every synchronization)
      */
-    Integer age
+    Integer getAge(){
+        return GeneralUtil.getAge(this.dob)
+    }
     /*
      * Age of the Individual when he died
      */
@@ -127,13 +129,15 @@ class Member extends CollectableEntity {
         headRelationshipType==HeadRelationshipType.HEAD_OF_HOUSEHOLD
     }
 
+    static transients = ['householdHead', 'age']
+
     static constraints = {
         id maxSize: 32
         code unique: true, blank: false
         name blank: false
         gender nullable: false
         dob nullable: false
-        age min: 0
+        //age min: 0
         ageAtDeath nullable: true
 
         maritalStatus nullable: false
@@ -188,7 +192,7 @@ class Member extends CollectableEntity {
         name column: 'name'
         gender column: 'gender', enumType: 'identity'
         dob column: 'dob'
-        age column: 'age'
+        //age column: 'age'
         ageAtDeath column: 'age_at_death'
 
         maritalStatus column: 'marital_status', enumType: 'identity'

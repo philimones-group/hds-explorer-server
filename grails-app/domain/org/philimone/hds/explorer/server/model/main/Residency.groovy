@@ -15,7 +15,6 @@ class Residency extends AuditableEntity {
     Member member
     String householdCode
     String memberCode
-    Integer order
     ResidencyStartType startType
     Date startDate
     ResidencyEndType endType
@@ -27,7 +26,6 @@ class Residency extends AuditableEntity {
         member nullable: false
         householdCode blank: false
         memberCode blank: false
-        order min: 1
         startType nullable: false
         startDate nullable: false
         endType nullable: false, blank:true
@@ -43,7 +41,6 @@ class Residency extends AuditableEntity {
         member column: "member_id"
         householdCode column: "household_code"
         memberCode column: "member_code"
-        order column: "order"
         startType column: "start_type", enumType: "identity"
         startDate column: "start_date"
         endType column: "end_type", enumType: "identity"

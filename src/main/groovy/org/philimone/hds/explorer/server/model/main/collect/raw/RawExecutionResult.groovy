@@ -32,6 +32,10 @@ class RawExecutionResult<D> {
         new RawExecutionResult(Status.SUCCESS, instance,null)
     }
 
+    static RawExecutionResult<D> newSuccessResult(D instance, ArrayList<RawMessage> otherErrors){
+        new RawExecutionResult(Status.SUCCESS, instance, otherErrors)
+    }
+
     static RawExecutionResult<D> newErrorResult(ArrayList<RawMessage> errorMessages){
         new RawExecutionResult(Status.ERROR, errorMessages)
     }

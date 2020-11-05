@@ -1284,7 +1284,6 @@ class SyncFilesService {
 
         element.appendChild(createAttributeNonNull(doc, "householdCode", residency.householdCode));
         element.appendChild(createAttributeNonNull(doc, "memberCode", residency.memberCode));
-        element.appendChild(createAttributeNonNull(doc, "order", residency.order));
         element.appendChild(createAttributeNonNull(doc, "startType", residency.startType.code ));
         element.appendChild(createAttributeNonNull(doc, "startDate", residency.startDate));
         element.appendChild(createAttributeNonNull(doc, "endType", residency.endType.code));
@@ -1300,7 +1299,6 @@ class SyncFilesService {
         element.appendChild(createAttributeNonNull(doc, "memberCode", headRelationship.memberCode));
         element.appendChild(createAttributeNonNull(doc, "headCode", headRelationship.headCode));
         element.appendChild(createAttributeNonNull(doc, "relationshipType", headRelationship.relationshipType.code));
-        element.appendChild(createAttributeNonNull(doc, "order", headRelationship.order));
         element.appendChild(createAttributeNonNull(doc, "startType", headRelationship.startType.code ));
         element.appendChild(createAttributeNonNull(doc, "startDate", headRelationship.startDate));
         element.appendChild(createAttributeNonNull(doc, "endType", headRelationship.endType.code));
