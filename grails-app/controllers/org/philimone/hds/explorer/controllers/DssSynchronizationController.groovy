@@ -1,7 +1,7 @@
 package org.philimone.hds.explorer.controllers
 
-
-import org.philimone.hds.explorer.server.model.enums.settings.ReportCode
+import org.philimone.hds.explorer.server.model.enums.settings.LogGroupCode
+import org.philimone.hds.explorer.server.model.enums.settings.LogReportCode
 import org.philimone.hds.explorer.server.model.logs.LogReport
 import org.philimone.hds.explorer.server.model.enums.LogStatus
 
@@ -11,7 +11,7 @@ class DssSynchronizationController {
     def dssSynchronizationStatusService
 
     def index = {
-        def logReports = LogReport.executeQuery("select lr from LogReport lr where lr.group.groupId=? order by lr.reportId", [ReportCode.GROUP_SYNC_DSS_DATA_FROM_CLIENT])
+        def logReports = LogReport.executeQuery("select lr from LogReport lr where lr.group.groupId=? order by lr.reportId", [LogGroupCode.GROUP_SYNC_DSS_DATA_FROM_CLIENT])
 
         def syncProcesses = dssSynchronizationStatusService.mainProcessedStatus()
 
@@ -31,7 +31,7 @@ class DssSynchronizationController {
 
         def id = logReport.reportId
 
-        if (logReport.reportId== ReportCode.REPORT_DSS_ODK_CENSUS_SYNC){
+        if (logReport.reportId== LogReportCode.REPORT_DSS_ODK_CENSUS_SYNC){
             new Thread(new Runnable() {
                 @Override
                 void run() {

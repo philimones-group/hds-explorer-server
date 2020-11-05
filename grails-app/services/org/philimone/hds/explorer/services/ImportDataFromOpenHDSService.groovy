@@ -17,6 +17,7 @@ import org.philimone.hds.explorer.openhds.model.Locationhierarchy
 import org.philimone.hds.explorer.openhds.model.Locationhierarchylevel
 import org.philimone.hds.explorer.openhds.model.Relationship
 import org.philimone.hds.explorer.openhds.model.Socialgroup
+import org.philimone.hds.explorer.server.model.enums.settings.LogReportCode
 import org.philimone.hds.explorer.server.model.logs.LogReport
 import org.philimone.hds.explorer.server.model.logs.LogReportFile
 import org.philimone.hds.explorer.server.model.enums.LogStatus
@@ -39,7 +40,7 @@ class ImportDataFromOpenHDSService {
     def errorMessageService
     def sessionFactory
 
-    def importRegions(long logReportId){
+    def importRegions(LogReportCode logReportId){
         LogOutput log = generalUtilitiesService.getOutput(SystemPath.getLogsPath(), "db-hierarchies-from-openhds");
         PrintStream output = log.output
 
@@ -126,7 +127,7 @@ class ImportDataFromOpenHDSService {
         output.close()
     }
 
-    def importFieldWorkers(long logReportId){
+    def importFieldWorkers(LogReportCode logReportId){
         LogOutput log = generalUtilitiesService.getOutput(SystemPath.getLogsPath(), "db-fieldworkers-from-openhds");
         PrintStream output = log.output
 
@@ -241,7 +242,7 @@ class ImportDataFromOpenHDSService {
         output.close()
     }
 
-    def importHouseholds(long logReportId){
+    def importHouseholds(LogReportCode logReportId){
         LogOutput log = generalUtilitiesService.getOutput(SystemPath.getLogsPath(), "db-households-from-openhds");
         PrintStream output = log.output
 
@@ -379,7 +380,7 @@ class ImportDataFromOpenHDSService {
         output.close()
     }
 
-    def importIndividuals(long logReportId){
+    def importIndividuals(LogReportCode logReportId){
         LogOutput log = generalUtilitiesService.getOutput(SystemPath.getLogsPath(), "db-members-from-openhds");
         PrintStream output = log.output
 

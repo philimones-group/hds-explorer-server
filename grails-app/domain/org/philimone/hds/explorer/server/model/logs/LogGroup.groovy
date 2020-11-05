@@ -1,12 +1,14 @@
 package org.philimone.hds.explorer.server.model.logs
 
+import org.philimone.hds.explorer.server.model.enums.settings.LogGroupCode
+
 /**
  * Log Group represents a collection of Reports that belongs to a specific procedure or category of functions
  */
 class LogGroup {
 
     String id
-    int groupId
+    LogGroupCode groupId
     String name
     String description
 
@@ -16,7 +18,7 @@ class LogGroup {
 
     static constraints = {
         id maxSize: 32
-        groupId min: 1, max: 5000, unique:true
+        groupId unique:true
         name blank: false, unique: true
         description nullable: true, blank: true
     }
@@ -25,6 +27,10 @@ class LogGroup {
         table '_log_group'
 
         id column: "id", generator: 'uuid'
+
+        groupId column: "group_id", enumType: 'identity'
+        name column: "name"
+        description column: "description"
     }
 
 }

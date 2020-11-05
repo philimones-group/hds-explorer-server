@@ -1,6 +1,7 @@
 package org.philimone.hds.explorer.server.model.logs
 
 import org.philimone.hds.explorer.server.model.enums.LogStatus
+import org.philimone.hds.explorer.server.model.enums.settings.LogReportCode
 
 /**
  * A Log Report represents a register/report of the status of an specific execution that started and ended at an specific time
@@ -9,7 +10,7 @@ import org.philimone.hds.explorer.server.model.enums.LogStatus
 class LogReport {
 
     String id
-    int reportId
+    LogReportCode reportId
     LogGroup group
     LogStatus status
     String description
@@ -39,7 +40,7 @@ class LogReport {
 
         id column: "id", generator: 'uuid'
 
-        reportId column: "report_id"
+        reportId column: "report_id", enumType: "identity"
         group column: "group_id"
         description column: "description"
         status column: "status_id", enumType: "string"

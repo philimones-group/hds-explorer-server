@@ -6,6 +6,7 @@ import org.philimone.hds.explorer.io.SystemPath
 import org.philimone.hds.explorer.odk.model.CensusHouseholdCore
 import org.philimone.hds.explorer.odk.model.CensusMemberCore
 import org.philimone.hds.explorer.openhds.model.Round
+import org.philimone.hds.explorer.server.model.enums.settings.LogReportCode
 import org.philimone.hds.explorer.server.model.logs.LogReport
 import org.philimone.hds.explorer.server.model.logs.LogReportFile
 import org.philimone.hds.explorer.server.model.enums.LogStatus
@@ -31,7 +32,7 @@ class DssSynchronizationService {
 
     def baseUrl = ""
 
-    def readCensusDataAndExecute(long logReportId) {
+    def readCensusDataAndExecute(LogReportCode logReportId) {
         List<CensusData> locations = []
         List<CensusData> visits = []
         List<CensusData> individuals = []
@@ -140,7 +141,7 @@ class DssSynchronizationService {
 
     }
 
-    def syncLocations(long logReportId, RestApiAccess webApi, List<CensusData> locations){
+    def syncLocations(LogReportCode logReportId, RestApiAccess webApi, List<CensusData> locations){
 
         LogOutput log = null
         def processed = 0
@@ -238,7 +239,7 @@ class DssSynchronizationService {
         log.output.close()
     }
 
-    def syncVisits(long logReportId, RestApiAccess webApi, List<CensusData> visits){
+    def syncVisits(LogReportCode logReportId, RestApiAccess webApi, List<CensusData> visits){
 
         LogOutput log = null
         def processed = 0
@@ -339,7 +340,7 @@ class DssSynchronizationService {
         log.output.close()
     }
 
-    def syncIndividuals(long logReportId, RestApiAccess webApi, List<CensusData> individuals){
+    def syncIndividuals(LogReportCode logReportId, RestApiAccess webApi, List<CensusData> individuals){
 
         LogOutput log = null
         def processed = 0
@@ -434,7 +435,7 @@ class DssSynchronizationService {
         log.output.close()
     }
 
-    def syncSocialgroups(long logReportId, RestApiAccess webApi, List<CensusData> socialgroups){
+    def syncSocialgroups(LogReportCode logReportId, RestApiAccess webApi, List<CensusData> socialgroups){
 
         LogOutput log = null
         def processed = 0
@@ -529,7 +530,7 @@ class DssSynchronizationService {
         log.output.close()
     }
 
-    def syncMemberships(long logReportId, RestApiAccess webApi, List<CensusData> memberships){
+    def syncMemberships(LogReportCode logReportId, RestApiAccess webApi, List<CensusData> memberships){
 
         LogOutput log = null
         def processed = 0
@@ -624,7 +625,7 @@ class DssSynchronizationService {
         log.output.close()
     }
 
-    def syncRelationships(long logReportId, RestApiAccess webApi, List<CensusData> relationships){
+    def syncRelationships(LogReportCode logReportId, RestApiAccess webApi, List<CensusData> relationships){
 
         LogOutput log = null
         def processed = 0

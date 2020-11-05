@@ -6,6 +6,7 @@ import net.betainteractive.io.writers.ZipMaker
 import net.betainteractive.utilities.StringUtil
 import org.philimone.hds.explorer.server.model.authentication.User
 import org.philimone.hds.explorer.io.SystemPath
+import org.philimone.hds.explorer.server.model.enums.settings.LogReportCode
 import org.philimone.hds.explorer.server.model.logs.LogReport
 import org.philimone.hds.explorer.server.model.logs.LogReportFile
 import org.philimone.hds.explorer.server.model.enums.LogStatus
@@ -44,7 +45,7 @@ class SyncFilesService {
     def trackingListService
     def syncFilesReportService
 
-    def generateUsersXML(long logReportId) {
+    def generateUsersXML(LogReportCode logReportId) {
 
         LogOutput log = generalUtilitiesService.getOutput(SystemPath.getLogsPath(), "generate-users-xml-zip");
         PrintStream output = log.output
@@ -137,7 +138,7 @@ class SyncFilesService {
 
     }
 
-    def generateSettingsXML(long logReportId){
+    def generateSettingsXML(LogReportCode logReportId){
         generateAppParametersXML(logReportId)
         generateRegionsXML(logReportId)
         generateModulesXML(logReportId)
@@ -145,7 +146,7 @@ class SyncFilesService {
         generateDatasetsXML(logReportId)
     }
 
-    def generateModulesXML(long logReportId) {
+    def generateModulesXML(LogReportCode logReportId) {
 
         LogOutput log = generalUtilitiesService.getOutput(SystemPath.getLogsPath(), "generate-exp-modules-xml");
         PrintStream output = log.output
@@ -239,7 +240,7 @@ class SyncFilesService {
 
     }
 
-    def generateFormsXML(long logReportId) { //read forms
+    def generateFormsXML(LogReportCode logReportId) { //read forms
 
         LogOutput log = generalUtilitiesService.getOutput(SystemPath.getLogsPath(), "generate-exp-settings-xml");
         PrintStream output = log.output
@@ -335,7 +336,7 @@ class SyncFilesService {
 
     }
 
-    def generateRegionsXML(long logReportId) {
+    def generateRegionsXML(LogReportCode logReportId) {
 
         LogOutput log = generalUtilitiesService.getOutput(SystemPath.getLogsPath(), "generate-regions-xml-zip");
         PrintStream output = log.output
@@ -428,7 +429,7 @@ class SyncFilesService {
 
     }
     
-    def generateHouseHoldsXML(long logReportId) {
+    def generateHouseHoldsXML(LogReportCode logReportId) {
 
         LogOutput log = generalUtilitiesService.getOutput(SystemPath.logsPath, "/generate-households-xml");
         PrintStream output = log.output
@@ -511,7 +512,7 @@ class SyncFilesService {
 
     }
 
-    def generateMembersXML(long logReportId) {
+    def generateMembersXML(LogReportCode logReportId) {
 
         LogOutput log = generalUtilitiesService.getOutput(SystemPath.logsPath, "/generate-members-xml");
         PrintStream output = log.output
@@ -598,7 +599,7 @@ class SyncFilesService {
 
     }
 
-    def generateResidenciesXML(long logReportId) {
+    def generateResidenciesXML(LogReportCode logReportId) {
         String filename = SyncEntity.RESIDENCIES.filename
         String xmlFilename = SyncEntity.RESIDENCIES.xmlFilename
         String zipFilename = SyncEntity.RESIDENCIES.zipFilename
@@ -695,7 +696,7 @@ class SyncFilesService {
 
     }
 
-    def generateHeadRelationshipsXML(long logReportId) {
+    def generateHeadRelationshipsXML(LogReportCode logReportId) {
         String filename = SyncEntity.HEAD_RELATIONSHIPS.filename
         String xmlFilename = SyncEntity.HEAD_RELATIONSHIPS.xmlFilename
         String zipFilename = SyncEntity.HEAD_RELATIONSHIPS.zipFilename
@@ -792,7 +793,7 @@ class SyncFilesService {
 
     }
 
-    def generateMaritalRelationshipsXML(long logReportId) {
+    def generateMaritalRelationshipsXML(LogReportCode logReportId) {
         String filename = SyncEntity.MARITAL_RELATIONSHIPS.filename
         String xmlFilename = SyncEntity.MARITAL_RELATIONSHIPS.xmlFilename
         String zipFilename = SyncEntity.MARITAL_RELATIONSHIPS.zipFilename
@@ -889,7 +890,7 @@ class SyncFilesService {
 
     }
 
-    def generateAppParametersXML(long logReportId) {
+    def generateAppParametersXML(LogReportCode logReportId) {
 
         LogOutput log = generalUtilitiesService.getOutput(SystemPath.getLogsPath(), "generate-app-param-xml-zip");
         PrintStream output = log.output
@@ -982,7 +983,7 @@ class SyncFilesService {
 
     }    
 
-    def generateDatasetsXML(long logReportId) {
+    def generateDatasetsXML(LogReportCode logReportId) {
 
         LogOutput log = generalUtilitiesService.getOutput(SystemPath.getLogsPath(), "generate-dataset-xml-zip");
         PrintStream output = log.output
@@ -1074,7 +1075,7 @@ class SyncFilesService {
 
     }
 
-    def generateTrackingListsXML(long logReportId) {
+    def generateTrackingListsXML(LogReportCode logReportId) {
 
         LogOutput log = generalUtilitiesService.getOutput(SystemPath.getLogsPath(), "generate-tracklist-xml-zip");
         PrintStream output = log.output
