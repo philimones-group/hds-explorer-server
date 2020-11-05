@@ -6,7 +6,7 @@ import org.philimone.hds.explorer.server.model.collect.raw.RawRegion
 import org.philimone.hds.explorer.server.model.enums.RegionLevel
 import org.philimone.hds.explorer.server.model.main.collect.raw.RawExecutionResult
 import org.philimone.hds.explorer.server.model.main.collect.raw.RawMessage
-import org.philimone.hds.explorer.server.Codes
+import org.philimone.hds.explorer.server.model.settings.Codes
 
 @Transactional
 class RegionService {

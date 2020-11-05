@@ -1,5 +1,6 @@
 package org.philimone.hds.explorer
 
+import org.apache.xmlbeans.impl.xb.ltgfmt.Code
 import org.philimone.hds.explorer.server.model.authentication.Role
 import org.philimone.hds.explorer.server.model.authentication.SecurityMap
 import org.philimone.hds.explorer.server.model.authentication.User
@@ -12,6 +13,7 @@ import org.philimone.hds.explorer.server.model.enums.LogStatus
 import org.philimone.hds.explorer.server.model.main.MappingFormatType
 import org.philimone.hds.explorer.server.model.main.StudyModule
 import org.philimone.hds.explorer.server.model.enums.SyncEntity
+import org.philimone.hds.explorer.server.model.settings.Codes
 import org.philimone.hds.explorer.server.model.settings.SyncFilesReport
 
 class BootStrap {
@@ -19,10 +21,6 @@ class BootStrap {
     def generalUtilitiesService
     def userService
     def applicationParamService
-    def importDataFromOpenHDSService
-    def syncFilesService
-    def trackingListService
-    def testDataService
 
     def init = { servletContext ->
 
@@ -30,7 +28,7 @@ class BootStrap {
         configSecurityMap()
         defaultAppUser()
         insertDefaults()
-
+        retrieveAndPopulateStaticConstants()
         //testApp()
     }
 
@@ -321,19 +319,21 @@ class BootStrap {
                 enabled: false
         ).save(flush: true)
 
-        //Inserting defaults system params
-
-        def maxCols = svc.getConfigValue("${ReportCode.PARAMS_TRACKING_LISTS_MAX_DATA_COLUMNS}")
-        def fmaxAge = svc.getConfigValue("${ReportCode.PARAMS_MIN_AGE_OF_FATHER}")
-        def mmaxAge = svc.getConfigValue("${ReportCode.PARAMS_MIN_AGE_OF_MOTHER}")
-        def hmaxAge = svc.getConfigValue("${ReportCode.PARAMS_MIN_AGE_OF_HEAD}")
+        //Get defaults system paramaters from properties file
+        def maxCols = svc.getConfigValue("${Codes.PARAMS_TRACKLIST_MAX_DATA_COLUMNS}")
+        def fmaxAge = svc.getConfigValue("${Codes.PARAMS_MIN_AGE_OF_FATHER}")
+        def mmaxAge = svc.getConfigValue("${Codes.PARAMS_MIN_AGE_OF_MOTHER}")
+        def hmaxAge = svc.getConfigValue("${Codes.PARAMS_MIN_AGE_OF_HEAD}")
+        def gndChck = svc.getConfigValue("${Codes.PARAMS_GENDER_CHECKING}")
         println "code: ${maxCols}"
 
-        //Will not rewrite the existent
-        aps.addParam(ReportCode.PARAMS_TRACKING_LISTS_MAX_DATA_COLUMNS, Integer.parseInt(maxCols))
-        aps.addParam(ReportCode.PARAMS_MIN_AGE_OF_MOTHER, Integer.parseInt(mmaxAge))
-        aps.addParam(ReportCode.PARAMS_MIN_AGE_OF_FATHER, Integer.parseInt(fmaxAge))
-        aps.addParam(ReportCode.PARAMS_MIN_AGE_OF_HEAD, Integer.parseInt(hmaxAge))
+        //Save Application/System Parameters to database, Will persist to the database only when its empty - changing parameters will be done through database
+        aps.addParam(Codes.PARAMS_TRACKLIST_MAX_DATA_COLUMNS, Integer.parseInt(maxCols))
+        aps.addParam(Codes.PARAMS_MIN_AGE_OF_MOTHER, Integer.parseInt(mmaxAge))
+        aps.addParam(Codes.PARAMS_MIN_AGE_OF_FATHER, Integer.parseInt(fmaxAge))
+        aps.addParam(Codes.PARAMS_MIN_AGE_OF_HEAD, Integer.parseInt(hmaxAge))
+        aps.addParam(Codes.PARAMS_GENDER_CHECKING, Boolean.parseBoolean(gndChck))
+
         aps.addParam(RegionLevel.HIERARCHY_1, "")
         aps.addParam(RegionLevel.HIERARCHY_2, "")
         aps.addParam(RegionLevel.HIERARCHY_3, "")
@@ -376,8 +376,19 @@ class BootStrap {
         new SyncFilesReport(name: SyncEntity.MEMBERS).save(flush:true)
     }
 
-    def retrievePopulateStaticConstants(){
+    def retrieveAndPopulateStaticConstants(){
 
+        def valueDtc = applicationParamService.getIntegerValue(Codes.PARAMS_TRACKLIST_MAX_DATA_COLUMNS)
+        def valueAgm = applicationParamService.getIntegerValue(Codes.PARAMS_MIN_AGE_OF_MOTHER)
+        def valueAgf = applicationParamService.getIntegerValue(Codes.PARAMS_MIN_AGE_OF_FATHER)
+        def valueAgh = applicationParamService.getIntegerValue(Codes.PARAMS_MIN_AGE_OF_HEAD)
+        def valueGch = applicationParamService.getBooleanValue(Codes.PARAMS_GENDER_CHECKING)
+
+        Codes.MAX_TRACKLIST_DATA_COLUMNS_VALUE = valueDtc != null ? valueDtc : Codes.MAX_TRACKLIST_DATA_COLUMNS_VALUE
+        Codes.MIN_MOTHER_AGE_VALUE = valueAgm != null ? valueAgm : Codes.MIN_MOTHER_AGE_VALUE
+        Codes.MIN_FATHER_AGE_VALUE = valueAgf != null ? valueAgf : Codes.MIN_FATHER_AGE_VALUE
+        Codes.MIN_HEAD_AGE_VALUE = valueAgh != null ? valueAgh : Codes.MIN_HEAD_AGE_VALUE
+        Codes.GENDER_CHECKING = valueGch != null ? valueGch : Codes.GENDER_CHECKING
     }
 
     def insertTestData(){

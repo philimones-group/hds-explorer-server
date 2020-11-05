@@ -6,7 +6,7 @@ import org.philimone.hds.explorer.server.model.authentication.User
 import org.philimone.hds.explorer.server.model.collect.raw.RawHousehold
 import org.philimone.hds.explorer.server.model.main.collect.raw.RawExecutionResult
 import org.philimone.hds.explorer.server.model.main.collect.raw.RawMessage
-import org.philimone.hds.explorer.server.Codes
+import org.philimone.hds.explorer.server.model.settings.Codes
 
 @Transactional
 class HouseholdService {
@@ -22,6 +22,17 @@ class HouseholdService {
 
     boolean exists(String householdCode) {
         Household.countByCode(householdCode) > 0
+    }
+
+    boolean prefixExists(String memberCode){
+        exists(memberCode.length()>8 ? memberCode.substring(0, 9) : memberCode)
+    }
+
+    Household getHousehold(String householdCode) {
+        if (!StringUtil.isBlank(householdCode)){
+            return Household.findByCode(householdCode)
+        }
+        return null
     }
 
     /* Generate Household Code using the Region.code and User.code */
@@ -167,5 +178,4 @@ class HouseholdService {
 
     }
     //</editor-fold>
-
 }
