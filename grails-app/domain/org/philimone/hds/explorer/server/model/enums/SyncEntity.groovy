@@ -50,7 +50,7 @@ enum SyncEntity {
         }
     }
 
-    public static SyncEntity valueOf(Integer code) {
+    public static SyncEntity getFrom(Integer code) {
         return code==null ? null : MAP.get(code);
     }
 }

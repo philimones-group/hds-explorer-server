@@ -30,7 +30,7 @@ enum MaritalStatus {
         }
     }
 
-    public static MaritalStatus valueOf(String code) {
+    public static MaritalStatus getFrom(String code) {
         return code==null ? null : MAP.get(code);
     }
 

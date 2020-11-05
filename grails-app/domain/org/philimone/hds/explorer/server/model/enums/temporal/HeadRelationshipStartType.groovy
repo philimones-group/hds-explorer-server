@@ -29,7 +29,7 @@ enum HeadRelationshipStartType {
         }
     }
 
-    public static HeadRelationshipStartType valueOf(String code) {
+    public static HeadRelationshipStartType getFrom(String code) {
         return code==null ? null : MAP.get(code);
     }
 }

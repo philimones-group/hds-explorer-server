@@ -22,7 +22,7 @@ enum RawEntity {
         }
     }
 
-    public static RawEntity valueOf(String code) {
+    public static RawEntity getFrom(String code) {
         return code==null ? null : MAP.get(code);
     }
 }

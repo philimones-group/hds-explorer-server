@@ -28,7 +28,7 @@ enum ResidencyEndType {
         }
     }
 
-    public static ResidencyEndType valueOf(String code) {
+    public static ResidencyEndType getFrom(String code) {
         return code==null ? null : MAP.get(code);
     }
 }

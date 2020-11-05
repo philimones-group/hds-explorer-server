@@ -26,7 +26,7 @@ enum MaritalStartStatus {
         }
     }
 
-    public static MaritalStartStatus valueOf(String code) {
+    public static MaritalStartStatus getFrom(String code) {
         return code==null ? null : MAP.get(code);
     }
 

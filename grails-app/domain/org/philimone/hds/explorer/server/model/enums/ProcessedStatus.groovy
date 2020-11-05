@@ -33,7 +33,7 @@ enum ProcessedStatus {
         }
     }
 
-    public static Gender valueOf(Integer code) {
+    public static Gender getFrom(Integer code) {
         return code==null ? null : MAP.get(code);
     }
 }

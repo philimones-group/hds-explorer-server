@@ -25,7 +25,7 @@ enum Gender {
         }
     }
 
-    public static Gender valueOf(String code) {
+    public static Gender getFrom(String code) {
         return code==null ? null : MAP.get(code);
     }
 }

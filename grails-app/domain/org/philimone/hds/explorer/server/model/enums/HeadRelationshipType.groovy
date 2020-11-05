@@ -33,7 +33,7 @@ enum HeadRelationshipType {
         }
     }
 
-    public static HeadRelationshipType valueOf(String code) {
+    public static HeadRelationshipType getFrom(String code) {
         return code==null ? null : MAP.get(code);
     }
 

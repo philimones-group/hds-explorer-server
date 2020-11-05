@@ -34,7 +34,7 @@ enum RegionLevel {
         }
     }
 
-    public static RegionLevel valueOf(String code) {
+    public static RegionLevel getFrom(String code) {
         return code==null ? null : MAP.get(code);
     }
 }
