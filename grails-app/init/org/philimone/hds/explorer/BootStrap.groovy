@@ -4,8 +4,8 @@ import org.philimone.hds.explorer.server.model.authentication.Role
 import org.philimone.hds.explorer.server.model.authentication.SecurityMap
 import org.philimone.hds.explorer.server.model.authentication.User
 import org.philimone.hds.explorer.io.SystemPath
-import org.philimone.hds.explorer.server.model.enums.Codes
 import org.philimone.hds.explorer.server.model.enums.RegionLevel
+import org.philimone.hds.explorer.server.model.enums.settings.ReportCode
 import org.philimone.hds.explorer.server.model.logs.LogGroup
 import org.philimone.hds.explorer.server.model.logs.LogReport
 import org.philimone.hds.explorer.server.model.enums.LogStatus
@@ -183,40 +183,40 @@ class BootStrap {
         def aps = applicationParamService
 
         //Inserting Log Groups
-        new LogGroup(groupId: Codes.GROUP_IMPORT_DATA_OPENHDS,       name: "OPENHDS",    description: "").save(flush: true)
-        new LogGroup(groupId: Codes.GROUP_IMPORT_DATA_XLSHDS,        name: "XLSHDS",     description: "").save(flush: true)
-        new LogGroup(groupId: Codes.GROUP_UPLOAD_TRACKING_LISTS,     name: "TRACKLISTS", description: "").save(flush: true)
-        new LogGroup(groupId: Codes.GROUP_GENERATE_FILES,            name: "GENFILES",   description: "").save(flush: true)
-        new LogGroup(groupId: Codes.GROUP_SYNC_DSS_DATA_FROM_CLIENT, name: "SYNCDSS",    description: "").save(flush: true)
+        new LogGroup(groupId: ReportCode.GROUP_IMPORT_DATA_OPENHDS,       name: "OPENHDS",    description: "").save(flush: true)
+        new LogGroup(groupId: ReportCode.GROUP_IMPORT_DATA_XLSHDS,        name: "XLSHDS",     description: "").save(flush: true)
+        new LogGroup(groupId: ReportCode.GROUP_UPLOAD_TRACKING_LISTS,     name: "TRACKLISTS", description: "").save(flush: true)
+        new LogGroup(groupId: ReportCode.GROUP_GENERATE_FILES,            name: "GENFILES",   description: "").save(flush: true)
+        new LogGroup(groupId: ReportCode.GROUP_SYNC_DSS_DATA_FROM_CLIENT, name: "SYNCDSS",    description: "").save(flush: true)
 
 
         //Inserting Log Reports
 
         /* Group Import from OpenHDS */
         new LogReport(
-                reportId: Codes.REPORT_IMPORT_FROM_OPENHDS_FIELDWORKERS,
-                group: LogGroup.findByGroupId(Codes.GROUP_IMPORT_DATA_OPENHDS),
+                reportId: ReportCode.REPORT_IMPORT_FROM_OPENHDS_FIELDWORKERS,
+                group: LogGroup.findByGroupId(ReportCode.GROUP_IMPORT_DATA_OPENHDS),
                 status: LogStatus.NOT_STARTED,
                 description: 'logreport.import.openhds.fieldworkers.label'
         ).save(flush: true)
 
         new LogReport(
-                reportId: Codes.REPORT_IMPORT_FROM_OPENHDS_HOUSEHOLDS,
-                group: LogGroup.findByGroupId(Codes.GROUP_IMPORT_DATA_OPENHDS),
+                reportId: ReportCode.REPORT_IMPORT_FROM_OPENHDS_HOUSEHOLDS,
+                group: LogGroup.findByGroupId(ReportCode.GROUP_IMPORT_DATA_OPENHDS),
                 status: LogStatus.NOT_STARTED,
                 description: 'logreport.import.openhds.households.label'
         ).save(flush: true)
 
         new LogReport(
-                reportId: Codes.REPORT_IMPORT_FROM_OPENHDS_INDIVIDUALS,
-                group: LogGroup.findByGroupId(Codes.GROUP_IMPORT_DATA_OPENHDS),
+                reportId: ReportCode.REPORT_IMPORT_FROM_OPENHDS_INDIVIDUALS,
+                group: LogGroup.findByGroupId(ReportCode.GROUP_IMPORT_DATA_OPENHDS),
                 status: LogStatus.NOT_STARTED,
                 description: 'logreport.import.openhds.individuals.label'
         ).save(flush: true)
 
         new LogReport(
-                reportId: Codes.REPORT_IMPORT_FROM_OPENHDS_RESIDENCIES,
-                group: LogGroup.findByGroupId(Codes.GROUP_IMPORT_DATA_OPENHDS),
+                reportId: ReportCode.REPORT_IMPORT_FROM_OPENHDS_RESIDENCIES,
+                group: LogGroup.findByGroupId(ReportCode.GROUP_IMPORT_DATA_OPENHDS),
                 status: LogStatus.NOT_STARTED,
                 description: 'logreport.import.openhds.residencies.label'
         ).save(flush: true)
@@ -224,15 +224,15 @@ class BootStrap {
 
         /* Group Import from HDS-XLS Files */
         new LogReport(
-                reportId: Codes.REPORT_IMPORT_HDSXLS_HOUSEHOLDS,
-                group: LogGroup.findByGroupId(Codes.GROUP_IMPORT_DATA_XLSHDS),
+                reportId: ReportCode.REPORT_IMPORT_HDSXLS_HOUSEHOLDS,
+                group: LogGroup.findByGroupId(ReportCode.GROUP_IMPORT_DATA_XLSHDS),
                 status: LogStatus.NOT_STARTED,
                 description: 'logreport.import.hdsxls.households.label'
         ).save(flush: true)
 
         new LogReport(
-                reportId: Codes.REPORT_IMPORT_HDSXLS_INDIVIDUALS,
-                group: LogGroup.findByGroupId(Codes.GROUP_IMPORT_DATA_XLSHDS),
+                reportId: ReportCode.REPORT_IMPORT_HDSXLS_INDIVIDUALS,
+                group: LogGroup.findByGroupId(ReportCode.GROUP_IMPORT_DATA_XLSHDS),
                 status: LogStatus.NOT_STARTED,
                 description: 'logreport.import.hdsxls.individuals.label'
         ).save(flush: true)
@@ -240,82 +240,82 @@ class BootStrap {
 
         /* Group Uploading Tracking Lists */
         new LogReport(
-                reportId: Codes.REPORT_UPLOAD_TRACKING_LISTS_BASIC,
-                group: LogGroup.findByGroupId(Codes.GROUP_UPLOAD_TRACKING_LISTS),
+                reportId: ReportCode.REPORT_UPLOAD_TRACKING_LISTS_BASIC,
+                group: LogGroup.findByGroupId(ReportCode.GROUP_UPLOAD_TRACKING_LISTS),
                 status: LogStatus.NOT_STARTED,
                 description: 'logreport.upload.trackinglists.basic.label'
         ).save(flush: true)
 
         new LogReport(
-                reportId: Codes.REPORT_UPLOAD_TRACKING_LISTS_W_EXTRA_DATA,
-                group: LogGroup.findByGroupId(Codes.GROUP_UPLOAD_TRACKING_LISTS),
+                reportId: ReportCode.REPORT_UPLOAD_TRACKING_LISTS_W_EXTRA_DATA,
+                group: LogGroup.findByGroupId(ReportCode.GROUP_UPLOAD_TRACKING_LISTS),
                 status: LogStatus.NOT_STARTED,
                 description: 'logreport.upload.trackinglists.with_extradata.label'
         ).save(flush: true)
 
         /* Group Sync DSS Data from Client (odk, etc) */
         new LogReport(
-                reportId: Codes.REPORT_DSS_ODK_CENSUS_SYNC,
-                group: LogGroup.findByGroupId(Codes.GROUP_SYNC_DSS_DATA_FROM_CLIENT),
+                reportId: ReportCode.REPORT_DSS_ODK_CENSUS_SYNC,
+                group: LogGroup.findByGroupId(ReportCode.GROUP_SYNC_DSS_DATA_FROM_CLIENT),
                 status: LogStatus.NOT_STARTED,
                 description: 'logreport.sync.syncdss.odk.census.label'
         ).save(flush: true)
 
         /* Group Generate Files */
         new LogReport(
-                reportId: Codes.REPORT_GENERATE_USERS_ZIP_XML_FILES,
-                group: LogGroup.findByGroupId(Codes.GROUP_GENERATE_FILES),
+                reportId: ReportCode.REPORT_GENERATE_USERS_ZIP_XML_FILES,
+                group: LogGroup.findByGroupId(ReportCode.GROUP_GENERATE_FILES),
                 status: LogStatus.NOT_STARTED,
                 description: 'logreport.export.users.zip_xml_files.label'
         ).save(flush: true)
 
         new LogReport(
-                reportId: Codes.REPORT_GENERATE_HOUSEHOLDS_ZIP_XML_FILES,
-                group: LogGroup.findByGroupId(Codes.GROUP_GENERATE_FILES),
+                reportId: ReportCode.REPORT_GENERATE_HOUSEHOLDS_ZIP_XML_FILES,
+                group: LogGroup.findByGroupId(ReportCode.GROUP_GENERATE_FILES),
                 status: LogStatus.NOT_STARTED,
                 description: 'logreport.export.households.zip_xml_files.label'
         ).save(flush: true)
 
         new LogReport(
-                reportId: Codes.REPORT_GENERATE_MEMBERS_ZIP_XML_FILES,
-                group: LogGroup.findByGroupId(Codes.GROUP_GENERATE_FILES),
+                reportId: ReportCode.REPORT_GENERATE_MEMBERS_ZIP_XML_FILES,
+                group: LogGroup.findByGroupId(ReportCode.GROUP_GENERATE_FILES),
                 status: LogStatus.NOT_STARTED,
                 description: 'logreport.export.individuals.zip_xml_files.label'
         ).save(flush: true)
 
         new LogReport(
-                reportId: Codes.REPORT_GENERATE_SETTINGS_ZIP_XML_FILES,
-                group: LogGroup.findByGroupId(Codes.GROUP_GENERATE_FILES),
+                reportId: ReportCode.REPORT_GENERATE_SETTINGS_ZIP_XML_FILES,
+                group: LogGroup.findByGroupId(ReportCode.GROUP_GENERATE_FILES),
                 status: LogStatus.NOT_STARTED,
                 description: 'logreport.export.settings.zip_xml_files.label'
         ).save(flush: true)
 
         new LogReport(
-                reportId: Codes.REPORT_GENERATE_TRACKING_LISTS_ZIP_XML_FILES,
-                group: LogGroup.findByGroupId(Codes.GROUP_GENERATE_FILES),
+                reportId: ReportCode.REPORT_GENERATE_TRACKING_LISTS_ZIP_XML_FILES,
+                group: LogGroup.findByGroupId(ReportCode.GROUP_GENERATE_FILES),
                 status: LogStatus.NOT_STARTED,
                 description: 'logreport.export.trakinglists.zip_xml_files.label'
         ).save(flush: true)
 
         new LogReport(
-                reportId: Codes.REPORT_GENERATE_RESIDENCIES_ZIP_XML_FILES,
-                group: LogGroup.findByGroupId(Codes.GROUP_GENERATE_FILES),
+                reportId: ReportCode.REPORT_GENERATE_RESIDENCIES_ZIP_XML_FILES,
+                group: LogGroup.findByGroupId(ReportCode.GROUP_GENERATE_FILES),
                 status: LogStatus.NOT_STARTED,
                 description: 'logreport.export.residencies.zip_xml_files.label',
                 enabled: false
         ).save(flush: true)
 
         new LogReport(
-                reportId: Codes.REPORT_GENERATE_HEAD_RELATIONSHIPS_ZIP_XML_FILES,
-                group: LogGroup.findByGroupId(Codes.GROUP_GENERATE_FILES),
+                reportId: ReportCode.REPORT_GENERATE_HEAD_RELATIONSHIPS_ZIP_XML_FILES,
+                group: LogGroup.findByGroupId(ReportCode.GROUP_GENERATE_FILES),
                 status: LogStatus.NOT_STARTED,
                 description: 'logreport.export.head_relationships.zip_xml_files.label',
                 enabled: false
         ).save(flush: true)
 
         new LogReport(
-                reportId: Codes.REPORT_GENERATE_MARTIAL_RELATIONSHIPS_ZIP_XML_FILES,
-                group: LogGroup.findByGroupId(Codes.GROUP_GENERATE_FILES),
+                reportId: ReportCode.REPORT_GENERATE_MARTIAL_RELATIONSHIPS_ZIP_XML_FILES,
+                group: LogGroup.findByGroupId(ReportCode.GROUP_GENERATE_FILES),
                 status: LogStatus.NOT_STARTED,
                 description: 'logreport.export.marital_relationships.zip_xml_files.label',
                 enabled: false
@@ -323,17 +323,17 @@ class BootStrap {
 
         //Inserting defaults system params
 
-        def maxCols = svc.getConfigValue("${Codes.PARAMS_TRACKING_LISTS_MAX_DATA_COLUMNS}")
-        def fmaxAge = svc.getConfigValue("${Codes.PARAMS_MIN_AGE_OF_FATHER}")
-        def mmaxAge = svc.getConfigValue("${Codes.PARAMS_MIN_AGE_OF_MOTHER}")
-        def hmaxAge = svc.getConfigValue("${Codes.PARAMS_MIN_AGE_OF_HEAD}")
+        def maxCols = svc.getConfigValue("${ReportCode.PARAMS_TRACKING_LISTS_MAX_DATA_COLUMNS}")
+        def fmaxAge = svc.getConfigValue("${ReportCode.PARAMS_MIN_AGE_OF_FATHER}")
+        def mmaxAge = svc.getConfigValue("${ReportCode.PARAMS_MIN_AGE_OF_MOTHER}")
+        def hmaxAge = svc.getConfigValue("${ReportCode.PARAMS_MIN_AGE_OF_HEAD}")
         println "code: ${maxCols}"
 
         //Will not rewrite the existent
-        aps.addParam(Codes.PARAMS_TRACKING_LISTS_MAX_DATA_COLUMNS, Integer.parseInt(maxCols))
-        aps.addParam(Codes.PARAMS_MIN_AGE_OF_MOTHER, Integer.parseInt(mmaxAge))
-        aps.addParam(Codes.PARAMS_MIN_AGE_OF_FATHER, Integer.parseInt(fmaxAge))
-        aps.addParam(Codes.PARAMS_MIN_AGE_OF_HEAD, Integer.parseInt(hmaxAge))
+        aps.addParam(ReportCode.PARAMS_TRACKING_LISTS_MAX_DATA_COLUMNS, Integer.parseInt(maxCols))
+        aps.addParam(ReportCode.PARAMS_MIN_AGE_OF_MOTHER, Integer.parseInt(mmaxAge))
+        aps.addParam(ReportCode.PARAMS_MIN_AGE_OF_FATHER, Integer.parseInt(fmaxAge))
+        aps.addParam(ReportCode.PARAMS_MIN_AGE_OF_HEAD, Integer.parseInt(hmaxAge))
         aps.addParam(RegionLevel.HIERARCHY_1, "")
         aps.addParam(RegionLevel.HIERARCHY_2, "")
         aps.addParam(RegionLevel.HIERARCHY_3, "")
@@ -500,15 +500,15 @@ class BootStrap {
         //String xml = trackingListService.createXMLfromFile("/home/paul/snap/tracking_list_sample_1.xlsx")
         //println(xml)
 
-        //importDataFromOpenHDSService.importFieldWorkers(Codes.REPORT_IMPORT_FROM_OPENHDS_FIELDWORKERS)
-        //importDataFromOpenHDSService.importRegions(Codes.REPORT_IMPORT_FROM_OPENHDS_HOUSEHOLDS)
-        //importDataFromOpenHDSService.importHouseholds(Codes.REPORT_IMPORT_FROM_OPENHDS_HOUSEHOLDS)
-        //importDataFromOpenHDSService.importIndividuals(Codes.REPORT_IMPORT_FROM_OPENHDS_INDIVIDUALS)
+        //importDataFromOpenHDSService.importFieldWorkers(ReportCode.REPORT_IMPORT_FROM_OPENHDS_FIELDWORKERS)
+        //importDataFromOpenHDSService.importRegions(ReportCode.REPORT_IMPORT_FROM_OPENHDS_HOUSEHOLDS)
+        //importDataFromOpenHDSService.importHouseholds(ReportCode.REPORT_IMPORT_FROM_OPENHDS_HOUSEHOLDS)
+        //importDataFromOpenHDSService.importIndividuals(ReportCode.REPORT_IMPORT_FROM_OPENHDS_INDIVIDUALS)
 
-        //exportFilesService.generateUsersXML(Codes.REPORT_GENERATE_USERS_ZIP_XML_FILES)
-        //exportFilesService.generateSettingsXML(Codes.REPORT_GENERATE_SETTINGS_ZIP_XML_FILES)
-        //exportFilesService.generateHouseHoldsXML(Codes.REPORT_GENERATE_HOUSEHOLDS_ZIP_XML_FILES)
-        //exportFilesService.generateMembersXML(Codes.REPORT_GENERATE_MEMBERS_ZIP_XML_FILES)
+        //exportFilesService.generateUsersXML(ReportCode.REPORT_GENERATE_USERS_ZIP_XML_FILES)
+        //exportFilesService.generateSettingsXML(ReportCode.REPORT_GENERATE_SETTINGS_ZIP_XML_FILES)
+        //exportFilesService.generateHouseHoldsXML(ReportCode.REPORT_GENERATE_HOUSEHOLDS_ZIP_XML_FILES)
+        //exportFilesService.generateMembersXML(ReportCode.REPORT_GENERATE_MEMBERS_ZIP_XML_FILES)
 
 
 /*

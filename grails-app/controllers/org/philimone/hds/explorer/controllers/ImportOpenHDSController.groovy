@@ -1,6 +1,7 @@
 package org.philimone.hds.explorer.controllers
 
-import org.philimone.hds.explorer.server.model.enums.Codes
+
+import org.philimone.hds.explorer.server.model.enums.settings.ReportCode
 import org.philimone.hds.explorer.server.model.logs.LogReport
 import org.philimone.hds.explorer.server.model.enums.LogStatus
 
@@ -9,7 +10,7 @@ class ImportOpenHDSController {
     def importDataFromOpenHDSService
 
     def index = {
-        def logReports = LogReport.executeQuery("select lr from LogReport lr where lr.group.groupId=? order by lr.reportId", [Codes.GROUP_IMPORT_DATA_OPENHDS])
+        def logReports = LogReport.executeQuery("select lr from LogReport lr where lr.group.groupId=? order by lr.reportId", [ReportCode.GROUP_IMPORT_DATA_OPENHDS])
 
         render view: "index", model: [logReports : logReports]
     }
@@ -27,7 +28,7 @@ class ImportOpenHDSController {
 
         def id = logReport.reportId
 
-        if (logReport.reportId==Codes.REPORT_IMPORT_FROM_OPENHDS_FIELDWORKERS){
+        if (logReport.reportId==ReportCode.REPORT_IMPORT_FROM_OPENHDS_FIELDWORKERS){
             new Thread(new Runnable() {
                 @Override
                 void run() {
@@ -37,7 +38,7 @@ class ImportOpenHDSController {
             }).start()
         }
 
-        if (logReport.reportId==Codes.REPORT_IMPORT_FROM_OPENHDS_HOUSEHOLDS){
+        if (logReport.reportId==ReportCode.REPORT_IMPORT_FROM_OPENHDS_HOUSEHOLDS){
             new Thread(new Runnable() {
                 @Override
                 void run() {
@@ -48,7 +49,7 @@ class ImportOpenHDSController {
             }).start()
         }
 
-        if (logReport.reportId==Codes.REPORT_IMPORT_FROM_OPENHDS_INDIVIDUALS){
+        if (logReport.reportId== ReportCode.REPORT_IMPORT_FROM_OPENHDS_INDIVIDUALS){
             new Thread(new Runnable() {
                 @Override
                 void run() {
@@ -58,7 +59,7 @@ class ImportOpenHDSController {
             }).start()
         }
 
-        if (logReport.reportId==Codes.REPORT_IMPORT_FROM_OPENHDS_RESIDENCIES){
+        if (logReport.reportId==ReportCode.REPORT_IMPORT_FROM_OPENHDS_RESIDENCIES){
             new Thread(new Runnable() {
                 @Override
                 void run() {

@@ -1,9 +1,9 @@
-package org.philimone.hds.explorer.server.model.enums
+package org.philimone.hds.explorer.server.model.enums.settings
 
 /**
  * Created by paul on 4/5/17.
  */
-class Codes {
+class ReportCode {
 
     static final int GROUP_IMPORT_DATA_OPENHDS = 1
     static final int GROUP_IMPORT_DATA_XLSHDS = 2 /* Import Data from HDS-XLS files - excel files with HDS DataSet */
@@ -12,7 +12,7 @@ class Codes {
     static final int GROUP_SYNC_DSS_DATA_FROM_CLIENT = 5
 
 
-    /*Codes for events of Data Import from OpenHDS */
+    /*ReportCode for events of Data Import from OpenHDS */
     static final int REPORT_IMPORT_FROM_OPENHDS_FIELDWORKERS = 10
     static final int REPORT_IMPORT_FROM_OPENHDS_HOUSEHOLDS = 11
     static final int REPORT_IMPORT_FROM_OPENHDS_INDIVIDUALS = 12
@@ -20,19 +20,19 @@ class Codes {
     // DEATHS, MIGRATIONS, BIRTHS CAN BE CONSIDERED LATER
 
 
-    /*Codes for events of Data Import from HDS-XLS Files - must provide template */
+    /*ReportCode for events of Data Import from HDS-XLS Files - must provide template */
     static final int REPORT_IMPORT_HDSXLS_HOUSEHOLDS = 20
     static final int REPORT_IMPORT_HDSXLS_INDIVIDUALS = 21
     //RESIDENCIES AND OTHER DATA CAN BE CONSIDERED LATER
 
-    /*Codes for events of Uploading Tracking Lists */
+    /*ReportCode for events of Uploading Tracking Lists */
     static final int REPORT_UPLOAD_TRACKING_LISTS_BASIC = 30
     static final int REPORT_UPLOAD_TRACKING_LISTS_W_EXTRA_DATA = 31
 
-    /*Codes for events that export data to OpenHDS or HDS Explorer from ODK*/
+    /*ReportCode for events that export data to OpenHDS or HDS Explorer from ODK*/
     static final int REPORT_DSS_ODK_CENSUS_SYNC = 40
 
-    /*Codes for events of Generating ZIP XML Files */
+    /*ReportCode for events of Generating ZIP XML Files */
     static final int REPORT_GENERATE_USERS_ZIP_XML_FILES = 50
     static final int REPORT_GENERATE_HOUSEHOLDS_ZIP_XML_FILES = 51
     static final int REPORT_GENERATE_MEMBERS_ZIP_XML_FILES = 52

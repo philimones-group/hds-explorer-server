@@ -1,7 +1,7 @@
 package org.philimone.hds.explorer.controllers
 
 import org.philimone.hds.explorer.io.SystemPath
-import org.philimone.hds.explorer.server.model.enums.Codes
+import org.philimone.hds.explorer.server.model.enums.settings.ReportCode
 import org.philimone.hds.explorer.server.model.enums.SyncEntity
 import org.philimone.hds.explorer.server.model.logs.LogReport
 import org.philimone.hds.explorer.server.model.enums.LogStatus
@@ -251,7 +251,7 @@ class SyncFilesController {
     /**/
     def index = {
 
-        def logReports = LogReport.executeQuery("select lr from LogReport lr where lr.group.groupId=?", [Codes.GROUP_GENERATE_FILES])
+        def logReports = LogReport.executeQuery("select lr from LogReport lr where lr.group.groupId=?", [ReportCode.GROUP_GENERATE_FILES])
 
         render view: "index", model: [logReports : logReports]
     }
@@ -272,7 +272,7 @@ class SyncFilesController {
 
         def id = logReport.reportId
 
-        if (logReport.reportId==Codes.REPORT_GENERATE_USERS_ZIP_XML_FILES){
+        if (logReport.reportId==ReportCode.REPORT_GENERATE_USERS_ZIP_XML_FILES){
             new Thread(new Runnable() {
                 @Override
                 void run() {
@@ -282,7 +282,7 @@ class SyncFilesController {
             }).start()
         }
 
-        if (logReport.reportId==Codes.REPORT_GENERATE_HOUSEHOLDS_ZIP_XML_FILES){
+        if (logReport.reportId==ReportCode.REPORT_GENERATE_HOUSEHOLDS_ZIP_XML_FILES){
             new Thread(new Runnable() {
                 @Override
                 void run() {
@@ -292,7 +292,7 @@ class SyncFilesController {
             }).start()
         }
 
-        if (logReport.reportId==Codes.REPORT_GENERATE_MEMBERS_ZIP_XML_FILES){
+        if (logReport.reportId== ReportCode.REPORT_GENERATE_MEMBERS_ZIP_XML_FILES){
             new Thread(new Runnable() {
                 @Override
                 void run() {
@@ -302,7 +302,7 @@ class SyncFilesController {
             }).start()
         }
 
-        if (logReport.reportId==Codes.REPORT_GENERATE_SETTINGS_ZIP_XML_FILES){
+        if (logReport.reportId==ReportCode.REPORT_GENERATE_SETTINGS_ZIP_XML_FILES){
             new Thread(new Runnable() {
                 @Override
                 void run() {
@@ -312,7 +312,7 @@ class SyncFilesController {
             }).start()
         }
 
-        if (logReport.reportId==Codes.REPORT_GENERATE_TRACKING_LISTS_ZIP_XML_FILES){
+        if (logReport.reportId==ReportCode.REPORT_GENERATE_TRACKING_LISTS_ZIP_XML_FILES){
             new Thread(new Runnable() {
                 @Override
                 void run() {
@@ -322,7 +322,7 @@ class SyncFilesController {
             }).start()
         }
 
-        if (logReport.reportId==Codes.REPORT_GENERATE_RESIDENCIES_ZIP_XML_FILES){
+        if (logReport.reportId==ReportCode.REPORT_GENERATE_RESIDENCIES_ZIP_XML_FILES){
             new Thread(new Runnable() {
                 @Override
                 void run() {
@@ -332,7 +332,7 @@ class SyncFilesController {
             }).start()
         }
 
-        if (logReport.reportId==Codes.REPORT_GENERATE_HEAD_RELATIONSHIPS_ZIP_XML_FILES){
+        if (logReport.reportId==ReportCode.REPORT_GENERATE_HEAD_RELATIONSHIPS_ZIP_XML_FILES){
             new Thread(new Runnable() {
                 @Override
                 void run() {
@@ -342,7 +342,7 @@ class SyncFilesController {
             }).start()
         }
 
-        if (logReport.reportId==Codes.REPORT_GENERATE_MARTIAL_RELATIONSHIPS_ZIP_XML_FILES){
+        if (logReport.reportId==ReportCode.REPORT_GENERATE_MARTIAL_RELATIONSHIPS_ZIP_XML_FILES){
             new Thread(new Runnable() {
                 @Override
                 void run() {
