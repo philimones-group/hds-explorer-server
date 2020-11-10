@@ -1154,6 +1154,7 @@ class SyncFilesService {
     private Element createUser(Document doc, User user) {
         Element userElement = doc.createElement("user");
 
+        userElement.appendChild(createAttributeNonNull(doc, "code", user.getCode()));
         userElement.appendChild(createAttributeNonNull(doc, "username", user.getUsername()));
         userElement.appendChild(createAttributeNonNull(doc, "password", user.getPassword()));
         userElement.appendChild(createAttributeNonNull(doc, "firstName", user.getFirstName()));
