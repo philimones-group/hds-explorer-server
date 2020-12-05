@@ -529,7 +529,7 @@ public class StringUtil {
     public static Double getDouble(String value){
         try{
             return Double.parseDouble(value);
-        } catch (NumberFormatException ex){
+        } catch (Exception ex){
             return null;
         }
     }

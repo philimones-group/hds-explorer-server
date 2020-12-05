@@ -114,7 +114,7 @@ class Member extends CollectableEntity {
     //Boolean isSecHouseholdHead = false
 
     /** GPS Coordinates Columns **/
-    Boolean gpsNull
+    Boolean gpsNull = true
     Double gpsAccuracy
     Double gpsAltitude
     Double gpsLatitude
@@ -156,8 +156,8 @@ class Member extends CollectableEntity {
         fatherName blank: true, nullable: true
 
         household nullable: true
-        householdCode blank: false, nullable: false
-        householdName blank: false, nullable: false
+        householdCode blank: true, nullable: true
+        householdName blank: true, nullable: true
         entryHousehold nullable: true
         entryType nullable: true
         entryDate nullable: true

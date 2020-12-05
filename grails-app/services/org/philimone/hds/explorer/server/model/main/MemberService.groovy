@@ -107,6 +107,8 @@ class MemberService {
         def father = getMember(member.fatherCode)
         def motherExists = mother != null
         def fatherExists = father != null
+        def motherUnknown = motherExists && mother?.code == Codes.MEMBER_UNKNOWN_CODE
+        def fatherUnknown = fatherExists && father?.code == Codes.MEMBER_UNKNOWN_CODE
 
         //C1. Check Blank Fields (code)
         if (isBlankMemberCode){
@@ -178,20 +180,20 @@ class MemberService {
         }
 
         //C6. Check mother Dob must be greater or equal to 12
-        if (motherExists && GeneralUtil.getAge(mother.dob)< Codes.MIN_MOTHER_AGE_VALUE ){
+        if (!motherUnknown && motherExists && GeneralUtil.getAge(mother.dob)< Codes.MIN_MOTHER_AGE_VALUE ){
             errors << errorMessageService.getRawMessage("validation.field.dob.mother.minage.error", [mother.dob, Codes.MIN_MOTHER_AGE_VALUE], ["mother.dob"])
         }
         //C7. Check father Dob must be greater or equal to 12
-        if (fatherExists && GeneralUtil.getAge(father.dob)< Codes.MIN_FATHER_AGE_VALUE ){
+        if (!fatherUnknown && fatherExists && GeneralUtil.getAge(father.dob)< Codes.MIN_FATHER_AGE_VALUE ){
             errors << errorMessageService.getRawMessage("validation.field.dob.father.minage.error", [mother.dob, Codes.MIN_FATHER_AGE_VALUE], ["father.dob"])
         }
 
         //C9. Check mother Gender
-        if (Codes.GENDER_CHECKING && motherExists && mother.gender==Gender.MALE){
+        if (Codes.GENDER_CHECKING && !motherUnknown &&  motherExists && mother.gender==Gender.MALE){
             errors << errorMessageService.getRawMessage("validation.field.gender.mother.error", [], ["mother.gender"])
         }
         //C10. Check father Gender
-        if (Codes.GENDER_CHECKING && fatherExists && father.gender==Gender.FEMALE){
+        if (Codes.GENDER_CHECKING && !fatherUnknown && fatherExists && father.gender==Gender.FEMALE){
             errors << errorMessageService.getRawMessage("validation.field.gender.father.error", [], ["father.gender"])
         }
 

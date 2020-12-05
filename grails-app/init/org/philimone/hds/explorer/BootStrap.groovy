@@ -1,10 +1,12 @@
 package org.philimone.hds.explorer
 
-
+import net.betainteractive.utilities.GeneralUtil
 import org.philimone.hds.explorer.server.model.authentication.Role
 import org.philimone.hds.explorer.server.model.authentication.SecurityMap
 import org.philimone.hds.explorer.server.model.authentication.User
 import org.philimone.hds.explorer.io.SystemPath
+import org.philimone.hds.explorer.server.model.enums.Gender
+import org.philimone.hds.explorer.server.model.enums.MaritalStatus
 import org.philimone.hds.explorer.server.model.enums.RegionLevel
 import org.philimone.hds.explorer.server.model.enums.settings.LogGroupCode
 import org.philimone.hds.explorer.server.model.enums.settings.LogReportCode
@@ -12,6 +14,7 @@ import org.philimone.hds.explorer.server.model.logs.LogGroup
 import org.philimone.hds.explorer.server.model.logs.LogReport
 import org.philimone.hds.explorer.server.model.enums.LogStatus
 import org.philimone.hds.explorer.server.model.main.MappingFormatType
+import org.philimone.hds.explorer.server.model.main.Member
 import org.philimone.hds.explorer.server.model.main.StudyModule
 import org.philimone.hds.explorer.server.model.enums.SyncEntity
 import org.philimone.hds.explorer.server.model.settings.Codes
@@ -377,6 +380,10 @@ class BootStrap {
         new SyncFilesReport(name: SyncEntity.REGIONS).save(flush:true)
         new SyncFilesReport(name: SyncEntity.HOUSEHOLDS).save(flush:true)
         new SyncFilesReport(name: SyncEntity.MEMBERS).save(flush:true)
+
+        //Insert Unknown Member for reference Unknown Individual
+        //code: UNK, Unknown Member,
+        new Member(id: "Unknown Member", code: Codes.MEMBER_UNKNOWN_CODE, name: "member.unknown.label", gender: Gender.MALE, dob: GeneralUtil.getDate(1900,1,1), maritalStatus: MaritalStatus.SINGLE).save(flush: true)
     }
 
     def retrieveAndPopulateStaticConstants(){

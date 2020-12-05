@@ -13,6 +13,8 @@ class Codes {
     static final String HOUSEHOLD_CODE_PATTERN = '^[A-Z0-9]{6}[0-9]{3}$'
     static final String MEMBER_CODE_PATTERN = '^[A-Z0-9]{6}[0-9]{6}$'
 
+    static final String MEMBER_UNKNOWN_CODE = "UNK"
+
     /* Mutable Constants - Will be loaded during bootstrap */
     static int MAX_TRACKLIST_DATA_COLUMNS_VALUE = 20
     static int MIN_MOTHER_AGE_VALUE = 12
