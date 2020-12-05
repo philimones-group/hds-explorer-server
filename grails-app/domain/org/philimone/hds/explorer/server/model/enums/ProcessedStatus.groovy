@@ -25,15 +25,15 @@ enum ProcessedStatus {
     }
 
     /* Finding Enum by code */
-    private static final Map<Integer, Gender> MAP = new HashMap<>();
+    private static final Map<Integer, ProcessedStatus> MAP = new HashMap<>();
 
     static {
-        for (Gender e: values()) {
+        for (ProcessedStatus e: values()) {
             MAP.put(e.code, e);
         }
     }
 
-    public static Gender getFrom(Integer code) {
+    public static ProcessedStatus getFrom(Integer code) {
         return code==null ? null : MAP.get(code);
     }
 }
