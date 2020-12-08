@@ -89,7 +89,7 @@ class GeneralUtil {
 
     static Date getDate(int y, int m, int d){
         Calendar cal = Calendar.getInstance()
-        cal.set(y, m, d)
+        cal.set(y, m, d, 0, 0, 0)
         return cal.getTime()
     }
 

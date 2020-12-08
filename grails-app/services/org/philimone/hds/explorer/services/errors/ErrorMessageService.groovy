@@ -69,7 +69,7 @@ class ErrorMessageService {
     }
 
     RawMessage getRawMessage(String messageCode, List<String> args, List<String> fields){
-        def msg = messageSource.getMessage(messageCode, args.toArray(), LocaleContextHolder.getLocale())
+        def msg = messageSource.getMessage(messageCode, args!=null ? args.toArray() : null, LocaleContextHolder.getLocale())
         new RawMessage(msg, fields)
     }
 }

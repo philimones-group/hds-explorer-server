@@ -72,7 +72,7 @@ class RawMemberEnu {
         processedMembership nullable: false
         processedRelationship nullable: false
 
-        processedStatus nullable: false
+        processedStatus nullable: true
     }
 
     static mapping = {

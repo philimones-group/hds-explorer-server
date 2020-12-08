@@ -30,7 +30,7 @@ class RawRegion {
         collectedDate nullable: true
         uploadedDate nullable: true
 
-        processedStatus nullable: false
+        processedStatus nullable: true
     }
 
     static mapping = {

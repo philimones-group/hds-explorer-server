@@ -21,7 +21,7 @@ class RawMaritalRelationship {
         endStatus nullable: true, blank:true, enumType: "identity"
         endDate nullable: true
 
-        processedStatus nullable: false
+        processedStatus nullable: true
     }
 
     static mapping = {

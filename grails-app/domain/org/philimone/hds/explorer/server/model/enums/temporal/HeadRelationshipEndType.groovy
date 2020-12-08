@@ -22,15 +22,15 @@ enum HeadRelationshipEndType {
     }
 
     /* Finding Enum by code */
-    private static final Map<String, HeadRelationshipStartType> MAP = new HashMap<>();
+    private static final Map<String, HeadRelationshipEndType> MAP = new HashMap<>();
 
     static {
-        for (HeadRelationshipStartType e: values()) {
+        for (HeadRelationshipEndType e: values()) {
             MAP.put(e.code, e);
         }
     }
 
-    public static HeadRelationshipStartType getFrom(String code) {
+    public static HeadRelationshipEndType getFrom(String code) {
         return code==null ? null : MAP.get(code);
     }
 }

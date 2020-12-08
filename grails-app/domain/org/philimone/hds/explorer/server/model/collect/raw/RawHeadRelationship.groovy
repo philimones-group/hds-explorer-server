@@ -27,7 +27,7 @@ class RawHeadRelationship {
         endType nullable: false, blank:true
         endDate nullable: true
 
-        processedStatus nullable: false
+        processedStatus nullable: true
     }
 
     static mapping = {

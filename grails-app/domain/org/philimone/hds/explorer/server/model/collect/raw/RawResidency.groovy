@@ -23,7 +23,7 @@ class RawResidency {
         endType nullable: true, blank:true
         endDate nullable: true
 
-        processedStatus nullable: false
+        processedStatus nullable: true
     }
 
     static mapping = {
