@@ -370,6 +370,12 @@ public class StringUtil {
         }
     }
 
+    public static String format(Date date){
+        if (date == null) return "null";
+        java.text.DateFormat formatter = new java.text.SimpleDateFormat("yyyy-MM-dd");
+        return formatter.format(date);
+    }
+
     public static String format(Date date, String format){
         java.text.DateFormat formatter = new java.text.SimpleDateFormat(format);
         return formatter.format(date);

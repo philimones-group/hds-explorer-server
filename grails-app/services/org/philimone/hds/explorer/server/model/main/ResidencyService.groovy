@@ -40,7 +40,7 @@ class ResidencyService {
     Residency getCurrentResidency(Member member, Household household){
         if (member != null && member.id != null && household != null && household.id != null){
 
-            def residencies = Residency.executeQuery("select r from Residency r where r.member.id=?, r.household.id=? order by r.startDate desc", [member.id, household.id], [offset:0, max:1]) // limit 1
+            def residencies = Residency.executeQuery("select r from Residency r where r.member.id=? and r.household.id=? order by r.startDate desc", [member.id, household.id], [offset:0, max:1]) // limit 1
 
             if (residencies != null && residencies.size()>0){
                 return residencies.first()
@@ -265,7 +265,7 @@ class ResidencyService {
         if (isNullEndDate){
             errors << errorMessageService.getRawMessage("validation.field.blank", ["endDate"], ["endDate"])
         }
-        //C3. Validate startType Enum Options
+        //C3. Validate endType Enum Options
         if (!isBlankEndType && ResidencyEndType.getFrom(residency.endType)==null){
             errors << errorMessageService.getRawMessage("validation.field.enum.endtype.error", [residency.endType], ["endType"])
         }

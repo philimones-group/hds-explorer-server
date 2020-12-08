@@ -54,7 +54,7 @@ class UserService {
             generalUtilitiesService.sendTextEmail(user.email, subject, message)
         }
 
-        println "error ${user.errors}"
+        //println "error ${user.errors}"
 
         return user
     }
