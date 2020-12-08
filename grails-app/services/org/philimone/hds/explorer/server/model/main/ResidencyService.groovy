@@ -20,7 +20,14 @@ class ResidencyService {
     Residency getCurrentResidency(Member member){
         if (member != null && member.id != null){
 
-            def residencies = Residency.executeQuery("select r from Residency r where r.member.id=? order by r.startDate desc limit 1", [member.id])
+            def residencies = Residency.executeQuery("select r from Residency r where r.member.id=? order by r.startDate desc", [member.id], [offset:0, max:1]) // limit 1
+
+            /*
+            def residencies = Residency.createCriteria(offset:0, max: 1).list {
+                eq("member", member)
+                order("startDate", "desc")
+            }
+            */
 
             if (residencies != null && residencies.size()>0){
                 return residencies.first()
@@ -33,7 +40,7 @@ class ResidencyService {
     Residency getCurrentResidency(Member member, Household household){
         if (member != null && member.id != null && household != null && household.id != null){
 
-            def residencies = Residency.executeQuery("select r from Residency r where r.member.id=?, r.household.id=? order by r.startDate desc limit 1", [member.id, household.id])
+            def residencies = Residency.executeQuery("select r from Residency r where r.member.id=?, r.household.id=? order by r.startDate desc", [member.id, household.id], [offset:0, max:1]) // limit 1
 
             if (residencies != null && residencies.size()>0){
                 return residencies.first()

@@ -23,7 +23,7 @@ class HeadRelationshipService {
     HeadRelationship getCurrentHeadRelationship(Member member) {
         if (member != null && member.id != null) {
 
-            def headRelationships = HeadRelationship.executeQuery("select r from HeadRelationship r where r.member.id=? order by r.startDate desc limit 1", [member.id])
+            def headRelationships = HeadRelationship.executeQuery("select r from HeadRelationship r where r.member.id=? order by r.startDate desc", [member.id], [offset:0, max:1]) // limit 1
 
             if (headRelationships != null && headRelationships.size()>0) {
                 return headRelationships.first()
@@ -36,7 +36,7 @@ class HeadRelationshipService {
     HeadRelationship getCurrentHeadRelationship(Member member, Household household) {
         if (member != null && member.id != null && household != null && household.id != null) {
 
-            def headRelationships = HeadRelationship.executeQuery("select r from HeadRelationship r where r.member.id=?, r.household.id=? order by r.startDate desc limit 1", [member.id, household.id])
+            def headRelationships = HeadRelationship.executeQuery("select r from HeadRelationship r where r.member.id=?, r.household.id=? order by r.startDate desc", [member.id, household.id], [offset:0, max:1]) // limit 1
 
             if (headRelationships != null && headRelationships.size()>0) {
                 return headRelationships.first()
@@ -52,7 +52,7 @@ class HeadRelationshipService {
     HeadRelationship getCurrentHouseholdHead(Household household){
 
         if (household != null && household.id != null){
-            def headRelationships = HeadRelationship.executeQuery("select r from HeadRelationship r where r.household.id=? and r.relationshipType=? order by r.startDate desc limit 1", [household.id, HeadRelationshipType.HEAD_OF_HOUSEHOLD])
+            def headRelationships = HeadRelationship.executeQuery("select r from HeadRelationship r where r.household.id=? and r.relationshipType=? order by r.startDate desc", [household.id, HeadRelationshipType.HEAD_OF_HOUSEHOLD], [offset:0, max:1]) // limit 1
 
             if (headRelationships != null && headRelationships.size()>0) {
                 return headRelationships.first()

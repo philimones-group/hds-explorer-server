@@ -45,7 +45,7 @@ class UserService {
         UserRole.create(user, roles, true)
 
         //send email
-        if (!StringUtil.isBlank(user.email)){ //send email with the credentials if mail address exists
+        if (!StringUtil.isBlank(user.email) && !user.email.equals("youremail@domain.net")){ //send email with the credentials if mail address exists
 
             def url = grailsLinkGenerator.serverBaseURL
             def subject = generalUtilitiesService.getMessage("default.mail.user.subject.created", "")
