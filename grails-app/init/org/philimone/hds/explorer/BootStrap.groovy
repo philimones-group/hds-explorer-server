@@ -1,6 +1,7 @@
 package org.philimone.hds.explorer
 
 import net.betainteractive.utilities.GeneralUtil
+import net.betainteractive.utilities.StringUtil
 import org.philimone.hds.explorer.server.model.authentication.Role
 import org.philimone.hds.explorer.server.model.authentication.SecurityMap
 import org.philimone.hds.explorer.server.model.authentication.User
@@ -333,12 +334,12 @@ class BootStrap {
         println "code: ${maxCols}"
 
         //Save Application/System Parameters to database, Will persist to the database only when its empty - changing parameters will be done through database
-        aps.addParam(Codes.PARAMS_TRACKLIST_MAX_DATA_COLUMNS, Integer.parseInt(maxCols))
-        aps.addParam(Codes.PARAMS_MIN_AGE_OF_MOTHER, Integer.parseInt(mmaxAge))
-        aps.addParam(Codes.PARAMS_MIN_AGE_OF_FATHER, Integer.parseInt(fmaxAge))
-        aps.addParam(Codes.PARAMS_MIN_AGE_OF_HEAD, Integer.parseInt(hmaxAge))
-        aps.addParam(Codes.PARAMS_MIN_AGE_OF_SPOUSE, Integer.parseInt(smaxAge))
-        aps.addParam(Codes.PARAMS_GENDER_CHECKING, Boolean.parseBoolean(gndChck))
+        aps.addParam(Codes.PARAMS_TRACKLIST_MAX_DATA_COLUMNS, StringUtil.getInteger(maxCols))
+        aps.addParam(Codes.PARAMS_MIN_AGE_OF_MOTHER, StringUtil.getInteger(mmaxAge))
+        aps.addParam(Codes.PARAMS_MIN_AGE_OF_FATHER, StringUtil.getInteger(fmaxAge))
+        aps.addParam(Codes.PARAMS_MIN_AGE_OF_HEAD, StringUtil.getInteger(hmaxAge))
+        aps.addParam(Codes.PARAMS_MIN_AGE_OF_SPOUSE, StringUtil.getInteger(smaxAge))
+        aps.addParam(Codes.PARAMS_GENDER_CHECKING, StringUtil.getBoolean(gndChck))
 
         aps.addParam(RegionLevel.HIERARCHY_1.code, "")
         aps.addParam(RegionLevel.HIERARCHY_2.code, "")

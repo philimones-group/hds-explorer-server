@@ -21,7 +21,7 @@ class Application extends GrailsAutoConfiguration implements EnvironmentAware {
 
         def configFile = getExternalConfigurationFile()
 
-        println "path: ${configFile}, ${conf}"
+        println "path: ${configFile}, ${conf}, istest=${isTestEnvironment()}"
 
         if (configFile != null){
             Resource resourceConfig = new FileSystemResource(configFile)
@@ -48,5 +48,9 @@ class Application extends GrailsAutoConfiguration implements EnvironmentAware {
             return null
         }
 
+    }
+
+    boolean isTestEnvironment(){
+        return grails.util.Environment.current==grails.util.Environment.TEST
     }
 }

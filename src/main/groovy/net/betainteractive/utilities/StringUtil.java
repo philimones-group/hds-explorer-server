@@ -540,6 +540,26 @@ public class StringUtil {
         }
     }
 
+    public static Integer getInteger(String value){
+        if (value == null) return null;
+
+        try{
+            return Integer.parseInt(value);
+        } catch (Exception ex){
+            return null;
+        }
+    }
+
+    public static Boolean getBoolean(String value){
+        if (value == null) return null;
+
+        try{
+            return Boolean.parseBoolean(value);
+        } catch (Exception ex){
+            return null;
+        }
+    }
+
     public static interface StringConverter {
         public String convert(String value);
     }
