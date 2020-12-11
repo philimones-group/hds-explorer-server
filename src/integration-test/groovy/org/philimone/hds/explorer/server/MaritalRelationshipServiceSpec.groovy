@@ -2,22 +2,21 @@ package org.philimone.hds.explorer.server
 
 import grails.gorm.transactions.Transactional
 import grails.testing.mixin.integration.Integration
-import grails.transaction.Rollback
 import net.betainteractive.utilities.GeneralUtil
 import net.betainteractive.utilities.StringUtil
 import org.philimone.hds.explorer.server.model.authentication.Role
 import org.philimone.hds.explorer.server.model.authentication.User
 import org.philimone.hds.explorer.server.model.authentication.UserService
-import org.philimone.hds.explorer.server.model.collect.raw.RawHeadRelationship
 import org.philimone.hds.explorer.server.model.collect.raw.RawHousehold
+import org.philimone.hds.explorer.server.model.collect.raw.RawMaritalRelationship
 import org.philimone.hds.explorer.server.model.collect.raw.RawMember
 import org.philimone.hds.explorer.server.model.collect.raw.RawRegion
 import org.philimone.hds.explorer.server.model.enums.Gender
 import org.philimone.hds.explorer.server.model.enums.MaritalStatus
-import org.philimone.hds.explorer.server.model.main.HeadRelationship
-import org.philimone.hds.explorer.server.model.main.HeadRelationshipService
+import org.philimone.hds.explorer.server.model.main.MaritalRelationship
 import org.philimone.hds.explorer.server.model.main.Household
 import org.philimone.hds.explorer.server.model.main.HouseholdService
+import org.philimone.hds.explorer.server.model.main.MaritalRelationshipService
 import org.philimone.hds.explorer.server.model.main.Member
 import org.philimone.hds.explorer.server.model.main.MemberService
 import org.philimone.hds.explorer.server.model.main.Region
@@ -31,10 +30,8 @@ import spock.lang.Ignore
 import spock.lang.Specification
 
 @Integration
-@Transactional
-class HeadRelationshipServiceSpec extends Specification {
-
-    //static transactional = false
+@Transactional //@Rollback
+class MaritalRelationshipServiceSpec extends Specification {
 
     @Autowired
     ErrorMessageService errorMessageService
@@ -47,7 +44,7 @@ class HeadRelationshipServiceSpec extends Specification {
     @Autowired
     UserService userService
     @Autowired
-    HeadRelationshipService headRelationshipService
+    MaritalRelationshipService maritalRelationshipService
 
     def setupAll() {
 
@@ -165,21 +162,21 @@ class HeadRelationshipServiceSpec extends Specification {
         }
     }
 
-    def printHeadRelationship(HeadRelationship headRelationship){
-        if (headRelationship==null) return null
-        println "headRelationship(id=${headRelationship.id},m.code=${headRelationship.memberCode},h.code=${headRelationship.householdCode},starttype=${headRelationship.startType},startdate=${StringUtil.format(headRelationship?.startDate)},endtype=${headRelationship.endType},enddate=${StringUtil.format(headRelationship?.endDate)})"
+    def printMaritalRelationship(MaritalRelationship maritalRelationship){
+        if (maritalRelationship==null) return null
+        println "maritalRelationship(id=${maritalRelationship.id},memberA=${maritalRelationship.memberA_code},memberB=${maritalRelationship.memberB_code},startstatus=${maritalRelationship.startStatus},startdate=${StringUtil.format(maritalRelationship?.startDate)},endstatus=${maritalRelationship.endStatus},enddate=${StringUtil.format(maritalRelationship?.endDate)})"
     }
 
     /*
-     * 1. Test Creation of headRelationship
-     * 2. Test Closing the headRelationship
-     * 3. Test Creating 2 relationships of same member
-     * 4. Test Closing a Closed headRelationship
+     * 1. Test Creation of maritalRelationship
+     * 2. Test Closing the maritalRelationship
+     * 3. Test Creating 2 Relationships of same member
+     * 4. Test Closing a Closed maritalRelationship
      */
     @Ignore
-    void "Test Creation of Head Relationship"() {
+    void "Test Creation of Marital Relationship"() {
 
-        println "\n#### Test Creation of Head Relationship ####"
+        println "\n#### Test Creation of Marital Relationship ####"
 
         def count = -1
 
@@ -188,7 +185,7 @@ class HeadRelationshipServiceSpec extends Specification {
         //println "*3 households - ${Household.findAll().size()}"
 
 
-        //create new headRelationship
+        //create new maritalRelationship
         def household1 = Household.findByName("Macandza House")
         def household2 = Household.findByName("George Benson")
         def member11 = Member.findByName("John Benedit Macandza")
@@ -201,26 +198,24 @@ class HeadRelationshipServiceSpec extends Specification {
         //println "household2: ${household2}, check: ${Household.count()}"
         //println "member2: ${member21}, check: ${Member.count()}"
 
-        //create new head
-        def rw1 = new RawHeadRelationship(
+        //create new marital relation
+        def rw1 = new RawMaritalRelationship (
                 id: "uuuid1",
-                memberCode: member11.code,
-                householdCode: household1.code,
-                relationshipType: "HOH",
-                startType: "ENU",
-                startDate: GeneralUtil.getDate(2020,10,17),
-                endType: "",
+                memberA: member11.code,
+                memberB: member12.code,
+                startStatus: "LIV",
+                startDate: GeneralUtil.getDate(2020,06,17),
+                endStatus: "",
                 endDate: ""
         )
 
-        def rw2 = new RawHeadRelationship(
+        def rw2 = new RawMaritalRelationship(
                 id: "uuuid2",
-                memberCode: member12.code,
-                householdCode: household1.code,
-                relationshipType: "SPO",
-                startType: "ENU",
+                memberA: member12.code,
+                memberB: member21.code,
+                startStatus: "MAR",
                 startDate: GeneralUtil.getDate(2020,05,04),
-                endType: "",
+                endStatus: "",
                 endDate: ""
         )
 
@@ -234,31 +229,31 @@ class HeadRelationshipServiceSpec extends Specification {
         //printErrors(rw)
 
         //This methods validates data twice, first through strict rules of demographics and then through domain model constraints
-        def result1 = headRelationshipService.createHeadRelationship(rw1)
+        def result1 = maritalRelationshipService.createMaritalRelationship(rw1)
         printResults(result1)
 
-        def result2 = headRelationshipService.createHeadRelationship(rw2)
+        def result2 = maritalRelationshipService.createMaritalRelationship(rw2)
         printResults(result2)
 
-        printHeadRelationship(result1?.domainInstance)
-        printHeadRelationship(result2?.domainInstance)
+        printMaritalRelationship(result1?.domainInstance)
+        printMaritalRelationship(result2?.domainInstance)
 
 
-        count = HeadRelationship.count()
+        count = MaritalRelationship.count()
 
         expect:
-        count == 2
+        count == 1
     }
 
     //@Ignore
-    void "Test Closing of Head Relationship"() {
-        println "\n#### Test Closing of Head Relationship ####"
+    void "Test Closing of Marital Relationship"() {
+        println "\n#### Test Closing of Marital Relationship ####"
 
         setupAll()
 
         //println "*3 households - ${Household.findAll().size()}"
 
-        //create new headRelationship
+        //create new maritalRelationship
         def household1 = Household.findByName("Macandza House")
         def household2 = Household.findByName("George Benson")
         def member11 = Member.findByName("John Benedit Macandza")
@@ -271,37 +266,34 @@ class HeadRelationshipServiceSpec extends Specification {
         //println "household2: ${household2}, check: ${Household.count()}"
         //println "member2: ${member21}, check: ${Member.count()}"
 
-        def rw1 = new RawHeadRelationship(
+        def rw1 = new RawMaritalRelationship (
                 id: "uuuid1",
-                memberCode: member11.code,
-                householdCode: household1.code,
-                relationshipType: "HOH",
-                startType: "ENU",
-                startDate: GeneralUtil.getDate(2020,02,17),
-                endType: "",
+                memberA: member11.code,
+                memberB: member12.code,
+                startStatus: "LIV",
+                startDate: GeneralUtil.getDate(2020,6,17),
+                endStatus: "",
                 endDate: ""
         )
 
-        def rw2 = new RawHeadRelationship(
+        def rw2 = new RawMaritalRelationship(
                 id: "uuuid2",
-                memberCode: member12.code,
-                householdCode: household1.code,
-                relationshipType: "SPO",
-                startType: "ENU",
-                startDate: GeneralUtil.getDate(2020,05,04),
-                endType: "",
+                memberA: member12.code,
+                memberB: member21.code,
+                startStatus: "MAR",
+                startDate: GeneralUtil.getDate(2020,10,4),
+                endStatus: "",
                 endDate: ""
         )
 
-        def rw1close = new RawHeadRelationship(
-                id: "uuuid2",
-                memberCode: member11.code,
-                householdCode: household1.code,
-                relationshipType: "HOH",
-                startType: "",
+        def rw1close = new RawMaritalRelationship(
+                id: "uuuid3",
+                memberA: member12.code,
+                memberB: member11.code,
+                startStatus: "",
                 startDate: null,
-                endType: "CHG",
-                endDate: GeneralUtil.getDate(2020,05,14)
+                endStatus: "DIV",
+                endDate: GeneralUtil.getDate(2020,8,15)
         )
 
         rw1.save()
@@ -315,19 +307,23 @@ class HeadRelationshipServiceSpec extends Specification {
         //printErrors(rw)
 
         //This methods validates data twice, first through strict rules of demographics and then through domain model constraints
-        def result1 = headRelationshipService.createHeadRelationship(rw1)
+        def result1 = maritalRelationshipService.createMaritalRelationship(rw1)
         printResults(result1)
-        printHeadRelationship(result1?.domainInstance)
+        printMaritalRelationship(result1?.domainInstance)
 
-        def result2 = headRelationshipService.closeHeadRelationship(rw1close)
+        def result2 = maritalRelationshipService.closeMaritalRelationship(rw1close)
         printResults(result2)
-        printHeadRelationship(result2?.domainInstance)
+        printMaritalRelationship(result2?.domainInstance)
 
-        def result3 = headRelationshipService.createHeadRelationship(rw2)
+        def result4 = maritalRelationshipService.closeMaritalRelationship(rw1close)
+        printResults(result4)
+        printMaritalRelationship(result4?.domainInstance)
+
+        def result3 = maritalRelationshipService.createMaritalRelationship(rw2)
         printResults(result3)
-        printHeadRelationship(result3?.domainInstance)
+        printMaritalRelationship(result3?.domainInstance)
 
         expect:
-        HeadRelationship.count()==2
+        MaritalRelationship.count()==2
     }
 }

@@ -43,10 +43,11 @@ class MaritalRelationshipService {
     }
 
     MaritalRelationship getCurrentMaritalRelationship(Member memberA, Member memberB) {
-        if (member != null && member.id != null) {
 
-            def maritalRelationshipsA = MaritalRelationship.executeQuery("select r from MaritalRelationship r where r.memberA.id=? and r.memberB.id=? order by r.startDate desc", [memberA.id, memberB.id], [offset:0, max:1]) // limit 1
-            def maritalRelationshipsB = MaritalRelationship.executeQuery("select r from MaritalRelationship r where r.memberB.id=? and r.memberB.id=? order by r.startDate desc", [memberB.id, memberA.id], [offset:0, max:1]) // limit 1
+        if (memberA != null && memberA.id != null && memberB != null && memberB.id != null) {
+
+            def maritalRelationshipsA = MaritalRelationship.executeQuery("select r from MaritalRelationship r where r.memberA=? and r.memberB=? order by r.startDate desc", [memberA, memberB], [offset:0, max:1]) // limit 1
+            def maritalRelationshipsB = MaritalRelationship.executeQuery("select r from MaritalRelationship r where r.memberA=? and r.memberB=? order by r.startDate desc", [memberB, memberA], [offset:0, max:1]) // limit 1
             MaritalRelationship relationA = (maritalRelationshipsA != null && maritalRelationshipsA.size() > 0) ? maritalRelationshipsA.first() : null
             MaritalRelationship relationB = (maritalRelationshipsB != null && maritalRelationshipsB.size() > 0) ? maritalRelationshipsB.first() : null
 
@@ -120,17 +121,21 @@ class MaritalRelationshipService {
         def errors = [] as ArrayList<RawMessage>
         def memberA = maritalRelationship.memberA.refresh()
         def memberB = maritalRelationship.memberB.refresh()
+        def endStatus = convertFrom(maritalRelationship.endStatus)
 
         //update spouse status
-        memberA.maritalStatus = convertFrom(maritalRelationship.endStatus)
+        memberA.maritalStatus = endStatus
         //memberA.spouse = memberB
         //memberA.spouseCode = memberB.code
         //memberA.spouseName = memberB.name
 
-        memberB.maritalStatus = convertFrom(maritalRelationship.endStatus)
+        memberB.maritalStatus = endStatus
         //memberB.spouse = memberA
         //memberB.spouseCode = memberA.code
         //memberB.spouseName = memberA.name
+
+        memberA.save(flush: true)
+        memberB.save(flush: true)
 
         //get errors if they occur and send with the success report
         if (memberA.hasErrors()) {
@@ -299,7 +304,7 @@ class MaritalRelationshipService {
                 errors << errorMessageService.getRawMessage("validation.field.maritalRelationship.prev.enddate.before.n.startdate.error", [memberA.code], ["previous.memberA.endDate"])
             }
             //P2. Check If endDate is greater than new startDate, for memberB
-            if (currentA != null && (currentB.endDate != null && currentB.endDate >= newStartDate)){
+            if (currentB != null && (currentB.endDate != null && currentB.endDate >= newStartDate)){
                 errors << errorMessageService.getRawMessage("validation.field.maritalRelationship.prev.enddate.before.n.startdate.error", [memberB.code], ["previous.memberB.endDate"])
             }
         }
@@ -374,9 +379,9 @@ class MaritalRelationshipService {
                 errors << errorMessageService.getRawMessage("validation.field.maritalRelationship.closed.already.error", [currentMaritalRelationship.id, currentMaritalRelationship.endStatus], ["previous.endStatus"])
             }
 
-            //C6. Check If endDate is before or equal to startDate
-            if (currentMaritalRelationship.startDate >= endDate){
-                errors << errorMessageService.getRawMessage("validation.field.maritalRelationship.enddate.before.startdate.error", null, ["currentMaritalRelationship.startDate", "new.endDate"])
+            //C6. Check If the proposed endDate is before or equal to the startDate of this relationship
+            if (currentMaritalRelationship.startDate >= endDate){ //endDate <= startDate
+                errors << errorMessageService.getRawMessage("validation.field.maritalRelationship.enddate.before.startdate.error", [memberA.code, memberB.code], ["currentMaritalRelationship.startDate", "new.endDate"])
             }
 
         }
@@ -409,7 +414,7 @@ class MaritalRelationshipService {
         def maritalRelationship = getCurrentMaritalRelationship(memberA, memberB)
         def endStatus = MaritalEndStatus.getFrom(mr.endStatus)
 
-        maritalRelationship.memberA = memberB
+        maritalRelationship.memberA = memberA
         maritalRelationship.memberB = memberB
         maritalRelationship.memberA_code = memberA.code
         maritalRelationship.memberB_code = memberB.code
