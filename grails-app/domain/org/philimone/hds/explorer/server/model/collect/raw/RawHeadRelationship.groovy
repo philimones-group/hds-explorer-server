@@ -7,7 +7,7 @@ class RawHeadRelationship {
     String id
     String householdCode
     String memberCode
-    String headCode
+    //String headCode /* We should not specify the head here, it will be specified automatically in main.HeadRelationship domain */
     String relationshipType
     String startType
     Date startDate
@@ -20,7 +20,7 @@ class RawHeadRelationship {
         id maxSize: 32
         householdCode nullable: false
         memberCode nullable: false
-        headCode nullable: false
+        //headCode nullable: false
         relationshipType nullable: false
         startType nullable: false, blank:false
         startDate nullable: false
@@ -37,7 +37,7 @@ class RawHeadRelationship {
 
         householdCode column: "household_code"
         memberCode column: "member_code"
-        headCode column: "head_code"
+        //headCode column: "head_code"
         relationshipType column: "relationship_type"
         startType column: "start_type"
         startDate column: "start_date"

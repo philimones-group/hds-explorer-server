@@ -156,11 +156,12 @@ environments:
         dataSource:
             dbCreate: create-drop
             username: hds_test
-            password: hds_test
+            password:
             driverClassName: org.h2.Driver
             dialect: org.hibernate.dialect.H2Dialect
             url: jdbc:h2:file:/tmp/hdsTestDb;MVCC=TRUE;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=FALSE
             #url: jdbc:h2:mem:hdsTestDb;MVCC=TRUE;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=FALSE
+            logSql: false
         dataSources:
             openhds:
                 dbCreate: none

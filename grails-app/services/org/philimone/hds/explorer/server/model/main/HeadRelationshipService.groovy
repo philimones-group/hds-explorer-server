@@ -76,7 +76,7 @@ class HeadRelationshipService {
             //Set New Head on Household
             household.headMember = member
             household.headCode = member.code
-            household.headName = member.code
+            household.headName = member.name
 
             household.save(flush: true)
         }
@@ -187,14 +187,13 @@ class HeadRelationshipService {
 
         def isBlankMemberCode = StringUtil.isBlank(headRelationship.memberCode)
         def isBlankHouseholdCode = StringUtil.isBlank(headRelationship.householdCode)
-        def isBlankHeadCode = StringUtil.isBlank(headRelationship.headCode)
         def isBlankStartType = StringUtil.isBlank(headRelationship.startType)
         def isNullStartDate = headRelationship.startDate == null
         def isBlankRelationshipType = StringUtil.isBlank(headRelationship.relationshipType)
         def relationshipType = !isBlankRelationshipType ? HeadRelationshipType.getFrom(headRelationship.relationshipType) : null
         def member = !isBlankMemberCode ? memberService.getMember(headRelationship.memberCode) : null
         def household = !isBlankHouseholdCode ? householdService.getHousehold(headRelationship.householdCode) : null
-        def head = !isBlankHeadCode ? memberService.getMember(headRelationship.headCode) : null
+        def head = !isBlankHouseholdCode ? getCurrentHouseholdHead(household) : null
         def memberExists = member != null
         def householdExists = household != null
         def headExists = head != null
@@ -206,10 +205,6 @@ class HeadRelationshipService {
         //C1. Check Blank Fields (householdCode)
         if (isBlankHouseholdCode){
             errors << errorMessageService.getRawMessage("validation.field.blank", ["householdCode"], ["householdCode"])
-        }
-        //C1. Check Blank Fields (headCode)
-        if (isBlankHeadCode){
-            errors << errorMessageService.getRawMessage("validation.field.blank", ["headCode"], ["headCode"])
         }
         //C1. Check Blank Fields (startType)
         if (isBlankStartType){
@@ -235,10 +230,6 @@ class HeadRelationshipService {
         if (!isBlankHouseholdCode && !householdExists){
             errors << errorMessageService.getRawMessage("validation.field.reference.error", ["Household", "householdCode", headRelationship.householdCode], ["householdCode"])
         }
-        //C4. Check Head reference existence
-        if (!isBlankHeadCode && !headExists){
-            errors << errorMessageService.getRawMessage("validation.field.reference.error", ["Member", "headCode", headRelationship.headCode], ["headCode"])
-        }
         //C5. Check startDate max date
         if (!isNullStartDate && headRelationship.startDate > new Date()){
             errors << errorMessageService.getRawMessage("validation.field.date.not.greater.today", [headRelationship.startDate], ["startDate"])
@@ -246,6 +237,10 @@ class HeadRelationshipService {
         //C6. Check Age of Head of Household
         if (memberExists && (relationshipType == HeadRelationshipType.HEAD_OF_HOUSEHOLD && GeneralUtil.getAge(member.dob)< Codes.MIN_HEAD_AGE_VALUE )){
             errors << errorMessageService.getRawMessage("validation.field.dob.head.minage.error", [member.dob, Codes.MIN_HEAD_AGE_VALUE], ["member.dob"])
+        }
+        //C7. Check Current Head Existence and the new relation is not a head of household - We must have a existent Head of Household in order to create new Relationship with the Head
+        if (!headExists && relationshipType != HeadRelationshipType.HEAD_OF_HOUSEHOLD){
+            errors << errorMessageService.getRawMessage("validation.field.headRelationship.head.not.exists.error", [headRelationship.householdCode], ["householdCode"])
         }
 
         //Validation part 2: Previous HeadRelationship against new HeadRelationship
@@ -379,16 +374,25 @@ class HeadRelationshipService {
 
         headRelationship.member = memberService.getMember(rh.memberCode)
         headRelationship.household = householdService.getHousehold(rh.householdCode)
-        headRelationship.head = memberService.getMember(rh.headCode)
         headRelationship.memberCode = headRelationship.member?.code
         headRelationship.householdCode = headRelationship.household?.code
-        headRelationship.headCode = headRelationship.head?.code
         headRelationship.relationshipType = HeadRelationshipType.getFrom(rh.relationshipType)
         headRelationship.startType = HeadRelationshipStartType.getFrom(rh.startType)
         headRelationship.startDate = rh.startDate
         headRelationship.endType = HeadRelationshipEndType.NOT_APPLICABLE
         headRelationship.endDate = null
 
+        // Set head of household in relationship
+        if (headRelationship.relationshipType == HeadRelationshipType.HEAD_OF_HOUSEHOLD){
+            headRelationship.head = headRelationship.member
+            headRelationship.headCode = headRelationship.member.code
+        } else {
+
+            def headMemberRel = getCurrentHouseholdHead(headRelationship.household)
+
+            headRelationship.head = headMemberRel.member
+            headRelationship.headCode = headMemberRel.member.code
+        }
 
         return headRelationship
 
