@@ -10,6 +10,7 @@ enum Gender {
 
     Gender(String code, String name){
         this.code = code
+        this.name = name
     }
 
     String getId(){

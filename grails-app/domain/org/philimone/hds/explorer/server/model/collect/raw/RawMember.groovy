@@ -47,7 +47,7 @@ class RawMember {
         collectedDate nullable: true
         uploadedDate nullable: true
 
-        processedStatus nullable: true
+        processedStatus nullable: false
     }
 
     static mapping = {

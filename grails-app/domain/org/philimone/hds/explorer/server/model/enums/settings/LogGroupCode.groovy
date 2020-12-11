@@ -13,10 +13,23 @@ enum LogGroupCode {
 
     LogGroupCode(Integer code, String name){
         this.code = code
+        this.name = name
     }
 
     Integer getId(){
         return code
     }
 
+    /* Finding Enum by code */
+    private static final Map<String, LogGroupCode> MAP = new HashMap<>();
+
+    static {
+        for (LogGroupCode e: values()) {
+            MAP.put(e.code, e);
+        }
+    }
+
+    public static LogGroupCode getFrom(String code) {
+        return code==null ? null : MAP.get(code);
+    }
 }

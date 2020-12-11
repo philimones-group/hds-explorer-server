@@ -13,6 +13,7 @@ enum ProcessedStatus {
     String name
 
     ProcessedStatus(Integer code, String name){
+        this.code = code
         this.name = name
     }
 
