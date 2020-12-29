@@ -15,7 +15,6 @@ class Visit extends CollectableEntity {
     VisitLocationItem visitLocation
     String visitLocationOther
 
-    Round round
     Integer roundNumber
 
     Member respondent
@@ -41,7 +40,6 @@ class Visit extends CollectableEntity {
         visitLocation blank: true, nullable: true, enumType: "identity"
         visitLocationOther blank: true, nullable: true
 
-        round nullable: false
         roundNumber min: 0
 
         respondent nullable: true
@@ -71,7 +69,6 @@ class Visit extends CollectableEntity {
         visitLocation column: "visit_location"
         visitLocationOther column: "visit_location_other"
 
-        round column: "round_id"
         roundNumber column: "round_number"
 
         respondent column: "respondent_id"

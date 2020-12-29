@@ -27,7 +27,7 @@ class Household extends CollectableEntity {
     String hierarchy7
     String hierarchy8
 
-    Boolean gpsNull;
+    Boolean gpsNull = true;
     Double gpsAccuracy;
     Double gpsAltitude;
     Double gpsLatitude;
@@ -43,7 +43,7 @@ class Household extends CollectableEntity {
         code unique: true
         region nullable: false
         name blank: false
-        headCode  blank: false, nullable: true, unique: 'code'
+        headCode  blank: true, nullable: true, unique: 'code'
         headName blank: true, nullable: true
         secHeadCode blank: true, nullable: true
 

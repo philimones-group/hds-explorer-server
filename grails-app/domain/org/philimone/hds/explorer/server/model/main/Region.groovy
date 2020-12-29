@@ -28,7 +28,7 @@ class Region extends CollectableEntity {
         id maxSize: 32
         code(unique: true, maxSize: 32)
         name blank: false
-        hierarchyLevel blank: false
+        hierarchyLevel nullable: false, blank: false
         parent nullable: true
     }
 
