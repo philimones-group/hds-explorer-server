@@ -24,6 +24,7 @@ import org.philimone.hds.explorer.server.model.main.RegionService
 import org.philimone.hds.explorer.server.model.main.collect.raw.RawExecutionResult
 import org.philimone.hds.explorer.server.model.main.collect.raw.RawMessage
 import org.philimone.hds.explorer.server.model.settings.Codes
+import org.philimone.hds.explorer.server.model.settings.generator.CodeGeneratorService
 import org.philimone.hds.explorer.services.errors.ErrorMessageService
 import org.springframework.beans.factory.annotation.Autowired
 import spock.lang.Ignore
@@ -45,6 +46,8 @@ class MaritalRelationshipServiceSpec extends Specification {
     UserService userService
     @Autowired
     MaritalRelationshipService maritalRelationshipService
+    @Autowired
+    CodeGeneratorService codeGeneratorService
 
     def setupAll() {
 
@@ -62,14 +65,14 @@ class MaritalRelationshipServiceSpec extends Specification {
     }
 
     def setupRegions(){
-        def rg1 = new RawRegion(regionCode: "MAP", regionName: "Maputo", parentCode: "")
-        def rg11 = new RawRegion(regionCode: "MAT", regionName: "Matola", parentCode: "MAP")
-        def rg111 = new RawRegion(regionCode: "TXU", regionName: "Txumene", parentCode: "MAT")
-        def rg112 = new RawRegion(regionCode: "FOM", regionName: "Fomento", parentCode: "MAT")
-        def rg2 = new RawRegion(regionCode: "GAZ", regionName: "Gaza", parentCode: "")
-        def rg21 = new RawRegion(regionCode: "XAI", regionName: "Xai-Xai", parentCode: "GAZ")
-        def rg211 = new RawRegion(regionCode: "ZON", regionName: "Zongoene", parentCode: "XAI")
-        def rg212 = new RawRegion(regionCode: "LIM", regionName: "Limpopo", parentCode: "XAI")
+        def rg1 = new RawRegion(regionCode: codeGeneratorService.generateRegionCode("Maputo"), regionName: "Maputo", parentCode: "")
+        def rg11 = new RawRegion(regionCode: codeGeneratorService.generateRegionCode("Matola"), regionName: "Matola", parentCode: "MAP")
+        def rg111 = new RawRegion(regionCode: codeGeneratorService.generateRegionCode("Txumene"), regionName: "Txumene", parentCode: "MAT")
+        def rg112 = new RawRegion(regionCode: codeGeneratorService.generateRegionCode("Fomento"), regionName: "Fomento", parentCode: "MAT")
+        def rg2 = new RawRegion(regionCode: codeGeneratorService.generateRegionCode("Gaza"), regionName: "Gaza", parentCode: "")
+        def rg21 = new RawRegion(regionCode: codeGeneratorService.generateRegionCode("Xai-Xai"), regionName: "Xai-Xai", parentCode: "GAZ")
+        def rg211 = new RawRegion(regionCode: codeGeneratorService.generateRegionCode("Zongoene"), regionName: "Zongoene", parentCode: "XAI")
+        def rg212 = new RawRegion(regionCode: codeGeneratorService.generateRegionCode("Limpopo"), regionName: "Limpopo", parentCode: "XAI")
 
         regionService.createRegion(rg1)
         regionService.createRegion(rg11)

@@ -11,6 +11,7 @@ import org.philimone.hds.explorer.server.model.collect.raw.RawHousehold
 import org.philimone.hds.explorer.server.model.collect.raw.RawRegion
 import org.philimone.hds.explorer.server.model.main.collect.raw.RawExecutionResult
 import org.philimone.hds.explorer.server.model.main.collect.raw.RawMessage
+import org.philimone.hds.explorer.server.model.settings.generator.CodeGeneratorService
 import org.philimone.hds.explorer.services.errors.ErrorMessageService
 import org.springframework.context.MessageSource
 import org.springframework.context.support.ResourceBundleMessageSource
@@ -24,12 +25,14 @@ class HouseholdServiceSpec extends Specification implements ServiceUnitTest<Hous
         memberService MemberService
         regionService RegionService
         userService UserService
+        codeGeneratorService CodeGeneratorService
     }}
 
     ErrorMessageService errorMessageService
     MemberService memberService
     RegionService regionService
     UserService userService
+    CodeGeneratorService codeGeneratorService
 
     MessageSource getI18n() {
         // assuming the test cwd is the project dir (where application.properties is)
@@ -46,6 +49,9 @@ class HouseholdServiceSpec extends Specification implements ServiceUnitTest<Hous
 
         service.errorMessageService.messageSource = getI18n()
         service.userService = userService
+        service.codeGeneratorService = codeGeneratorService
+
+        userService.codeGeneratorService = codeGeneratorService
 
         setupRegions()
         //inject message source
@@ -53,9 +59,10 @@ class HouseholdServiceSpec extends Specification implements ServiceUnitTest<Hous
     }
 
     def setupRegions(){
-        def rg1 = new RawRegion(regionCode: "MAT", regionName: "Matola", parentCode: "")
-        def rg2 = new RawRegion(regionCode: "TXU", regionName: "Txumene", parentCode: "MAT")
+        def rg1 = new RawRegion(regionCode: codeGeneratorService.generateRegionCode("Matola"), regionName: "Matola", parentCode: "")
+        def rg2 = new RawRegion(regionCode: codeGeneratorService.generateRegionCode("Txumene"), regionName: "Txumene", parentCode: "MAT")
         regionService.userService = userService
+        regionService.codeGeneratorService = codeGeneratorService
         regionService.errorMessageService = errorMessageService
         regionService.errorMessageService.messageSource = getI18n()
         regionService.createRegion(rg1)
