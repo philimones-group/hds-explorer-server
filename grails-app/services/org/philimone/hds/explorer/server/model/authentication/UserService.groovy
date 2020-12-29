@@ -10,6 +10,7 @@ import org.philimone.hds.explorer.services.GeneralUtilitiesService
 class UserService {
 
     def GeneralUtilitiesService generalUtilitiesService
+    def codeGeneratorService
     def springSecurityService
 
     LinkGenerator grailsLinkGenerator
@@ -39,7 +40,7 @@ class UserService {
     User addUser(User user, List<Role> roles) {
 
         //generate user code
-        user.code = generateCode(user)
+        user.code = codeGeneratorService.generateUserCode(user)
 
         user = user.save(flush: true)
         UserRole.create(user, roles, true)
@@ -95,37 +96,6 @@ class UserService {
         springSecurityService.encodePassword(password, "8")
     }
 
-    String generateCode(User user){
-        def regexFw = '^FW[A-Za-z]{3}$'
-
-        if (user.username.matches(regexFw)){ //ohds fieldworker
-            return user.username.toUpperCase().replaceAll("FW")
-        }else {
-            def codes = User.list().collect{ t -> t.code}
-
-            def f = user.firstName.toUpperCase()
-            def l = user.lastName.toUpperCase()
-            def alist = f.chars.toList()
-            def blist = l.chars.toList()
-            def clist = ("1".."9") + (l.length()>1 ? l.substring(1).chars.toList() : []) + ("A".."Z")
-
-            for (def a : alist){
-                for (def b : blist){
-                    for (def c : clist){
-                        def test = "${a}${b}${c}" as String
-
-                        if (!codes.contains(test)){
-                            return test
-                        }
-                    }
-
-                }
-            }
-        }
-
-        return null
-    }
-
     List<String> getAuthoritiesText(User user){
         def list = new ArrayList<String>()
 
@@ -164,6 +134,5 @@ class UserService {
         user.save(flush: true)
 
     }
-
 
 }

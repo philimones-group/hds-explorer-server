@@ -12,13 +12,10 @@ import org.philimone.hds.explorer.server.model.settings.Codes
 class RegionService {
 
     def userService
+    def codeGeneratorService
     def errorMessageService
 
     //<editor-fold desc="Region Utilities Methods">
-    boolean isCodeValid(String regionCode){
-        regionCode.matches(Codes.REGION_CODE_PATTERN)
-    }
-
     boolean exists(String regionCode) {
         Region.countByCode(regionCode) > 0
     }
@@ -71,6 +68,11 @@ class RegionService {
 
         return hierarchy
     }
+
+    String generateCode(String regionName){
+        return codeGeneratorService.generateRegionCode(regionName)
+    }
+
     //</editor-fold>
 
     //<editor-fold desc="Region Factory/Manager Methods">
@@ -127,7 +129,7 @@ class RegionService {
         //    errors << errorMessageService.getRawMessage("validation.field.blank", ["parentCode"], ["parentCode"])
         //}
         //C2. Check Code Regex Pattern
-        if (!isBlankRegionCode && !isCodeValid(region.regionCode)) {
+        if (!isBlankRegionCode && !codeGeneratorService.isRegionCodeValid(region.regionCode)) {
             errors << errorMessageService.getRawMessage("validation.field.pattern.no.matches", ["regionCode", "TXU"], ["regionCode"])
         }
         //C3. Check Region reference existence

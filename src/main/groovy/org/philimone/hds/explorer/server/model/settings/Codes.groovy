@@ -9,10 +9,6 @@ class Codes {
     static final String PARAMS_MIN_AGE_OF_HEAD   = "hds.explorer.constraints.head.age.min"
     static final String PARAMS_MIN_AGE_OF_SPOUSE   = "hds.explorer.constraints.spouse.age.min"
 
-    static final String REGION_CODE_PATTERN = '^[A-Z0-9]{3}$'
-    static final String HOUSEHOLD_CODE_PATTERN = '^[A-Z0-9]{6}[0-9]{3}$'
-    static final String MEMBER_CODE_PATTERN = '^[A-Z0-9]{6}[0-9]{6}$'
-
     static final String MEMBER_UNKNOWN_CODE = "UNK"
 
     /* Mutable Constants - Will be loaded during bootstrap */

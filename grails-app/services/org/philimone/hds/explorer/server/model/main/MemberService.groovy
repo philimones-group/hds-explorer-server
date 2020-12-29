@@ -15,13 +15,10 @@ class MemberService {
 
     def householdService
     def userService
+    def codeGeneratorService
     def errorMessageService
 
     //<editor-fold desc="Member Utilities Methods">
-    boolean isCodeValid(String memberCode){
-        memberCode.matches(Codes.MEMBER_CODE_PATTERN)
-    }
-
     boolean exists(String memberCode) {
         Member.countByCode(memberCode) > 0
     }
@@ -37,28 +34,10 @@ class MemberService {
         return false /* TODO Will be Implemented when we build Death Registration */
     }
 
-    /*
-     * Generate Household Code using the Region.code and User.code
-     */
     String generateCode(Household household){
-        def cbase = "${household.code}"
-
-        def codes = Member.findAllByCodeLike("${cbase}%", [sort:'code', order: 'asc']).collect{ t -> t.code}
-
-        //Generate codes and try to match the database until u cant
-        if (codes.size()==0){
-            return "${cbase}001"
-        } else {
-            for (int i=1; i <= 999; i++){
-                def code = "${cbase}${String.format('%03d', i)}" as String
-                if (!codes.contains(code)){
-                    return code
-                }
-            }
-        }
-
-        return "${cbase}ERROR"
+        return codeGeneratorService.generateMemberCode(household)
     }
+
     //</editor-fold>
 
     //<editor-fold desc="Member Factory/Manager Methods">
@@ -144,7 +123,7 @@ class MemberService {
         }
 
         //C2. Check Code Regex Pattern
-        if (!isBlankMemberCode && !isCodeValid(member.code)) {
+        if (!isBlankMemberCode && !codeGeneratorService.isMemberCodeValid(member.code)) {
             errors << errorMessageService.getRawMessage("validation.field.pattern.no.matches", ["code", "TXUPF1001001"], ["code"])
         }
         //C3. Check Code Prefix Reference existence (Household Existence in memberCode)

@@ -13,13 +13,10 @@ class HouseholdService {
 
     def regionService
     def userService
+    def codeGeneratorService
     def errorMessageService
 
     //<editor-fold desc="Household Utilities Methods">
-    boolean isCodeValid(String householdCode){
-        householdCode.matches(Codes.HOUSEHOLD_CODE_PATTERN)
-    }
-
     boolean exists(String householdCode) {
         Household.countByCode(householdCode) > 0
     }
@@ -35,26 +32,10 @@ class HouseholdService {
         return null
     }
 
-    /* Generate Household Code using the Region.code and User.code */
     String generateCode(Region region, User user){
-        def cbase = "${region.code}${user.code}"
-
-        def codes = Household.findAllByCodeLike("${cbase}%", [sort:'code', order: 'asc']).collect{ t -> t.code}
-
-        //Generate codes and try to match the database until u cant
-        if (codes.size()==0){
-            return "${cbase}001"
-        } else {
-            for (int i=1; i <= 999; i++){
-                def code = "${cbase}${String.format('%03d', i)}" as String
-                if (!codes.contains(code)){
-                    return code
-                }
-            }
-        }
-
-        return "${cbase}ERROR"
+        return codeGeneratorService.generateHouseholdCode(region, user)
     }
+
     //</editor-fold>
 
     //<editor-fold desc="Household Factory/Manager Methods">
@@ -110,7 +91,7 @@ class HouseholdService {
             errors << errorMessageService.getRawMessage("validation.field.blank", ["regionCode"], ["regionCode"])
         }
         //C2. Check Code Regex Pattern
-        if (!isBlankHouseholdCode && !isCodeValid(household.householdCode)) {
+        if (!isBlankHouseholdCode && !codeGeneratorService.isHouseholdCodeValid(household.householdCode)) {
             errors << errorMessageService.getRawMessage("validation.field.pattern.no.matches", ["householdCode", "TXUPF1001"], ["householdCode"])
         }
         //C3. Check Region reference existence
