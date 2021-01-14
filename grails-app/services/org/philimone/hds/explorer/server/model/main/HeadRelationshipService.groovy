@@ -234,6 +234,10 @@ class HeadRelationshipService {
         if (!isNullStartDate && headRelationship.startDate > new Date()){
             errors << errorMessageService.getRawMessage("validation.field.date.not.greater.today", [headRelationship.startDate], ["startDate"])
         }
+        //C5.2. Check Dates against DOB
+        if (!isNullStartDate && memberExists && headRelationship.startDate < member.dob){
+            errors << errorMessageService.getRawMessage("validation.field.date.not.greater.dob", ["headRelationship.startDate", StringUtil.format(member.dob)], ["startDate","member.dob"])
+        }
         //C6. Check Age of Head of Household
         if (memberExists && (relationshipType == HeadRelationshipType.HEAD_OF_HOUSEHOLD && GeneralUtil.getAge(member.dob)< Codes.MIN_HEAD_AGE_VALUE )){
             errors << errorMessageService.getRawMessage("validation.field.dob.head.minage.error", [member.dob, Codes.MIN_HEAD_AGE_VALUE], ["member.dob"])
@@ -337,6 +341,10 @@ class HeadRelationshipService {
         //C5. Check endDate max date
         if (!isNullEndDate && headRelationship.endDate > new Date()){
             errors << errorMessageService.getRawMessage("validation.field.date.not.greater.today", [headRelationship.endDate], ["endDate"])
+        }
+        //C6. Check Dates against DOB
+        if (!isNullEndDate && memberExists && headRelationship.endDate < member.dob){
+            errors << errorMessageService.getRawMessage("validation.field.date.not.greater.dob", ["headRelationship.endDate", StringUtil.format(member.dob)], ["endDate","member.dob"])
         }
 
         //Validation part 2: Previous HeadRelationship against new HeadRelationship

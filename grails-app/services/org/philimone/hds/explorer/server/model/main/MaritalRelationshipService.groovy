@@ -258,6 +258,15 @@ class MaritalRelationshipService {
         if (!isNullStartDate && maritalRelationship.startDate > new Date()){
             errors << errorMessageService.getRawMessage("validation.field.date.not.greater.today", [maritalRelationship.startDate], ["startDate"])
         }
+        //C5.1. Check Dates against DOB
+        if (!isNullStartDate && memberAExists && memberBExists){
+            if (maritalRelationship.startDate < memberA.dob){
+                errors << errorMessageService.getRawMessage("validation.field.date.not.greater.dob", ["maritalRelationship.startDate", StringUtil.format(memberA.dob)], ["startDate","memberA.dob"])
+            }
+            if (maritalRelationship.startDate < memberB.dob){
+                errors << errorMessageService.getRawMessage("validation.field.date.not.greater.dob", ["maritalRelationship.startDate", StringUtil.format(memberB.dob)], ["startDate","memberB.dob"])
+            }
+        }
         //C6. Check Age of Member A
         if (memberAExists && GeneralUtil.getAge(memberA.dob)< Codes.MIN_SPOUSE_AGE_VALUE ){
             errors << errorMessageService.getRawMessage("validation.field.dob.spouse.minage.error", [memberA.dob, Codes.MIN_SPOUSE_AGE_VALUE], ["member.dob"])
@@ -355,10 +364,18 @@ class MaritalRelationshipService {
         if (!isBlankMemberBCode && !memberBExists){
             errors << errorMessageService.getRawMessage("validation.field.reference.error", ["Member", "memberB", maritalRelationship.memberB], ["memberB"])
         }
-
         //C5. Check dob max date
         if (!isNullEndDate && maritalRelationship.endDate > new Date()){
             errors << errorMessageService.getRawMessage("validation.field.date.not.greater.today", [maritalRelationship.endDate], ["endDate"])
+        }
+        //C6. Check Dates against DOB
+        if (!isNullEndDate && memberAExists && memberBExists){
+            if (maritalRelationship.endDate < memberA.dob){
+                errors << errorMessageService.getRawMessage("validation.field.date.not.greater.dob", ["maritalRelationship.endDate", StringUtil.format(memberA.dob)], ["endDate","memberA.dob"])
+            }
+            if (maritalRelationship.endDate < memberB.dob){
+                errors << errorMessageService.getRawMessage("validation.field.date.not.greater.dob", ["maritalRelationship.endDate", StringUtil.format(memberB.dob)], ["endDate","memberB.dob"])
+            }
         }
 
         //Validation part 2: Previous MaritalRelationship against new MaritalRelationship

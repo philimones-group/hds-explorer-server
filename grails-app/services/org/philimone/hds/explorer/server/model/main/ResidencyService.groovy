@@ -198,7 +198,11 @@ class ResidencyService {
         }
         //C5. Check startDate max date
         if (!isNullStartDate && residency.startDate > new Date()){
-            errors << errorMessageService.getRawMessage("validation.field.date.not.greater.today", [residency.startDate], ["startDate"])
+            errors << errorMessageService.getRawMessage("validation.field.date.not.greater.today", ["residency.startDate"], ["startDate"])
+        }
+        //C6. Check Dates against DOB
+        if (!isNullStartDate && memberExists && residency.startDate < member.dob){
+            errors << errorMessageService.getRawMessage("validation.field.date.not.greater.dob", ["residency.startDate", StringUtil.format(member.dob)], ["startDate","member.dob"])
         }
 
         //Validation part 2: Previous Residency against new Residency
@@ -280,6 +284,10 @@ class ResidencyService {
         //C5. Check endDate max date
         if (!isNullEndDate && residency.endDate > new Date()){
             errors << errorMessageService.getRawMessage("validation.field.date.not.greater.today", [residency.endDate], ["endDate"])
+        }
+        //C6. Check Dates against DOB
+        if (!isNullEndDate && memberExists && residency.endDate < member.dob){
+            errors << errorMessageService.getRawMessage("validation.field.date.not.greater.dob", ["residency.endDate", StringUtil.format(member.dob)], ["endDate","member.dob"])
         }
 
         //Validation part 2: Previous Residency against new Residency

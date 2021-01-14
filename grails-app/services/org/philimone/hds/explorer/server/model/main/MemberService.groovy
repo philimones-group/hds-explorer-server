@@ -31,7 +31,7 @@ class MemberService {
     }
 
     boolean isDead(Member member) {
-        return false /* TODO Will be Implemented when we build Death Registration */
+        return Death.countByMember(member) > 0
     }
 
     String generateCode(Household household){
