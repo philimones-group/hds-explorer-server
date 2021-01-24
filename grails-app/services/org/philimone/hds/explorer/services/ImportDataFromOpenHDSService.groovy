@@ -40,6 +40,7 @@ class ImportDataFromOpenHDSService {
     def errorMessageService
     def sessionFactory
 
+    /*  REVIEW THIS IMPORT DOESNT WORK WELL */
     def importRegions(LogReportCode logReportId){
         LogOutput log = generalUtilitiesService.getOutput(SystemPath.getLogsPath(), "db-hierarchies-from-openhds");
         PrintStream output = log.output
@@ -84,7 +85,7 @@ class ImportDataFromOpenHDSService {
 
                 locationHiearachies.subList(from, to).each {
 
-                    def region = new Region()
+                    def region = Region.findOrCreateByCode(it[1])
 
                     region.code = it[1]
                     region.name = it[2]
