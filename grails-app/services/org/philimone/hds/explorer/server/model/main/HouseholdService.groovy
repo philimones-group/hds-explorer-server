@@ -128,7 +128,7 @@ class HouseholdService {
         //household.headName = rh.headName
 
         household.parentRegion = hierarchies.region
-        //household.headMember = memberService.getMember(rh.headCode)
+        //household.headMember = memberService.getVisit(rh.headCode)
 
         household.hierarchy1 = hierarchies.hierarchy1
         household.hierarchy2 = hierarchies.hierarchy2

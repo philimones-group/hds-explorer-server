@@ -4,7 +4,7 @@ enum InMigrationType {
 
     INTERNAL  ("ENT", "eventType.internal_inmigration"),
     EXTERNAL  ("XEN", "eventType.external_inmigration"),
-    RETURNING ( "XEN", "eventType.returning_inmigration") /* I dont think I will need this, entry_date and start_type suits enough to know that its a return to dss */
+    //RETURNING ( "XEN", "eventType.returning_inmigration") /* I dont think I will need this, entry_date and start_type suits enough to know that its a return to dss */
 
     final String code;
     final String name;

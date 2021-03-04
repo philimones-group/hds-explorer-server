@@ -98,4 +98,55 @@ class GeneralUtil {
         cal.set(y, m, d, hour, min, sec)
         return cal.getTime()
     }
+
+    static Date addDaysToDate(Date date, int days){
+        Calendar cal = Calendar.getInstance()
+        cal.setTime(date)
+        cal.add(Calendar.DAY_OF_YEAR, days)
+        return cal.getTime()
+    }
+
+    static Date getDateStart(Date date){
+        Calendar cal = Calendar.getInstance()
+        cal.setTime(date)
+        cal.set(Calendar.HOUR_OF_DAY, 0)
+        cal.set(Calendar.MINUTE, 0)
+        cal.set(Calendar.SECOND, 0)
+
+        return cal.getTime()
+    }
+
+    static Date getDateEnd(Date date){
+        Calendar cal = Calendar.getInstance()
+        cal.setTime(date)
+        cal.set(Calendar.HOUR_OF_DAY, 23)
+        cal.set(Calendar.MINUTE, 59)
+        cal.set(Calendar.SECOND, 59)
+
+        return cal.getTime()
+    }
+
+    static Date getDateStart(Date date, int plusDays){
+        Calendar cal = Calendar.getInstance()
+        cal.setTime(date)
+        cal.set(Calendar.HOUR_OF_DAY, 0)
+        cal.set(Calendar.MINUTE, 0)
+        cal.set(Calendar.SECOND, 0)
+
+        cal.add(Calendar.DAY_OF_YEAR, plusDays)
+
+        return cal.getTime()
+    }
+
+    static Date getDateEnd(Date date, int plusDays){
+        Calendar cal = Calendar.getInstance()
+        cal.setTime(date)
+        cal.set(Calendar.HOUR_OF_DAY, 23)
+        cal.set(Calendar.MINUTE, 59)
+        cal.set(Calendar.SECOND, 59)
+
+        cal.add(Calendar.DAY_OF_YEAR, plusDays)
+
+        return cal.getTime()
+    }
 }

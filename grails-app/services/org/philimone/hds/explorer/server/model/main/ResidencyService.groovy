@@ -50,10 +50,43 @@ class ResidencyService {
         return null
     }
 
+    Household getCurrentHousehold(Member member){
+        def residency = getCurrentResidency(member)
+        return residency?.household
+    }
+
+    RawResidency getCurrentResidencyAsRaw(Member member){
+        def residency = getCurrentResidency(member)
+        return convertToRaw(residency)
+    }
+
+    RawResidency getCurrentResidencyAsRaw(Member member, Household household){
+        def residency = getCurrentResidency(member, household)
+        return convertToRaw(residency)
+    }
+
+    RawResidency convertToRaw(Residency residency){
+
+        if (residency == null) return null
+
+        def rr = new RawResidency()
+
+        rr.memberCode = residency.member.code
+        rr.householdCode = residency.household.code
+        rr.startType = residency.startType.code
+        rr.startDate = residency.startDate
+        rr.endType = residency.endType.code
+        rr.endDate = residency.endDate
+
+        return rr
+    }
+
+
     List<RawMessage> updatesAfterCreatingResidency(Residency residency){
 
         def errors = [] as ArrayList<RawMessage>
         def member = residency.member.refresh()
+        def household = residency.household.refresh()
 
         //check if is first entry
         if (Residency.countByMember(member) == 1){
@@ -61,6 +94,9 @@ class ResidencyService {
             member.entryDate = residency.startDate
             member.entryHousehold = residency.household.code
         }
+
+        member.householdCode = household.code
+        member.household = household
 
         member.startType = residency.startType
         member.startDate = residency.startDate
@@ -208,6 +244,91 @@ class ResidencyService {
         //Validation part 2: Previous Residency against new Residency
         if (memberExists && householdExists){
             def previous = getCurrentResidency(member)
+            def newStartType = ResidencyStartType.getFrom(residency.startType)
+            def newStartDate = residency.startDate
+
+            if (previous == null) {
+                return errors
+            }
+
+            //P1. Check If endType is empty or NA
+            if (previous.endType == null || previous.endType == ResidencyEndType.NOT_APPLICABLE){
+                errors << errorMessageService.getRawMessage("validation.field.residency.endtype.na.error", null, ["previous.endType"])
+            }
+            //P2. Check If endType is DTH or Member has DTH Reg
+            if (previous.endType == ResidencyEndType.DEATH || memberService.isDead(member)){
+                errors << errorMessageService.getRawMessage("validation.field.residency.endtype.dth.error", null, ["previous.endType"])
+            }
+            //P3. Check If endType is CHG and new startType isnt ENT
+            if (previous.endType == ResidencyEndType.INTERNAL_OUTMIGRATION && newStartType != ResidencyStartType.INTERNAL_INMIGRATION){
+                errors << errorMessageService.getRawMessage("validation.field.residency.endtype.chg.error", null, ["previous.endType"])
+            }
+            //P4. Check If endType is EXT and new startType isnt XEN
+            if (previous.endType == ResidencyEndType.EXTERNAL_OUTMIGRATION && newStartType != ResidencyStartType.EXTERNAL_INMIGRATION){
+                errors << errorMessageService.getRawMessage("validation.field.residency.endtype.ext.error", null, ["previous.endType"])
+            }
+            //C5. Check If endDate is greater than new startDate
+            if (previous.endDate != null && (previous.endDate >= newStartDate)){
+                errors << errorMessageService.getRawMessage("validation.field.residency.enddate.greater.new.startdate.error", null, ["previous.endType"])
+            }
+        }
+
+
+        return errors
+    }
+
+    ArrayList<RawMessage> validateCreateResidency(Residency previousFakeResidency, RawResidency residency){
+        def errors = new ArrayList<RawMessage>()
+
+        def isBlankMemberCode = StringUtil.isBlank(residency.memberCode)
+        def isBlankHouseholdCode = StringUtil.isBlank(residency.householdCode)
+        def isBlankStartType = StringUtil.isBlank(residency.startType)
+        def isNullStartDate = residency.startDate == null
+        def member = !isBlankMemberCode ? memberService.getMember(residency.memberCode) : null
+        def household = !isBlankHouseholdCode ? householdService.getHousehold(residency.householdCode) : null
+        def memberExists = member != null
+        def householdExists = household != null
+
+        //C1. Check Blank Fields (memberCode)
+        if (isBlankMemberCode){
+            errors << errorMessageService.getRawMessage("validation.field.blank", ["memberCode"], ["memberCode"])
+        }
+        //C1. Check Blank Fields (householdCode)
+        if (isBlankHouseholdCode){
+            errors << errorMessageService.getRawMessage("validation.field.blank", ["householdCode"], ["householdCode"])
+        }
+        //C1. Check Blank Fields (startType)
+        if (isBlankStartType){
+            errors << errorMessageService.getRawMessage("validation.field.blank", ["startType"], ["startType"])
+        }
+        //C1. Check Nullable Fields (startDate)
+        if (isNullStartDate){
+            errors << errorMessageService.getRawMessage("validation.field.blank", ["startDate"], ["startDate"])
+        }
+        //C3. Validate startType Enum Options
+        if (!isBlankStartType && ResidencyStartType.getFrom(residency.startType)==null){
+            errors << errorMessageService.getRawMessage("validation.field.enum.starttype.error", [residency.startType], ["startType"])
+        }
+        //C4. Check Member reference existence
+        if (!isBlankMemberCode && !memberExists){
+            errors << errorMessageService.getRawMessage("validation.field.reference.error", ["Member", "memberCode", residency.memberCode], ["memberCode"])
+        }
+        //C4. Check Household reference existence
+        if (!isBlankHouseholdCode && !householdExists){
+            errors << errorMessageService.getRawMessage("validation.field.reference.error", ["Household", "householdCode", residency.householdCode], ["householdCode"])
+        }
+        //C5. Check startDate max date
+        if (!isNullStartDate && residency.startDate > new Date()){
+            errors << errorMessageService.getRawMessage("validation.field.date.not.greater.today", ["residency.startDate"], ["startDate"])
+        }
+        //C6. Check Dates against DOB
+        if (!isNullStartDate && memberExists && residency.startDate < member.dob){
+            errors << errorMessageService.getRawMessage("validation.field.date.not.greater.dob", ["residency.startDate", StringUtil.format(member.dob)], ["startDate","member.dob"])
+        }
+
+        //Validation part 2: Previous Residency against new Residency
+        if (memberExists && householdExists){
+            def previous = previousFakeResidency //getCurrentResidency(member)
             def newStartType = ResidencyStartType.getFrom(residency.startType)
             def newStartDate = residency.startDate
 

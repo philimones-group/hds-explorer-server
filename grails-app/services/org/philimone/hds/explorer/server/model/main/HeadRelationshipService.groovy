@@ -62,6 +62,55 @@ class HeadRelationshipService {
         return null
     }
 
+    List<HeadRelationship> getCurrentHeadRelationships(Member headOfHousehold, Household household){
+        if (headOfHousehold != null && headOfHousehold.id != null && household != null && household.id != null) {
+
+            def headRelationships = HeadRelationship.executeQuery("select r from HeadRelationship r where r.head.id=? and r.household.id=? order by r.startDate", [headOfHousehold.id, household.id])
+
+            return headRelationships
+
+        }
+        return null
+    }
+
+    List<HeadRelationship> getCurrentHeadRelationships(String headCode, String householdCode){
+        def member = memberService.getMember(headCode)
+        def household = householdService.getHousehold(householdCode)
+        return getCurrentHeadRelationships(member, household)
+    }
+
+    RawHeadRelationship getCurrentHeadRelationshipAsRaw(Member member) {
+        def headRelationship = getCurrentHeadRelationship(member)
+        return convertToRaw(headRelationship)
+    }
+
+    RawHeadRelationship getCurrentHeadRelationshipAsRaw(Member member, Household household) {
+        def headRelationship = getCurrentHeadRelationship(member, household)
+        return convertToRaw(headRelationship)
+    }
+
+    RawHeadRelationship getCurrentHouseholdHeadAsRaw(Household household){
+        def headRelationship = getCurrentHouseholdHead(household)
+        return convertToRaw(headRelationship)
+    }
+
+    RawHeadRelationship convertToRaw(HeadRelationship headRelationship){
+
+        if (headRelationship == null) return null
+
+        def rh = new RawHeadRelationship()
+
+        rh.memberCode = headRelationship.member.code
+        rh.householdCode = headRelationship.household.code
+        rh.relationshipType = headRelationship.relationshipType.code
+        rh.startType = headRelationship.startType.code
+        rh.startDate = headRelationship.startDate
+        rh.endType = headRelationship.endType.code
+        rh.endDate = headRelationship.endDate
+
+        return rh
+    }
+
     List<RawMessage> updatesAfterCreatingRelationship(HeadRelationship headRelationship) {
 
         def errors = [] as ArrayList<RawMessage>

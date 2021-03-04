@@ -134,6 +134,22 @@ public class StringUtil {
         return value==null || value.trim().isEmpty();
     }
 
+    public static boolean isBlank(Date value){
+        return value==null;
+    }
+
+    public static boolean isBlank(Boolean value){
+        return value==null;
+    }
+
+    public static boolean isBlank(Integer value){
+        return value==null;
+    }
+
+    public static boolean isBlank(Double value){
+        return value==null;
+    }
+
     //Search if a certain string is inside a text returning percentage
 
     //levenstein algorhytm
