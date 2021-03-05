@@ -238,7 +238,7 @@ class ResidencyService {
         }
         //C6. Check Dates against DOB
         if (!isNullStartDate && memberExists && residency.startDate < member.dob){
-            errors << errorMessageService.getRawMessage("validation.field.date.not.greater.dob", ["residency.startDate", StringUtil.format(member.dob)], ["startDate","member.dob"])
+            errors << errorMessageService.getRawMessage("validation.field.dob.not.greater.date", ["residency.startDate", StringUtil.format(member.dob)], ["startDate","member.dob"])
         }
 
         //Validation part 2: Previous Residency against new Residency
@@ -323,7 +323,7 @@ class ResidencyService {
         }
         //C6. Check Dates against DOB
         if (!isNullStartDate && memberExists && residency.startDate < member.dob){
-            errors << errorMessageService.getRawMessage("validation.field.date.not.greater.dob", ["residency.startDate", StringUtil.format(member.dob)], ["startDate","member.dob"])
+            errors << errorMessageService.getRawMessage("validation.field.dob.not.greater.date", ["residency.startDate", StringUtil.format(member.dob)], ["startDate","member.dob"])
         }
 
         //Validation part 2: Previous Residency against new Residency
@@ -404,11 +404,11 @@ class ResidencyService {
         }
         //C5. Check endDate max date
         if (!isNullEndDate && residency.endDate > new Date()){
-            errors << errorMessageService.getRawMessage("validation.field.date.not.greater.today", [residency.endDate], ["endDate"])
+            errors << errorMessageService.getRawMessage("validation.field.date.not.greater.today", ["endDate"], ["endDate"])
         }
         //C6. Check Dates against DOB
         if (!isNullEndDate && memberExists && residency.endDate < member.dob){
-            errors << errorMessageService.getRawMessage("validation.field.date.not.greater.dob", ["residency.endDate", StringUtil.format(member.dob)], ["endDate","member.dob"])
+            errors << errorMessageService.getRawMessage("validation.field.dob.not.greater.date", ["residency.endDate", StringUtil.format(member.dob)], ["endDate","member.dob"])
         }
 
         //Validation part 2: Previous Residency against new Residency
