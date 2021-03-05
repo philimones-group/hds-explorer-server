@@ -134,19 +134,19 @@ public class StringUtil {
         return value==null || value.trim().isEmpty();
     }
 
-    public static boolean isBlank(Date value){
+    public static boolean isBlankDate(Date value){
         return value==null;
     }
 
-    public static boolean isBlank(Boolean value){
+    public static boolean isBlankBoolean(Boolean value){
         return value==null;
     }
 
-    public static boolean isBlank(Integer value){
+    public static boolean isBlankInteger(Integer value){
         return value==null;
     }
 
-    public static boolean isBlank(Double value){
+    public static boolean isBlankDouble(Double value){
         return value==null;
     }
 
