@@ -56,7 +56,7 @@ class Visit extends CollectableEntity {
     }
 
     static mapping = {
-        table 'death'
+        table 'visit'
 
         id column: "id", generator: 'uuid'
 
