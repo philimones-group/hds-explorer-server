@@ -392,6 +392,12 @@ public class StringUtil {
         return formatter.format(date);
     }
 
+    public static String format(Date date, boolean longDateFormat){
+        if (date == null) return "null";
+        java.text.DateFormat formatter = new java.text.SimpleDateFormat(longDateFormat ? "yyyy-MM-dd HH:mm:ss" : "yyyy-MM-dd");
+        return formatter.format(date);
+    }
+
     public static String format(Date date, String format){
         java.text.DateFormat formatter = new java.text.SimpleDateFormat(format);
         return formatter.format(date);

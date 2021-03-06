@@ -32,7 +32,7 @@ import spock.lang.Ignore
 import spock.lang.Specification
 
 @Integration
-@Transactional
+@Transactional //@Rollback
 class HeadRelationshipServiceSpec extends Specification {
 
     //static transactional = false

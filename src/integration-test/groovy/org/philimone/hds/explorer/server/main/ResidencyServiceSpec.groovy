@@ -31,7 +31,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import spock.lang.Specification
 
 @Integration
-@Rollback
+@Transactional //@Rollback
 class ResidencyServiceSpec extends Specification {
 
     @Autowired

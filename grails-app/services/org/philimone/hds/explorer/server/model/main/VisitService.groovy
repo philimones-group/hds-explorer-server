@@ -53,7 +53,7 @@ class VisitService {
 
         def visit = newVisitInstance(rawVisit)
 
-        visit = visit.save(flush:true)
+        def result = visit.save(flush:true)
         //Validate using Gorm Validations
         if (visit.hasErrors()){
 
@@ -61,6 +61,8 @@ class VisitService {
 
             RawExecutionResult<Visit> obj = RawExecutionResult.newErrorResult(errors)
             return obj
+        } else {
+            visit = result
         }
 
         RawExecutionResult<Visit> obj = RawExecutionResult.newSuccessResult(visit)
@@ -124,13 +126,17 @@ class VisitService {
             //errors << errorMessageService.getRawMessage("validation.field.blank", ["hasInterpreter"], ["hasInterpreter"])
         }
         //C1. Check Blank Fields (interpreterName) //Its Conditional
-        if (rawVisit.hasInterpreter == true && isBlankInterpreterName){
+        if (rawVisit.hasInterpreter && isBlankInterpreterName){
             errors << errorMessageService.getRawMessage("validation.field.blank", ["interpreterName"], ["interpreterName"])
         }
 
         //C2. Check VisitCode Regex Pattern
         if (!isBlankCode && !codeGeneratorService.isVisitCodeValid(rawVisit.code)) {
             errors << errorMessageService.getRawMessage("validation.field.pattern.no.matches", ["code", "TXUPF1001001"], ["code"])
+        }
+
+        if (!isBlankCode && !isBlankHouseholdCode && !rawVisit.code.startsWith(rawVisit.householdCode)){
+            errors << errorMessageService.getRawMessage("validation.field.visit.code.prefix.not.current.error", [rawVisit.code, rawVisit.householdCode], ["visitCode","householdCode"])
         }
 
         //C4. Check If RoundNumber is Valid
@@ -149,7 +155,7 @@ class VisitService {
         }
 
         //C4. Check Household reference existence
-        if (!isBlankHouseholdCode && !householdService.exists(rawVisit.householdCode)){
+        if (!isBlankHouseholdCode && !householdExists){
             errors << errorMessageService.getRawMessage("validation.field.reference.error", ["Household", "householdCode", rawVisit.householdCode], ["householdCode"])
         }
         //C4. Check Respondent reference existence

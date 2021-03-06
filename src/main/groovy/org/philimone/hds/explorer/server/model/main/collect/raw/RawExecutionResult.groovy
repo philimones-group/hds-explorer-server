@@ -6,21 +6,21 @@ class RawExecutionResult<D> {
     }
 
     Status status
-    ArrayList<RawMessage> errorMessages = new ArrayList<>();
+    List<RawMessage> errorMessages = new ArrayList<>();
     D domainInstance
 
-    RawExecutionResult(Status status, ArrayList<RawMessage> errorMessages) {
+    RawExecutionResult(Status status, List<RawMessage> errorMessages) {
         this.status = status
         if (errorMessages != null) { this.errorMessages.addAll(errorMessages) }
     }
 
-    RawExecutionResult(Status status, D instance, ArrayList<RawMessage> errorMessages) {
+    RawExecutionResult(Status status, D instance, List<RawMessage> errorMessages) {
         this.status = status
         this.domainInstance = instance
         if (errorMessages != null) { this.errorMessages.addAll(errorMessages) }
     }
 
-    static RawExecutionResult<D> newResult(Status status, ArrayList<RawMessage> errorMessages){
+    static RawExecutionResult<D> newResult(Status status, List<RawMessage> errorMessages){
         new RawExecutionResult(status, errorMessages)
     }
 
@@ -32,15 +32,15 @@ class RawExecutionResult<D> {
         new RawExecutionResult(Status.SUCCESS, instance,null)
     }
 
-    static RawExecutionResult<D> newSuccessResult(D instance, ArrayList<RawMessage> otherErrors){
+    static RawExecutionResult<D> newSuccessResult(D instance, List<RawMessage> otherErrors){
         new RawExecutionResult(Status.SUCCESS, instance, otherErrors)
     }
 
-    static RawExecutionResult<D> newErrorResult(ArrayList<RawMessage> errorMessages){
+    static RawExecutionResult<D> newErrorResult(List<RawMessage> errorMessages){
         new RawExecutionResult(Status.ERROR, errorMessages)
     }
 
-    static RawExecutionResult<D> newSemiErrorResult(ArrayList<RawMessage> errorMessages){
+    static RawExecutionResult<D> newSemiErrorResult(List<RawMessage> errorMessages){
         new RawExecutionResult(Status.SEMI_ERROR, errorMessages)
     }
 }

@@ -107,7 +107,7 @@ class RoundService {
             errors << errorMessageService.getRawMessage("validation.field.date.not.greater.today", [round.endDate], ["endDate"])
         }*/
         if (!isBlankStartDate && !isBlankEndDate && (round.startDate > round.endDate)){
-            errors << errorMessageService.getRawMessage("validation.field.startdate.not.greater.enddate", [round.startDate, round.endDate], ["startDate","endDate"])
+            errors << errorMessageService.getRawMessage("validation.field.startdate.not.greater.enddate", [StringUtil.format(round.startDate), StringUtil.format(round.endDate)], ["startDate","endDate"])
         }
 
         if (errors.size()==0){//no errors
@@ -118,12 +118,12 @@ class RoundService {
 
             if (roundsStarts.size() > 0) { //we have overlapping dates with startDate
                 def rounds = roundsStarts.collect { it.roundNumber }
-                errors << errorMessageService.getRawMessage("validation.field.round.startdate.overlaps.error", [round.startDate, rounds], ["startDate"])
+                errors << errorMessageService.getRawMessage("validation.field.round.startdate.overlaps.error", [StringUtil.format(round.startDate), rounds], ["startDate"])
             }
 
             if (roundsEnds.size() > 0) { //we have overlapping dates with endDate
                 def rounds = roundsEnds.collect { it.roundNumber }
-                errors << errorMessageService.getRawMessage("validation.field.round.enddate.overlaps.error", [round.endDate, rounds], ["endDate"])
+                errors << errorMessageService.getRawMessage("validation.field.round.enddate.overlaps.error", [StringUtil.format(round.endDate), rounds], ["endDate"])
             }
         }
 

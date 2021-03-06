@@ -1,7 +1,7 @@
 package org.philimone.hds.explorer.server.main
 
 import grails.testing.mixin.integration.Integration
-import grails.transaction.*
+import grails.gorm.transactions.Transactional
 import net.betainteractive.utilities.GeneralUtil
 import net.betainteractive.utilities.StringUtil
 import org.junit.Ignore
@@ -36,7 +36,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import spock.lang.Specification
 
 @Integration
-@Rollback
+@Transactional //@Rollback
 class VisitServiceSpec extends Specification {
 
     @Autowired
