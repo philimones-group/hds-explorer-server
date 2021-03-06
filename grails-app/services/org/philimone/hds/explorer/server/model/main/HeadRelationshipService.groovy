@@ -416,7 +416,7 @@ class HeadRelationshipService {
 
             //C6. Check If endDate is before or equal to startDate
             if (currentHeadRelationship.startDate >= endDate){ //RECHECK THIS WITH >=
-                errors << errorMessageService.getRawMessage("validation.field.headRelationship.enddate.before.startdate.error", null, ["currentHeadRelationship.startDate", "new.endDate"])
+                errors << errorMessageService.getRawMessage("validation.field.headRelationship.enddate.before.startdate.error", [currentHeadRelationship.id, StringUtil.format(endDate), StringUtil.format(currentHeadRelationship.startDate)], ["currentHeadRelationship.startDate", "new.endDate"])
             }
 
         }
