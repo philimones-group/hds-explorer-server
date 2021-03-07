@@ -2,15 +2,17 @@ package org.philimone.hds.explorer.server.model.collect.raw
 
 import org.philimone.hds.explorer.server.model.enums.ProcessedStatus
 
+import java.time.LocalDate
+
 class RawMaritalRelationship {
 
     String id
     String memberA
     String memberB
     String startStatus
-    Date startDate
+    LocalDate startDate
     String endStatus
-    Date endDate
+    LocalDate endDate
 
     ProcessedStatus processedStatus = ProcessedStatus.NOT_PROCESSED /* General Status, 1-All Processed, 0-Not All Processed*/
 

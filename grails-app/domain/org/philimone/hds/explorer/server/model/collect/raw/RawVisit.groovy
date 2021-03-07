@@ -2,13 +2,16 @@ package org.philimone.hds.explorer.server.model.collect.raw
 
 import org.philimone.hds.explorer.server.model.enums.ProcessedStatus
 
+import java.time.LocalDate
+import java.time.LocalDateTime
+
 class RawVisit {
 
     String id
 
     String code
     String householdCode
-    Date visitDate
+    LocalDate visitDate
     String visitLocation
     String visitLocationOther
     Integer roundNumber
@@ -21,8 +24,8 @@ class RawVisit {
     String gpsLongitude;
 
     String collectedBy //fieldWorkerId
-    Date collectedDate //visitDate / creationDate
-    Date uploadedDate  //submissionDate
+    LocalDateTime collectedDate //visitDate / creationDate
+    LocalDateTime uploadedDate  //submissionDate
 
     ProcessedStatus processedStatus = ProcessedStatus.NOT_PROCESSED
 

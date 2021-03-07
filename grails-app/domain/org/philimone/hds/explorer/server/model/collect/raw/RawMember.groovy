@@ -2,6 +2,9 @@ package org.philimone.hds.explorer.server.model.collect.raw
 
 import org.philimone.hds.explorer.server.model.enums.ProcessedStatus
 
+import java.time.LocalDate
+import java.time.LocalDateTime
+
 class RawMember {
 
     static mapWith = "none"
@@ -11,7 +14,7 @@ class RawMember {
     String code
     String name
     String gender
-    Date dob
+    LocalDate dob
     String motherCode
     String motherName
     String fatherCode
@@ -22,8 +25,8 @@ class RawMember {
     String householdCode
 
     String collectedBy
-    Date collectedDate
-    Date uploadedDate
+    LocalDateTime collectedDate
+    LocalDateTime uploadedDate
 
     ProcessedStatus processedStatus = ProcessedStatus.NOT_PROCESSED /* General Status, 1-All Processed, 0-Not All Processed*/
 

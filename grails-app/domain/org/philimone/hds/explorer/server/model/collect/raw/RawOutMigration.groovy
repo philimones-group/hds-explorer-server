@@ -2,6 +2,9 @@ package org.philimone.hds.explorer.server.model.collect.raw
 
 import org.philimone.hds.explorer.server.model.enums.ProcessedStatus
 
+import java.time.LocalDate
+import java.time.LocalDateTime
+
 class RawOutMigration {
 
     String id
@@ -12,12 +15,12 @@ class RawOutMigration {
     String originCode
     String destinationCode
     String destinationOther
-    Date migrationDate
+    LocalDate migrationDate
     String migrationReason
 
     String collectedBy //fieldWorkerId
-    Date collectedDate //visitDate / creationDate
-    Date uploadedDate  //submissionDate
+    LocalDateTime collectedDate //visitDate / creationDate
+    LocalDateTime uploadedDate  //submissionDate
 
     ProcessedStatus processedStatus = ProcessedStatus.NOT_PROCESSED
 

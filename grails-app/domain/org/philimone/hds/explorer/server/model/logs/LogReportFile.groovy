@@ -1,5 +1,7 @@
 package org.philimone.hds.explorer.server.model.logs
 
+import java.time.LocalDateTime
+
 /**
  * A Log Report File represents the link to a file that contains details/logs of the execution of an specific task, generally the file can be downloaded from the application
  */
@@ -7,10 +9,10 @@ class LogReportFile {
 
     String id
     long keyTimestamp /* key that associate to a group of logs */
-    Date start /* start time of the log */
-    Date end   /* end time of the log */
+    LocalDateTime start /* start time of the log */
+    LocalDateTime end   /* end time of the log */
 
-    Date creationDate
+    LocalDateTime creationDate
     String fileName
     int processedCount = 0
     int errorsCount = 0

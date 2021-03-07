@@ -2,6 +2,8 @@ package org.philimone.hds.explorer.server.model.collect.raw
 
 import org.philimone.hds.explorer.server.model.enums.ProcessedStatus
 
+import java.time.LocalDateTime
+
 /**
  * Household model taken from Mobile Data Collect, essentially for Enumeration Cases
  */
@@ -14,8 +16,8 @@ class RawRegion {
     String parentCode
 
     String collectedBy //fieldWorkerId
-    Date collectedDate //visitDate / creationDate
-    Date uploadedDate  //submissionDate
+    LocalDateTime collectedDate //visitDate / creationDate
+    LocalDateTime uploadedDate  //submissionDate
 
     ProcessedStatus processedStatus = ProcessedStatus.NOT_PROCESSED
 

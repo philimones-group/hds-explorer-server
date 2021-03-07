@@ -5,6 +5,8 @@ import org.philimone.hds.explorer.server.model.audit.CollectableEntity
 import org.philimone.hds.explorer.server.model.enums.temporal.ResidencyEndType
 import org.philimone.hds.explorer.server.model.enums.temporal.ResidencyStartType
 
+import java.time.LocalDate
+
 /**
  * Residency stores the information about a Member/Individual thats lives
  */
@@ -16,9 +18,9 @@ class Residency extends AuditableEntity {
     String householdCode
     String memberCode
     ResidencyStartType startType
-    Date startDate
+    LocalDate startDate
     ResidencyEndType endType
-    Date endDate
+    LocalDate endDate
 
     static constraints = {
         id maxSize: 32

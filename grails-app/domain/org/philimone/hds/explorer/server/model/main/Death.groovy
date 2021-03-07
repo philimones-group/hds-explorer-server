@@ -2,12 +2,14 @@ package org.philimone.hds.explorer.server.model.main
 
 import org.philimone.hds.explorer.server.model.audit.CollectableEntity
 
+import java.time.LocalDate
+
 class Death extends CollectableEntity {
 
     String id
     Member member
     String memberCode
-    Date deathDate
+    LocalDate deathDate
     Integer ageAtDeath
     String deathCause
     String deathPlace

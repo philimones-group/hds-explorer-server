@@ -2,13 +2,15 @@ package org.philimone.hds.explorer.server.model.settings
 
 import org.philimone.hds.explorer.server.model.enums.SyncEntity
 
+import java.time.LocalDateTime
+
 class SyncFilesReport {
 
     String id
     int code
     SyncEntity name
     long records
-    Date syncDate
+    LocalDateTime syncDate
 
     def beforeInsert() {
         this.code = name.code

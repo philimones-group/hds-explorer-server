@@ -2,6 +2,8 @@ package org.philimone.hds.explorer.server.model.collect.raw
 
 import org.philimone.hds.explorer.server.model.enums.ProcessedStatus
 
+import java.time.LocalDate
+
 class RawHeadRelationship {
 
     String id
@@ -10,9 +12,9 @@ class RawHeadRelationship {
     //String headCode /* We should not specify the head here, it will be specified automatically in main.HeadRelationship domain */
     String relationshipType
     String startType
-    Date startDate
+    LocalDate startDate
     String endType
-    Date endDate
+    LocalDate endDate
 
     ProcessedStatus processedStatus = ProcessedStatus.NOT_PROCESSED /* General Status, 1-All Processed, 0-Not All Processed*/
 

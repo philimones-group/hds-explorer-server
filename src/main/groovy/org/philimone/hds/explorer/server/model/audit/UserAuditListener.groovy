@@ -10,6 +10,8 @@ import org.grails.datastore.mapping.engine.event.PreUpdateEvent
 import org.philimone.hds.explorer.server.model.authentication.User
 import org.springframework.beans.factory.annotation.Autowired
 
+import java.time.LocalDateTime
+
 @Slf4j
 @CompileStatic
 class UserAuditListener {
@@ -23,7 +25,7 @@ class UserAuditListener {
         def user = getCurrentUser()
 
         event.entityAccess.setProperty('updatedBy', user)
-        event.entityAccess.setProperty('updatedDate', new Date())
+        event.entityAccess.setProperty('updatedDate', LocalDateTime.now())
     }
 
     @Listener(AuditableEntity)
@@ -34,7 +36,7 @@ class UserAuditListener {
             def user = this.getCurrentUser()
 
             event.entityAccess.setProperty('createdBy', user)
-            event.entityAccess.setProperty('createdDate', new Date())
+            event.entityAccess.setProperty('createdDate', LocalDateTime.now())
         }
     }
 

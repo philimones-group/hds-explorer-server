@@ -1,5 +1,7 @@
 package org.philimone.hds.explorer.server.model.authentication
 
+import java.time.LocalDateTime
+
 /**
  * A Notification represents a message sent to a User, its part of the quick message system that keeps the Users notified about things of interest in the app
  */
@@ -11,7 +13,7 @@ class Notification {
     User user
     String subject
     String message
-    Date date
+    LocalDateTime date
     boolean readed
 
     String getShortMessage(){

@@ -8,6 +8,8 @@ import org.philimone.hds.explorer.server.model.enums.MaritalStatus
 import org.philimone.hds.explorer.server.model.enums.temporal.ResidencyEndType
 import org.philimone.hds.explorer.server.model.enums.temporal.ResidencyStartType
 
+import java.time.LocalDate
+
 /**
  * This table represents Individuals or Household Members stored in the system, identified by code/extId, name and others
  */
@@ -29,7 +31,7 @@ class Member extends CollectableEntity {
     /*
      * Date of birth of the Individual
      */
-    Date dob
+    LocalDate dob
     /*
      * Current Age of the Individual (calculated on every synchronization)
      */
@@ -83,7 +85,7 @@ class Member extends CollectableEntity {
     /*
      * The Date the Individual Started Living on Current Household
      */
-    Date startDate
+    LocalDate startDate
     /*
      * Residency End Event Type (NA/CHG/EXT/DTH) on Current Household
      */
@@ -91,7 +93,7 @@ class Member extends CollectableEntity {
     /*
      * The Date the Individual Ended Living on Current Household
      */
-    Date endDate
+    LocalDate endDate
     /*
      * The Type of Relationship with the Head of the Current Household
      */
@@ -108,7 +110,7 @@ class Member extends CollectableEntity {
     /*
      * The Date the Individual Started Living on the first Household that in the study area
      */
-    Date entryDate
+    LocalDate entryDate
 
     //Boolean isHouseholdHead = false
     //Boolean isSecHouseholdHead = false

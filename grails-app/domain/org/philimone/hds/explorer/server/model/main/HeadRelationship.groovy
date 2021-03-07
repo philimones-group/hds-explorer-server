@@ -6,6 +6,8 @@ import org.philimone.hds.explorer.server.model.enums.HeadRelationshipType
 import org.philimone.hds.explorer.server.model.enums.temporal.HeadRelationshipEndType
 import org.philimone.hds.explorer.server.model.enums.temporal.HeadRelationshipStartType
 
+import java.time.LocalDate
+
 class HeadRelationship extends CollectableEntity {
 
     String id
@@ -17,9 +19,9 @@ class HeadRelationship extends CollectableEntity {
     String headCode
     HeadRelationshipType relationshipType
     HeadRelationshipStartType startType
-    Date startDate
+    LocalDate startDate
     HeadRelationshipEndType endType
-    Date endDate
+    LocalDate endDate
 
     static constraints = {
         id maxSize: 32

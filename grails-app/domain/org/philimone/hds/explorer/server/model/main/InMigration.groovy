@@ -3,6 +3,8 @@ package org.philimone.hds.explorer.server.model.main
 import org.philimone.hds.explorer.server.model.audit.CollectableEntity
 import org.philimone.hds.explorer.server.model.enums.temporal.InMigrationType
 
+import java.time.LocalDate
+
 class InMigration extends CollectableEntity {
 
     String id
@@ -49,7 +51,7 @@ class InMigration extends CollectableEntity {
     /*
      * Date of the Migration
      */
-    Date migrationDate
+    LocalDate migrationDate
     /*
      * Reason for InMigration
      */

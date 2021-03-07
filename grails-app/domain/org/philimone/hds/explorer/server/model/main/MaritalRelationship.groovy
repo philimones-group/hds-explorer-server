@@ -4,6 +4,8 @@ import org.philimone.hds.explorer.server.model.audit.CollectableEntity
 import org.philimone.hds.explorer.server.model.enums.MaritalEndStatus
 import org.philimone.hds.explorer.server.model.enums.MaritalStartStatus
 
+import java.time.LocalDate
+
 class MaritalRelationship extends CollectableEntity {
 
     String id
@@ -12,9 +14,9 @@ class MaritalRelationship extends CollectableEntity {
     String memberA_code
     String memberB_code
     MaritalStartStatus startStatus
-    Date startDate
+    LocalDate startDate
     MaritalEndStatus endStatus
-    Date endDate
+    LocalDate endDate
 
     static constraints = {
         id maxSize: 32

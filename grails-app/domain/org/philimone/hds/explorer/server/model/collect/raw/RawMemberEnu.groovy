@@ -2,6 +2,9 @@ package org.philimone.hds.explorer.server.model.collect.raw
 
 import org.philimone.hds.explorer.server.model.enums.ProcessedStatus
 
+import java.time.LocalDate
+import java.time.LocalDateTime
+
 /**
  * Member model taken from Mobile Data Collect, essentially for Enumeration Cases
  */
@@ -12,7 +15,7 @@ class RawMemberEnu {
     String code
     String name
     String gender
-    Date dob
+    LocalDate dob
     String motherCode
     String motherName
     String fatherCode
@@ -21,17 +24,17 @@ class RawMemberEnu {
     String maritalStatus
     String spouseCode
     String spouseName
-    Date spouseDate
+    LocalDate spouseDate
 
     String householdCode
     String householdName
     String relationshipWithHead
-    Date residencyStartDate
+    LocalDate residencyStartDate
     String isHouseholdHead
 
     String collectedBy //fieldWorkerId
-    Date collectedDate //visitDate / creationDate
-    Date uploadedDate
+    LocalDateTime collectedDate //visitDate / creationDate
+    LocalDateTime uploadedDate
 
     ProcessedStatus processedMember
     ProcessedStatus processedResidency

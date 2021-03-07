@@ -3,6 +3,8 @@ package org.philimone.hds.explorer.server.model.logs
 import org.philimone.hds.explorer.server.model.enums.LogStatus
 import org.philimone.hds.explorer.server.model.enums.settings.LogReportCode
 
+import java.time.LocalDateTime
+
 /**
  * A Log Report represents a register/report of the status of an specific execution that started and ended at an specific time
  * Used to control the execution and report of a specific task
@@ -15,8 +17,8 @@ class LogReport {
     LogStatus status
     String description
     long keyTimestamp /* temporary - every time its executed it creates a code with the timestamp */
-    Date start
-    Date end
+    LocalDateTime start
+    LocalDateTime end
 
     boolean enabled = true
 

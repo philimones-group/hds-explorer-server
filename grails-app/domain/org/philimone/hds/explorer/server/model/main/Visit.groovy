@@ -3,6 +3,8 @@ package org.philimone.hds.explorer.server.model.main
 import org.philimone.hds.explorer.server.model.audit.CollectableEntity
 import org.philimone.hds.explorer.server.model.enums.VisitLocationItem
 
+import java.time.LocalDate
+
 class Visit extends CollectableEntity {
 
     String id
@@ -11,7 +13,7 @@ class Visit extends CollectableEntity {
     Household household
     String householdCode
 
-    Date visitDate
+    LocalDate visitDate
     VisitLocationItem visitLocation
     String visitLocationOther
 

@@ -3,6 +3,8 @@ package org.philimone.hds.explorer.server.model.audit
 import grails.gorm.dirty.checking.DirtyCheck
 import org.philimone.hds.explorer.server.model.authentication.User
 
+import java.time.LocalDateTime
+
 @DirtyCheck
 abstract class AuditableEntity {
 
@@ -10,9 +12,9 @@ abstract class AuditableEntity {
     //Date collectedDate
 
     User createdBy
-    Date createdDate
+    LocalDateTime createdDate
     User updatedBy
-    Date updatedDate
+    LocalDateTime updatedDate
 
     static constraints = {
         createdBy nullable: true

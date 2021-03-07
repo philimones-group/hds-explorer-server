@@ -1,11 +1,13 @@
 package org.philimone.hds.explorer.server.model.main
 
+import java.time.LocalDate
+
 class Round {
 
     String id
     Integer roundNumber
-    Date startDate
-    Date endDate
+    LocalDate startDate
+    LocalDate endDate
     String description
 
     static constraints = {
