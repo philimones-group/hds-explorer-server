@@ -6,7 +6,6 @@ import org.philimone.hds.explorer.server.model.collect.raw.RawRegion
 import org.philimone.hds.explorer.server.model.enums.RegionLevel
 import org.philimone.hds.explorer.server.model.main.collect.raw.RawExecutionResult
 import org.philimone.hds.explorer.server.model.main.collect.raw.RawMessage
-import org.philimone.hds.explorer.server.model.settings.Codes
 
 @Transactional
 class RegionService {
@@ -25,7 +24,7 @@ class RegionService {
     }
 
     Region getRegion(String code) {
-        if (StringUtil.isBlank(code)) return null;
+        if (StringUtil.isBlank(code)) return null
         return Region.findByCode(code)
     }
 
@@ -33,12 +32,13 @@ class RegionService {
         if (region == null)
             return  RegionLevel.HIERARCHY_1
         else {
-            int level = 0;
+            int level = 0
             try {
                 def c = region.hierarchyLevel.code
                 c = c.replaceAll("hierarchy","")
                 level = Integer.parseInt(c)
             } catch (Exception ex){
+                
             }
 
             level++

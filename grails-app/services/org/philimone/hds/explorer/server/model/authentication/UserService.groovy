@@ -16,7 +16,7 @@ class UserService {
     LinkGenerator grailsLinkGenerator
 
     boolean exists(String username) {
-        User.countByUsername(username) > 0
+        User.countByUsernameOrCode(username, username) > 0
     }
 
     boolean existsByCode(String code) {
@@ -25,7 +25,7 @@ class UserService {
 
     User getUser(String username){
         if (!StringUtil.isBlank(username)) {
-            return User.findByUsername(username)
+            return User.findByUsernameOrCode(username, username)
         }
         return null
     }

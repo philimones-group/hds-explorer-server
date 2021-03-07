@@ -75,7 +75,7 @@ class InMigration extends CollectableEntity {
 
         destination nullable: false
         destinationCode nullable: false, blank: false
-        destinationResidency nullable: false
+        destinationResidency nullable: true
 
         migrationDate nullable: false
         migrationReason nullable: true, blank: true

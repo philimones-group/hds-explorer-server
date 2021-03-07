@@ -60,10 +60,10 @@ class ResidencyService {
         return convertToRaw(residency)
     }
 
-    RawResidency getCurrentResidencyAsRaw(Member member, Household household){
+    /*RawResidency getCurrentResidencyAsRaw(Member member, Household household){
         def residency = getCurrentResidency(member, household)
         return convertToRaw(residency)
-    }
+    }*/
 
     RawResidency convertToRaw(Residency residency){
 

@@ -142,7 +142,7 @@ class MemberService {
 
         //C5. Check dob max date
         if (!isNullDob && member.dob > new Date()){
-            errors << errorMessageService.getRawMessage("validation.field.date.not.greater.today", [member.dob], ["dob"])
+            errors << errorMessageService.getRawMessage("validation.field.date.not.greater.today", [StringUtil.format(member.dob)], ["dob"])
         }
 
         //C4. Check Household reference existence
@@ -160,11 +160,11 @@ class MemberService {
 
         //C6. Check mother Dob must be greater or equal to 12
         if (!motherUnknown && motherExists && GeneralUtil.getAge(mother.dob)< Codes.MIN_MOTHER_AGE_VALUE ){
-            errors << errorMessageService.getRawMessage("validation.field.dob.mother.minage.error", [mother.dob, Codes.MIN_MOTHER_AGE_VALUE], ["mother.dob"])
+            errors << errorMessageService.getRawMessage("validation.field.dob.mother.minage.error", [StringUtil.format(mother.dob), Codes.MIN_MOTHER_AGE_VALUE+""], ["mother.dob"])
         }
         //C7. Check father Dob must be greater or equal to 12
         if (!fatherUnknown && fatherExists && GeneralUtil.getAge(father.dob)< Codes.MIN_FATHER_AGE_VALUE ){
-            errors << errorMessageService.getRawMessage("validation.field.dob.father.minage.error", [mother.dob, Codes.MIN_FATHER_AGE_VALUE], ["father.dob"])
+            errors << errorMessageService.getRawMessage("validation.field.dob.father.minage.error", [StringUtil.format(father.dob), Codes.MIN_FATHER_AGE_VALUE+""], ["father.dob"])
         }
 
         //C9. Check mother Gender

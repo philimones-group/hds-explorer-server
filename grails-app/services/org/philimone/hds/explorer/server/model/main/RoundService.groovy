@@ -96,7 +96,7 @@ class RoundService {
 
         //C6. Check Duplicate of Round using roundNumber
         if (!isBlankRoundNumber && roundExists){
-            errors << errorMessageService.getRawMessage("validation.field.reference.duplicate.error", ["Round", "roundNumber", round.roundNumber], ["roundNumber"])
+            errors << errorMessageService.getRawMessage("validation.field.reference.duplicate.error", ["Round", "roundNumber", round.roundNumber+""], ["roundNumber"])
         }
 
         //C6. Check Round (start/end)Date and today
@@ -118,12 +118,12 @@ class RoundService {
 
             if (roundsStarts.size() > 0) { //we have overlapping dates with startDate
                 def rounds = roundsStarts.collect { it.roundNumber }
-                errors << errorMessageService.getRawMessage("validation.field.round.startdate.overlaps.error", [StringUtil.format(round.startDate), rounds], ["startDate"])
+                errors << errorMessageService.getRawMessage("validation.field.round.startdate.overlaps.error", [StringUtil.format(round.startDate), rounds+""], ["startDate"])
             }
 
             if (roundsEnds.size() > 0) { //we have overlapping dates with endDate
                 def rounds = roundsEnds.collect { it.roundNumber }
-                errors << errorMessageService.getRawMessage("validation.field.round.enddate.overlaps.error", [StringUtil.format(round.endDate), rounds], ["endDate"])
+                errors << errorMessageService.getRawMessage("validation.field.round.enddate.overlaps.error", [StringUtil.format(round.endDate), rounds+""], ["endDate"])
             }
         }
 

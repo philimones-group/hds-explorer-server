@@ -6,7 +6,6 @@ import org.philimone.hds.explorer.server.model.authentication.User
 import org.philimone.hds.explorer.server.model.collect.raw.RawHousehold
 import org.philimone.hds.explorer.server.model.main.collect.raw.RawExecutionResult
 import org.philimone.hds.explorer.server.model.main.collect.raw.RawMessage
-import org.philimone.hds.explorer.server.model.settings.Codes
 
 @Transactional
 class HouseholdService {

@@ -84,15 +84,15 @@ class HeadRelationshipService {
         return convertToRaw(headRelationship)
     }
 
-    RawHeadRelationship getCurrentHeadRelationshipAsRaw(Member member, Household household) {
+    /*RawHeadRelationship getCurrentHeadRelationshipAsRaw(Member member, Household household) {
         def headRelationship = getCurrentHeadRelationship(member, household)
         return convertToRaw(headRelationship)
-    }
+    }*/
 
-    RawHeadRelationship getCurrentHouseholdHeadAsRaw(Household household){
+    /*RawHeadRelationship getCurrentHouseholdHeadAsRaw(Household household){
         def headRelationship = getCurrentHouseholdHead(household)
         return convertToRaw(headRelationship)
-    }
+    }*/
 
     RawHeadRelationship convertToRaw(HeadRelationship headRelationship){
 
@@ -132,10 +132,10 @@ class HeadRelationshipService {
 
         //get errors if they occur and send with the success report
         if (member.hasErrors()) {
-            errors << errorMessageService.getRawMessages(member)
+            errors += errorMessageService.getRawMessages(member)
         }
         if (household.hasErrors()) {
-            errors << errorMessageService.getRawMessages(household)
+            errors += errorMessageService.getRawMessages(household)
         }
 
         return errors
@@ -157,10 +157,10 @@ class HeadRelationshipService {
 
         //get errors if they occur and send with the success report
         if (member.hasErrors()) {
-            errors << errorMessageService.getRawMessages(member)
+            errors += errorMessageService.getRawMessages(member)
         }
         if (household.hasErrors()) {
-            errors << errorMessageService.getRawMessages(household)
+            errors += errorMessageService.getRawMessages(household)
         }
 
         return errors
@@ -194,7 +194,7 @@ class HeadRelationshipService {
         }
 
         //Update Member with start status
-        errors << updatesAfterCreatingRelationship(headRelationship)
+        errors += updatesAfterCreatingRelationship(headRelationship)
 
         RawExecutionResult<HeadRelationship> obj = RawExecutionResult.newSuccessResult(headRelationship, errors)
         return obj
@@ -289,7 +289,7 @@ class HeadRelationshipService {
         }
         //C6. Check Age of Head of Household
         if (memberExists && (relationshipType == HeadRelationshipType.HEAD_OF_HOUSEHOLD && GeneralUtil.getAge(member.dob)< Codes.MIN_HEAD_AGE_VALUE )){
-            errors << errorMessageService.getRawMessage("validation.field.dob.head.minage.error", [member.dob, Codes.MIN_HEAD_AGE_VALUE], ["member.dob"])
+            errors << errorMessageService.getRawMessage("validation.field.dob.head.minage.error", [StringUtil.format(member.dob), Codes.MIN_HEAD_AGE_VALUE+""], ["member.dob"])
         }
         //C7. Check Current Head Existence and the new relation is not a head of household - We must have a existent Head of Household in order to create new Relationship with the Head
         if (!headExists && relationshipType != HeadRelationshipType.HEAD_OF_HOUSEHOLD){
@@ -411,7 +411,7 @@ class HeadRelationshipService {
             //must not be closed
             //P1. Check If endType is empty or NA
             if ( !(currentHeadRelationship.endType == null || currentHeadRelationship.endType == HeadRelationshipEndType.NOT_APPLICABLE) ){
-                errors << errorMessageService.getRawMessage("validation.field.headRelationship.closed.already.error", [currentHeadRelationship.id, currentHeadRelationship.endType], ["previous.endType"])
+                errors << errorMessageService.getRawMessage("validation.field.headRelationship.closed.already.error", [currentHeadRelationship.id+"", currentHeadRelationship.endType.code], ["previous.endType"])
             }
 
             //C6. Check If endDate is before or equal to startDate
