@@ -1,5 +1,9 @@
 package net.betainteractive.utilities
 
+import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.time.LocalDateTime
+
 /**
  * Created by paul on 4/16/16.
  */
@@ -87,16 +91,33 @@ class GeneralUtil {
         return cal;
     }
 
+    static boolean dateEquals(Date dateA, Date dateB){
+        if (dateA == null || dateB == null) return false
+
+        def calA = getCalendar(dateA)
+        def calB = getCalendar(dateB)
+
+
+        return calA.compareTo(calB)==0
+    }
+
     static Date getDate(int y, int m, int d){
-        Calendar cal = Calendar.getInstance()
-        cal.set(y, m, d, 0, 0, 0)
-        return cal.getTime()
+        //Calendar cal = Calendar.getInstance()
+        //cal.set(y, m, d, 0, 0, 0)
+
+        //return cal.getTime()
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd")
+        return sdf.parse("${y}-${m}-${d}")
     }
 
     static Date getDate(int y, int m, int d, int hour, int min, int sec){
-        Calendar cal = Calendar.getInstance()
-        cal.set(y, m, d, hour, min, sec)
-        return cal.getTime()
+        //Calendar cal = Calendar.getInstance()
+        //cal.set(y, m, d, hour, min, sec)
+        //return cal.getTime()
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss")
+        return sdf.parse("${y}-${m}-${d} ${hour}:${min}:${sec}")
     }
 
     static Date addDaysToDate(Date date, int days){

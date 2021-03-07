@@ -18,6 +18,7 @@ class MaritalRelationshipService {
     def householdService
     def memberService
     def userService
+    def deathService
     def errorMessageService
     def messageSource
 
@@ -27,8 +28,8 @@ class MaritalRelationshipService {
 
             def maritalRelationshipsA = MaritalRelationship.executeQuery("select r from MaritalRelationship r where r.memberA.id=? order by r.startDate desc", [member.id], [offset:0, max:1]) // limit 1
             def maritalRelationshipsB = MaritalRelationship.executeQuery("select r from MaritalRelationship r where r.memberB.id=? order by r.startDate desc", [member.id], [offset:0, max:1]) // limit 1
-            MaritalRelationship relationA = (maritalRelationshipsA != null && maritalRelationshipsA.size() > 0) ? maritalRelationshipsA.first() : null
-            MaritalRelationship relationB = (maritalRelationshipsB != null && maritalRelationshipsB.size() > 0) ? maritalRelationshipsB.first() : null
+            MaritalRelationship relationA = (maritalRelationshipsA != null && maritalRelationshipsA.size() > 0) ? maritalRelationshipsA.first() as MaritalRelationship : null
+            MaritalRelationship relationB = (maritalRelationshipsB != null && maritalRelationshipsB.size() > 0) ? maritalRelationshipsB.first() as MaritalRelationship : null
 
             if (relationA == null) return relationB
             if (relationB == null) return relationA
@@ -48,8 +49,8 @@ class MaritalRelationshipService {
 
             def maritalRelationshipsA = MaritalRelationship.executeQuery("select r from MaritalRelationship r where r.memberA=? and r.memberB=? order by r.startDate desc", [memberA, memberB], [offset:0, max:1]) // limit 1
             def maritalRelationshipsB = MaritalRelationship.executeQuery("select r from MaritalRelationship r where r.memberA=? and r.memberB=? order by r.startDate desc", [memberB, memberA], [offset:0, max:1]) // limit 1
-            MaritalRelationship relationA = (maritalRelationshipsA != null && maritalRelationshipsA.size() > 0) ? maritalRelationshipsA.first() : null
-            MaritalRelationship relationB = (maritalRelationshipsB != null && maritalRelationshipsB.size() > 0) ? maritalRelationshipsB.first() : null
+            MaritalRelationship relationA = (maritalRelationshipsA != null && maritalRelationshipsA.size() > 0) ? maritalRelationshipsA.first() as MaritalRelationship : null
+            MaritalRelationship relationB = (maritalRelationshipsB != null && maritalRelationshipsB.size() > 0) ? maritalRelationshipsB.first() as MaritalRelationship : null
 
             if (relationA == null) return relationB
             if (relationB == null) return relationA
@@ -62,6 +63,17 @@ class MaritalRelationshipService {
         }
         return null
     }
+
+    RawMaritalRelationship getCurrentMaritalRelationshipAsRaw(Member member) {
+        def maritalRelationship = getCurrentMaritalRelationship(member)
+        return convertToRaw(maritalRelationship)
+    }
+
+    /*
+    RawMaritalRelationship getCurrentMaritalRelationshipAsRaw(Member memberA, Member memberB) {
+        def maritalRelationship = getCurrentMaritalRelationship(memberA, memberB)
+        return convertToRaw(maritalRelationship)
+    }*/
 
     MaritalStatus convertFrom(MaritalStartStatus status){
         switch (status){
@@ -81,6 +93,22 @@ class MaritalRelationshipService {
         }
 
         return null
+    }
+
+    RawMaritalRelationship convertToRaw(MaritalRelationship maritalRelationship){
+
+        if (maritalRelationship == null) return null
+
+        def rm = new RawMaritalRelationship()
+
+        rm.memberA = maritalRelationship.memberA.code
+        rm.memberB = maritalRelationship.memberB.code
+        rm.startStatus = maritalRelationship.startStatus.code
+        rm.startDate = maritalRelationship.startDate
+        rm.endStatus = maritalRelationship.endStatus.code
+        rm.endDate = maritalRelationship.endDate
+
+        return rm
     }
 
     List<RawMessage> updatesAfterCreatingRelationship(MaritalRelationship maritalRelationship) {
@@ -107,10 +135,10 @@ class MaritalRelationshipService {
 
         //get errors if they occur and send with the success report
         if (memberA.hasErrors()) {
-            errors << errorMessageService.getRawMessages(memberA)
+            errors += errorMessageService.getRawMessages(memberA)
         }
         if (memberB.hasErrors()) {
-            errors << errorMessageService.getRawMessages(memberB)
+            errors += errorMessageService.getRawMessages(memberB)
         }
 
         return errors
@@ -122,14 +150,42 @@ class MaritalRelationshipService {
         def memberA = maritalRelationship.memberA.refresh()
         def memberB = maritalRelationship.memberB.refresh()
         def endStatus = convertFrom(maritalRelationship.endStatus)
+        def marStatusA = convertFrom(maritalRelationship.startStatus) //the default is the start status
+        def marStatusB = marStatusA
+
+        if (endStatus == MaritalStatus.WIDOWED){ //If things go OK, for two members who died - maritalrelationship close runs once - so do this check on DeathService.afterCreateDeath
+            //Find who died and set the other Member as WIDOWED
+            def deathA = deathService.getDeath(memberA)
+            def deathB = deathService.getDeath(memberB)
+            def isDeadA = deathA != null
+            def isDeadB = deathB != null
+
+            if (isDeadA && !isDeadB && GeneralUtil.dateEquals(deathA.deathDate, maritalRelationship.endDate)){ //the relationship ended this day
+                marStatusB = MaritalStatus.WIDOWED
+                marStatusA = convertFrom(maritalRelationship.startStatus) //The dead Member will remain with the last Status
+            }
+            if (isDeadB && !isDeadA && GeneralUtil.dateEquals(deathB.deathDate, maritalRelationship.endDate)){ //the relationship ended this day
+                marStatusA = MaritalStatus.WIDOWED
+                marStatusB = convertFrom(maritalRelationship.startStatus) //The dead Member will remain with the last Status
+            }
+            if (isDeadA && isDeadB) { //this can happen if for a odd reason the relationship wasnt closed when one of them died
+                if (GeneralUtil.dateEquals(deathA.deathDate, deathB.deathDate)){
+                    //they will mantain the last status / startStatus - assuring that both died married/any
+                } else if (deathA.deathDate < deathB.deathDate){ //memberA died first, then memberB is widow and vice-versa
+                    marStatusB = MaritalStatus.WIDOWED
+                } else {
+                    marStatusA = MaritalStatus.WIDOWED
+                }
+            }
+        }
 
         //update spouse status
-        memberA.maritalStatus = endStatus
+        memberA.maritalStatus = marStatusA
         //memberA.spouse = memberB
         //memberA.spouseCode = memberB.code
         //memberA.spouseName = memberB.name
 
-        memberB.maritalStatus = endStatus
+        memberB.maritalStatus = marStatusB
         //memberB.spouse = memberA
         //memberB.spouseCode = memberA.code
         //memberB.spouseName = memberA.name
@@ -139,10 +195,10 @@ class MaritalRelationshipService {
 
         //get errors if they occur and send with the success report
         if (memberA.hasErrors()) {
-            errors << errorMessageService.getRawMessages(memberA)
+            errors += errorMessageService.getRawMessages(memberA)
         }
         if (memberB.hasErrors()) {
-            errors << errorMessageService.getRawMessages(memberB)
+            errors += errorMessageService.getRawMessages(memberB)
         }
 
         return errors
@@ -162,7 +218,7 @@ class MaritalRelationshipService {
             return obj
         }
 
-        def maritalRelationship = newMaritalRelationshipInstance(rawMaritalRelationship)
+        def maritalRelationship = newCreateMaritalRelationshipInstance(rawMaritalRelationship)
 
         maritalRelationship = maritalRelationship.save(flush:true)
 
@@ -176,7 +232,7 @@ class MaritalRelationshipService {
         }
 
         //Update Member with start status
-        errors << updatesAfterCreatingRelationship(maritalRelationship)
+        errors += updatesAfterCreatingRelationship(maritalRelationship)
 
         RawExecutionResult<MaritalRelationship> obj = RawExecutionResult.newSuccessResult(maritalRelationship, errors)
         return obj
@@ -194,7 +250,7 @@ class MaritalRelationshipService {
             return obj
         }
 
-        def maritalRelationship = closeMaritalRelationshipInstance(rawMaritalRelationship)
+        def maritalRelationship = newCloseMaritalRelationshipInstance(rawMaritalRelationship)
 
         maritalRelationship = maritalRelationship.save(flush:true)
         //Validate using Gorm Validations
@@ -256,24 +312,24 @@ class MaritalRelationshipService {
         }
         //C5. Check startdate max date
         if (!isNullStartDate && maritalRelationship.startDate > new Date()){
-            errors << errorMessageService.getRawMessage("validation.field.date.not.greater.today", [maritalRelationship.startDate], ["startDate"])
+            errors << errorMessageService.getRawMessage("validation.field.date.not.greater.today", [StringUtil.format(maritalRelationship.startDate)], ["startDate"])
         }
         //C5.1. Check Dates against DOB
         if (!isNullStartDate && memberAExists && memberBExists){
             if (maritalRelationship.startDate < memberA.dob){
-                errors << errorMessageService.getRawMessage("validation.field.date.not.greater.dob", ["maritalRelationship.startDate", StringUtil.format(memberA.dob)], ["startDate","memberA.dob"])
+                errors << errorMessageService.getRawMessage("validation.field.dob.not.greater.date", ["maritalRelationship.startDate", StringUtil.format(memberA.dob)], ["startDate","memberA.dob"])
             }
             if (maritalRelationship.startDate < memberB.dob){
-                errors << errorMessageService.getRawMessage("validation.field.date.not.greater.dob", ["maritalRelationship.startDate", StringUtil.format(memberB.dob)], ["startDate","memberB.dob"])
+                errors << errorMessageService.getRawMessage("validation.field.dob.not.greater.date", ["maritalRelationship.startDate", StringUtil.format(memberB.dob)], ["startDate","memberB.dob"])
             }
         }
         //C6. Check Age of Member A
         if (memberAExists && GeneralUtil.getAge(memberA.dob)< Codes.MIN_SPOUSE_AGE_VALUE ){
-            errors << errorMessageService.getRawMessage("validation.field.dob.spouse.minage.error", [memberA.dob, Codes.MIN_SPOUSE_AGE_VALUE], ["member.dob"])
+            errors << errorMessageService.getRawMessage("validation.field.dob.spouse.minage.error", [StringUtil.format(memberA.dob), Codes.MIN_SPOUSE_AGE_VALUE+""], ["member.dob"])
         }
         //C6. Check Age of Member B
         if (memberBExists && GeneralUtil.getAge(memberB.dob)< Codes.MIN_SPOUSE_AGE_VALUE ){
-            errors << errorMessageService.getRawMessage("validation.field.dob.spouse.minage.error", [memberB.dob, Codes.MIN_SPOUSE_AGE_VALUE], ["member.dob"])
+            errors << errorMessageService.getRawMessage("validation.field.dob.spouse.minage.error", [StringUtil.format(memberB.dob), Codes.MIN_SPOUSE_AGE_VALUE+""], ["member.dob"])
         }
         //C7. Check Gender as Optional
         if (Codes.GENDER_CHECKING && memberAExists && memberBExists){
@@ -366,15 +422,15 @@ class MaritalRelationshipService {
         }
         //C5. Check dob max date
         if (!isNullEndDate && maritalRelationship.endDate > new Date()){
-            errors << errorMessageService.getRawMessage("validation.field.date.not.greater.today", [maritalRelationship.endDate], ["endDate"])
+            errors << errorMessageService.getRawMessage("validation.field.date.not.greater.today", ["maritalRelationship.endDate"], ["endDate"])
         }
         //C6. Check Dates against DOB
         if (!isNullEndDate && memberAExists && memberBExists){
             if (maritalRelationship.endDate < memberA.dob){
-                errors << errorMessageService.getRawMessage("validation.field.date.not.greater.dob", ["maritalRelationship.endDate", StringUtil.format(memberA.dob)], ["endDate","memberA.dob"])
+                errors << errorMessageService.getRawMessage("validation.field.dob.not.greater.date", ["maritalRelationship.endDate", StringUtil.format(memberA.dob)], ["endDate","memberA.dob"])
             }
             if (maritalRelationship.endDate < memberB.dob){
-                errors << errorMessageService.getRawMessage("validation.field.date.not.greater.dob", ["maritalRelationship.endDate", StringUtil.format(memberB.dob)], ["endDate","memberB.dob"])
+                errors << errorMessageService.getRawMessage("validation.field.dob.not.greater.date", ["maritalRelationship.endDate", StringUtil.format(memberB.dob)], ["endDate","memberB.dob"])
             }
         }
 
@@ -393,7 +449,7 @@ class MaritalRelationshipService {
             //must not be closed
             //P1. Check If endStatus is empty or NA
             if ( !(currentMaritalRelationship.endStatus == null || currentMaritalRelationship.endStatus == MaritalEndStatus.NOT_APPLICABLE) ){
-                errors << errorMessageService.getRawMessage("validation.field.maritalRelationship.closed.already.error", [currentMaritalRelationship.id, currentMaritalRelationship.endStatus], ["previous.endStatus"])
+                errors << errorMessageService.getRawMessage("validation.field.maritalRelationship.closed.already.error", [currentMaritalRelationship.id, currentMaritalRelationship.endStatus.code], ["previous.endStatus"])
             }
 
             //C6. Check If the proposed endDate is before or equal to the startDate of this relationship
@@ -407,7 +463,7 @@ class MaritalRelationshipService {
         return errors
     }
 
-    private MaritalRelationship newMaritalRelationshipInstance(RawMaritalRelationship mr){
+    private MaritalRelationship newCreateMaritalRelationshipInstance(RawMaritalRelationship mr){
 
         MaritalRelationship maritalRelationship = new MaritalRelationship()
 
@@ -424,7 +480,7 @@ class MaritalRelationshipService {
 
     }
 
-    private MaritalRelationship closeMaritalRelationshipInstance(RawMaritalRelationship mr){
+    private MaritalRelationship newCloseMaritalRelationshipInstance(RawMaritalRelationship mr){
 
         def memberA = memberService.getMember(mr.memberA)
         def memberB = memberService.getMember(mr.memberB)
