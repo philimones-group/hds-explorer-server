@@ -1,8 +1,15 @@
 package net.betainteractive.utilities
 
+import org.codehaus.groovy.runtime.DefaultGroovyMethods
+import org.codehaus.groovy.runtime.StringGroovyMethods
+
 import java.text.SimpleDateFormat
+import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.Period
+import java.time.temporal.ChronoUnit
+import java.time.temporal.TemporalUnit
 
 /**
  * Created by paul on 4/16/16.
@@ -44,130 +51,72 @@ class GeneralUtil {
 
     }
 
-    static int getAge(Date dobDate){
-        Calendar now = Calendar.getInstance()
-        Calendar dob = Calendar.getInstance()
-        dob.setTime(dobDate)
-
-        def age = now.get(Calendar.YEAR)-dob.get(Calendar.YEAR) + (now.get(Calendar.DAY_OF_YEAR)<dob.get(Calendar.DAY_OF_YEAR) ? -1 : 0)
-
+    static int getAge(LocalDate dobDate){
+        def age = Period.between(dobDate, LocalDate.now()).years
         return age
     }
 
-    static int getAge(Date dobDate, Date endDate){
-        Calendar end = Calendar.getInstance()
-        Calendar dob = Calendar.getInstance()
-        end.setTime(endDate)
-        dob.setTime(dobDate)
-
-        def age = end.get(Calendar.YEAR)-dob.get(Calendar.YEAR) + (end.get(Calendar.DAY_OF_YEAR)<dob.get(Calendar.DAY_OF_YEAR) ? -1 : 0)
-
+    static int getAge(LocalDate dobDate, LocalDate endDate){
+        def age = Period.between(dobDate, endDate).years
         return age
     }
 
-    static int getAgeInDays(Date dobDate, Date endDate){
-        Calendar end = Calendar.getInstance()
-        Calendar dob = Calendar.getInstance()
-        end.setTime(endDate)
-        dob.setTime(dobDate)
+    static String getDurationText(LocalDateTime endTime, LocalDateTime startTime){
+        def duration = Duration.between(startTime, endTime)
+        
+        List buffer = new ArrayList();
+        int years = duration.get(ChronoUnit.YEARS)
+        int months = duration.get(ChronoUnit.MONTHS)
+        int days = duration.get(ChronoUnit.DAYS)
+        int hours = duration.get(ChronoUnit.HOURS)
+        int minutes = duration.get(ChronoUnit.MINUTES)
+        int seconds = duration.get(ChronoUnit.SECONDS)
+        int millis = duration.get(ChronoUnit.MILLIS)
 
-        return end - dob
+        if (years != 0) buffer.add(years + " years");
+        if (months != 0) buffer.add(months + " months");
+        if (days != 0) buffer.add(days + " days");
+        if (hours != 0) buffer.add(hours + " hours");
+        if (minutes != 0) buffer.add(minutes + " minutes");
+
+        if (seconds != 0 || millis != 0) {
+            int norm_millis = millis % 1000;
+            int norm_seconds = seconds + DefaultGroovyMethods.intdiv(millis - norm_millis, 1000).intValue();
+            CharSequence millisToPad = "" + Math.abs(norm_millis);
+            buffer.add((norm_seconds == 0 ? (norm_millis < 0 ? "-0" : "0") : norm_seconds) + "." + StringGroovyMethods.padLeft(millisToPad, 3, "0") + " seconds");
+        }
+
+        if (!buffer.isEmpty()) {
+            return DefaultGroovyMethods.join(buffer.iterator(), ", ");
+        } else {
+            return "0";
+        }
     }
 
-    def static int getYearsDiff(Date firstDate, Date secondDate){
-        Calendar second = Calendar.getInstance()
-        Calendar first = Calendar.getInstance()
-        first.setTime(firstDate)
-        second.setTime(secondDate)
-
-        def diff = second.get(Calendar.YEAR)-first.get(Calendar.YEAR) + (second.get(Calendar.DAY_OF_YEAR)<first.get(Calendar.DAY_OF_YEAR) ? -1 : 0)
-
-        return diff
-    }
-
-    def static Calendar getCalendar(Date date){
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(date);
-        return cal;
-    }
-
-    static boolean dateEquals(Date dateA, Date dateB){
-        if (dateA == null || dateB == null) return false
-
-        def calA = getCalendar(dateA)
-        def calB = getCalendar(dateB)
-
-
-        return calA.compareTo(calB)==0
-    }
-
-    static Date getDate(int y, int m, int d){
+    static LocalDate getDate(int y, int m, int d){
         //Calendar cal = Calendar.getInstance()
         //cal.set(y, m, d, 0, 0, 0)
-
         //return cal.getTime()
 
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd")
-        return sdf.parse("${y}-${m}-${d}")
+        //SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd")
+        //return sdf.parse("${y}-${m}-${d}")
+
+        return LocalDate.of(y, m, d)
     }
 
-    static Date getDate(int y, int m, int d, int hour, int min, int sec){
+    static LocalDateTime getDate(int y, int m, int d, int hour, int min, int sec){
         //Calendar cal = Calendar.getInstance()
         //cal.set(y, m, d, hour, min, sec)
         //return cal.getTime()
 
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss")
-        return sdf.parse("${y}-${m}-${d} ${hour}:${min}:${sec}")
+        //SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss")
+        //return sdf.parse("${y}-${m}-${d} ${hour}:${min}:${sec}")
+
+        return LocalDateTime.of(y, m, d, hour, min, sec)
     }
 
-    static Date addDaysToDate(Date date, int days){
-        Calendar cal = Calendar.getInstance()
-        cal.setTime(date)
-        cal.add(Calendar.DAY_OF_YEAR, days)
-        return cal.getTime()
+    static LocalDate addDaysToDate(LocalDate date, int days){
+        return date.plusDays(days)
     }
 
-    static Date getDateStart(Date date){
-        Calendar cal = Calendar.getInstance()
-        cal.setTime(date)
-        cal.set(Calendar.HOUR_OF_DAY, 0)
-        cal.set(Calendar.MINUTE, 0)
-        cal.set(Calendar.SECOND, 0)
-
-        return cal.getTime()
-    }
-
-    static Date getDateEnd(Date date){
-        Calendar cal = Calendar.getInstance()
-        cal.setTime(date)
-        cal.set(Calendar.HOUR_OF_DAY, 23)
-        cal.set(Calendar.MINUTE, 59)
-        cal.set(Calendar.SECOND, 59)
-
-        return cal.getTime()
-    }
-
-    static Date getDateStart(Date date, int plusDays){
-        Calendar cal = Calendar.getInstance()
-        cal.setTime(date)
-        cal.set(Calendar.HOUR_OF_DAY, 0)
-        cal.set(Calendar.MINUTE, 0)
-        cal.set(Calendar.SECOND, 0)
-
-        cal.add(Calendar.DAY_OF_YEAR, plusDays)
-
-        return cal.getTime()
-    }
-
-    static Date getDateEnd(Date date, int plusDays){
-        Calendar cal = Calendar.getInstance()
-        cal.setTime(date)
-        cal.set(Calendar.HOUR_OF_DAY, 23)
-        cal.set(Calendar.MINUTE, 59)
-        cal.set(Calendar.SECOND, 59)
-
-        cal.add(Calendar.DAY_OF_YEAR, plusDays)
-
-        return cal.getTime()
-    }
 }

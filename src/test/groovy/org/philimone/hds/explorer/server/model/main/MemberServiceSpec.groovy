@@ -111,11 +111,11 @@ class MemberServiceSpec extends Specification implements ServiceUnitTest<MemberS
         def user = User.findByUsername("dragon")
         def region = Region.findByCode("TXU")
 
-        def rw1 = new RawHousehold(id: "u1", regionCode: region.code, householdCode: householdService.generateCode(region, user), householdName: "Macandza House", headCode: "", headName: "", collectedBy: user.username, collectedDate: new Date(), uploadedDate: new Date())
+        def rw1 = new RawHousehold(id: "u1", regionCode: region.code, householdCode: householdService.generateCode(region, user), householdName: "Macandza House", headCode: "", headName: "", collectedBy: user.username, collectedDate: LocalDateTime.now(), uploadedDate: LocalDateTime.now())
 
         householdService.createHousehold(rw1)
 
-        def rw2 = new RawHousehold(id: "u2", regionCode: region.code, householdCode: householdService.generateCode(region, user), householdName: "George Benson", headCode: "", headName: "", collectedBy: user.username, collectedDate: new Date(), uploadedDate: new Date())
+        def rw2 = new RawHousehold(id: "u2", regionCode: region.code, householdCode: householdService.generateCode(region, user), householdName: "George Benson", headCode: "", headName: "", collectedBy: user.username, collectedDate: LocalDateTime.now(), uploadedDate: LocalDateTime.now())
 
         householdService.createHousehold(rw2)
     }
@@ -165,8 +165,8 @@ class MemberServiceSpec extends Specification implements ServiceUnitTest<MemberS
                 householdCode: household.code,
 
                 collectedBy: "dragon",
-                collectedDate: new Date(),
-                uploadedDate: new Date()
+                collectedDate: LocalDateTime.now(),
+                uploadedDate: LocalDateTime.now()
         )
 
 
@@ -205,8 +205,8 @@ class MemberServiceSpec extends Specification implements ServiceUnitTest<MemberS
                 householdCode: household.code,
 
                 collectedBy: "dragon",
-                collectedDate: new Date(),
-                uploadedDate: new Date()
+                collectedDate: LocalDateTime.now(),
+                uploadedDate: LocalDateTime.now()
         )
 
         def rw2 = new RawMember(
@@ -225,8 +225,8 @@ class MemberServiceSpec extends Specification implements ServiceUnitTest<MemberS
                 householdCode: household.code,
 
                 collectedBy: "dragon",
-                collectedDate: new Date(),
-                uploadedDate: new Date()
+                collectedDate: LocalDateTime.now(),
+                uploadedDate: LocalDateTime.now()
         )
 
 

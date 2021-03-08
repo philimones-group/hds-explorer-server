@@ -3,6 +3,8 @@ package net.betainteractive.utilities;
 import java.text.Normalizer;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -134,7 +136,7 @@ public class StringUtil {
         return value==null || value.trim().isEmpty();
     }
 
-    public static boolean isBlankDate(Date value){
+    public static boolean isBlankDate(LocalDate value){
         return value==null;
     }
 
@@ -392,10 +394,23 @@ public class StringUtil {
         return formatter.format(date);
     }
 
+    public static String format(LocalDate date){
+        //if (date == null) return "null";
+        //java.text.DateFormat formatter = new java.text.SimpleDateFormat("yyyy-MM-dd");
+        //return formatter.format(date);
+
+        return date.format(DateTimeFormatter.ISO_LOCAL_DATE);
+    }
+
     public static String format(Date date, boolean longDateFormat){
         if (date == null) return "null";
         java.text.DateFormat formatter = new java.text.SimpleDateFormat(longDateFormat ? "yyyy-MM-dd HH:mm:ss" : "yyyy-MM-dd");
         return formatter.format(date);
+    }
+
+    public static String format(LocalDate date, boolean longDateFormat){ //RECHECK PRINT OUR DATES
+        DateTimeFormatter formatter = longDateFormat ? DateTimeFormatter.ISO_LOCAL_DATE_TIME : DateTimeFormatter.ISO_LOCAL_DATE;
+        return date.format(formatter);
     }
 
     public static String format(Date date, String format){

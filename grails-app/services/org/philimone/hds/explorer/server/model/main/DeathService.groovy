@@ -12,6 +12,8 @@ import org.philimone.hds.explorer.server.model.enums.temporal.ResidencyEndType
 import org.philimone.hds.explorer.server.model.main.collect.raw.RawExecutionResult
 import org.philimone.hds.explorer.server.model.main.collect.raw.RawMessage
 
+import java.time.LocalDate
+
 @Transactional
 class DeathService {
 
@@ -101,11 +103,11 @@ class DeathService {
                 def memberB = maritalRelationship.memberB==member.code ? member : memberService.getMember(maritalRelationship.memberB)
                 def deathA = getDeath(memberA)
                 def deathB = getDeath(memberB)
-                println "member[${death.memberCode}] relationship already closed! mantain old status[${maritalRelationship.startStatus}] = ${(deathA != null && deathB != null)}, ${(GeneralUtil.dateEquals(deathA.deathDate, deathB.deathDate))}, ${GeneralUtil.dateEquals(maritalRelationship.endDate, deathA.deathDate)}"
-                println "ma=${memberA.code},mb=${memberB.code}, dates, d.a.date=${StringUtil.format(deathA.deathDate,true)}, d.b.date=${StringUtil.format(deathB.deathDate,true)}, mr.e.date=${StringUtil.format(maritalRelationship.endDate,true)}"
-                println "ma=${memberA.code},mb=${memberB.code}, dates, d.a.date=${deathA.deathDate.getTime()}, d.b.date=${deathB.deathDate.getTime()}, mr.e.date=${StringUtil.format(maritalRelationship.endDate)}"
+                //println "member[${death.memberCode}] relationship already closed! mantain old status[${maritalRelationship.startStatus}] = ${(deathA != null && deathB != null)}, ${(GeneralUtil.dateEquals(deathA.deathDate, deathB.deathDate))}, ${GeneralUtil.dateEquals(maritalRelationship.endDate, deathA.deathDate)}"
+                //println "ma=${memberA.code},mb=${memberB.code}, dates, d.a.date=${StringUtil.format(deathA.deathDate,true)}, d.b.date=${StringUtil.format(deathB.deathDate,true)}, mr.e.date=${StringUtil.format(maritalRelationship.endDate,true)}"
+                //println "ma=${memberA.code},mb=${memberB.code}, dates, d.a.date=${deathA.deathDate.getTime()}, d.b.date=${deathB.deathDate.getTime()}, mr.e.date=${StringUtil.format(maritalRelationship.endDate)}"
 
-                if ((deathA != null && deathB != null) && (GeneralUtil.dateEquals(deathA.deathDate, deathB.deathDate)) && GeneralUtil.dateEquals(maritalRelationship.endDate, deathA.deathDate)) { //both died in the same die while in sort of a relationship
+                if ((deathA != null && deathB != null) && (deathA.deathDate == deathB.deathDate) && (maritalRelationship.endDate == deathA.deathDate)) { //both died in the same die while in sort of a relationship
                     def startStatus = MaritalStartStatus.getFrom(maritalRelationship.startStatus)
                     def marStatus = maritalRelationshipService.convertFrom(startStatus)
 
@@ -221,7 +223,7 @@ class DeathService {
         }
 
         //C3. Check DeathDate against maxDate
-        if (!isBlankDeathDate && rawDeath.deathDate > new Date()){
+        if (!isBlankDeathDate && rawDeath.deathDate > LocalDate.now()){
             errors << errorMessageService.getRawMessage("validation.field.date.not.greater.today", ["deathDate"], ["deathDate"])
         }
         //C4. Check DeathDate against dateOfBirth

@@ -10,6 +10,8 @@ import org.philimone.hds.explorer.server.model.enums.temporal.ResidencyEndType
 import org.philimone.hds.explorer.server.model.main.collect.raw.RawExecutionResult
 import org.philimone.hds.explorer.server.model.main.collect.raw.RawMessage
 
+import java.time.LocalDate
+
 @Transactional
 class OutMigrationService {
 
@@ -192,7 +194,7 @@ class OutMigrationService {
         }
 
         //C3. Check MigrationDate against maxDate
-        if (!isBlankMigrationDate && rawOutMigration.migrationDate > new Date()){
+        if (!isBlankMigrationDate && rawOutMigration.migrationDate > LocalDate.now()){
             errors << errorMessageService.getRawMessage("validation.field.date.not.greater.today", ["migrationDate"], ["migrationDate"])
         }
         //C4. Check MigrationDate against dateOfBirth

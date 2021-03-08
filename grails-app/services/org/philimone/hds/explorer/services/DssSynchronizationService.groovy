@@ -146,7 +146,7 @@ class DssSynchronizationService {
         LogOutput log = null
         def processed = 0
         def errors = 0
-        def start = new Date()
+        def start = LocalDateTime.now()
         def logStatusValue = LogStatus.FINISHED
 
         try {
@@ -222,15 +222,15 @@ class DssSynchronizationService {
 
         LogReport.withTransaction {
             LogReport logReport = LogReport.findByReportId(logReportId)
-            LogReportFile reportFile = new LogReportFile(creationDate: new Date(), fileName: log.logFileName, logReport: logReport)
+            LogReportFile reportFile = new LogReportFile(creationDate: LocalDateTime.now(), fileName: log.logFileName, logReport: logReport)
             reportFile.keyTimestamp = logReport.keyTimestamp
             reportFile.start = start
-            reportFile.end = new Date()
-            reportFile.creationDate = new Date()
+            reportFile.end = LocalDateTime.now()
+            reportFile.creationDate = LocalDateTime.now()
             reportFile.processedCount = processed
             reportFile.errorsCount = errors
 
-            logReport.end = new Date()
+            logReport.end = LocalDateTime.now()
             logReport.status = logStatusValue
             logReport.addToLogFiles(reportFile)
             logReport.save()
@@ -244,7 +244,7 @@ class DssSynchronizationService {
         LogOutput log = null
         def processed = 0
         def errors = 0
-        def start = new Date()
+        def start = LocalDateTime.now()
         def logStatusValue = LogStatus.FINISHED
 
 
@@ -323,15 +323,15 @@ class DssSynchronizationService {
 
         LogReport.withTransaction {
             LogReport logReport = LogReport.findByReportId(logReportId)
-            LogReportFile reportFile = new LogReportFile(creationDate: new Date(), fileName: log.logFileName, logReport: logReport)
+            LogReportFile reportFile = new LogReportFile(creationDate: LocalDateTime.now(), fileName: log.logFileName, logReport: logReport)
             reportFile.keyTimestamp = logReport.keyTimestamp
             reportFile.start = start
-            reportFile.end = new Date()
-            reportFile.creationDate = new Date()
+            reportFile.end = LocalDateTime.now()
+            reportFile.creationDate = LocalDateTime.now()
             reportFile.processedCount = processed
             reportFile.errorsCount = errors
 
-            logReport.end = new Date()
+            logReport.end = LocalDateTime.now()
             logReport.status = logStatusValue
             logReport.addToLogFiles(reportFile)
             logReport.save()
@@ -345,7 +345,7 @@ class DssSynchronizationService {
         LogOutput log = null
         def processed = 0
         def errors = 0
-        def start = new Date()
+        def start = LocalDateTime.now()
         def logStatusValue = LogStatus.FINISHED
 
         try {
@@ -418,15 +418,15 @@ class DssSynchronizationService {
 
         LogReport.withTransaction {
             LogReport logReport = LogReport.findByReportId(logReportId)
-            LogReportFile reportFile = new LogReportFile(creationDate: new Date(), fileName: log.logFileName, logReport: logReport)
+            LogReportFile reportFile = new LogReportFile(creationDate: LocalDateTime.now(), fileName: log.logFileName, logReport: logReport)
             reportFile.keyTimestamp = logReport.keyTimestamp
             reportFile.start = start
-            reportFile.end = new Date()
-            reportFile.creationDate = new Date()
+            reportFile.end = LocalDateTime.now()
+            reportFile.creationDate = LocalDateTime.now()
             reportFile.processedCount = processed
             reportFile.errorsCount = errors
 
-            logReport.end = new Date()
+            logReport.end = LocalDateTime.now()
             logReport.status = logStatusValue
             logReport.addToLogFiles(reportFile)
             logReport.save()
@@ -440,7 +440,7 @@ class DssSynchronizationService {
         LogOutput log = null
         def processed = 0
         def errors = 0
-        def start = new Date()
+        def start = LocalDateTime.now()
         def logStatusValue = LogStatus.FINISHED
 
         try {
@@ -513,15 +513,15 @@ class DssSynchronizationService {
 
         LogReport.withTransaction {
             LogReport logReport = LogReport.findByReportId(logReportId)
-            LogReportFile reportFile = new LogReportFile(creationDate: new Date(), fileName: log.logFileName, logReport: logReport)
+            LogReportFile reportFile = new LogReportFile(creationDate: LocalDateTime.now(), fileName: log.logFileName, logReport: logReport)
             reportFile.keyTimestamp = logReport.keyTimestamp
             reportFile.start = start
-            reportFile.end = new Date()
-            reportFile.creationDate = new Date()
+            reportFile.end = LocalDateTime.now()
+            reportFile.creationDate = LocalDateTime.now()
             reportFile.processedCount = processed
             reportFile.errorsCount = errors
 
-            logReport.end = new Date()
+            logReport.end = LocalDateTime.now()
             logReport.status = logStatusValue
             logReport.addToLogFiles(reportFile)
             logReport.save()
@@ -535,7 +535,7 @@ class DssSynchronizationService {
         LogOutput log = null
         def processed = 0
         def errors = 0
-        def start = new Date()
+        def start = LocalDateTime.now()
         def logStatusValue = LogStatus.FINISHED
 
         try {
@@ -608,15 +608,15 @@ class DssSynchronizationService {
 
         LogReport.withTransaction {
             LogReport logReport = LogReport.findByReportId(logReportId)
-            LogReportFile reportFile = new LogReportFile(creationDate: new Date(), fileName: log.logFileName, logReport: logReport)
+            LogReportFile reportFile = new LogReportFile(creationDate: LocalDateTime.now(), fileName: log.logFileName, logReport: logReport)
             reportFile.keyTimestamp = logReport.keyTimestamp
             reportFile.start = start
-            reportFile.end = new Date()
-            reportFile.creationDate = new Date()
+            reportFile.end = LocalDateTime.now()
+            reportFile.creationDate = LocalDateTime.now()
             reportFile.processedCount = processed
             reportFile.errorsCount = errors
 
-            logReport.end = new Date()
+            logReport.end = LocalDateTime.now()
             logReport.status = logStatusValue
             logReport.addToLogFiles(reportFile)
             logReport.save()
@@ -630,7 +630,7 @@ class DssSynchronizationService {
         LogOutput log = null
         def processed = 0
         def errors = 0
-        def start = new Date()
+        def start = LocalDateTime.now()
         def logStatusValue = LogStatus.FINISHED
 
         try {
@@ -703,15 +703,15 @@ class DssSynchronizationService {
 
         LogReport.withTransaction {
             LogReport logReport = LogReport.findByReportId(logReportId)
-            LogReportFile reportFile = new LogReportFile(creationDate: new Date(), fileName: log.logFileName, logReport: logReport)
+            LogReportFile reportFile = new LogReportFile(creationDate: LocalDateTime.now(), fileName: log.logFileName, logReport: logReport)
             reportFile.keyTimestamp = logReport.keyTimestamp
             reportFile.start = start
-            reportFile.end = new Date()
-            reportFile.creationDate = new Date()
+            reportFile.end = LocalDateTime.now()
+            reportFile.creationDate = LocalDateTime.now()
             reportFile.processedCount = processed
             reportFile.errorsCount = errors
 
-            logReport.end = new Date()
+            logReport.end = LocalDateTime.now()
             logReport.status = logStatusValue
             logReport.addToLogFiles(reportFile)
             logReport.save()

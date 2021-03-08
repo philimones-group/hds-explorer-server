@@ -5,6 +5,8 @@ import net.betainteractive.utilities.StringUtil
 import org.philimone.hds.explorer.server.model.main.collect.raw.RawExecutionResult
 import org.philimone.hds.explorer.server.model.main.collect.raw.RawMessage
 
+import java.time.LocalDate
+
 @Transactional
 class RoundService {
 
@@ -35,7 +37,7 @@ class RoundService {
     //</editor-fold>
 
     //<editor-fold desc="Round Factory/Manager Methods">
-    RawExecutionResult<Round> createRound(Date roundStartDate, Date roundEndDate, String description) {
+    RawExecutionResult<Round> createRound(LocalDate roundStartDate, LocalDate roundEndDate, String description) {
 
         /* Run Checks and Validations */
 
@@ -100,10 +102,10 @@ class RoundService {
         }
 
         //C6. Check Round (start/end)Date and today
-        /*if (!isBlankStartDate && round.startDate > new Date()){
+        /*if (!isBlankStartDate && round.startDate > LocalDate.now()){
             errors << errorMessageService.getRawMessage("validation.field.date.not.greater.today", [round.startDate], ["startDate"])
         }
-        if (!isBlankEndDate && round.endDate > new Date()){
+        if (!isBlankEndDate && round.endDate > LocalDate.now()){
             errors << errorMessageService.getRawMessage("validation.field.date.not.greater.today", [round.endDate], ["endDate"])
         }*/
         if (!isBlankStartDate && !isBlankEndDate && (round.startDate > round.endDate)){
@@ -130,7 +132,7 @@ class RoundService {
         return errors
     }
 
-    private Round newRoundInstance(Date roundStartDate, Date roundEndDate, String description){
+    private Round newRoundInstance(LocalDate roundStartDate, LocalDate roundEndDate, String description){
 
         Round round = new Round()
 

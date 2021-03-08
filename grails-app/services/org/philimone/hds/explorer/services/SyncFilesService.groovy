@@ -34,6 +34,9 @@ import javax.xml.transform.Transformer
 import javax.xml.transform.TransformerFactory
 import javax.xml.transform.dom.DOMSource
 import javax.xml.transform.stream.StreamResult
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 /**
  *  Responsible for generating XML/Zip Files to be exported - eg. Households, Members, Users...
@@ -51,7 +54,7 @@ class SyncFilesService {
         PrintStream output = log.output
         if (output == null) return;
 
-        def start = new Date();
+        def start = LocalDateTime.now();
         int processed = 0
         int errors = 0
         def logStatusValue = LogStatus.FINISHED
@@ -118,15 +121,15 @@ class SyncFilesService {
 
         LogReport.withTransaction {
             LogReport logReport = LogReport.findByReportId(logReportId)
-            LogReportFile reportFile = new LogReportFile(creationDate: new Date(), fileName: log.logFileName, logReport: logReport)
+            LogReportFile reportFile = new LogReportFile(creationDate: LocalDateTime.now(), fileName: log.logFileName, logReport: logReport)
             reportFile.keyTimestamp = logReport.keyTimestamp
             reportFile.start = start
-            reportFile.end = new Date()
-            reportFile.creationDate = new Date()
+            reportFile.end = LocalDateTime.now()
+            reportFile.creationDate = LocalDateTime.now()
             reportFile.processedCount = processed
             reportFile.errorsCount = errors
 
-            logReport.end = new Date()
+            logReport.end = LocalDateTime.now()
             logReport.status = logStatusValue
             logReport.addToLogFiles(reportFile)
             logReport.save()
@@ -152,7 +155,7 @@ class SyncFilesService {
         PrintStream output = log.output
         if (output == null) return;
 
-        def start = new Date();
+        def start = LocalDateTime.now();
         int processed = 0
         int errors = 0
         def logStatusValue = LogStatus.FINISHED
@@ -219,15 +222,15 @@ class SyncFilesService {
 
         LogReport.withTransaction {
             LogReport logReport = LogReport.findByReportId(logReportId)
-            LogReportFile reportFile = new LogReportFile(creationDate: new Date(), fileName: log.logFileName, logReport: logReport)
+            LogReportFile reportFile = new LogReportFile(creationDate: LocalDateTime.now(), fileName: log.logFileName, logReport: logReport)
             reportFile.keyTimestamp = logReport.keyTimestamp
             reportFile.start = start
-            reportFile.end = new Date()
-            reportFile.creationDate = new Date()
+            reportFile.end = LocalDateTime.now()
+            reportFile.creationDate = LocalDateTime.now()
             reportFile.processedCount = processed
             reportFile.errorsCount = errors
 
-            logReport.end = new Date()
+            logReport.end = LocalDateTime.now()
             logReport.status = logStatusValue
             logReport.addToLogFiles(reportFile)
             logReport.save()
@@ -246,7 +249,7 @@ class SyncFilesService {
         PrintStream output = log.output
         if (output == null) return;
 
-        def start = new Date();
+        def start = LocalDateTime.now();
         int processed = 0
         int errors = 0
         def logStatusValue = LogStatus.FINISHED
@@ -316,15 +319,15 @@ class SyncFilesService {
 
         LogReport.withTransaction {
             LogReport logReport = LogReport.findByReportId(logReportId)
-            LogReportFile reportFile = new LogReportFile(creationDate: new Date(), fileName: log.logFileName, logReport: logReport)
+            LogReportFile reportFile = new LogReportFile(creationDate: LocalDateTime.now(), fileName: log.logFileName, logReport: logReport)
             reportFile.keyTimestamp = logReport.keyTimestamp
             reportFile.start = start
-            reportFile.end = new Date()
-            reportFile.creationDate = new Date()
+            reportFile.end = LocalDateTime.now()
+            reportFile.creationDate = LocalDateTime.now()
             reportFile.processedCount = processed
             reportFile.errorsCount = errors
 
-            logReport.end = new Date()
+            logReport.end = LocalDateTime.now()
             logReport.status = logStatusValue
             logReport.addToLogFiles(reportFile)
             logReport.save()
@@ -342,7 +345,7 @@ class SyncFilesService {
         PrintStream output = log.output
         if (output == null) return;
 
-        def start = new Date();
+        def start = LocalDateTime.now();
         int processed = 0
         int errors = 0
         def logStatusValue = LogStatus.FINISHED
@@ -409,15 +412,15 @@ class SyncFilesService {
 
         LogReport.withTransaction {
             LogReport logReport = LogReport.findByReportId(logReportId)
-            LogReportFile reportFile = new LogReportFile(creationDate: new Date(), fileName: log.logFileName, logReport: logReport)
+            LogReportFile reportFile = new LogReportFile(creationDate: LocalDateTime.now(), fileName: log.logFileName, logReport: logReport)
             reportFile.keyTimestamp = logReport.keyTimestamp
             reportFile.start = start
-            reportFile.end = new Date()
-            reportFile.creationDate = new Date()
+            reportFile.end = LocalDateTime.now()
+            reportFile.creationDate = LocalDateTime.now()
             reportFile.processedCount = processed
             reportFile.errorsCount = errors
 
-            logReport.end = new Date()
+            logReport.end = LocalDateTime.now()
             logReport.status = logStatusValue
             logReport.addToLogFiles(reportFile)
             logReport.save()
@@ -435,7 +438,7 @@ class SyncFilesService {
         PrintStream output = log.output
         if (output == null) return;
 
-        def start = new Date();
+        def start = LocalDateTime.now();
         int processed = 0
         int errors = 0
         def logStatusValue = LogStatus.FINISHED
@@ -492,15 +495,15 @@ class SyncFilesService {
 
         LogReport.withTransaction {
             LogReport logReport = LogReport.findByReportId(logReportId)
-            LogReportFile reportFile = new LogReportFile(creationDate: new Date(), fileName: log.logFileName, logReport: logReport)
+            LogReportFile reportFile = new LogReportFile(creationDate: LocalDateTime.now(), fileName: log.logFileName, logReport: logReport)
             reportFile.keyTimestamp = logReport.keyTimestamp
             reportFile.start = start
-            reportFile.end = new Date()
-            reportFile.creationDate = new Date()
+            reportFile.end = LocalDateTime.now()
+            reportFile.creationDate = LocalDateTime.now()
             reportFile.processedCount = processed
             reportFile.errorsCount = errors
 
-            logReport.end = new Date()
+            logReport.end = LocalDateTime.now()
             logReport.status = logStatusValue
             logReport.addToLogFiles(reportFile)
             logReport.save()
@@ -518,7 +521,7 @@ class SyncFilesService {
         PrintStream output = log.output
         if (output == null) return;
 
-        def start = new Date();
+        def start = LocalDateTime.now();
         int processed = 0
         int errors = 0
         def logStatusValue = LogStatus.FINISHED
@@ -580,15 +583,15 @@ class SyncFilesService {
 
         LogReport.withTransaction {
             LogReport logReport = LogReport.findByReportId(logReportId)
-            LogReportFile reportFile = new LogReportFile(creationDate: new Date(), fileName: log.logFileName, logReport: logReport)
+            LogReportFile reportFile = new LogReportFile(creationDate: LocalDateTime.now(), fileName: log.logFileName, logReport: logReport)
             reportFile.keyTimestamp = logReport.keyTimestamp
             reportFile.start = start
-            reportFile.end = new Date()
-            reportFile.creationDate = new Date()
+            reportFile.end = LocalDateTime.now()
+            reportFile.creationDate = LocalDateTime.now()
             reportFile.processedCount = processed
             reportFile.errorsCount = errors
 
-            logReport.end = new Date()
+            logReport.end = LocalDateTime.now()
             logReport.status = logStatusValue
             logReport.addToLogFiles(reportFile)
             logReport.save()
@@ -609,7 +612,7 @@ class SyncFilesService {
         PrintStream output = log.output
         if (output == null) return;
 
-        def start = new Date();
+        def start = LocalDateTime.now();
         int processed = 0
         int errors = 0
         def logStatusValue = LogStatus.FINISHED
@@ -676,15 +679,15 @@ class SyncFilesService {
 
         LogReport.withTransaction {
             LogReport logReport = LogReport.findByReportId(logReportId)
-            LogReportFile reportFile = new LogReportFile(creationDate: new Date(), fileName: log.logFileName, logReport: logReport)
+            LogReportFile reportFile = new LogReportFile(creationDate: LocalDateTime.now(), fileName: log.logFileName, logReport: logReport)
             reportFile.keyTimestamp = logReport.keyTimestamp
             reportFile.start = start
-            reportFile.end = new Date()
-            reportFile.creationDate = new Date()
+            reportFile.end = LocalDateTime.now()
+            reportFile.creationDate = LocalDateTime.now()
             reportFile.processedCount = processed
             reportFile.errorsCount = errors
 
-            logReport.end = new Date()
+            logReport.end = LocalDateTime.now()
             logReport.status = logStatusValue
             logReport.addToLogFiles(reportFile)
             logReport.save()
@@ -706,7 +709,7 @@ class SyncFilesService {
         PrintStream output = log.output
         if (output == null) return;
 
-        def start = new Date();
+        def start = LocalDateTime.now();
         int processed = 0
         int errors = 0
         def logStatusValue = LogStatus.FINISHED
@@ -773,15 +776,15 @@ class SyncFilesService {
 
         LogReport.withTransaction {
             LogReport logReport = LogReport.findByReportId(logReportId)
-            LogReportFile reportFile = new LogReportFile(creationDate: new Date(), fileName: log.logFileName, logReport: logReport)
+            LogReportFile reportFile = new LogReportFile(creationDate: LocalDateTime.now(), fileName: log.logFileName, logReport: logReport)
             reportFile.keyTimestamp = logReport.keyTimestamp
             reportFile.start = start
-            reportFile.end = new Date()
-            reportFile.creationDate = new Date()
+            reportFile.end = LocalDateTime.now()
+            reportFile.creationDate = LocalDateTime.now()
             reportFile.processedCount = processed
             reportFile.errorsCount = errors
 
-            logReport.end = new Date()
+            logReport.end = LocalDateTime.now()
             logReport.status = logStatusValue
             logReport.addToLogFiles(reportFile)
             logReport.save()
@@ -803,7 +806,7 @@ class SyncFilesService {
         PrintStream output = log.output
         if (output == null) return;
 
-        def start = new Date();
+        def start = LocalDateTime.now();
         int processed = 0
         int errors = 0
         def logStatusValue = LogStatus.FINISHED
@@ -870,15 +873,15 @@ class SyncFilesService {
 
         LogReport.withTransaction {
             LogReport logReport = LogReport.findByReportId(logReportId)
-            LogReportFile reportFile = new LogReportFile(creationDate: new Date(), fileName: log.logFileName, logReport: logReport)
+            LogReportFile reportFile = new LogReportFile(creationDate: LocalDateTime.now(), fileName: log.logFileName, logReport: logReport)
             reportFile.keyTimestamp = logReport.keyTimestamp
             reportFile.start = start
-            reportFile.end = new Date()
-            reportFile.creationDate = new Date()
+            reportFile.end = LocalDateTime.now()
+            reportFile.creationDate = LocalDateTime.now()
             reportFile.processedCount = processed
             reportFile.errorsCount = errors
 
-            logReport.end = new Date()
+            logReport.end = LocalDateTime.now()
             logReport.status = logStatusValue
             logReport.addToLogFiles(reportFile)
             logReport.save()
@@ -896,7 +899,7 @@ class SyncFilesService {
         PrintStream output = log.output
         if (output == null) return;
 
-        def start = new Date();
+        def start = LocalDateTime.now();
         int processed = 0
         int errors = 0
         def logStatusValue = LogStatus.FINISHED
@@ -963,15 +966,15 @@ class SyncFilesService {
 
         LogReport.withTransaction {
             LogReport logReport = LogReport.findByReportId(logReportId)
-            LogReportFile reportFile = new LogReportFile(creationDate: new Date(), fileName: log.logFileName, logReport: logReport)
+            LogReportFile reportFile = new LogReportFile(creationDate: LocalDateTime.now(), fileName: log.logFileName, logReport: logReport)
             reportFile.keyTimestamp = logReport.keyTimestamp
             reportFile.start = start
-            reportFile.end = new Date()
-            reportFile.creationDate = new Date()
+            reportFile.end = LocalDateTime.now()
+            reportFile.creationDate = LocalDateTime.now()
             reportFile.processedCount = processed
             reportFile.errorsCount = errors
 
-            logReport.end = new Date()
+            logReport.end = LocalDateTime.now()
             logReport.status = logStatusValue
             logReport.addToLogFiles(reportFile)
             logReport.save()
@@ -989,7 +992,7 @@ class SyncFilesService {
         PrintStream output = log.output
         if (output == null) return;
 
-        def start = new Date();
+        def start = LocalDateTime.now();
         int processed = 0
         int errors = 0
         def logStatusValue = LogStatus.FINISHED
@@ -1055,15 +1058,15 @@ class SyncFilesService {
 
         LogReport.withTransaction {
             LogReport logReport = LogReport.findByReportId(logReportId)
-            LogReportFile reportFile = new LogReportFile(creationDate: new Date(), fileName: log.logFileName, logReport: logReport)
+            LogReportFile reportFile = new LogReportFile(creationDate: LocalDateTime.now(), fileName: log.logFileName, logReport: logReport)
             reportFile.keyTimestamp = logReport.keyTimestamp
             reportFile.start = start
-            reportFile.end = new Date()
-            reportFile.creationDate = new Date()
+            reportFile.end = LocalDateTime.now()
+            reportFile.creationDate = LocalDateTime.now()
             reportFile.processedCount = processed
             reportFile.errorsCount = errors
 
-            logReport.end = new Date()
+            logReport.end = LocalDateTime.now()
             logReport.status = logStatusValue
             logReport.addToLogFiles(reportFile)
             logReport.save()
@@ -1081,7 +1084,7 @@ class SyncFilesService {
         PrintStream output = log.output
         if (output == null) return;
 
-        def start = new Date();
+        def start = LocalDateTime.now();
         int processed = 0
         int errors = 0
         def logStatusValue = LogStatus.FINISHED
@@ -1131,15 +1134,15 @@ class SyncFilesService {
 
         LogReport.withTransaction {
             LogReport logReport = LogReport.findByReportId(logReportId)
-            LogReportFile reportFile = new LogReportFile(creationDate: new Date(), fileName: log.logFileName, logReport: logReport)
+            LogReportFile reportFile = new LogReportFile(creationDate: LocalDateTime.now(), fileName: log.logFileName, logReport: logReport)
             reportFile.keyTimestamp = logReport.keyTimestamp
             reportFile.start = start
-            reportFile.end = new Date()
-            reportFile.creationDate = new Date()
+            reportFile.end = LocalDateTime.now()
+            reportFile.creationDate = LocalDateTime.now()
             reportFile.processedCount = processed
             reportFile.errorsCount = errors
 
-            logReport.end = new Date()
+            logReport.end = LocalDateTime.now()
             logReport.status = logStatusValue
             logReport.addToLogFiles(reportFile)
             logReport.save()
@@ -1334,8 +1337,8 @@ class SyncFilesService {
         return element;
     }
 
-    private Element createAttributeNonNull(Document doc, String name, Date value){
-        def date = StringUtil.format(value, "yyyy-MM-dd");
+    private Element createAttributeNonNull(Document doc, String name, LocalDate value){
+        def date = value.format(DateTimeFormatter.ISO_LOCAL_DATE)
         return createAttributeNonNull(doc, name, date);
     }
 

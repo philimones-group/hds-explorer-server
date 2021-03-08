@@ -52,11 +52,11 @@ class CodeGeneratorServiceSpec extends Specification implements ServiceUnitTest<
     void setupMembers(){
         def household = Household.findByCode("MAPTXI001")
 
-        new Member(code: "MAPTXI001001", name: "Member 1", gender: Gender.MALE, dob: new Date(), maritalStatus: MaritalStatus.SINGLE).save(flush:true)
-        new Member(code: "MAPTXI001003", name: "Member 3", gender: Gender.MALE, dob: new Date(), maritalStatus: MaritalStatus.SINGLE).save(flush:true)
-        new Member(code: "MAPTXI001005", name: "Member 5", gender: Gender.MALE, dob: new Date(), maritalStatus: MaritalStatus.SINGLE).save(flush:true)
-        new Member(code: "MAPTXI001006", name: "Member 6", gender: Gender.MALE, dob: new Date(), maritalStatus: MaritalStatus.SINGLE).save(flush:true)
-        new Member(code: "MAPTXI001007", name: "Member 7", gender: Gender.MALE, dob: new Date(), maritalStatus: MaritalStatus.SINGLE).save(flush:true)
+        new Member(code: "MAPTXI001001", name: "Member 1", gender: Gender.MALE, dob: LocalDateTime.now(), maritalStatus: MaritalStatus.SINGLE).save(flush:true)
+        new Member(code: "MAPTXI001003", name: "Member 3", gender: Gender.MALE, dob: LocalDateTime.now(), maritalStatus: MaritalStatus.SINGLE).save(flush:true)
+        new Member(code: "MAPTXI001005", name: "Member 5", gender: Gender.MALE, dob: LocalDateTime.now(), maritalStatus: MaritalStatus.SINGLE).save(flush:true)
+        new Member(code: "MAPTXI001006", name: "Member 6", gender: Gender.MALE, dob: LocalDateTime.now(), maritalStatus: MaritalStatus.SINGLE).save(flush:true)
+        new Member(code: "MAPTXI001007", name: "Member 7", gender: Gender.MALE, dob: LocalDateTime.now(), maritalStatus: MaritalStatus.SINGLE).save(flush:true)
 
 
         //println "members: ${Member.count()}"
@@ -65,11 +65,11 @@ class CodeGeneratorServiceSpec extends Specification implements ServiceUnitTest<
     void setupVisits(){
         def household = Household.findByCode("MAPTXI001")
 
-        new Visit(code: "MAPTXI001001", household: household, householdCode: household.code,  visitDate: new Date(), roundNumber: 1).save(flush:true)
-        new Visit(code: "MAPTXI001003", household: household, householdCode: household.code,  visitDate: new Date(), roundNumber: 1).save(flush:true)
-        new Visit(code: "MAPTXI001005", household: household, householdCode: household.code,  visitDate: new Date(), roundNumber: 1).save(flush:true)
-        new Visit(code: "MAPTXI001006", household: household, householdCode: household.code,  visitDate: new Date(), roundNumber: 1).save(flush:true)
-        new Visit(code: "MAPTXI001007", household: household, householdCode: household.code,  visitDate: new Date(), roundNumber: 1).save(flush:true)
+        new Visit(code: "MAPTXI001001", household: household, householdCode: household.code,  visitDate: LocalDateTime.now(), roundNumber: 1).save(flush:true)
+        new Visit(code: "MAPTXI001003", household: household, householdCode: household.code,  visitDate: LocalDateTime.now(), roundNumber: 1).save(flush:true)
+        new Visit(code: "MAPTXI001005", household: household, householdCode: household.code,  visitDate: LocalDateTime.now(), roundNumber: 1).save(flush:true)
+        new Visit(code: "MAPTXI001006", household: household, householdCode: household.code,  visitDate: LocalDateTime.now(), roundNumber: 1).save(flush:true)
+        new Visit(code: "MAPTXI001007", household: household, householdCode: household.code,  visitDate: LocalDateTime.now(), roundNumber: 1).save(flush:true)
 
 
         //println "visits: ${Visit.count()}"
@@ -243,7 +243,7 @@ class CodeGeneratorServiceSpec extends Specification implements ServiceUnitTest<
             if (gen != null) {
                 count++
                 //codes.add(gen)
-                new Member(code: gen, name: "Member ${name}", gender: Gender.MALE, dob: new Date(), maritalStatus: MaritalStatus.SINGLE).save(flush:true)
+                new Member(code: gen, name: "Member ${name}", gender: Gender.MALE, dob: LocalDateTime.now(), maritalStatus: MaritalStatus.SINGLE).save(flush:true)
             }
         }
         println()
@@ -269,7 +269,7 @@ class CodeGeneratorServiceSpec extends Specification implements ServiceUnitTest<
             if (gen != null) {
                 count++
                 //codes.add(gen)
-                new Visit(code: gen, household: household, householdCode: household.code,  visitDate: new Date(), roundNumber: 1).save(flush:true)
+                new Visit(code: gen, household: household, householdCode: household.code,  visitDate: LocalDateTime.now(), roundNumber: 1).save(flush:true)
             }
         }
         println()

@@ -12,6 +12,8 @@ import org.philimone.hds.explorer.server.model.main.collect.raw.RawMessage
 import org.philimone.hds.explorer.server.model.settings.Codes
 import org.springframework.context.i18n.LocaleContextHolder
 
+import java.time.LocalDate
+
 @Transactional
 class MaritalRelationshipService {
 
@@ -160,16 +162,16 @@ class MaritalRelationshipService {
             def isDeadA = deathA != null
             def isDeadB = deathB != null
 
-            if (isDeadA && !isDeadB && GeneralUtil.dateEquals(deathA.deathDate, maritalRelationship.endDate)){ //the relationship ended this day
+            if (isDeadA && !isDeadB && (deathA.deathDate == maritalRelationship.endDate)){ //the relationship ended this day
                 marStatusB = MaritalStatus.WIDOWED
                 marStatusA = convertFrom(maritalRelationship.startStatus) //The dead Member will remain with the last Status
             }
-            if (isDeadB && !isDeadA && GeneralUtil.dateEquals(deathB.deathDate, maritalRelationship.endDate)){ //the relationship ended this day
+            if (isDeadB && !isDeadA && (deathB.deathDate == maritalRelationship.endDate)){ //the relationship ended this day
                 marStatusA = MaritalStatus.WIDOWED
                 marStatusB = convertFrom(maritalRelationship.startStatus) //The dead Member will remain with the last Status
             }
             if (isDeadA && isDeadB) { //this can happen if for a odd reason the relationship wasnt closed when one of them died
-                if (GeneralUtil.dateEquals(deathA.deathDate, deathB.deathDate)){
+                if (deathA.deathDate == deathB.deathDate){
                     //they will mantain the last status / startStatus - assuring that both died married/any
                 } else if (deathA.deathDate < deathB.deathDate){ //memberA died first, then memberB is widow and vice-versa
                     marStatusB = MaritalStatus.WIDOWED
@@ -311,7 +313,7 @@ class MaritalRelationshipService {
             errors << errorMessageService.getRawMessage("validation.field.reference.error", ["Member", "memberB", maritalRelationship.memberB], ["memberB"])
         }
         //C5. Check startdate max date
-        if (!isNullStartDate && maritalRelationship.startDate > new Date()){
+        if (!isNullStartDate && maritalRelationship.startDate > LocalDate.now()){
             errors << errorMessageService.getRawMessage("validation.field.date.not.greater.today", [StringUtil.format(maritalRelationship.startDate)], ["startDate"])
         }
         //C5.1. Check Dates against DOB
@@ -421,7 +423,7 @@ class MaritalRelationshipService {
             errors << errorMessageService.getRawMessage("validation.field.reference.error", ["Member", "memberB", maritalRelationship.memberB], ["memberB"])
         }
         //C5. Check dob max date
-        if (!isNullEndDate && maritalRelationship.endDate > new Date()){
+        if (!isNullEndDate && maritalRelationship.endDate > LocalDate.now()){
             errors << errorMessageService.getRawMessage("validation.field.date.not.greater.today", ["maritalRelationship.endDate"], ["endDate"])
         }
         //C6. Check Dates against DOB

@@ -11,6 +11,8 @@ import org.philimone.hds.explorer.server.model.main.collect.raw.RawExecutionResu
 import org.philimone.hds.explorer.server.model.main.collect.raw.RawMessage
 import org.philimone.hds.explorer.server.model.settings.Codes
 
+import java.time.LocalDate
+
 @Transactional
 class HeadRelationshipService {
 
@@ -280,7 +282,7 @@ class HeadRelationshipService {
             errors << errorMessageService.getRawMessage("validation.field.reference.error", ["Household", "householdCode", headRelationship.householdCode], ["householdCode"])
         }
         //C5. Check startDate max date
-        if (!isNullStartDate && headRelationship.startDate > new Date()){
+        if (!isNullStartDate && headRelationship.startDate > LocalDate.now()){
             errors << errorMessageService.getRawMessage("validation.field.date.not.greater.today", ["headRelationship.startDate"], ["startDate"])
         }
         //C5.2. Check Dates against DOB
@@ -388,7 +390,7 @@ class HeadRelationshipService {
             errors << errorMessageService.getRawMessage("validation.field.reference.error", ["Household", "householdCode", headRelationship.householdCode], ["householdCode"])
         }
         //C5. Check endDate max date
-        if (!isNullEndDate && headRelationship.endDate > new Date()){
+        if (!isNullEndDate && headRelationship.endDate > LocalDate.now()){
             errors << errorMessageService.getRawMessage("validation.field.date.not.greater.today", ["headRelationship.endDate"], ["endDate"])
         }
         //C6. Check Dates against DOB

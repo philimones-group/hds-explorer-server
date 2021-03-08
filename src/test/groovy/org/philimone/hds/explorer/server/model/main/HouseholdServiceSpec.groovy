@@ -116,8 +116,8 @@ class HouseholdServiceSpec extends Specification implements ServiceUnitTest<Hous
                 gpsAcc: "10.1000",
 
                 collectedBy: "",
-                collectedDate: new Date(),
-                uploadedDate: new Date()
+                collectedDate: LocalDateTime.now(),
+                uploadedDate: LocalDateTime.now()
         )
 
         rw.save()
@@ -164,8 +164,8 @@ class HouseholdServiceSpec extends Specification implements ServiceUnitTest<Hous
                 gpsAcc: "10.1000",
 
                 collectedBy: "dragon",
-                collectedDate: new Date(),
-                uploadedDate: new Date()
+                collectedDate: LocalDateTime.now(),
+                uploadedDate: LocalDateTime.now()
         )
 
         def rw2 = new RawHousehold(
@@ -182,8 +182,8 @@ class HouseholdServiceSpec extends Specification implements ServiceUnitTest<Hous
                 gpsAcc: "10.1000",
 
                 collectedBy: "dragon",
-                collectedDate: new Date(),
-                uploadedDate: new Date()
+                collectedDate: LocalDateTime.now(),
+                uploadedDate: LocalDateTime.now()
         )
 
         println "Duplicate Tests:"

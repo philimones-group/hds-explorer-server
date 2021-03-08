@@ -52,6 +52,8 @@ import org.philimone.hds.explorer.services.errors.ErrorMessageService
 import org.springframework.beans.factory.annotation.Autowired
 import spock.lang.Specification
 
+import java.time.LocalDateTime
+
 @Integration
 @Transactional //@Rollback
 class DeathServiceSpec extends Specification {
@@ -83,6 +85,7 @@ class DeathServiceSpec extends Specification {
     @Autowired
     DeathService deathService
 
+    @Transactional
     def setupAll() {
         setupUsers()
         setupRegions()
@@ -125,11 +128,11 @@ class DeathServiceSpec extends Specification {
         def user = User.findByUsername("dragon")
         def region = Region.findByCode("TXU")
 
-        def rw1 = new RawHousehold(id: "u1", regionCode: region.code, householdCode: householdService.generateCode(region, user), householdName: "Macandza House", headCode: "", headName: "", collectedBy: user.username, collectedDate: new Date(), uploadedDate: new Date())
+        def rw1 = new RawHousehold(id: "u1", regionCode: region.code, householdCode: householdService.generateCode(region, user), householdName: "Macandza House", headCode: "", headName: "", collectedBy: user.username, collectedDate: LocalDateTime.now(), uploadedDate: LocalDateTime.now())
         rw1.save()
         def res1 = householdService.createHousehold(rw1)
 
-        def rw2 = new RawHousehold(id: "u2", regionCode: region.code, householdCode: householdService.generateCode(region, user), householdName: "George Benson", headCode: "", headName: "", collectedBy: user.username, collectedDate: new Date(), uploadedDate: new Date())
+        def rw2 = new RawHousehold(id: "u2", regionCode: region.code, householdCode: householdService.generateCode(region, user), householdName: "George Benson", headCode: "", headName: "", collectedBy: user.username, collectedDate: LocalDateTime.now(), uploadedDate: LocalDateTime.now())
         rw2.save()
         def res2 = householdService.createHousehold(rw2)
 
@@ -157,25 +160,25 @@ class DeathServiceSpec extends Specification {
 
         def rw1 = new RawMember(id: "uuuid1", code: memberService.generateCode(household1), name: "John Benedit Macandza", gender: Gender.MALE.code, dob: GeneralUtil.getDate(1988,10,10),
                 motherCode: Codes.MEMBER_UNKNOWN_CODE, motherName: "", fatherCode: Codes.MEMBER_UNKNOWN_CODE, fatherName: "", maritalStatus: MaritalStatus.SINGLE.code, householdCode: household1.code,
-                collectedBy: "dragon", collectedDate: new Date(), uploadedDate: new Date())
+                collectedBy: "dragon", collectedDate: LocalDateTime.now(), uploadedDate: LocalDateTime.now())
 
         def res1 = memberService.createMember(rw1)
 
         def rw2 = new RawMember(id: "uuuid2", code: memberService.generateCode(household1), name: "Catarina Loyd Macandza", gender: Gender.FEMALE.code, dob: GeneralUtil.getDate(1993,10,10),
                 motherCode: Codes.MEMBER_UNKNOWN_CODE, motherName: "", fatherCode: Codes.MEMBER_UNKNOWN_CODE, fatherName: "", maritalStatus: MaritalStatus.SINGLE.code, householdCode: household1.code,
-                collectedBy: "dragon", collectedDate: new Date(), uploadedDate: new Date())
+                collectedBy: "dragon", collectedDate: LocalDateTime.now(), uploadedDate: LocalDateTime.now())
 
         def res2 = memberService.createMember(rw2)
 
         def rw3 = new RawMember(id: "uuuid3", code: memberService.generateCode(household2), name: "George Benson", gender: Gender.MALE.code, dob: GeneralUtil.getDate(1988,10,10),
                 motherCode: Codes.MEMBER_UNKNOWN_CODE, motherName: "", fatherCode: Codes.MEMBER_UNKNOWN_CODE, fatherName: "", maritalStatus: MaritalStatus.SINGLE.code, householdCode: household1.code,
-                collectedBy: "dragon", collectedDate: new Date(), uploadedDate: new Date())
+                collectedBy: "dragon", collectedDate: LocalDateTime.now(), uploadedDate: LocalDateTime.now())
 
         def res3 = memberService.createMember(rw3)
 
         def rw4 = new RawMember(id: "uuuid4", code: memberService.generateCode(household2), name: "Joyce Mary Benson", gender: Gender.FEMALE.code, dob: GeneralUtil.getDate(1993,10,10),
                 motherCode: Codes.MEMBER_UNKNOWN_CODE, motherName: "", fatherCode: Codes.MEMBER_UNKNOWN_CODE, fatherName: "", maritalStatus: MaritalStatus.SINGLE.code, householdCode: household1.code,
-                collectedBy: "dragon", collectedDate: new Date(), uploadedDate: new Date())
+                collectedBy: "dragon", collectedDate: LocalDateTime.now(), uploadedDate: LocalDateTime.now())
 
         def res4 = memberService.createMember(rw4)
 
@@ -186,8 +189,8 @@ class DeathServiceSpec extends Specification {
     }
 
     def setupRounds(){
-        def result1 = roundService.createRound(GeneralUtil.getDate(2021, 0, 1), GeneralUtil.getDate(2021, 0, 31), "baseline round")
-        //def result2 = roundService.createRound(GeneralUtil.getDate(2021, 0, 31), GeneralUtil.getDate(2021, 1, 28), "first round")
+        def result1 = roundService.createRound(GeneralUtil.getDate(2021, 1, 1), GeneralUtil.getDate(2021, 1, 31), "baseline round")
+        //def result2 = roundService.createRound(GeneralUtil.getDate(2021, 1, 31), GeneralUtil.getDate(2021, 1, 28), "first round")
         //def result3 = roundService.createRound(GeneralUtil.getDate(2021, 2, 1), GeneralUtil.getDate(2021, 1, 20), "second round")
 
         //printResults(result1)
@@ -396,6 +399,7 @@ class DeathServiceSpec extends Specification {
         def result5 = inMigrationService.createInMigration(rin5) //internal move
     }
 
+    @Transactional
     def cleanup() {
     }
 
@@ -446,6 +450,7 @@ class DeathServiceSpec extends Specification {
         println "round(id=${round.id},r.number=${round.roundNumber},r.startdate=${round.startDate},r.enddate=${round.endDate},r.description=${round?.description})"
     }
 
+    @Transactional
     void "Test Deaths"() {
         println "\n#### Test Creation of Deaths ####"
 

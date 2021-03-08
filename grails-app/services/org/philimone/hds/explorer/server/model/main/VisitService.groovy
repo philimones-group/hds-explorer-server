@@ -7,6 +7,8 @@ import org.philimone.hds.explorer.server.model.enums.VisitLocationItem
 import org.philimone.hds.explorer.server.model.main.collect.raw.RawExecutionResult
 import org.philimone.hds.explorer.server.model.main.collect.raw.RawMessage
 
+import java.time.LocalDate
+
 @Transactional
 class VisitService {
 
@@ -150,7 +152,7 @@ class VisitService {
         }
 
         //C6. Check Visit Date max date
-        if (!isBlankVisitDate && rawVisit.visitDate > new Date()){
+        if (!isBlankVisitDate && rawVisit.visitDate > LocalDate.now()){
             errors << errorMessageService.getRawMessage("validation.field.date.not.greater.today", ["visitDate"], ["visitDate"])
         }
 

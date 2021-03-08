@@ -264,7 +264,7 @@ class SyncFilesController {
             logReport = LogReport.get(params.id)
             logReport.keyTimestamp = System.currentTimeMillis() //CREATE timestamp code
             logReport.status = LogStatus.STARTED
-            logReport.start = new Date();
+            logReport.start = LocalDateTime.now();
             logReport.save(flush: true)
         }
 

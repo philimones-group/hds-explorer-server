@@ -10,6 +10,8 @@ import org.philimone.hds.explorer.server.model.main.collect.raw.RawExecutionResu
 import org.philimone.hds.explorer.server.model.main.collect.raw.RawMessage
 import org.philimone.hds.explorer.server.model.settings.Codes
 
+import java.time.LocalDate
+
 @Transactional
 class MemberService {
 
@@ -141,7 +143,7 @@ class MemberService {
         }
 
         //C5. Check dob max date
-        if (!isNullDob && member.dob > new Date()){
+        if (!isNullDob && member.dob > LocalDate.now()){
             errors << errorMessageService.getRawMessage("validation.field.date.not.greater.today", [StringUtil.format(member.dob)], ["dob"])
         }
 

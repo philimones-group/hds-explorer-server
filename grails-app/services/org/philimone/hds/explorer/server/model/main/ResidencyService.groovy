@@ -8,6 +8,8 @@ import org.philimone.hds.explorer.server.model.enums.temporal.ResidencyStartType
 import org.philimone.hds.explorer.server.model.main.collect.raw.RawExecutionResult
 import org.philimone.hds.explorer.server.model.main.collect.raw.RawMessage
 
+import java.time.LocalDate
+
 @Transactional
 class ResidencyService {
 
@@ -233,7 +235,7 @@ class ResidencyService {
             errors << errorMessageService.getRawMessage("validation.field.reference.error", ["Household", "householdCode", residency.householdCode], ["householdCode"])
         }
         //C5. Check startDate max date
-        if (!isNullStartDate && residency.startDate > new Date()){
+        if (!isNullStartDate && residency.startDate > LocalDate.now()){
             errors << errorMessageService.getRawMessage("validation.field.date.not.greater.today", ["residency.startDate"], ["startDate"])
         }
         //C6. Check Dates against DOB
@@ -318,7 +320,7 @@ class ResidencyService {
             errors << errorMessageService.getRawMessage("validation.field.reference.error", ["Household", "householdCode", residency.householdCode], ["householdCode"])
         }
         //C5. Check startDate max date
-        if (!isNullStartDate && residency.startDate > new Date()){
+        if (!isNullStartDate && residency.startDate > LocalDate.now()){
             errors << errorMessageService.getRawMessage("validation.field.date.not.greater.today", ["residency.startDate"], ["startDate"])
         }
         //C6. Check Dates against DOB
@@ -403,7 +405,7 @@ class ResidencyService {
             errors << errorMessageService.getRawMessage("validation.field.reference.error", ["Household", "householdCode", residency.householdCode], ["householdCode"])
         }
         //C5. Check endDate max date
-        if (!isNullEndDate && residency.endDate > new Date()){
+        if (!isNullEndDate && residency.endDate > LocalDate.now()){
             errors << errorMessageService.getRawMessage("validation.field.date.not.greater.today", ["endDate"], ["endDate"])
         }
         //C6. Check Dates against DOB

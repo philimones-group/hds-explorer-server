@@ -13,6 +13,8 @@ import org.philimone.hds.explorer.server.model.enums.temporal.ResidencyStartType
 import org.philimone.hds.explorer.server.model.main.collect.raw.RawExecutionResult
 import org.philimone.hds.explorer.server.model.main.collect.raw.RawMessage
 
+import java.time.LocalDate
+
 @Transactional
 class InMigrationService {
 
@@ -176,7 +178,7 @@ class InMigrationService {
         }
 
         //C3. Check MigrationDate against maxDate
-        if (!isBlankMigrationDate && rawInMigration.migrationDate > new Date()){
+        if (!isBlankMigrationDate && rawInMigration.migrationDate > LocalDate.now()){
             errors << errorMessageService.getRawMessage("validation.field.date.not.greater.today", ["migrationDate"], ["migrationDate"])
         }
         //C4. Check MigrationDate against dateOfBirth
@@ -362,7 +364,7 @@ class InMigrationService {
         return residency
     }
 
-    private static Residency createFakeResidency(Residency residency, ResidencyEndType endType, Date endDate){
+    private static Residency createFakeResidency(Residency residency, ResidencyEndType endType, LocalDate endDate){
         def fakeResidency = new Residency()
         fakeResidency.member = residency.member
         fakeResidency.memberCode = residency.member?.code
