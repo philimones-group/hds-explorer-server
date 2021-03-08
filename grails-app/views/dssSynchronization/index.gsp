@@ -39,9 +39,9 @@
 
 						<td><g:message code="${logReport.description}" default="${logReport.description}" /></td>
 
-						<td><g:formatDate date="${logReport.start}" format="yyyy-MM-dd HH:mm" /></td>
+						<td><bi:formatDate date="${logReport.start}" format="yyyy-MM-dd HH:mm" /></td>
 
-						<td><g:formatDate date="${logReport.end}" format="yyyy-MM-dd HH:mm" /></td>
+						<td><bi:formatDate date="${logReport.end}" format="yyyy-MM-dd HH:mm" /></td>
 
 						<td><g:message code="${logReport.status}" default="${logReport.status}" /></td>
 

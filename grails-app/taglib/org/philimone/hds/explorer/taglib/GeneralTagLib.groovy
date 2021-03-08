@@ -1,5 +1,10 @@
 package org.philimone.hds.explorer.taglib
 
+import net.betainteractive.utilities.StringUtil
+
+import java.time.LocalDate
+import java.time.LocalDateTime
+
 class GeneralTagLib {
 
     static namespace = "bi"
@@ -48,6 +53,25 @@ class GeneralTagLib {
 
     def menuheader = { attrs, body ->
         out << "<li class=\"dropdown-header\">${attrs.label}</li>"
+    }
+
+    //Format LocalDateTime
+    def formatDate = {attrs, body ->
+
+        def date = attrs.date
+        String format = attrs.format
+        def output = date + ""
+
+        LocalDate localDate = (date instanceof LocalDate) ? (LocalDate) date : null
+        LocalDateTime localDateTime = (date instanceof LocalDateTime) ? (LocalDateTime) date : null
+
+        if (localDate != null){
+            output = "${StringUtil.format(localDate, format)}"
+        } else if (localDateTime != null){
+            output = "${StringUtil.format(localDateTime, format)}"
+        }
+
+        out << "${output}"
     }
 
     def showLoggedUser = {attrs, body ->

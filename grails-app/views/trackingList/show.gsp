@@ -75,7 +75,7 @@
 				<g:if test="${trackingListInstance?.createdDate}">
 				<li class="fieldcontain">
 					<span id="createdDate-label" class="property-label"><g:message code="trackingList.createdDate.label" default="Created Date" /></span>
-					<span class="property-value" aria-labelledby="createdDate-label"><g:formatDate date="${trackingListInstance?.createdDate}" /></span>
+					<span class="property-value" aria-labelledby="createdDate-label"><bi:formatDate date="${trackingListInstance?.createdDate}" /></span>
 				</li>
 				</g:if>
 			
@@ -89,7 +89,7 @@
 				<g:if test="${trackingListInstance?.updatedDate}">
 				<li class="fieldcontain">
 					<span id="updatedDate-label" class="property-label"><g:message code="trackingList.updatedDate.label" default="Updated Date" /></span>
-					<span class="property-value" aria-labelledby="updatedDate-label"><g:formatDate date="${trackingListInstance?.updatedDate}" /></span>
+					<span class="property-value" aria-labelledby="updatedDate-label"><bi:formatDate date="${trackingListInstance?.updatedDate}" /></span>
 				</li>
 				</g:if>
 			

@@ -65,14 +65,14 @@
 				<g:if test="${logReportInstance?.start}">
 				<li class="fieldcontain">
 					<span id="start-label" class="property-label"><g:message code="logreport.start.label" default="Start" /></span>
-					<span class="property-value" aria-labelledby="start-label"><g:formatDate date="${logReportInstance?.start}" format="yyyy-MM-dd HH:mm:ss" /></span>
+					<span class="property-value" aria-labelledby="start-label"><bi:formatDate date="${logReportInstance?.start}" format="yyyy-MM-dd HH:mm:ss" /></span>
 				</li>
 				</g:if>
 			
 				<g:if test="${logReportInstance?.end}">
 				<li class="fieldcontain">
 					<span id="end-label" class="property-label"><g:message code="logreport.end.label" default="End" /></span>
-					<span class="property-value" aria-labelledby="end-label"><g:formatDate date="${logReportInstance?.end}" format="yyyy-MM-dd HH:mm:ss" /></span>
+					<span class="property-value" aria-labelledby="end-label"><bi:formatDate date="${logReportInstance?.end}" format="yyyy-MM-dd HH:mm:ss" /></span>
 				</li>
 				</g:if>
 
@@ -124,11 +124,11 @@
 
 								<td>${fieldValue(bean: logFileInstance, field: "errorsCount")}</td>
 
-								<td><g:formatDate date="${logFileInstance.creationDate}" format="yyyy-MM-dd HH:mm:ss" /></td>
+								<td><bi:formatDate date="${logFileInstance.creationDate}" format="yyyy-MM-dd HH:mm:ss" /></td>
 
-								<td><g:formatDate date="${logFileInstance.start}" format="yyyy-MM-dd HH:mm:ss" /></td>
+								<td><bi:formatDate date="${logFileInstance.start}" format="yyyy-MM-dd HH:mm:ss" /></td>
 
-								<td><g:formatDate date="${logFileInstance.end}" format="yyyy-MM-dd HH:mm:ss" /></td>
+								<td><bi:formatDate date="${logFileInstance.end}" format="yyyy-MM-dd HH:mm:ss" /></td>
 
 							</tr>
 

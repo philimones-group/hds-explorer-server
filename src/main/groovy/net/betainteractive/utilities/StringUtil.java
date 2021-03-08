@@ -4,6 +4,7 @@ import java.text.Normalizer;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
@@ -395,13 +396,40 @@ public class StringUtil {
     }
 
     public static String format(LocalDate date){
-        //if (date == null) return "null";
-        //java.text.DateFormat formatter = new java.text.SimpleDateFormat("yyyy-MM-dd");
-        //return formatter.format(date);
-
+        //"yyyy-MM-dd"
         return date.format(DateTimeFormatter.ISO_LOCAL_DATE);
     }
 
+    public static String format(LocalDate date, String format) {
+        DateTimeFormatter formatter = null;
+
+        if (isBlank(format)){
+            formatter = DateTimeFormatter.ISO_LOCAL_DATE;
+        }else {
+            formatter = DateTimeFormatter.ofPattern(format);
+        }
+
+        return date.format(formatter);
+    }
+
+    public static String format(LocalDateTime dateTime){
+        //"yyyy-MM-dd"
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        return dateTime.format(formatter);
+    }
+
+    public static String format(LocalDateTime dateTime, String format){
+        DateTimeFormatter formatter = null;
+
+        if (isBlank(format)){
+            formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        }else {
+            formatter = DateTimeFormatter.ofPattern(format);
+        }
+
+        return dateTime.format(formatter);
+    }
+/*
     public static String format(Date date, boolean longDateFormat){
         if (date == null) return "null";
         java.text.DateFormat formatter = new java.text.SimpleDateFormat(longDateFormat ? "yyyy-MM-dd HH:mm:ss" : "yyyy-MM-dd");
@@ -409,9 +437,9 @@ public class StringUtil {
     }
 
     public static String format(LocalDate date, boolean longDateFormat){ //RECHECK PRINT OUR DATES
-        DateTimeFormatter formatter = longDateFormat ? DateTimeFormatter.ISO_LOCAL_DATE_TIME : DateTimeFormatter.ISO_LOCAL_DATE;
+        DateTimeFormatter formatter = longDateFormat ? DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss") : DateTimeFormatter.ISO_LOCAL_DATE;
         return date.format(formatter);
-    }
+    }*/
 
     public static String format(Date date, String format){
         java.text.DateFormat formatter = new java.text.SimpleDateFormat(format);

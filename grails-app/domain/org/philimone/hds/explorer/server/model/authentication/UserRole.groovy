@@ -1,11 +1,9 @@
 package org.philimone.hds.explorer.server.model.authentication
 
+import grails.compiler.GrailsCompileStatic
 import grails.gorm.DetachedCriteria
 import groovy.transform.ToString
-
 import org.codehaus.groovy.util.HashCodeHelper
-import grails.compiler.GrailsCompileStatic
-import org.grails.datastore.mapping.core.connections.ConnectionSource
 
 /**
  * Store a mapping structure between a User and a Role, represents an associations between the two
@@ -24,6 +22,8 @@ class UserRole implements Serializable {
 	boolean equals(other) {
 		if (other instanceof UserRole) {
 			other.userId == user?.id && other.roleId == role?.id
+		} else {
+			false
 		}
 	}
 
@@ -71,6 +71,8 @@ class UserRole implements Serializable {
 	static boolean remove(User u, Role r) {
 		if (u != null && r != null) {
 			UserRole.where { user == u && role == r }.deleteAll()
+		} else {
+			false
 		}
 	}
 

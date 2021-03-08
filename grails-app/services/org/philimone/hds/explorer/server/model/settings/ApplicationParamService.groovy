@@ -6,6 +6,9 @@ import net.betainteractive.utilities.StringUtil
 import org.philimone.hds.explorer.server.model.enums.settings.ApplicationParamType
 import org.philimone.hds.explorer.services.GeneralUtilitiesService
 
+import java.time.LocalDate
+import java.time.LocalDateTime
+
 @Transactional
 class ApplicationParamService {
 
@@ -34,6 +37,16 @@ class ApplicationParamService {
 
     def ApplicationParam addParam(String name, Date value) {
         def param = new ApplicationParam(name: name, type: ApplicationParamType.DATE, value: StringUtil.format(value, "yyyy-MM-dd HH:mm:ss" ))
+        addApplicationParam(param)
+    }
+
+    def ApplicationParam addParam(String name, LocalDate value) {
+        def param = new ApplicationParam(name: name, type: ApplicationParamType.DATE, value: StringUtil.format(value))
+        addApplicationParam(param)
+    }
+
+    def ApplicationParam addParam(String name, LocalDateTime value) {
+        def param = new ApplicationParam(name: name, type: ApplicationParamType.DATE, value: StringUtil.format(value))
         addApplicationParam(param)
     }
 

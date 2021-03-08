@@ -63,7 +63,7 @@ class GeneralUtil {
 
     static String getDurationText(LocalDateTime endTime, LocalDateTime startTime){
         def duration = Duration.between(startTime, endTime)
-        
+
         List buffer = new ArrayList();
         int years = duration.get(ChronoUnit.YEARS)
         int months = duration.get(ChronoUnit.MONTHS)

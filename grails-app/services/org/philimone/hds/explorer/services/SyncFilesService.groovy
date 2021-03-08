@@ -1384,7 +1384,7 @@ class SyncFilesService {
                 ((m.code==null || m.code.isEmpty()) ?                   "<code />" : "<code>${m.code}</code>") +
                 ((m.name==null || m.name.isEmpty()) ?                   "<name />" : "<name>${m.name}</name>") +
                 ((m.gender==null ) ?                                    "<gender />" : "<gender>${m.gender.code}</gender>") +
-                ((m.dob==null) ?                                        "<dob />" : "<dob>${StringUtil.format(m.dob, "yyyy-MM-dd")}</dob>") +
+                ((m.dob==null) ?                                        "<dob />" : "<dob>${StringUtil.format(m.dob)}</dob>") +
                 ((m.age==null) ?                                        "<age />" : "<age>${m.age}</age>") +
 
                 ((m.ageAtDeath==null) ?                                 "<ageAtDeath />" : "<ageAtDeath>${m.ageAtDeath}</ageAtDeath>") +
@@ -1402,13 +1402,13 @@ class SyncFilesService {
                 ((m.householdName==null || m.householdName.isEmpty()) ? "<householdName />" : "<householdName>${m.householdName}</householdName>") +
 
                 ((m.startType==null || m.startType.isEmpty()) ?         "<startType />" : "<startType>${m.startType.code}</startType>") +
-                ((m.startDate==null)                        ?           "<startDate />" : "<startDate>${StringUtil.format(m.startDate, "yyyy-MM-dd")}</startDate>") +
+                ((m.startDate==null)                        ?           "<startDate />" : "<startDate>${StringUtil.format(m.startDate)}</startDate>") +
                 ((m.endType==null || m.endType.isEmpty())     ?         "<endType />"   : "<endType>${m.endType.code}</endType>") +
-                ((m.endDate==null)                          ?           "<endDate />"   : "<endDate>${StringUtil.format(m.endDate, "yyyy-MM-dd")}</endDate>") +
+                ((m.endDate==null)                          ?           "<endDate />"   : "<endDate>${StringUtil.format(m.endDate)}</endDate>") +
 
                 ((m.entryHousehold==null || m.entryHousehold.isEmpty()) ? "<entryHousehold />" : "<entryHousehold>${m.entryHousehold}</entryHousehold>") +
                 ((m.entryType==null || m.entryType.isEmpty())           ? "<entryType />" : "<entryType>${m.entryType.code}</entryType>") +
-                ((m.entryDate==null)                                    ? "<entryDate />" : "<entryDate>${StringUtil.format(m.entryDate, "yyyy-MM-dd")}</entryDate>") +
+                ((m.entryDate==null)                                    ? "<entryDate />" : "<entryDate>${StringUtil.format(m.entryDate)}</entryDate>") +
 
                 ((m.headRelationshipType==null)                       ? "<headRelationshipType />" : "<headRelationshipType>${m.headRelationshipType.code}</headRelationshipType>") +
                 ((m.headRelationshipType==null)                       ? "<isHouseholdHead />" : "<isHouseholdHead>${m.isHouseholdHead()}</isHouseholdHead>") +

@@ -81,7 +81,7 @@
 				<li class="fieldcontain">
 					<span id="createdDate-label" class="property-label"><g:message code="dataSet.createdDate.label" default="Created Date" /></span>
 					
-						<span class="property-value" aria-labelledby="createdDate-label"><g:formatDate date="${dataSetInstance?.createdDate}" /></span>
+						<span class="property-value" aria-labelledby="createdDate-label"><bi:formatDate date="${dataSetInstance?.createdDate}" /></span>
 					
 				</li>
 				</g:if>
@@ -99,7 +99,7 @@
 				<li class="fieldcontain">
 					<span id="updatedDate-label" class="property-label"><g:message code="dataSet.updatedDate.label" default="Updated Date" /></span>
 					
-						<span class="property-value" aria-labelledby="updatedDate-label"><g:formatDate date="${dataSetInstance?.updatedDate}" /></span>
+						<span class="property-value" aria-labelledby="updatedDate-label"><bi:formatDate date="${dataSetInstance?.updatedDate}" /></span>
 					
 				</li>
 				</g:if>
