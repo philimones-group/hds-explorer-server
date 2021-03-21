@@ -8,7 +8,6 @@ import org.codehaus.groovy.util.HashCodeHelper
 /**
  * Store a mapping structure between a User and a Role, represents an associations between the two
  */
-@GrailsCompileStatic
 @ToString(cache=true, includeNames=true, includePackage=false)
 class UserRole implements Serializable {
 
@@ -99,8 +98,8 @@ class UserRole implements Serializable {
 	static mapping = {
 		table '_user_role'
 
-		version false
 		id column: 'uuid', generator: 'uuid'
 
+		version false
 	}
 }

@@ -60,7 +60,7 @@ class GeneralTagLib {
 
         def date = attrs.date
         String format = attrs.format
-        def output = date + ""
+        def output = "${date}"
 
         LocalDate localDate = (date instanceof LocalDate) ? (LocalDate) date : null
         LocalDateTime localDateTime = (date instanceof LocalDateTime) ? (LocalDateTime) date : null
