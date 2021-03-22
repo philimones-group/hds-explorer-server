@@ -3,6 +3,7 @@ package org.philimone.hds.explorer.server.model.main
 import grails.gorm.transactions.Transactional
 import net.betainteractive.utilities.StringUtil
 import org.philimone.hds.explorer.server.model.collect.raw.RawVisit
+import org.philimone.hds.explorer.server.model.enums.RawEntity
 import org.philimone.hds.explorer.server.model.enums.VisitLocationItem
 import org.philimone.hds.explorer.server.model.main.collect.raw.RawExecutionResult
 import org.philimone.hds.explorer.server.model.main.collect.raw.RawMessage
@@ -59,7 +60,7 @@ class VisitService {
         //Validate using Gorm Validations
         if (visit.hasErrors()){
 
-            errors = errorMessageService.getRawMessages(visit)
+            errors = errorMessageService.getRawMessages(RawEntity.VISIT, visit)
 
             RawExecutionResult<Visit> obj = RawExecutionResult.newErrorResult(errors)
             return obj
@@ -95,84 +96,84 @@ class VisitService {
 
         //C1. Check Blank Fields (code)
         if (isBlankCode){
-            errors << errorMessageService.getRawMessage("validation.field.blank", ["code"], ["code"])
+            errors << errorMessageService.getRawMessage(RawEntity.VISIT, "validation.field.blank", ["code"], ["code"])
         }
         //C1. Check Blank Fields (householdCode)
         if (isBlankHouseholdCode){
-            errors << errorMessageService.getRawMessage("validation.field.blank", ["householdCode"], ["householdCode"])
+            errors << errorMessageService.getRawMessage(RawEntity.VISIT, "validation.field.blank", ["householdCode"], ["householdCode"])
         }
         //C1. Check Nullable Fields (visitDate)
         if (isBlankVisitDate){
-            errors << errorMessageService.getRawMessage("validation.field.blank", ["visitDate"], ["visitDate"])
+            errors << errorMessageService.getRawMessage(RawEntity.VISIT, "validation.field.blank", ["visitDate"], ["visitDate"])
         }
         //C1. Check Blank Fields (roundNumber)
         if (isBlankRoundNumber){
-            errors << errorMessageService.getRawMessage("validation.field.blank", ["roundNumber"], ["roundNumber"])
+            errors << errorMessageService.getRawMessage(RawEntity.VISIT, "validation.field.blank", ["roundNumber"], ["roundNumber"])
         }
         //C1. Check Blank Fields (visitLocation)
         if (isBlankVisitLocation){
-            errors << errorMessageService.getRawMessage("validation.field.blank", ["visitLocation"], ["visitLocation"])
+            errors << errorMessageService.getRawMessage(RawEntity.VISIT, "validation.field.blank", ["visitLocation"], ["visitLocation"])
         }
         //C1. Check Blank Fields (visitLocationOther) //Its Conditional
         if (isVisitLocationOther && isBlankVisitLocationOther){
-            errors << errorMessageService.getRawMessage("validation.field.blank", ["visitLocationOther"], ["visitLocationOther"])
+            errors << errorMessageService.getRawMessage(RawEntity.VISIT, "validation.field.blank", ["visitLocationOther"], ["visitLocationOther"])
         }
         //C1. Check Blank Fields (respondentCode)
         if (isBlankRespondentCode){
-            errors << errorMessageService.getRawMessage("validation.field.blank", ["respondentCode"], ["respondentCode"])
+            errors << errorMessageService.getRawMessage(RawEntity.VISIT, "validation.field.blank", ["respondentCode"], ["respondentCode"])
         }
         //C1. Check Blank Fields (hasInterpreter)
         if (isBlankHasInterpreter){
             //If is BLANK we will consider it false
 
-            //errors << errorMessageService.getRawMessage("validation.field.blank", ["hasInterpreter"], ["hasInterpreter"])
+            //errors << errorMessageService.getRawMessage(RawEntity.VISIT, "validation.field.blank", ["hasInterpreter"], ["hasInterpreter"])
         }
         //C1. Check Blank Fields (interpreterName) //Its Conditional
         if (rawVisit.hasInterpreter && isBlankInterpreterName){
-            errors << errorMessageService.getRawMessage("validation.field.blank", ["interpreterName"], ["interpreterName"])
+            errors << errorMessageService.getRawMessage(RawEntity.VISIT, "validation.field.blank", ["interpreterName"], ["interpreterName"])
         }
 
         //C2. Check VisitCode Regex Pattern
         if (!isBlankCode && !codeGeneratorService.isVisitCodeValid(rawVisit.code)) {
-            errors << errorMessageService.getRawMessage("validation.field.pattern.no.matches", ["code", "TXUPF1001001"], ["code"])
+            errors << errorMessageService.getRawMessage(RawEntity.VISIT, "validation.field.pattern.no.matches", ["code", "TXUPF1001001"], ["code"])
         }
 
         if (!isBlankCode && !isBlankHouseholdCode && !rawVisit.code.startsWith(rawVisit.householdCode)){
-            errors << errorMessageService.getRawMessage("validation.field.visit.code.prefix.not.current.error", [rawVisit.code, rawVisit.householdCode], ["visitCode","householdCode"])
+            errors << errorMessageService.getRawMessage(RawEntity.VISIT, "validation.field.visit.code.prefix.not.current.error", [rawVisit.code, rawVisit.householdCode], ["visitCode","householdCode"])
         }
 
         //C4. Check If RoundNumber is Valid
         if (!isBlankRoundNumber && !isValidRoundNumber(rawVisit.roundNumber)){
-            errors << errorMessageService.getRawMessage("validation.field.visit.roundnumber.valid.error", ["${rawVisit.roundNumber}"], ["roundNumber"])
+            errors << errorMessageService.getRawMessage(RawEntity.VISIT, "validation.field.visit.roundnumber.valid.error", ["${rawVisit.roundNumber}"], ["roundNumber"])
         }
 
         //C5. Validate VisitLocation Enum Options
         if (!isBlankVisitLocation && VisitLocationItem.getFrom(rawVisit.visitLocation)==null){
-            errors << errorMessageService.getRawMessage("validation.field.enum.choices.error", [rawVisit.visitLocation, "visitLocation"], ["visitLocation"])
+            errors << errorMessageService.getRawMessage(RawEntity.VISIT, "validation.field.enum.choices.error", [rawVisit.visitLocation, "visitLocation"], ["visitLocation"])
         }
 
         //C6. Check Visit Date max date
         if (!isBlankVisitDate && rawVisit.visitDate > LocalDate.now()){
-            errors << errorMessageService.getRawMessage("validation.field.date.not.greater.today", ["visitDate"], ["visitDate"])
+            errors << errorMessageService.getRawMessage(RawEntity.VISIT, "validation.field.date.not.greater.today", ["visitDate"], ["visitDate"])
         }
 
         //C4. Check Household reference existence
         if (!isBlankHouseholdCode && !householdExists){
-            errors << errorMessageService.getRawMessage("validation.field.reference.error", ["Household", "householdCode", rawVisit.householdCode], ["householdCode"])
+            errors << errorMessageService.getRawMessage(RawEntity.VISIT, "validation.field.reference.error", ["Household", "householdCode", rawVisit.householdCode], ["householdCode"])
         }
         //C4. Check Respondent reference existence
         if (!respondentExists){
-            errors << errorMessageService.getRawMessage("validation.field.reference.error", ["Member", "code", rawVisit.respondentCode], ["respondentCode"])
+            errors << errorMessageService.getRawMessage(RawEntity.VISIT, "validation.field.reference.error", ["Member", "code", rawVisit.respondentCode], ["respondentCode"])
         }
 
         //C5. Check CollectedBy User existence
         if (!isBlankCollectedBy && !userService.exists(rawVisit.collectedBy)){
-            errors << errorMessageService.getRawMessage("validation.field.user.dont.exists.error", [rawVisit.collectedBy], ["collectedBy"])
+            errors << errorMessageService.getRawMessage(RawEntity.VISIT, "validation.field.user.dont.exists.error", [rawVisit.collectedBy], ["collectedBy"])
         }
 
         //C6. Check Duplicate of visitCode
         if (!isBlankCode && exists(rawVisit.code)){
-            errors << errorMessageService.getRawMessage("validation.field.reference.duplicate.error", ["Visit", "code", rawVisit.code], ["code"])
+            errors << errorMessageService.getRawMessage(RawEntity.VISIT, "validation.field.reference.duplicate.error", ["Visit", "code", rawVisit.code], ["code"])
         }
 
         return errors

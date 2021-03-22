@@ -6,6 +6,7 @@ import net.betainteractive.utilities.StringUtil
 import org.philimone.hds.explorer.server.model.collect.raw.RawMember
 import org.philimone.hds.explorer.server.model.enums.Gender
 import org.philimone.hds.explorer.server.model.enums.MaritalStatus
+import org.philimone.hds.explorer.server.model.enums.RawEntity
 import org.philimone.hds.explorer.server.model.main.collect.raw.RawExecutionResult
 import org.philimone.hds.explorer.server.model.main.collect.raw.RawMessage
 import org.philimone.hds.explorer.server.model.settings.Codes
@@ -61,7 +62,7 @@ class MemberService {
         //Validate using Gorm Validations
         if (member.hasErrors()){
 
-            errors = errorMessageService.getRawMessages(member)
+            errors = errorMessageService.getRawMessages(RawEntity.MEMBER, member)
 
             RawExecutionResult<Member> obj = RawExecutionResult.newErrorResult(errors)
             return obj
@@ -93,99 +94,99 @@ class MemberService {
 
         //C1. Check Blank Fields (code)
         if (isBlankMemberCode){
-            errors << errorMessageService.getRawMessage("validation.field.blank", ["code"], ["code"])
+            errors << errorMessageService.getRawMessage(RawEntity.MEMBER, "validation.field.blank", ["code"], ["code"])
         }
         //C1. Check Blank Fields (name)
         if (isBlankMemberName){
-            errors << errorMessageService.getRawMessage("validation.field.blank", ["name"], ["name"])
+            errors << errorMessageService.getRawMessage(RawEntity.MEMBER, "validation.field.blank", ["name"], ["name"])
         }
         //C1. Check Blank Fields (gender)
         if (isBlankMemberGender){
-            errors << errorMessageService.getRawMessage("validation.field.blank", ["gender"], ["gender"])
+            errors << errorMessageService.getRawMessage(RawEntity.MEMBER, "validation.field.blank", ["gender"], ["gender"])
         }
         //C1. Check Blank Fields (householdCode)
         if (isBlankHouseholdCode){
-            errors << errorMessageService.getRawMessage("validation.field.blank", ["householdCode"], ["householdCode"])
+            errors << errorMessageService.getRawMessage(RawEntity.MEMBER, "validation.field.blank", ["householdCode"], ["householdCode"])
         }
         //C1. Check Blank Fields (motherCode)
         if (isBlankMotherCode){
-            errors << errorMessageService.getRawMessage("validation.field.blank", ["motherCode"], ["motherCode"])
+            errors << errorMessageService.getRawMessage(RawEntity.MEMBER, "validation.field.blank", ["motherCode"], ["motherCode"])
         }
         //C1. Check Blank Fields (fatherCode)
         if (isBlankFatherCode){
-            errors << errorMessageService.getRawMessage("validation.field.blank", ["fatherCode"], ["fatherCode"])
+            errors << errorMessageService.getRawMessage(RawEntity.MEMBER, "validation.field.blank", ["fatherCode"], ["fatherCode"])
         }
         //C1. Check Blank Fields (maritalStatus)
         if (isBlankMaritalStatus){
-            errors << errorMessageService.getRawMessage("validation.field.blank", ["maritalStatus"], ["maritalStatus"])
+            errors << errorMessageService.getRawMessage(RawEntity.MEMBER, "validation.field.blank", ["maritalStatus"], ["maritalStatus"])
         }
         //C1. Check Nullable Fields (dob)
         if (isNullDob){
-            errors << errorMessageService.getRawMessage("validation.field.blank", ["dob"], ["dob"])
+            errors << errorMessageService.getRawMessage(RawEntity.MEMBER, "validation.field.blank", ["dob"], ["dob"])
         }
 
         //C2. Check Code Regex Pattern
         if (!isBlankMemberCode && !codeGeneratorService.isMemberCodeValid(member.code)) {
-            errors << errorMessageService.getRawMessage("validation.field.pattern.no.matches", ["code", "TXUPF1001001"], ["code"])
+            errors << errorMessageService.getRawMessage(RawEntity.MEMBER, "validation.field.pattern.no.matches", ["code", "TXUPF1001001"], ["code"])
         }
         //C3. Check Code Prefix Reference existence (Household Existence in memberCode)
         if (!isBlankMemberCode && !householdService.prefixExists(member.code)){
-            errors << errorMessageService.getRawMessage("validation.field.pattern.prefix.household.reference.error", [member.code], ["code"])
+            errors << errorMessageService.getRawMessage(RawEntity.MEMBER, "validation.field.pattern.prefix.household.reference.error", [member.code], ["code"])
         }
 
         //C12. Validate Gender Enum Options
         if (!isBlankMemberGender && Gender.getFrom(member.gender)==null){
-            errors << errorMessageService.getRawMessage("validation.field.enum.choices.error", [member.gender, "gender"], ["gender"])
+            errors << errorMessageService.getRawMessage(RawEntity.MEMBER, "validation.field.enum.choices.error", [member.gender, "gender"], ["gender"])
         }
         //C12. Validate MaritalStatus Enum Options
         if (!isBlankMaritalStatus && MaritalStatus.getFrom(member.maritalStatus)==null){
-            errors << errorMessageService.getRawMessage("validation.field.enum.choices.error", [member.maritalStatus, "maritalStatus"], ["maritalStatus"])
+            errors << errorMessageService.getRawMessage(RawEntity.MEMBER, "validation.field.enum.choices.error", [member.maritalStatus, "maritalStatus"], ["maritalStatus"])
         }
 
         //C5. Check dob max date
         if (!isNullDob && member.dob > LocalDate.now()){
-            errors << errorMessageService.getRawMessage("validation.field.date.not.greater.today", [StringUtil.format(member.dob)], ["dob"])
+            errors << errorMessageService.getRawMessage(RawEntity.MEMBER, "validation.field.date.not.greater.today", [StringUtil.format(member.dob)], ["dob"])
         }
 
         //C4. Check Household reference existence
         if (!isBlankHouseholdCode && !householdService.exists(member.householdCode)){
-            errors << errorMessageService.getRawMessage("validation.field.reference.error", ["Household", "householdCode", member.householdCode], ["householdCode"])
+            errors << errorMessageService.getRawMessage(RawEntity.MEMBER, "validation.field.reference.error", ["Household", "householdCode", member.householdCode], ["householdCode"])
         }
         //C4. Check Mother reference existence
         if (!isBlankMotherCode && !motherExists){
-            errors << errorMessageService.getRawMessage("validation.field.reference.error", ["Member", "motherCode", member.motherCode], ["motherCode"])
+            errors << errorMessageService.getRawMessage(RawEntity.MEMBER, "validation.field.reference.error", ["Member", "motherCode", member.motherCode], ["motherCode"])
         }
         //C4. Check Father reference existence
         if (!isBlankFatherCode && !fatherExists){
-            errors << errorMessageService.getRawMessage("validation.field.reference.error", ["Member", "fatherCode", member.fatherCode], ["fatherCode"])
+            errors << errorMessageService.getRawMessage(RawEntity.MEMBER, "validation.field.reference.error", ["Member", "fatherCode", member.fatherCode], ["fatherCode"])
         }
 
         //C6. Check mother Dob must be greater or equal to 12
         if (!motherUnknown && motherExists && GeneralUtil.getAge(mother.dob)< Codes.MIN_MOTHER_AGE_VALUE ){
-            errors << errorMessageService.getRawMessage("validation.field.dob.mother.minage.error", [StringUtil.format(mother.dob), Codes.MIN_MOTHER_AGE_VALUE+""], ["mother.dob"])
+            errors << errorMessageService.getRawMessage(RawEntity.MEMBER, "validation.field.dob.mother.minage.error", [StringUtil.format(mother.dob), Codes.MIN_MOTHER_AGE_VALUE+""], ["mother.dob"])
         }
         //C7. Check father Dob must be greater or equal to 12
         if (!fatherUnknown && fatherExists && GeneralUtil.getAge(father.dob)< Codes.MIN_FATHER_AGE_VALUE ){
-            errors << errorMessageService.getRawMessage("validation.field.dob.father.minage.error", [StringUtil.format(father.dob), Codes.MIN_FATHER_AGE_VALUE+""], ["father.dob"])
+            errors << errorMessageService.getRawMessage(RawEntity.MEMBER, "validation.field.dob.father.minage.error", [StringUtil.format(father.dob), Codes.MIN_FATHER_AGE_VALUE+""], ["father.dob"])
         }
 
         //C9. Check mother Gender
         if (Codes.GENDER_CHECKING && !motherUnknown &&  motherExists && mother.gender==Gender.MALE){
-            errors << errorMessageService.getRawMessage("validation.field.gender.mother.error", [], ["mother.gender"])
+            errors << errorMessageService.getRawMessage(RawEntity.MEMBER, "validation.field.gender.mother.error", [], ["mother.gender"])
         }
         //C10. Check father Gender
         if (Codes.GENDER_CHECKING && !fatherUnknown && fatherExists && father.gender==Gender.FEMALE){
-            errors << errorMessageService.getRawMessage("validation.field.gender.father.error", [], ["father.gender"])
+            errors << errorMessageService.getRawMessage(RawEntity.MEMBER, "validation.field.gender.father.error", [], ["father.gender"])
         }
 
         //C5. Check CollectedBy User existence
         if (!isBlankCollectedBy && !userService.exists(member.collectedBy)){
-            errors << errorMessageService.getRawMessage("validation.field.user.dont.exists.error", [member.collectedBy], ["collectedBy"])
+            errors << errorMessageService.getRawMessage(RawEntity.MEMBER, "validation.field.user.dont.exists.error", [member.collectedBy], ["collectedBy"])
         }
 
         //C6. Check Duplicate of memberCode
         if (!isBlankMemberCode && exists(member.code)){
-            errors << errorMessageService.getRawMessage("validation.field.reference.duplicate.error", ["Member", "code", member.code], ["code"])
+            errors << errorMessageService.getRawMessage(RawEntity.MEMBER, "validation.field.reference.duplicate.error", ["Member", "code", member.code], ["code"])
         }
 
         return errors

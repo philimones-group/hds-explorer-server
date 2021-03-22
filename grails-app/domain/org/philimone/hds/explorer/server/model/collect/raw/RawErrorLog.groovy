@@ -48,5 +48,9 @@ class RawErrorLog {
         table "_raw_error_log"
 
         id name: "uuid", generator: "assigned"
+
+        entity column: "entity", indexColumn: [name: "idx_entity", type: Integer]
+        code column: "code", indexColumn: [name: "idx_code", type: Integer]
+        message column: "message"
     }
 }

@@ -7,6 +7,7 @@ import org.philimone.hds.explorer.server.model.collect.raw.RawDeath
 import org.philimone.hds.explorer.server.model.enums.HeadRelationshipType
 import org.philimone.hds.explorer.server.model.enums.MaritalEndStatus
 import org.philimone.hds.explorer.server.model.enums.MaritalStartStatus
+import org.philimone.hds.explorer.server.model.enums.RawEntity
 import org.philimone.hds.explorer.server.model.enums.temporal.HeadRelationshipEndType
 import org.philimone.hds.explorer.server.model.enums.temporal.ResidencyEndType
 import org.philimone.hds.explorer.server.model.main.collect.raw.RawExecutionResult
@@ -158,7 +159,7 @@ class DeathService {
         //Validate using Gorm Validations
         if (death.hasErrors()){
 
-            errors = errorMessageService.getRawMessages(death)
+            errors = errorMessageService.getRawMessages(RawEntity.DEATH, death)
 
             RawExecutionResult<Death> obj = RawExecutionResult.newErrorResult(errors)
             return obj
@@ -194,51 +195,51 @@ class DeathService {
 
         //C1. Check Blank Fields (visitCode)
         if (isBlankVisitCode){
-            errors << errorMessageService.getRawMessage("validation.field.blank", ["visitCode"], ["visitCode"])
+            errors << errorMessageService.getRawMessage(RawEntity.DEATH, "validation.field.blank", ["visitCode"], ["visitCode"])
         }
         //C1. Check Blank Fields (memberCode)
         if (isBlankMemberCode){
-            errors << errorMessageService.getRawMessage("validation.field.blank", ["memberCode"], ["memberCode"])
+            errors << errorMessageService.getRawMessage(RawEntity.DEATH, "validation.field.blank", ["memberCode"], ["memberCode"])
         }
         //C1. Check Nullable Fields (deathDate)
         if (isBlankDeathDate){
-            errors << errorMessageService.getRawMessage("validation.field.blank", ["deathDate"], ["deathDate"])
+            errors << errorMessageService.getRawMessage(RawEntity.DEATH, "validation.field.blank", ["deathDate"], ["deathDate"])
         }
         //C1. Check Blank Fields (deathCause)
         if (isBlankDeathCause){
-            //errors << errorMessageService.getRawMessage("validation.field.blank", ["deathCause"], ["deathCause"])
+            //errors << errorMessageService.getRawMessage(RawEntity.DEATH, "validation.field.blank", ["deathCause"], ["deathCause"])
         }
         //C1. Check Blank Fields (deathPlace)
         if (isBlankDeathPlace){
-            //errors << errorMessageService.getRawMessage("validation.field.blank", ["deathPlace"], ["deathPlace"])
+            //errors << errorMessageService.getRawMessage(RawEntity.DEATH, "validation.field.blank", ["deathPlace"], ["deathPlace"])
         }
 
         //C2. Check Visit reference existence
         if (!visitExists){
-            errors << errorMessageService.getRawMessage("validation.field.reference.error", ["Visit", "code", rawDeath.visitCode], ["visitCode"])
+            errors << errorMessageService.getRawMessage(RawEntity.DEATH, "validation.field.reference.error", ["Visit", "code", rawDeath.visitCode], ["visitCode"])
         }
         //C2. Check Member reference existence
         if (!memberExists){
-            errors << errorMessageService.getRawMessage("validation.field.reference.error", ["Member", "code", rawDeath.memberCode], ["memberCode"])
+            errors << errorMessageService.getRawMessage(RawEntity.DEATH, "validation.field.reference.error", ["Member", "code", rawDeath.memberCode], ["memberCode"])
         }
 
         //C3. Check DeathDate against maxDate
         if (!isBlankDeathDate && rawDeath.deathDate > LocalDate.now()){
-            errors << errorMessageService.getRawMessage("validation.field.date.not.greater.today", ["deathDate"], ["deathDate"])
+            errors << errorMessageService.getRawMessage(RawEntity.DEATH, "validation.field.date.not.greater.today", ["deathDate"], ["deathDate"])
         }
         //C4. Check DeathDate against dateOfBirth
         if (!isBlankDeathDate && memberExists && rawDeath.deathDate < member.dob){
-            errors << errorMessageService.getRawMessage("validation.field.death.dob.not.greater.date", [StringUtil.format(rawDeath.deathDate)], ["dob"])
+            errors << errorMessageService.getRawMessage(RawEntity.DEATH, "validation.field.death.dob.not.greater.date", [StringUtil.format(rawDeath.deathDate)], ["dob"])
         }
 
         //CV. Check CollectedBy User existence
         if (!isBlankCollectedBy && !userService.exists(rawDeath.collectedBy)){
-            errors << errorMessageService.getRawMessage("validation.field.user.dont.exists.error", [rawDeath.collectedBy], ["collectedBy"])
+            errors << errorMessageService.getRawMessage(RawEntity.DEATH, "validation.field.user.dont.exists.error", [rawDeath.collectedBy], ["collectedBy"])
         }
 
         //C5. Check Member Death Status
         if (memberExists && isMemberDead(rawDeath.memberCode)){
-            errors << errorMessageService.getRawMessage("validation.field.death.exists.error", [rawDeath.memberCode], ["memberCode"])
+            errors << errorMessageService.getRawMessage(RawEntity.DEATH, "validation.field.death.exists.error", [rawDeath.memberCode], ["memberCode"])
         }
 
 
@@ -264,7 +265,7 @@ class DeathService {
             if (residency != null){
 
                 if (residency.endType != ResidencyEndType.NOT_APPLICABLE.code) {
-                    errors << errorMessageService.getRawMessage("validation.field.death.opened.residency.error", [residency.householdCode, residency.id, residency.endType], ["householdCode","memberCode"])
+                    errors << errorMessageService.getRawMessage(RawEntity.DEATH, "validation.field.death.opened.residency.error", [residency.householdCode, residency.id, residency.endType], ["householdCode","memberCode"])
                     return errors
                 }
 

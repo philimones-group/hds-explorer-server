@@ -4,6 +4,7 @@ import grails.artefact.DomainClass
 import grails.gorm.transactions.Transactional
 import net.betainteractive.utilities.StringUtil
 import org.grails.datastore.gorm.GormEntity
+import org.philimone.hds.explorer.server.model.enums.RawEntity
 import org.philimone.hds.explorer.server.model.main.collect.raw.RawMessage
 import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.validation.ObjectError
@@ -49,7 +50,7 @@ class ErrorMessageService {
         return errors
     }
 
-    List<RawMessage> getRawMessages(GormEntity domain){
+    List<RawMessage> getRawMessages(RawEntity entity, GormEntity domain){
         def errors = new ArrayList<RawMessage>()
 
         domain.errors.fieldErrors.each { obj ->
@@ -63,13 +64,13 @@ class ErrorMessageService {
         return errors
     }
 
-    RawMessage getRawMessage(String messageCode, String[] args, String[] fields){
+    RawMessage getRawMessage(RawEntity entity, String messageCode, String[] args, String[] fields){
         def msg = messageSource.getMessage(messageCode, args, LocaleContextHolder.getLocale())
-        new RawMessage(msg, fields)
+        new RawMessage(entity, msg, fields)
     }
 
-    RawMessage getRawMessage(String messageCode, List<String> args, List<String> fields){
+    RawMessage getRawMessage(RawEntity entity, String messageCode, List<String> args, List<String> fields){
         def msg = messageSource.getMessage(messageCode, args!=null ? args.toArray() : null, LocaleContextHolder.getLocale())
-        new RawMessage(msg, fields)
+        new RawMessage(entity, msg, fields)
     }
 }

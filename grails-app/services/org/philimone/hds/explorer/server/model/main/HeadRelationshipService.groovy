@@ -5,6 +5,7 @@ import net.betainteractive.utilities.GeneralUtil
 import net.betainteractive.utilities.StringUtil
 import org.philimone.hds.explorer.server.model.collect.raw.RawHeadRelationship
 import org.philimone.hds.explorer.server.model.enums.HeadRelationshipType
+import org.philimone.hds.explorer.server.model.enums.RawEntity
 import org.philimone.hds.explorer.server.model.enums.temporal.HeadRelationshipEndType
 import org.philimone.hds.explorer.server.model.enums.temporal.HeadRelationshipStartType
 import org.philimone.hds.explorer.server.model.main.collect.raw.RawExecutionResult
@@ -134,10 +135,10 @@ class HeadRelationshipService {
 
         //get errors if they occur and send with the success report
         if (member.hasErrors()) {
-            errors += errorMessageService.getRawMessages(member)
+            errors += errorMessageService.getRawMessages(RawEntity.MEMBER, member)
         }
         if (household.hasErrors()) {
-            errors += errorMessageService.getRawMessages(household)
+            errors += errorMessageService.getRawMessages(RawEntity.HOUSEHOLD, household)
         }
 
         return errors
@@ -159,10 +160,10 @@ class HeadRelationshipService {
 
         //get errors if they occur and send with the success report
         if (member.hasErrors()) {
-            errors += errorMessageService.getRawMessages(member)
+            errors += errorMessageService.getRawMessages(RawEntity.MEMBER, member)
         }
         if (household.hasErrors()) {
-            errors += errorMessageService.getRawMessages(household)
+            errors += errorMessageService.getRawMessages(RawEntity.HOUSEHOLD, household)
         }
 
         return errors
@@ -189,7 +190,7 @@ class HeadRelationshipService {
         //Validate using Gorm Validations
         if (headRelationship.hasErrors()){
 
-            errors = errorMessageService.getRawMessages(headRelationship)
+            errors = errorMessageService.getRawMessages(RawEntity.HEAD_RELATIONSHIP, headRelationship)
 
             RawExecutionResult<HeadRelationship> obj = RawExecutionResult.newErrorResult(errors)
             return obj
@@ -220,7 +221,7 @@ class HeadRelationshipService {
         //Validate using Gorm Validations
         if (headRelationship.hasErrors()){
 
-            errors = errorMessageService.getRawMessages(headRelationship)
+            errors = errorMessageService.getRawMessages(RawEntity.HEAD_RELATIONSHIP, headRelationship)
 
             RawExecutionResult<HeadRelationship> obj = RawExecutionResult.newErrorResult(errors)
             return obj
@@ -251,51 +252,51 @@ class HeadRelationshipService {
 
         //C1. Check Blank Fields (memberCode)
         if (isBlankMemberCode){
-            errors << errorMessageService.getRawMessage("validation.field.blank", ["memberCode"], ["memberCode"])
+            errors << errorMessageService.getRawMessage(RawEntity.HEAD_RELATIONSHIP, "validation.field.blank", ["memberCode"], ["memberCode"])
         }
         //C1. Check Blank Fields (householdCode)
         if (isBlankHouseholdCode){
-            errors << errorMessageService.getRawMessage("validation.field.blank", ["householdCode"], ["householdCode"])
+            errors << errorMessageService.getRawMessage(RawEntity.HEAD_RELATIONSHIP, "validation.field.blank", ["householdCode"], ["householdCode"])
         }
         //C1. Check Blank Fields (startType)
         if (isBlankStartType){
-            errors << errorMessageService.getRawMessage("validation.field.blank", ["startType"], ["startType"])
+            errors << errorMessageService.getRawMessage(RawEntity.HEAD_RELATIONSHIP, "validation.field.blank", ["startType"], ["startType"])
         }
         //C1. Check Nullable Fields (startDate)
         if (isNullStartDate){
-            errors << errorMessageService.getRawMessage("validation.field.blank", ["startDate"], ["startDate"])
+            errors << errorMessageService.getRawMessage(RawEntity.HEAD_RELATIONSHIP, "validation.field.blank", ["startDate"], ["startDate"])
         }
         //C3. Validate startType Enum Options
         if (!isBlankStartType && HeadRelationshipStartType.getFrom(headRelationship.startType)==null){
-            errors << errorMessageService.getRawMessage("validation.field.enum.starttype.error", [headRelationship.startType], ["startType"])
+            errors << errorMessageService.getRawMessage(RawEntity.HEAD_RELATIONSHIP, "validation.field.enum.starttype.error", [headRelationship.startType], ["startType"])
         }
         //C3. Validate relationshipType Enum Options
         if (!isBlankRelationshipType && HeadRelationshipType.getFrom(headRelationship.relationshipType)==null){
-            errors << errorMessageService.getRawMessage("validation.field.headRelationship.type.valid.error", [headRelationship.relationshipType], ["relationshipType"])
+            errors << errorMessageService.getRawMessage(RawEntity.HEAD_RELATIONSHIP, "validation.field.headRelationship.type.valid.error", [headRelationship.relationshipType], ["relationshipType"])
         }
         //C4. Check Member reference existence
         if (!isBlankMemberCode && !memberExists){
-            errors << errorMessageService.getRawMessage("validation.field.reference.error", ["Member", "memberCode", headRelationship.memberCode], ["memberCode"])
+            errors << errorMessageService.getRawMessage(RawEntity.HEAD_RELATIONSHIP, "validation.field.reference.error", ["Member", "memberCode", headRelationship.memberCode], ["memberCode"])
         }
         //C4. Check Household reference existence
         if (!isBlankHouseholdCode && !householdExists){
-            errors << errorMessageService.getRawMessage("validation.field.reference.error", ["Household", "householdCode", headRelationship.householdCode], ["householdCode"])
+            errors << errorMessageService.getRawMessage(RawEntity.HEAD_RELATIONSHIP, "validation.field.reference.error", ["Household", "householdCode", headRelationship.householdCode], ["householdCode"])
         }
         //C5. Check startDate max date
         if (!isNullStartDate && headRelationship.startDate > LocalDate.now()){
-            errors << errorMessageService.getRawMessage("validation.field.date.not.greater.today", ["headRelationship.startDate"], ["startDate"])
+            errors << errorMessageService.getRawMessage(RawEntity.HEAD_RELATIONSHIP, "validation.field.date.not.greater.today", ["headRelationship.startDate"], ["startDate"])
         }
         //C5.2. Check Dates against DOB
         if (!isNullStartDate && memberExists && headRelationship.startDate < member.dob){
-            errors << errorMessageService.getRawMessage("validation.field.dob.not.greater.date", ["headRelationship.startDate", StringUtil.format(member.dob)], ["startDate","member.dob"])
+            errors << errorMessageService.getRawMessage(RawEntity.HEAD_RELATIONSHIP, "validation.field.dob.not.greater.date", ["headRelationship.startDate", StringUtil.format(member.dob)], ["startDate","member.dob"])
         }
         //C6. Check Age of Head of Household
         if (memberExists && (relationshipType == HeadRelationshipType.HEAD_OF_HOUSEHOLD && GeneralUtil.getAge(member.dob)< Codes.MIN_HEAD_AGE_VALUE )){
-            errors << errorMessageService.getRawMessage("validation.field.dob.head.minage.error", [StringUtil.format(member.dob), Codes.MIN_HEAD_AGE_VALUE+""], ["member.dob"])
+            errors << errorMessageService.getRawMessage(RawEntity.HEAD_RELATIONSHIP, "validation.field.dob.head.minage.error", [StringUtil.format(member.dob), Codes.MIN_HEAD_AGE_VALUE+""], ["member.dob"])
         }
         //C7. Check Current Head Existence and the new relation is not a head of household - We must have a existent Head of Household in order to create new Relationship with the Head
         if (!headExists && relationshipType != HeadRelationshipType.HEAD_OF_HOUSEHOLD){
-            errors << errorMessageService.getRawMessage("validation.field.headRelationship.head.not.exists.error", [headRelationship.householdCode], ["householdCode"])
+            errors << errorMessageService.getRawMessage(RawEntity.HEAD_RELATIONSHIP, "validation.field.headRelationship.head.not.exists.error", [headRelationship.householdCode], ["householdCode"])
         }
 
         //Validation part 2: Previous HeadRelationship against new HeadRelationship
@@ -310,28 +311,28 @@ class HeadRelationshipService {
 
             //P1. Check If endType is empty or NA
             if (previous.endType == null || previous.endType == HeadRelationshipEndType.NOT_APPLICABLE){
-                errors << errorMessageService.getRawMessage("validation.field.headRelationship.endtype.na.error", null, ["previous.endType"])
+                errors << errorMessageService.getRawMessage(RawEntity.HEAD_RELATIONSHIP, "validation.field.headRelationship.endtype.na.error", null, ["previous.endType"])
             }
             //P2. Check If endType is DTH or Member has DTH Reg
             if (previous.endType == HeadRelationshipEndType.DEATH || memberService.isDead(member)){
-                errors << errorMessageService.getRawMessage("validation.field.headRelationship.endtype.dth.error", null, ["previous.endType"])
+                errors << errorMessageService.getRawMessage(RawEntity.HEAD_RELATIONSHIP, "validation.field.headRelationship.endtype.dth.error", null, ["previous.endType"])
             }
             //P3. Check If endType is CHG and new startType isnt ENT
             if (previous.endType == HeadRelationshipEndType.INTERNAL_OUTMIGRATION && newStartType != HeadRelationshipStartType.INTERNAL_INMIGRATION){
-                errors << errorMessageService.getRawMessage("validation.field.headRelationship.endtype.chg.error", null, ["previous.endType"])
+                errors << errorMessageService.getRawMessage(RawEntity.HEAD_RELATIONSHIP, "validation.field.headRelationship.endtype.chg.error", null, ["previous.endType"])
             }
             //P4. Check If endType is EXT and new startType isnt XEN
             if (previous.endType == HeadRelationshipEndType.EXTERNAL_OUTMIGRATION && newStartType != HeadRelationshipStartType.EXTERNAL_INMIGRATION){
-                errors << errorMessageService.getRawMessage("validation.field.headRelationship.endtype.ext.error", null, ["previous.endType"])
+                errors << errorMessageService.getRawMessage(RawEntity.HEAD_RELATIONSHIP, "validation.field.headRelationship.endtype.ext.error", null, ["previous.endType"])
             }
             //P5. Check If endType is DHH/CHH and new startType isnt NHH
             if ((previous.endType == HeadRelationshipEndType.DEATH_OF_HEAD_OF_HOUSEHOLD || previous.endType == HeadRelationshipEndType.CHANGE_OF_HEAD_OF_HOUSEHOLD) &&
                  newStartType != HeadRelationshipStartType.NEW_HEAD_OF_HOUSEHOLD){
-                errors << errorMessageService.getRawMessage("validation.field.headRelationship.endtype.dhh.chh.error", null, ["previous.endType"])
+                errors << errorMessageService.getRawMessage(RawEntity.HEAD_RELATIONSHIP, "validation.field.headRelationship.endtype.dhh.chh.error", null, ["previous.endType"])
             }
             //P6. Check If endDate is greater than new startDate
             if (previous.endDate != null && (previous.endDate >= newStartDate)){
-                errors << errorMessageService.getRawMessage("validation.field.headRelationship.enddate.greater.new.startdate.error", null, ["previous.endType"])
+                errors << errorMessageService.getRawMessage(RawEntity.HEAD_RELATIONSHIP, "validation.field.headRelationship.enddate.greater.new.startdate.error", null, ["previous.endType"])
             }
 
             //P7. C7. Check If relationshipType is HEAD and if previous head is closed
@@ -340,7 +341,7 @@ class HeadRelationshipService {
                 def previousHead = getCurrentHouseholdHead(household)
 
                 if (previousHead != null && (previousHead.endType == null || previousHead.endType == HeadRelationshipEndType.NOT_APPLICABLE)){
-                    errors << errorMessageService.getRawMessage("validation.field.headRelationship.type.head.not.closed.error", null, ["lastHead.endType"])
+                    errors << errorMessageService.getRawMessage(RawEntity.HEAD_RELATIONSHIP, "validation.field.headRelationship.type.head.not.closed.error", null, ["lastHead.endType"])
                 }
             }
         }
@@ -363,39 +364,39 @@ class HeadRelationshipService {
 
         //C1. Check Blank Fields (memberCode)
         if (isBlankMemberCode){
-            errors << errorMessageService.getRawMessage("validation.field.blank", ["memberCode"], ["memberCode"])
+            errors << errorMessageService.getRawMessage(RawEntity.HEAD_RELATIONSHIP, "validation.field.blank", ["memberCode"], ["memberCode"])
         }
         //C1. Check Blank Fields (householdCode)
         if (isBlankHouseholdCode){
-            errors << errorMessageService.getRawMessage("validation.field.blank", ["householdCode"], ["householdCode"])
+            errors << errorMessageService.getRawMessage(RawEntity.HEAD_RELATIONSHIP, "validation.field.blank", ["householdCode"], ["householdCode"])
         }
         //C1. Check Blank Fields (startType)
         if (isBlankEndType){
-            errors << errorMessageService.getRawMessage("validation.field.blank", ["endType"], ["endType"])
+            errors << errorMessageService.getRawMessage(RawEntity.HEAD_RELATIONSHIP, "validation.field.blank", ["endType"], ["endType"])
         }
         //C1. Check Nullable Fields (startDate)
         if (isNullEndDate){
-            errors << errorMessageService.getRawMessage("validation.field.blank", ["endDate"], ["endDate"])
+            errors << errorMessageService.getRawMessage(RawEntity.HEAD_RELATIONSHIP, "validation.field.blank", ["endDate"], ["endDate"])
         }
         //C3. Validate startType Enum Options
         if (!isBlankEndType && HeadRelationshipEndType.getFrom(headRelationship.endType)==null){
-            errors << errorMessageService.getRawMessage("validation.field.enum.endtype.error", [headRelationship.endType], ["endType"])
+            errors << errorMessageService.getRawMessage(RawEntity.HEAD_RELATIONSHIP, "validation.field.enum.endtype.error", [headRelationship.endType], ["endType"])
         }
         //C4. Check Member reference existence
         if (!isBlankMemberCode && !memberExists){
-            errors << errorMessageService.getRawMessage("validation.field.reference.error", ["Member", "memberCode", headRelationship.memberCode], ["memberCode"])
+            errors << errorMessageService.getRawMessage(RawEntity.HEAD_RELATIONSHIP, "validation.field.reference.error", ["Member", "memberCode", headRelationship.memberCode], ["memberCode"])
         }
         //C4. Check Household reference existence
         if (!isBlankHouseholdCode && !householdExists){
-            errors << errorMessageService.getRawMessage("validation.field.reference.error", ["Household", "householdCode", headRelationship.householdCode], ["householdCode"])
+            errors << errorMessageService.getRawMessage(RawEntity.HEAD_RELATIONSHIP, "validation.field.reference.error", ["Household", "householdCode", headRelationship.householdCode], ["householdCode"])
         }
         //C5. Check endDate max date
         if (!isNullEndDate && headRelationship.endDate > LocalDate.now()){
-            errors << errorMessageService.getRawMessage("validation.field.date.not.greater.today", ["headRelationship.endDate"], ["endDate"])
+            errors << errorMessageService.getRawMessage(RawEntity.HEAD_RELATIONSHIP, "validation.field.date.not.greater.today", ["headRelationship.endDate"], ["endDate"])
         }
         //C6. Check Dates against DOB
         if (!isNullEndDate && memberExists && headRelationship.endDate < member.dob){
-            errors << errorMessageService.getRawMessage("validation.field.dob.not.greater.date", ["headRelationship.endDate", StringUtil.format(member.dob)], ["endDate","member.dob"])
+            errors << errorMessageService.getRawMessage(RawEntity.HEAD_RELATIONSHIP, "validation.field.dob.not.greater.date", ["headRelationship.endDate", StringUtil.format(member.dob)], ["endDate","member.dob"])
         }
 
         //Validation part 2: Previous HeadRelationship against new HeadRelationship
@@ -406,19 +407,19 @@ class HeadRelationshipService {
             //must exist
             if (currentHeadRelationship == null) {
                 //THERE IS NO CURRENT RELATIONSHIP TO CLOSE
-                errors << errorMessageService.getRawMessage("validation.field.headRelationship.close.not.exists.error", [household.code, member.code], ["household.code", "member.code"])
+                errors << errorMessageService.getRawMessage(RawEntity.HEAD_RELATIONSHIP, "validation.field.headRelationship.close.not.exists.error", [household.code, member.code], ["household.code", "member.code"])
                 return errors
             }
 
             //must not be closed
             //P1. Check If endType is empty or NA
             if ( !(currentHeadRelationship.endType == null || currentHeadRelationship.endType == HeadRelationshipEndType.NOT_APPLICABLE) ){
-                errors << errorMessageService.getRawMessage("validation.field.headRelationship.closed.already.error", [currentHeadRelationship.id+"", currentHeadRelationship.endType.code], ["previous.endType"])
+                errors << errorMessageService.getRawMessage(RawEntity.HEAD_RELATIONSHIP, "validation.field.headRelationship.closed.already.error", [currentHeadRelationship.id+"", currentHeadRelationship.endType.code], ["previous.endType"])
             }
 
             //C6. Check If endDate is before or equal to startDate
             if (currentHeadRelationship.startDate >= endDate){ //RECHECK THIS WITH >=
-                errors << errorMessageService.getRawMessage("validation.field.headRelationship.enddate.before.startdate.error", [currentHeadRelationship.id, StringUtil.format(endDate), StringUtil.format(currentHeadRelationship.startDate)], ["currentHeadRelationship.startDate", "new.endDate"])
+                errors << errorMessageService.getRawMessage(RawEntity.HEAD_RELATIONSHIP, "validation.field.headRelationship.enddate.before.startdate.error", [currentHeadRelationship.id, StringUtil.format(endDate), StringUtil.format(currentHeadRelationship.startDate)], ["currentHeadRelationship.startDate", "new.endDate"])
             }
 
         }

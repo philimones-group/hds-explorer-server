@@ -6,6 +6,7 @@ import net.betainteractive.utilities.StringUtil
 import org.philimone.hds.explorer.server.model.collect.raw.RawInMigration
 import org.philimone.hds.explorer.server.model.collect.raw.RawOutMigration
 import org.philimone.hds.explorer.server.model.collect.raw.RawResidency
+import org.philimone.hds.explorer.server.model.enums.RawEntity
 import org.philimone.hds.explorer.server.model.enums.temporal.InMigrationType
 import org.philimone.hds.explorer.server.model.enums.temporal.OutMigrationType
 import org.philimone.hds.explorer.server.model.enums.temporal.ResidencyEndType
@@ -81,7 +82,7 @@ class InMigrationService {
         //Validate using Gorm Validations
         if (inmigration.hasErrors()){
 
-            errors = errorMessageService.getRawMessages(inmigration)
+            errors = errorMessageService.getRawMessages(RawEntity.IN_MIGRATION, inmigration)
 
             RawExecutionResult<InMigration> obj = RawExecutionResult.newErrorResult(errors)
             return obj
@@ -125,75 +126,75 @@ class InMigrationService {
 
         //C1. Check Blank Fields (visitCode)
         if (isBlankVisitCode){
-            errors << errorMessageService.getRawMessage("validation.field.blank", ["visitCode"], ["visitCode"])
+            errors << errorMessageService.getRawMessage(RawEntity.IN_MIGRATION, "validation.field.blank", ["visitCode"], ["visitCode"])
         }
         //C1. Check Blank Fields (memberCode)
         if (isBlankMemberCode){
-            errors << errorMessageService.getRawMessage("validation.field.blank", ["memberCode"], ["memberCode"])
+            errors << errorMessageService.getRawMessage(RawEntity.IN_MIGRATION, "validation.field.blank", ["memberCode"], ["memberCode"])
         }
         //C1. Check Blank Fields (migrationType)
         if (isBlankMigrationType){
-            errors << errorMessageService.getRawMessage("validation.field.blank", ["migrationType"], ["migrationType"])
+            errors << errorMessageService.getRawMessage(RawEntity.IN_MIGRATION, "validation.field.blank", ["migrationType"], ["migrationType"])
         }
         //C1. Check Blank Fields (destinationCode)
         if (isBlankDestinationCode){
-            errors << errorMessageService.getRawMessage("validation.field.blank", ["destinationCode"], ["destinationCode"])
+            errors << errorMessageService.getRawMessage(RawEntity.IN_MIGRATION, "validation.field.blank", ["destinationCode"], ["destinationCode"])
         }
         //C1. Check Blank Fields (originCode)
         if (isBlankOriginCode && migrationType==InMigrationType.INTERNAL){
-            errors << errorMessageService.getRawMessage("validation.field.blank", ["originCode"], ["originCode"])
+            errors << errorMessageService.getRawMessage(RawEntity.IN_MIGRATION, "validation.field.blank", ["originCode"], ["originCode"])
         }
         //C1. Check Nullable Fields (migrationDate)
         if (isBlankMigrationDate){
-            errors << errorMessageService.getRawMessage("validation.field.blank", ["migrationDate"], ["migrationDate"])
+            errors << errorMessageService.getRawMessage(RawEntity.IN_MIGRATION, "validation.field.blank", ["migrationDate"], ["migrationDate"])
         }
         //C1. Check Blank Fields (migrationReason)
         if (isBlankMigrationReason){
-            //errors << errorMessageService.getRawMessage("validation.field.blank", ["migrationReason"], ["migrationReason"])
+            //errors << errorMessageService.getRawMessage(RawEntity.IN_MIGRATION, "validation.field.blank", ["migrationReason"], ["migrationReason"])
         }
         //C6. Validate migrationType Enum Options
         if (!isBlankMigrationType && migrationType==null){
-            errors << errorMessageService.getRawMessage("validation.field.enum.choices.error", [rawInMigration.migrationType, "migrationType"], ["migrationType"])
+            errors << errorMessageService.getRawMessage(RawEntity.IN_MIGRATION, "validation.field.enum.choices.error", [rawInMigration.migrationType, "migrationType"], ["migrationType"])
         }
 
         //CX. Validate the visitCode with the destinationCode(household being visited)
         if (!isBlankVisitCode && !isBlankDestinationCode && !rawInMigration.visitCode.startsWith(rawInMigration.destinationCode)){
-            errors << errorMessageService.getRawMessage("validation.field.inmigration.visit.code.prefix.not.current.error", [rawInMigration.visitCode, rawInMigration.destinationCode], ["visitCode","destinationCode"])
+            errors << errorMessageService.getRawMessage(RawEntity.IN_MIGRATION, "validation.field.inmigration.visit.code.prefix.not.current.error", [rawInMigration.visitCode, rawInMigration.destinationCode], ["visitCode","destinationCode"])
         }
 
         //C2. Check Visit reference existence
         if (!visitExists){
-            errors << errorMessageService.getRawMessage("validation.field.reference.error", ["Visit", "visitCode", rawInMigration.visitCode], ["visitCode"])
+            errors << errorMessageService.getRawMessage(RawEntity.IN_MIGRATION, "validation.field.reference.error", ["Visit", "visitCode", rawInMigration.visitCode], ["visitCode"])
         }
         //C2. Check Member reference existence
         if (!memberExists){
-            errors << errorMessageService.getRawMessage("validation.field.reference.error", ["Member", "memberCode", rawInMigration.memberCode], ["memberCode"])
+            errors << errorMessageService.getRawMessage(RawEntity.IN_MIGRATION, "validation.field.reference.error", ["Member", "memberCode", rawInMigration.memberCode], ["memberCode"])
         }
         //C2. CHECK ORIGIN(if migType is INTERNAL) AND DESTINATION
         if (!originExists && migrationType == InMigrationType.INTERNAL){
-            errors << errorMessageService.getRawMessage("validation.field.reference.error", ["Member", "originCode", rawInMigration.originCode], ["originCode"])
+            errors << errorMessageService.getRawMessage(RawEntity.IN_MIGRATION, "validation.field.reference.error", ["Member", "originCode", rawInMigration.originCode], ["originCode"])
         }
         if (!destinationExists){
-            errors << errorMessageService.getRawMessage("validation.field.reference.error", ["Member", "destinationCode", rawInMigration.destinationCode], ["destinationCode"])
+            errors << errorMessageService.getRawMessage(RawEntity.IN_MIGRATION, "validation.field.reference.error", ["Member", "destinationCode", rawInMigration.destinationCode], ["destinationCode"])
         }
 
         //C3. Check MigrationDate against maxDate
         if (!isBlankMigrationDate && rawInMigration.migrationDate > LocalDate.now()){
-            errors << errorMessageService.getRawMessage("validation.field.date.not.greater.today", ["migrationDate"], ["migrationDate"])
+            errors << errorMessageService.getRawMessage(RawEntity.IN_MIGRATION, "validation.field.date.not.greater.today", ["migrationDate"], ["migrationDate"])
         }
         //C4. Check MigrationDate against dateOfBirth
         if (!isBlankMigrationDate && memberExists && rawInMigration.migrationDate < member.dob){
-            errors << errorMessageService.getRawMessage("validation.field.inmigration.dob.not.greater.date", [StringUtil.format(rawInMigration.migrationDate)], ["dob"])
+            errors << errorMessageService.getRawMessage(RawEntity.IN_MIGRATION, "validation.field.inmigration.dob.not.greater.date", [StringUtil.format(rawInMigration.migrationDate)], ["dob"])
         }
 
         //CV. Check CollectedBy User existence
         if (!isBlankCollectedBy && !userService.exists(rawInMigration.collectedBy)){
-            errors << errorMessageService.getRawMessage("validation.field.user.dont.exists.error", [rawInMigration.collectedBy], ["collectedBy"])
+            errors << errorMessageService.getRawMessage(RawEntity.IN_MIGRATION, "validation.field.user.dont.exists.error", [rawInMigration.collectedBy], ["collectedBy"])
         }
 
         //C5. Check Member Death Status
         if (memberExists && deathService.isMemberDead(rawInMigration.memberCode)){
-            errors << errorMessageService.getRawMessage("validation.field.inmigration.death.exists.error", [rawInMigration.memberCode], ["memberCode"])
+            errors << errorMessageService.getRawMessage(RawEntity.IN_MIGRATION, "validation.field.inmigration.death.exists.error", [rawInMigration.memberCode], ["memberCode"])
         }
 
 
@@ -214,14 +215,14 @@ class InMigrationService {
 
                 //origin code vs residency.householdCode
                 if (currentResidency.householdCode != rawInMigration.originCode){
-                    errors << errorMessageService.getRawMessage("validation.field.residency.not.current.error", ["originCode", currentResidency.memberCode], ["originCode","memberCode"])
+                    errors << errorMessageService.getRawMessage(RawEntity.IN_MIGRATION, "validation.field.residency.not.current.error", ["originCode", currentResidency.memberCode], ["originCode","memberCode"])
                     return errors
                 }
 
             } else if (migrationType == InMigrationType.INTERNAL) { //Internals InMigs must have residency
 
                 //The individual doesnt have a residency registry in the system
-                errors << errorMessageService.getRawMessage("validation.field.inmigration.residency.not.found.error", [member.code], ["memberCode"])
+                errors << errorMessageService.getRawMessage(RawEntity.IN_MIGRATION, "validation.field.inmigration.residency.not.found.error", [member.code], ["memberCode"])
 
                 return errors
             } else if (migrationType == InMigrationType.EXTERNAL) { //Coming from outside the area
@@ -229,7 +230,7 @@ class InMigrationService {
                 //if coming from outside and its his first time - the codes must be validated (memberCode must contains destinationCode)
 
                 if (!rawInMigration.memberCode.startsWith(rawInMigration.destinationCode)){
-                    errors << errorMessageService.getRawMessage("validation.field.inmigration.member.code.invalid.error", [member.code, rawInMigration.destinationCode], ["memberCode", "destinationCode"])
+                    errors << errorMessageService.getRawMessage(RawEntity.IN_MIGRATION, "validation.field.inmigration.member.code.invalid.error", [member.code, rawInMigration.destinationCode], ["memberCode", "destinationCode"])
                 }
 
             }

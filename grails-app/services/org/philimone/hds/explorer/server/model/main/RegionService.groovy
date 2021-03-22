@@ -3,6 +3,7 @@ package org.philimone.hds.explorer.server.model.main
 import grails.gorm.transactions.Transactional
 import net.betainteractive.utilities.StringUtil
 import org.philimone.hds.explorer.server.model.collect.raw.RawRegion
+import org.philimone.hds.explorer.server.model.enums.RawEntity
 import org.philimone.hds.explorer.server.model.enums.RegionLevel
 import org.philimone.hds.explorer.server.model.main.collect.raw.RawExecutionResult
 import org.philimone.hds.explorer.server.model.main.collect.raw.RawMessage
@@ -98,7 +99,7 @@ class RegionService {
 
         if (region.hasErrors()){
 
-            errors = errorMessageService.getRawMessages(region)
+            errors = errorMessageService.getRawMessages(RawEntity.REGION, region)
 
             RawExecutionResult<Region> obj = RawExecutionResult.newErrorResult(errors)
             return obj
@@ -118,33 +119,33 @@ class RegionService {
 
         //C1. Check Blank Fields (regionCode)
         if (isBlankRegionCode){
-            errors << errorMessageService.getRawMessage("validation.field.blank", ["regionCode"], ["regionCode"])
+            errors << errorMessageService.getRawMessage(RawEntity.REGION, "validation.field.blank", ["regionCode"], ["regionCode"])
         }
         //C1. Check Blank Fields (regionName)
         if (isBlankRegionName){
-            errors << errorMessageService.getRawMessage("validation.field.blank", ["regionName"], ["regionName"])
+            errors << errorMessageService.getRawMessage(RawEntity.REGION, "validation.field.blank", ["regionName"], ["regionName"])
         }
         //C1. Check Blank Fields (parentCode)
         //if (isBlankParentCode){
-        //    errors << errorMessageService.getRawMessage("validation.field.blank", ["parentCode"], ["parentCode"])
+        //    errors << errorMessageService.getRawMessage(RawEntity.REGION, "validation.field.blank", ["parentCode"], ["parentCode"])
         //}
         //C2. Check Code Regex Pattern
         if (!isBlankRegionCode && !codeGeneratorService.isRegionCodeValid(region.regionCode)) {
-            errors << errorMessageService.getRawMessage("validation.field.pattern.no.matches", ["regionCode", "TXU"], ["regionCode"])
+            errors << errorMessageService.getRawMessage(RawEntity.REGION, "validation.field.pattern.no.matches", ["regionCode", "TXU"], ["regionCode"])
         }
         //C3. Check Region reference existence
         if (!isBlankParentCode && !exists(region.parentCode)){
-            errors << errorMessageService.getRawMessage("validation.field.reference.error", ["Region", "parentCode", region.parentCode], ["parentCode"])
+            errors << errorMessageService.getRawMessage(RawEntity.REGION, "validation.field.reference.error", ["Region", "parentCode", region.parentCode], ["parentCode"])
         }
 
         //C4. Check User existence
         if (!isBlankCollectedBy && !userService.exists(region.collectedBy)){
-            errors << errorMessageService.getRawMessage("validation.field.user.dont.exists.error", [region.collectedBy], ["collectedBy"])
+            errors << errorMessageService.getRawMessage(RawEntity.REGION, "validation.field.user.dont.exists.error", [region.collectedBy], ["collectedBy"])
         }
 
         //C5. Check Duplicate of regionCode
         if (!isBlankRegionCode && exists(region.regionCode)){
-            errors << errorMessageService.getRawMessage("validation.field.reference.duplicate.error", ["Region", "regionCode", region.regionCode], ["regionCode"])
+            errors << errorMessageService.getRawMessage(RawEntity.REGION, "validation.field.reference.duplicate.error", ["Region", "regionCode", region.regionCode], ["regionCode"])
         }
 
         return errors

@@ -9,6 +9,7 @@ import org.philimone.hds.explorer.server.model.authentication.UserRole
 import org.philimone.hds.explorer.server.model.authentication.UserService
 import org.philimone.hds.explorer.server.model.collect.raw.RawHousehold
 import org.philimone.hds.explorer.server.model.collect.raw.RawRegion
+import org.philimone.hds.explorer.server.model.enums.RawEntity
 import org.philimone.hds.explorer.server.model.main.collect.raw.RawExecutionResult
 import org.philimone.hds.explorer.server.model.main.collect.raw.RawMessage
 import org.philimone.hds.explorer.server.model.settings.generator.CodeGeneratorService
@@ -16,6 +17,8 @@ import org.philimone.hds.explorer.services.errors.ErrorMessageService
 import org.springframework.context.MessageSource
 import org.springframework.context.support.ResourceBundleMessageSource
 import spock.lang.Specification
+
+import java.time.LocalDateTime
 
 class HouseholdServiceSpec extends Specification implements ServiceUnitTest<HouseholdService>, DataTest, AutowiredTest{
 
@@ -123,7 +126,7 @@ class HouseholdServiceSpec extends Specification implements ServiceUnitTest<Hous
         rw.save()
 
         println "Raw Household Errors:"
-        printRawMessages(errorMessageService.getRawMessages(rw))
+        printRawMessages(errorMessageService.getRawMessages(RawEntity.HOUSEHOLD, rw))
         println()
         //printErrors(rw)
 

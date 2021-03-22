@@ -3,6 +3,7 @@ package org.philimone.hds.explorer.server.model.main
 import grails.gorm.transactions.Transactional
 import net.betainteractive.utilities.StringUtil
 import org.philimone.hds.explorer.server.model.collect.raw.RawResidency
+import org.philimone.hds.explorer.server.model.enums.RawEntity
 import org.philimone.hds.explorer.server.model.enums.temporal.ResidencyEndType
 import org.philimone.hds.explorer.server.model.enums.temporal.ResidencyStartType
 import org.philimone.hds.explorer.server.model.main.collect.raw.RawExecutionResult
@@ -106,7 +107,7 @@ class ResidencyService {
 
         //get errors if they occur and send with the success report
         if (member.hasErrors()){
-            errors = errorMessageService.getRawMessages(member)
+            errors = errorMessageService.getRawMessages(RawEntity.MEMBER, member)
         }
 
         return errors
@@ -122,7 +123,7 @@ class ResidencyService {
         member.save(flush:true)
         //get errors if they occur and send with the success report
         if (member.hasErrors()){
-            errors = errorMessageService.getRawMessages(member)
+            errors = errorMessageService.getRawMessages(RawEntity.MEMBER, member)
         }
 
         return errors
@@ -149,7 +150,7 @@ class ResidencyService {
         //Validate using Gorm Validations
         if (residency.hasErrors()){
 
-            errors = errorMessageService.getRawMessages(residency)
+            errors = errorMessageService.getRawMessages(RawEntity.RESIDENCY, residency)
 
             RawExecutionResult<Residency> obj = RawExecutionResult.newErrorResult(errors)
             return obj
@@ -180,7 +181,7 @@ class ResidencyService {
         //Validate using Gorm Validations
         if (residency.hasErrors()){
 
-            errors = errorMessageService.getRawMessages(residency)
+            errors = errorMessageService.getRawMessages(RawEntity.RESIDENCY, residency)
 
             RawExecutionResult<Residency> obj = RawExecutionResult.newErrorResult(errors)
             return obj
@@ -208,39 +209,39 @@ class ResidencyService {
 
         //C1. Check Blank Fields (memberCode)
         if (isBlankMemberCode){
-            errors << errorMessageService.getRawMessage("validation.field.blank", ["memberCode"], ["memberCode"])
+            errors << errorMessageService.getRawMessage(RawEntity.RESIDENCY, "validation.field.blank", ["memberCode"], ["memberCode"])
         }
         //C1. Check Blank Fields (householdCode)
         if (isBlankHouseholdCode){
-            errors << errorMessageService.getRawMessage("validation.field.blank", ["householdCode"], ["householdCode"])
+            errors << errorMessageService.getRawMessage(RawEntity.RESIDENCY, "validation.field.blank", ["householdCode"], ["householdCode"])
         }
         //C1. Check Blank Fields (startType)
         if (isBlankStartType){
-            errors << errorMessageService.getRawMessage("validation.field.blank", ["startType"], ["startType"])
+            errors << errorMessageService.getRawMessage(RawEntity.RESIDENCY, "validation.field.blank", ["startType"], ["startType"])
         }
         //C1. Check Nullable Fields (startDate)
         if (isNullStartDate){
-            errors << errorMessageService.getRawMessage("validation.field.blank", ["startDate"], ["startDate"])
+            errors << errorMessageService.getRawMessage(RawEntity.RESIDENCY, "validation.field.blank", ["startDate"], ["startDate"])
         }
         //C3. Validate startType Enum Options
         if (!isBlankStartType && ResidencyStartType.getFrom(residency.startType)==null){
-            errors << errorMessageService.getRawMessage("validation.field.enum.starttype.error", [residency.startType], ["startType"])
+            errors << errorMessageService.getRawMessage(RawEntity.RESIDENCY, "validation.field.enum.starttype.error", [residency.startType], ["startType"])
         }
         //C4. Check Member reference existence
         if (!isBlankMemberCode && !memberExists){
-            errors << errorMessageService.getRawMessage("validation.field.reference.error", ["Member", "memberCode", residency.memberCode], ["memberCode"])
+            errors << errorMessageService.getRawMessage(RawEntity.RESIDENCY, "validation.field.reference.error", ["Member", "memberCode", residency.memberCode], ["memberCode"])
         }
         //C4. Check Household reference existence
         if (!isBlankHouseholdCode && !householdExists){
-            errors << errorMessageService.getRawMessage("validation.field.reference.error", ["Household", "householdCode", residency.householdCode], ["householdCode"])
+            errors << errorMessageService.getRawMessage(RawEntity.RESIDENCY, "validation.field.reference.error", ["Household", "householdCode", residency.householdCode], ["householdCode"])
         }
         //C5. Check startDate max date
         if (!isNullStartDate && residency.startDate > LocalDate.now()){
-            errors << errorMessageService.getRawMessage("validation.field.date.not.greater.today", ["residency.startDate"], ["startDate"])
+            errors << errorMessageService.getRawMessage(RawEntity.RESIDENCY, "validation.field.date.not.greater.today", ["residency.startDate"], ["startDate"])
         }
         //C6. Check Dates against DOB
         if (!isNullStartDate && memberExists && residency.startDate < member.dob){
-            errors << errorMessageService.getRawMessage("validation.field.dob.not.greater.date", ["residency.startDate", StringUtil.format(member.dob)], ["startDate","member.dob"])
+            errors << errorMessageService.getRawMessage(RawEntity.RESIDENCY, "validation.field.dob.not.greater.date", ["residency.startDate", StringUtil.format(member.dob)], ["startDate","member.dob"])
         }
 
         //Validation part 2: Previous Residency against new Residency
@@ -255,23 +256,23 @@ class ResidencyService {
 
             //P1. Check If endType is empty or NA
             if (previous.endType == null || previous.endType == ResidencyEndType.NOT_APPLICABLE){
-                errors << errorMessageService.getRawMessage("validation.field.residency.endtype.na.error", null, ["previous.endType"])
+                errors << errorMessageService.getRawMessage(RawEntity.RESIDENCY, "validation.field.residency.endtype.na.error", null, ["previous.endType"])
             }
             //P2. Check If endType is DTH or Member has DTH Reg
             if (previous.endType == ResidencyEndType.DEATH || memberService.isDead(member)){
-                errors << errorMessageService.getRawMessage("validation.field.residency.endtype.dth.error", null, ["previous.endType"])
+                errors << errorMessageService.getRawMessage(RawEntity.RESIDENCY, "validation.field.residency.endtype.dth.error", null, ["previous.endType"])
             }
             //P3. Check If endType is CHG and new startType isnt ENT
             if (previous.endType == ResidencyEndType.INTERNAL_OUTMIGRATION && newStartType != ResidencyStartType.INTERNAL_INMIGRATION){
-                errors << errorMessageService.getRawMessage("validation.field.residency.endtype.chg.error", null, ["previous.endType"])
+                errors << errorMessageService.getRawMessage(RawEntity.RESIDENCY, "validation.field.residency.endtype.chg.error", null, ["previous.endType"])
             }
             //P4. Check If endType is EXT and new startType isnt XEN
             if (previous.endType == ResidencyEndType.EXTERNAL_OUTMIGRATION && newStartType != ResidencyStartType.EXTERNAL_INMIGRATION){
-                errors << errorMessageService.getRawMessage("validation.field.residency.endtype.ext.error", null, ["previous.endType"])
+                errors << errorMessageService.getRawMessage(RawEntity.RESIDENCY, "validation.field.residency.endtype.ext.error", null, ["previous.endType"])
             }
             //C5. Check If endDate is greater than new startDate
             if (previous.endDate != null && (previous.endDate >= newStartDate)){
-                errors << errorMessageService.getRawMessage("validation.field.residency.enddate.greater.new.startdate.error", null, ["previous.endType"])
+                errors << errorMessageService.getRawMessage(RawEntity.RESIDENCY, "validation.field.residency.enddate.greater.new.startdate.error", null, ["previous.endType"])
             }
         }
 
@@ -293,39 +294,39 @@ class ResidencyService {
 
         //C1. Check Blank Fields (memberCode)
         if (isBlankMemberCode){
-            errors << errorMessageService.getRawMessage("validation.field.blank", ["memberCode"], ["memberCode"])
+            errors << errorMessageService.getRawMessage(RawEntity.RESIDENCY, "validation.field.blank", ["memberCode"], ["memberCode"])
         }
         //C1. Check Blank Fields (householdCode)
         if (isBlankHouseholdCode){
-            errors << errorMessageService.getRawMessage("validation.field.blank", ["householdCode"], ["householdCode"])
+            errors << errorMessageService.getRawMessage(RawEntity.RESIDENCY, "validation.field.blank", ["householdCode"], ["householdCode"])
         }
         //C1. Check Blank Fields (startType)
         if (isBlankStartType){
-            errors << errorMessageService.getRawMessage("validation.field.blank", ["startType"], ["startType"])
+            errors << errorMessageService.getRawMessage(RawEntity.RESIDENCY, "validation.field.blank", ["startType"], ["startType"])
         }
         //C1. Check Nullable Fields (startDate)
         if (isNullStartDate){
-            errors << errorMessageService.getRawMessage("validation.field.blank", ["startDate"], ["startDate"])
+            errors << errorMessageService.getRawMessage(RawEntity.RESIDENCY, "validation.field.blank", ["startDate"], ["startDate"])
         }
         //C3. Validate startType Enum Options
         if (!isBlankStartType && ResidencyStartType.getFrom(residency.startType)==null){
-            errors << errorMessageService.getRawMessage("validation.field.enum.starttype.error", [residency.startType], ["startType"])
+            errors << errorMessageService.getRawMessage(RawEntity.RESIDENCY, "validation.field.enum.starttype.error", [residency.startType], ["startType"])
         }
         //C4. Check Member reference existence
         if (!isBlankMemberCode && !memberExists){
-            errors << errorMessageService.getRawMessage("validation.field.reference.error", ["Member", "memberCode", residency.memberCode], ["memberCode"])
+            errors << errorMessageService.getRawMessage(RawEntity.RESIDENCY, "validation.field.reference.error", ["Member", "memberCode", residency.memberCode], ["memberCode"])
         }
         //C4. Check Household reference existence
         if (!isBlankHouseholdCode && !householdExists){
-            errors << errorMessageService.getRawMessage("validation.field.reference.error", ["Household", "householdCode", residency.householdCode], ["householdCode"])
+            errors << errorMessageService.getRawMessage(RawEntity.RESIDENCY, "validation.field.reference.error", ["Household", "householdCode", residency.householdCode], ["householdCode"])
         }
         //C5. Check startDate max date
         if (!isNullStartDate && residency.startDate > LocalDate.now()){
-            errors << errorMessageService.getRawMessage("validation.field.date.not.greater.today", ["residency.startDate"], ["startDate"])
+            errors << errorMessageService.getRawMessage(RawEntity.RESIDENCY, "validation.field.date.not.greater.today", ["residency.startDate"], ["startDate"])
         }
         //C6. Check Dates against DOB
         if (!isNullStartDate && memberExists && residency.startDate < member.dob){
-            errors << errorMessageService.getRawMessage("validation.field.dob.not.greater.date", ["residency.startDate", StringUtil.format(member.dob)], ["startDate","member.dob"])
+            errors << errorMessageService.getRawMessage(RawEntity.RESIDENCY, "validation.field.dob.not.greater.date", ["residency.startDate", StringUtil.format(member.dob)], ["startDate","member.dob"])
         }
 
         //Validation part 2: Previous Residency against new Residency
@@ -340,23 +341,23 @@ class ResidencyService {
 
             //P1. Check If endType is empty or NA
             if (previous.endType == null || previous.endType == ResidencyEndType.NOT_APPLICABLE){
-                errors << errorMessageService.getRawMessage("validation.field.residency.endtype.na.error", null, ["previous.endType"])
+                errors << errorMessageService.getRawMessage(RawEntity.RESIDENCY, "validation.field.residency.endtype.na.error", null, ["previous.endType"])
             }
             //P2. Check If endType is DTH or Member has DTH Reg
             if (previous.endType == ResidencyEndType.DEATH || memberService.isDead(member)){
-                errors << errorMessageService.getRawMessage("validation.field.residency.endtype.dth.error", null, ["previous.endType"])
+                errors << errorMessageService.getRawMessage(RawEntity.RESIDENCY, "validation.field.residency.endtype.dth.error", null, ["previous.endType"])
             }
             //P3. Check If endType is CHG and new startType isnt ENT
             if (previous.endType == ResidencyEndType.INTERNAL_OUTMIGRATION && newStartType != ResidencyStartType.INTERNAL_INMIGRATION){
-                errors << errorMessageService.getRawMessage("validation.field.residency.endtype.chg.error", null, ["previous.endType"])
+                errors << errorMessageService.getRawMessage(RawEntity.RESIDENCY, "validation.field.residency.endtype.chg.error", null, ["previous.endType"])
             }
             //P4. Check If endType is EXT and new startType isnt XEN
             if (previous.endType == ResidencyEndType.EXTERNAL_OUTMIGRATION && newStartType != ResidencyStartType.EXTERNAL_INMIGRATION){
-                errors << errorMessageService.getRawMessage("validation.field.residency.endtype.ext.error", null, ["previous.endType"])
+                errors << errorMessageService.getRawMessage(RawEntity.RESIDENCY, "validation.field.residency.endtype.ext.error", null, ["previous.endType"])
             }
             //C5. Check If endDate is greater than new startDate
             if (previous.endDate != null && (previous.endDate >= newStartDate)){
-                errors << errorMessageService.getRawMessage("validation.field.residency.enddate.greater.new.startdate.error", null, ["previous.endType"])
+                errors << errorMessageService.getRawMessage(RawEntity.RESIDENCY, "validation.field.residency.enddate.greater.new.startdate.error", null, ["previous.endType"])
             }
         }
 
@@ -378,39 +379,39 @@ class ResidencyService {
 
         //C1. Check Blank Fields (memberCode)
         if (isBlankMemberCode){
-            errors << errorMessageService.getRawMessage("validation.field.blank", ["memberCode"], ["memberCode"])
+            errors << errorMessageService.getRawMessage(RawEntity.RESIDENCY, "validation.field.blank", ["memberCode"], ["memberCode"])
         }
         //C1. Check Blank Fields (householdCode)
         if (isBlankHouseholdCode){
-            errors << errorMessageService.getRawMessage("validation.field.blank", ["householdCode"], ["householdCode"])
+            errors << errorMessageService.getRawMessage(RawEntity.RESIDENCY, "validation.field.blank", ["householdCode"], ["householdCode"])
         }
         //C1. Check Blank Fields (startType)
         if (isBlankEndType){
-            errors << errorMessageService.getRawMessage("validation.field.blank", ["endType"], ["endType"])
+            errors << errorMessageService.getRawMessage(RawEntity.RESIDENCY, "validation.field.blank", ["endType"], ["endType"])
         }
         //C1. Check Nullable Fields (startDate)
         if (isNullEndDate){
-            errors << errorMessageService.getRawMessage("validation.field.blank", ["endDate"], ["endDate"])
+            errors << errorMessageService.getRawMessage(RawEntity.RESIDENCY, "validation.field.blank", ["endDate"], ["endDate"])
         }
         //C3. Validate endType Enum Options
         if (!isBlankEndType && ResidencyEndType.getFrom(residency.endType)==null){
-            errors << errorMessageService.getRawMessage("validation.field.enum.endtype.error", [residency.endType], ["endType"])
+            errors << errorMessageService.getRawMessage(RawEntity.RESIDENCY, "validation.field.enum.endtype.error", [residency.endType], ["endType"])
         }
         //C4. Check Member reference existence
         if (!isBlankMemberCode && !memberExists){
-            errors << errorMessageService.getRawMessage("validation.field.reference.error", ["Member", "memberCode", residency.memberCode], ["memberCode"])
+            errors << errorMessageService.getRawMessage(RawEntity.RESIDENCY, "validation.field.reference.error", ["Member", "memberCode", residency.memberCode], ["memberCode"])
         }
         //C4. Check Household reference existence
         if (!isBlankHouseholdCode && !householdExists){
-            errors << errorMessageService.getRawMessage("validation.field.reference.error", ["Household", "householdCode", residency.householdCode], ["householdCode"])
+            errors << errorMessageService.getRawMessage(RawEntity.RESIDENCY, "validation.field.reference.error", ["Household", "householdCode", residency.householdCode], ["householdCode"])
         }
         //C5. Check endDate max date
         if (!isNullEndDate && residency.endDate > LocalDate.now()){
-            errors << errorMessageService.getRawMessage("validation.field.date.not.greater.today", ["endDate"], ["endDate"])
+            errors << errorMessageService.getRawMessage(RawEntity.RESIDENCY, "validation.field.date.not.greater.today", ["endDate"], ["endDate"])
         }
         //C6. Check Dates against DOB
         if (!isNullEndDate && memberExists && residency.endDate < member.dob){
-            errors << errorMessageService.getRawMessage("validation.field.dob.not.greater.date", ["residency.endDate", StringUtil.format(member.dob)], ["endDate","member.dob"])
+            errors << errorMessageService.getRawMessage(RawEntity.RESIDENCY, "validation.field.dob.not.greater.date", ["residency.endDate", StringUtil.format(member.dob)], ["endDate","member.dob"])
         }
 
         //Validation part 2: Previous Residency against new Residency
@@ -421,19 +422,19 @@ class ResidencyService {
             //must exist
             if (currentResidency == null) {
                 //THERE IS NO CURRENT RESIDENCY TO CLOSE
-                errors << errorMessageService.getRawMessage("validation.field.residency.close.not.exists.error", [household.code, member.code], ["household.code","member.code"])
+                errors << errorMessageService.getRawMessage(RawEntity.RESIDENCY, "validation.field.residency.close.not.exists.error", [household.code, member.code], ["household.code","member.code"])
                 return errors
             }
 
             //must not be closed
             //P1. Check If endType is empty or NA
             if ( !(currentResidency.endType == null || currentResidency.endType == ResidencyEndType.NOT_APPLICABLE) ){
-                errors << errorMessageService.getRawMessage("validation.field.residency.closed.already.error", [currentResidency.id, currentResidency.endType], ["previous.endType"])
+                errors << errorMessageService.getRawMessage(RawEntity.RESIDENCY, "validation.field.residency.closed.already.error", [currentResidency.id, currentResidency.endType], ["previous.endType"])
             }
 
             //C6. Check If endDate is before or equal to startDate
             if (currentResidency.startDate >= endDate){ //RECHECK THIS WITH >=
-                errors << errorMessageService.getRawMessage("validation.field.residency.enddate.before.startdate.error", [currentResidency.id, StringUtil.format(endDate), StringUtil.format(currentResidency.startDate)], ["currentResidency.startDate", "new.endDate"])
+                errors << errorMessageService.getRawMessage(RawEntity.RESIDENCY, "validation.field.residency.enddate.before.startdate.error", [currentResidency.id, StringUtil.format(endDate), StringUtil.format(currentResidency.startDate)], ["currentResidency.startDate", "new.endDate"])
             }
 
         }

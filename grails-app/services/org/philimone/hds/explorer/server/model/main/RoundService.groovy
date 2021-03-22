@@ -2,6 +2,7 @@ package org.philimone.hds.explorer.server.model.main
 
 import grails.gorm.transactions.Transactional
 import net.betainteractive.utilities.StringUtil
+import org.philimone.hds.explorer.server.model.enums.RawEntity
 import org.philimone.hds.explorer.server.model.main.collect.raw.RawExecutionResult
 import org.philimone.hds.explorer.server.model.main.collect.raw.RawMessage
 
@@ -57,7 +58,7 @@ class RoundService {
         //Validate using Gorm Validations
         if (round.hasErrors()){
 
-            errors = errorMessageService.getRawMessages(round)
+            errors = errorMessageService.getRawMessages(RawEntity.ROUND, round)
 
             RawExecutionResult<Round> obj = RawExecutionResult.newErrorResult(errors)
             return obj
@@ -81,35 +82,35 @@ class RoundService {
 
         //C1. Check Blank Fields (roundNumber)
         if (isBlankRoundNumber){
-            errors << errorMessageService.getRawMessage("validation.field.blank", ["roundNumber"], ["roundNumber"])
+            errors << errorMessageService.getRawMessage(RawEntity.ROUND, "validation.field.blank", ["roundNumber"], ["roundNumber"])
         }
         //C1. Check Blank Fields (startDate)
         if (isBlankStartDate){
-            errors << errorMessageService.getRawMessage("validation.field.blank", ["startDate"], ["startDate"])
+            errors << errorMessageService.getRawMessage(RawEntity.ROUND, "validation.field.blank", ["startDate"], ["startDate"])
         }
         //C1. Check Nullable Fields (endDate)
         if (isBlankEndDate){
-            errors << errorMessageService.getRawMessage("validation.field.blank", ["endDate"], ["endDate"])
+            errors << errorMessageService.getRawMessage(RawEntity.ROUND, "validation.field.blank", ["endDate"], ["endDate"])
         }
         //C1. Check Blank Fields (description)
         if (checkDescription && isBlankDescription){
-            errors << errorMessageService.getRawMessage("validation.field.blank", ["description"], ["description"])
+            errors << errorMessageService.getRawMessage(RawEntity.ROUND, "validation.field.blank", ["description"], ["description"])
         }
 
         //C6. Check Duplicate of Round using roundNumber
         if (!isBlankRoundNumber && roundExists){
-            errors << errorMessageService.getRawMessage("validation.field.reference.duplicate.error", ["Round", "roundNumber", round.roundNumber+""], ["roundNumber"])
+            errors << errorMessageService.getRawMessage(RawEntity.ROUND, "validation.field.reference.duplicate.error", ["Round", "roundNumber", round.roundNumber+""], ["roundNumber"])
         }
 
         //C6. Check Round (start/end)Date and today
         /*if (!isBlankStartDate && round.startDate > LocalDate.now()){
-            errors << errorMessageService.getRawMessage("validation.field.date.not.greater.today", [round.startDate], ["startDate"])
+            errors << errorMessageService.getRawMessage(RawEntity.ROUND, "validation.field.date.not.greater.today", [round.startDate], ["startDate"])
         }
         if (!isBlankEndDate && round.endDate > LocalDate.now()){
-            errors << errorMessageService.getRawMessage("validation.field.date.not.greater.today", [round.endDate], ["endDate"])
+            errors << errorMessageService.getRawMessage(RawEntity.ROUND, "validation.field.date.not.greater.today", [round.endDate], ["endDate"])
         }*/
         if (!isBlankStartDate && !isBlankEndDate && (round.startDate > round.endDate)){
-            errors << errorMessageService.getRawMessage("validation.field.startdate.not.greater.enddate", [StringUtil.format(round.startDate), StringUtil.format(round.endDate)], ["startDate","endDate"])
+            errors << errorMessageService.getRawMessage(RawEntity.ROUND, "validation.field.startdate.not.greater.enddate", [StringUtil.format(round.startDate), StringUtil.format(round.endDate)], ["startDate","endDate"])
         }
 
         if (errors.size()==0){//no errors
@@ -120,12 +121,12 @@ class RoundService {
 
             if (roundsStarts.size() > 0) { //we have overlapping dates with startDate
                 def rounds = roundsStarts.collect { it.roundNumber }
-                errors << errorMessageService.getRawMessage("validation.field.round.startdate.overlaps.error", [StringUtil.format(round.startDate), rounds+""], ["startDate"])
+                errors << errorMessageService.getRawMessage(RawEntity.ROUND, "validation.field.round.startdate.overlaps.error", [StringUtil.format(round.startDate), rounds+""], ["startDate"])
             }
 
             if (roundsEnds.size() > 0) { //we have overlapping dates with endDate
                 def rounds = roundsEnds.collect { it.roundNumber }
-                errors << errorMessageService.getRawMessage("validation.field.round.enddate.overlaps.error", [StringUtil.format(round.endDate), rounds+""], ["endDate"])
+                errors << errorMessageService.getRawMessage(RawEntity.ROUND, "validation.field.round.enddate.overlaps.error", [StringUtil.format(round.endDate), rounds+""], ["endDate"])
             }
         }
 

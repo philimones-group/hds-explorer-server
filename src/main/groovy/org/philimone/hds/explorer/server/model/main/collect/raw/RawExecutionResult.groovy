@@ -7,7 +7,7 @@ class RawExecutionResult<D> {
 
     Status status
     List<RawMessage> errorMessages = new ArrayList<>();
-    D domainInstance
+    D domainInstance //Result of Execution
 
     RawExecutionResult(Status status, List<RawMessage> errorMessages) {
         this.status = status

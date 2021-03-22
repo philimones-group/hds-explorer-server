@@ -14,6 +14,7 @@ import org.philimone.hds.explorer.server.model.collect.raw.RawRegion
 import org.philimone.hds.explorer.server.model.collect.raw.RawResidency
 import org.philimone.hds.explorer.server.model.enums.Gender
 import org.philimone.hds.explorer.server.model.enums.MaritalStatus
+import org.philimone.hds.explorer.server.model.enums.RawEntity
 import org.philimone.hds.explorer.server.model.main.collect.raw.RawExecutionResult
 import org.philimone.hds.explorer.server.model.main.collect.raw.RawMessage
 import org.philimone.hds.explorer.server.model.settings.Codes
@@ -243,9 +244,9 @@ class ResidencyServiceSpec extends Specification implements ServiceUnitTest<Resi
         rw2.save()
 
         println "Raw Member Errors:"
-        printRawMessages(errorMessageService.getRawMessages(rw1))
+        printRawMessages(errorMessageService.getRawMessages(RawEntity.RESIDENCY, rw1))
         println()
-        printRawMessages(errorMessageService.getRawMessages(rw2))
+        printRawMessages(errorMessageService.getRawMessages(RawEntity.RESIDENCY, rw2))
         //printErrors(rw)
 
         //This methods validates data twice, first through strict rules of demographics and then through domain model constraints

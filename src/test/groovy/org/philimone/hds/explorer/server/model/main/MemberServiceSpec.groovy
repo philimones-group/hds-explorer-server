@@ -13,6 +13,7 @@ import org.philimone.hds.explorer.server.model.collect.raw.RawMember
 import org.philimone.hds.explorer.server.model.collect.raw.RawRegion
 import org.philimone.hds.explorer.server.model.enums.Gender
 import org.philimone.hds.explorer.server.model.enums.MaritalStatus
+import org.philimone.hds.explorer.server.model.enums.RawEntity
 import org.philimone.hds.explorer.server.model.main.collect.raw.RawExecutionResult
 import org.philimone.hds.explorer.server.model.main.collect.raw.RawMessage
 import org.philimone.hds.explorer.server.model.settings.Codes
@@ -21,6 +22,8 @@ import org.philimone.hds.explorer.services.errors.ErrorMessageService
 import org.springframework.context.MessageSource
 import org.springframework.context.support.ResourceBundleMessageSource
 import spock.lang.Specification
+
+import java.time.LocalDateTime
 
 class MemberServiceSpec extends Specification implements ServiceUnitTest<MemberService>, DataTest, AutowiredTest{
 
@@ -171,7 +174,7 @@ class MemberServiceSpec extends Specification implements ServiceUnitTest<MemberS
 
 
         println "Raw Member Errors:"
-        printRawMessages(errorMessageService.getRawMessages(rw))
+        printRawMessages(errorMessageService.getRawMessages(RawEntity.MEMBER, rw))
         println()
         //printErrors(rw)
 
@@ -231,7 +234,7 @@ class MemberServiceSpec extends Specification implements ServiceUnitTest<MemberS
 
 
         println "Raw Member Errors:"
-        printRawMessages(errorMessageService.getRawMessages(rw))
+        printRawMessages(errorMessageService.getRawMessages(RawEntity.MEMBER, rw))
         println()
         //printErrors(rw)
 

@@ -7,6 +7,7 @@ import org.philimone.hds.explorer.server.model.collect.raw.RawMaritalRelationshi
 import org.philimone.hds.explorer.server.model.enums.MaritalEndStatus
 import org.philimone.hds.explorer.server.model.enums.MaritalStartStatus
 import org.philimone.hds.explorer.server.model.enums.MaritalStatus
+import org.philimone.hds.explorer.server.model.enums.RawEntity
 import org.philimone.hds.explorer.server.model.main.collect.raw.RawExecutionResult
 import org.philimone.hds.explorer.server.model.main.collect.raw.RawMessage
 import org.philimone.hds.explorer.server.model.settings.Codes
@@ -137,10 +138,10 @@ class MaritalRelationshipService {
 
         //get errors if they occur and send with the success report
         if (memberA.hasErrors()) {
-            errors += errorMessageService.getRawMessages(memberA)
+            errors += errorMessageService.getRawMessages(RawEntity.MEMBER, memberA)
         }
         if (memberB.hasErrors()) {
-            errors += errorMessageService.getRawMessages(memberB)
+            errors += errorMessageService.getRawMessages(RawEntity.MEMBER, memberB)
         }
 
         return errors
@@ -197,10 +198,10 @@ class MaritalRelationshipService {
 
         //get errors if they occur and send with the success report
         if (memberA.hasErrors()) {
-            errors += errorMessageService.getRawMessages(memberA)
+            errors += errorMessageService.getRawMessages(RawEntity.MEMBER, memberA)
         }
         if (memberB.hasErrors()) {
-            errors += errorMessageService.getRawMessages(memberB)
+            errors += errorMessageService.getRawMessages(RawEntity.MEMBER, memberB)
         }
 
         return errors
@@ -227,7 +228,7 @@ class MaritalRelationshipService {
         //Validate using Gorm Validations
         if (maritalRelationship.hasErrors()){
 
-            errors = errorMessageService.getRawMessages(maritalRelationship)
+            errors = errorMessageService.getRawMessages(RawEntity.MARITAL_RELATIONSHIP, maritalRelationship)
 
             RawExecutionResult<MaritalRelationship> obj = RawExecutionResult.newErrorResult(errors)
             return obj
@@ -258,7 +259,7 @@ class MaritalRelationshipService {
         //Validate using Gorm Validations
         if (maritalRelationship.hasErrors()){
 
-            errors = errorMessageService.getRawMessages(maritalRelationship)
+            errors = errorMessageService.getRawMessages(RawEntity.MARITAL_RELATIONSHIP, maritalRelationship)
 
             RawExecutionResult<MaritalRelationship> obj = RawExecutionResult.newErrorResult(errors)
             return obj
@@ -286,52 +287,52 @@ class MaritalRelationshipService {
 
         //C1. Check Blank Fields (memberCode)
         if (isBlankMemberACode){
-            errors << errorMessageService.getRawMessage("validation.field.blank", ["memberA"], ["memberA"])
+            errors << errorMessageService.getRawMessage(RawEntity.MARITAL_RELATIONSHIP, "validation.field.blank", ["memberA"], ["memberA"])
         }
         //C1. Check Blank Fields (headCode)
         if (isBlankMemberBCode){
-            errors << errorMessageService.getRawMessage("validation.field.blank", ["memberB"], ["memberB"])
+            errors << errorMessageService.getRawMessage(RawEntity.MARITAL_RELATIONSHIP, "validation.field.blank", ["memberB"], ["memberB"])
         }
         //C1. Check Blank Fields (startStatus)
         if (isBlankStartStatus){
-            errors << errorMessageService.getRawMessage("validation.field.blank", ["startStatus"], ["startStatus"])
+            errors << errorMessageService.getRawMessage(RawEntity.MARITAL_RELATIONSHIP, "validation.field.blank", ["startStatus"], ["startStatus"])
         }
         //C1. Check Nullable Fields (startDate)
         if (isNullStartDate){
-            errors << errorMessageService.getRawMessage("validation.field.blank", ["startDate"], ["startDate"])
+            errors << errorMessageService.getRawMessage(RawEntity.MARITAL_RELATIONSHIP, "validation.field.blank", ["startDate"], ["startDate"])
         }
         //C3. Validate startStatus Enum Options
         if (!isBlankStartStatus && MaritalStartStatus.getFrom(maritalRelationship.startStatus)==null){
-            errors << errorMessageService.getRawMessage("validation.field.maritalRelationship.startstatus.valid.error", [maritalRelationship.startStatus], ["startStatus"])
+            errors << errorMessageService.getRawMessage(RawEntity.MARITAL_RELATIONSHIP, "validation.field.maritalRelationship.startstatus.valid.error", [maritalRelationship.startStatus], ["startStatus"])
         }
         //C4. Check Member A reference existence
         if (!isBlankMemberACode && !memberAExists){
-            errors << errorMessageService.getRawMessage("validation.field.reference.error", ["Member", "memberA", maritalRelationship.memberA], ["memberA"])
+            errors << errorMessageService.getRawMessage(RawEntity.MARITAL_RELATIONSHIP, "validation.field.reference.error", ["Member", "memberA", maritalRelationship.memberA], ["memberA"])
         }
         //C4. Check Member B reference existence
         if (!isBlankMemberBCode && !memberBExists){
-            errors << errorMessageService.getRawMessage("validation.field.reference.error", ["Member", "memberB", maritalRelationship.memberB], ["memberB"])
+            errors << errorMessageService.getRawMessage(RawEntity.MARITAL_RELATIONSHIP, "validation.field.reference.error", ["Member", "memberB", maritalRelationship.memberB], ["memberB"])
         }
         //C5. Check startdate max date
         if (!isNullStartDate && maritalRelationship.startDate > LocalDate.now()){
-            errors << errorMessageService.getRawMessage("validation.field.date.not.greater.today", [StringUtil.format(maritalRelationship.startDate)], ["startDate"])
+            errors << errorMessageService.getRawMessage(RawEntity.MARITAL_RELATIONSHIP, "validation.field.date.not.greater.today", [StringUtil.format(maritalRelationship.startDate)], ["startDate"])
         }
         //C5.1. Check Dates against DOB
         if (!isNullStartDate && memberAExists && memberBExists){
             if (maritalRelationship.startDate < memberA.dob){
-                errors << errorMessageService.getRawMessage("validation.field.dob.not.greater.date", ["maritalRelationship.startDate", StringUtil.format(memberA.dob)], ["startDate","memberA.dob"])
+                errors << errorMessageService.getRawMessage(RawEntity.MARITAL_RELATIONSHIP, "validation.field.dob.not.greater.date", ["maritalRelationship.startDate", StringUtil.format(memberA.dob)], ["startDate","memberA.dob"])
             }
             if (maritalRelationship.startDate < memberB.dob){
-                errors << errorMessageService.getRawMessage("validation.field.dob.not.greater.date", ["maritalRelationship.startDate", StringUtil.format(memberB.dob)], ["startDate","memberB.dob"])
+                errors << errorMessageService.getRawMessage(RawEntity.MARITAL_RELATIONSHIP, "validation.field.dob.not.greater.date", ["maritalRelationship.startDate", StringUtil.format(memberB.dob)], ["startDate","memberB.dob"])
             }
         }
         //C6. Check Age of Member A
         if (memberAExists && GeneralUtil.getAge(memberA.dob)< Codes.MIN_SPOUSE_AGE_VALUE ){
-            errors << errorMessageService.getRawMessage("validation.field.dob.spouse.minage.error", [StringUtil.format(memberA.dob), Codes.MIN_SPOUSE_AGE_VALUE+""], ["member.dob"])
+            errors << errorMessageService.getRawMessage(RawEntity.MARITAL_RELATIONSHIP, "validation.field.dob.spouse.minage.error", [StringUtil.format(memberA.dob), Codes.MIN_SPOUSE_AGE_VALUE+""], ["member.dob"])
         }
         //C6. Check Age of Member B
         if (memberBExists && GeneralUtil.getAge(memberB.dob)< Codes.MIN_SPOUSE_AGE_VALUE ){
-            errors << errorMessageService.getRawMessage("validation.field.dob.spouse.minage.error", [StringUtil.format(memberB.dob), Codes.MIN_SPOUSE_AGE_VALUE+""], ["member.dob"])
+            errors << errorMessageService.getRawMessage(RawEntity.MARITAL_RELATIONSHIP, "validation.field.dob.spouse.minage.error", [StringUtil.format(memberB.dob), Codes.MIN_SPOUSE_AGE_VALUE+""], ["member.dob"])
         }
         //C7. Check Gender as Optional
         if (Codes.GENDER_CHECKING && memberAExists && memberBExists){
@@ -339,16 +340,16 @@ class MaritalRelationshipService {
             if (memberA.gender == memberB.gender){
                 def genderA = messageSource.getMessage(memberA.gender.name, null, LocaleContextHolder.getLocale())
                 def genderB = messageSource.getMessage(memberB.gender.name, null, LocaleContextHolder.getLocale())
-                errors << errorMessageService.getRawMessage("validation.field.gender.spouse.error", [genderA, genderB], ["member.gender"])
+                errors << errorMessageService.getRawMessage(RawEntity.MARITAL_RELATIONSHIP, "validation.field.gender.spouse.error", [genderA, genderB], ["member.gender"])
             }
         }
         //C8. Check Death Status of member A
         if (memberAExists && memberService.isDead(memberA)){
-            errors << errorMessageService.getRawMessage("validation.field.maritalRelationship.death.a.or.b.error", ["memberA", memberA.code], ["memberA_code"])
+            errors << errorMessageService.getRawMessage(RawEntity.MARITAL_RELATIONSHIP, "validation.field.maritalRelationship.death.a.or.b.error", ["memberA", memberA.code], ["memberA_code"])
         }
         //C9. Check Death Status of member B
         if (memberBExists && memberService.isDead(memberB)){
-            errors << errorMessageService.getRawMessage("validation.field.maritalRelationship.death.a.or.b.error", ["memberB", memberB.code], ["memberB_code"])
+            errors << errorMessageService.getRawMessage(RawEntity.MARITAL_RELATIONSHIP, "validation.field.maritalRelationship.death.a.or.b.error", ["memberB", memberB.code], ["memberB_code"])
         }
 
 
@@ -360,19 +361,19 @@ class MaritalRelationshipService {
 
             //P1. Check if last relationship of A still opened
             if (currentA != null && (currentA.endStatus == null || currentA.endStatus == MaritalEndStatus.NOT_APPLICABLE)){
-                errors << errorMessageService.getRawMessage("validation.field.maritalRelationship.prev.relationships.ab.closed.error", [memberA.code], ["previous.memberA.endStatus"])
+                errors << errorMessageService.getRawMessage(RawEntity.MARITAL_RELATIONSHIP, "validation.field.maritalRelationship.prev.relationships.ab.closed.error", [memberA.code], ["previous.memberA.endStatus"])
             }
             //P1. Check if last relationship of B still opened
             if (currentB != null && (currentB.endStatus == null || currentB.endStatus == MaritalEndStatus.NOT_APPLICABLE)){
-                errors << errorMessageService.getRawMessage("validation.field.maritalRelationship.prev.relationships.ab.closed.error", [memberB.code], ["previous.memberB.endStatus"])
+                errors << errorMessageService.getRawMessage(RawEntity.MARITAL_RELATIONSHIP, "validation.field.maritalRelationship.prev.relationships.ab.closed.error", [memberB.code], ["previous.memberB.endStatus"])
             }
             //P2. Check If endDate is greater than new startDate, for memberA
             if (currentA != null && (currentA.endDate != null && currentA.endDate >= newStartDate)){
-                errors << errorMessageService.getRawMessage("validation.field.maritalRelationship.prev.enddate.before.n.startdate.error", [memberA.code], ["previous.memberA.endDate"])
+                errors << errorMessageService.getRawMessage(RawEntity.MARITAL_RELATIONSHIP, "validation.field.maritalRelationship.prev.enddate.before.n.startdate.error", [memberA.code], ["previous.memberA.endDate"])
             }
             //P2. Check If endDate is greater than new startDate, for memberB
             if (currentB != null && (currentB.endDate != null && currentB.endDate >= newStartDate)){
-                errors << errorMessageService.getRawMessage("validation.field.maritalRelationship.prev.enddate.before.n.startdate.error", [memberB.code], ["previous.memberB.endDate"])
+                errors << errorMessageService.getRawMessage(RawEntity.MARITAL_RELATIONSHIP, "validation.field.maritalRelationship.prev.enddate.before.n.startdate.error", [memberB.code], ["previous.memberB.endDate"])
             }
         }
 
@@ -396,43 +397,43 @@ class MaritalRelationshipService {
 
         //C1. Check Blank Fields (memberCode)
         if (isBlankMemberACode){
-            errors << errorMessageService.getRawMessage("validation.field.blank", ["memberA"], ["memberA"])
+            errors << errorMessageService.getRawMessage(RawEntity.MARITAL_RELATIONSHIP, "validation.field.blank", ["memberA"], ["memberA"])
         }
         //C1. Check Blank Fields (headCode)
         if (isBlankMemberBCode){
-            errors << errorMessageService.getRawMessage("validation.field.blank", ["memberB"], ["memberB"])
+            errors << errorMessageService.getRawMessage(RawEntity.MARITAL_RELATIONSHIP, "validation.field.blank", ["memberB"], ["memberB"])
         }
         //C1. Check Blank Fields (endStatus)
         if (isBlankEndStatus){
-            errors << errorMessageService.getRawMessage("validation.field.blank", ["endStatus"], ["endStatus"])
+            errors << errorMessageService.getRawMessage(RawEntity.MARITAL_RELATIONSHIP, "validation.field.blank", ["endStatus"], ["endStatus"])
         }
         //C1. Check Nullable Fields (endDate)
         if (isNullEndDate){
-            errors << errorMessageService.getRawMessage("validation.field.blank", ["endDate"], ["endDate"])
+            errors << errorMessageService.getRawMessage(RawEntity.MARITAL_RELATIONSHIP, "validation.field.blank", ["endDate"], ["endDate"])
         }
         //C3. Validate endStatus Enum Options
         if (!isBlankEndStatus && MaritalEndStatus.getFrom(maritalRelationship.endStatus)==null){
-            errors << errorMessageService.getRawMessage("validation.field.maritalRelationship.endstatus.valid.error", [maritalRelationship.endStatus], ["endStatus"])
+            errors << errorMessageService.getRawMessage(RawEntity.MARITAL_RELATIONSHIP, "validation.field.maritalRelationship.endstatus.valid.error", [maritalRelationship.endStatus], ["endStatus"])
         }
         //C4. Check Member A reference existence
         if (!isBlankMemberACode && !memberAExists){
-            errors << errorMessageService.getRawMessage("validation.field.reference.error", ["Member", "memberA", maritalRelationship.memberA], ["memberA"])
+            errors << errorMessageService.getRawMessage(RawEntity.MARITAL_RELATIONSHIP, "validation.field.reference.error", ["Member", "memberA", maritalRelationship.memberA], ["memberA"])
         }
         //C4. Check Member B reference existence
         if (!isBlankMemberBCode && !memberBExists){
-            errors << errorMessageService.getRawMessage("validation.field.reference.error", ["Member", "memberB", maritalRelationship.memberB], ["memberB"])
+            errors << errorMessageService.getRawMessage(RawEntity.MARITAL_RELATIONSHIP, "validation.field.reference.error", ["Member", "memberB", maritalRelationship.memberB], ["memberB"])
         }
         //C5. Check dob max date
         if (!isNullEndDate && maritalRelationship.endDate > LocalDate.now()){
-            errors << errorMessageService.getRawMessage("validation.field.date.not.greater.today", ["maritalRelationship.endDate"], ["endDate"])
+            errors << errorMessageService.getRawMessage(RawEntity.MARITAL_RELATIONSHIP, "validation.field.date.not.greater.today", ["maritalRelationship.endDate"], ["endDate"])
         }
         //C6. Check Dates against DOB
         if (!isNullEndDate && memberAExists && memberBExists){
             if (maritalRelationship.endDate < memberA.dob){
-                errors << errorMessageService.getRawMessage("validation.field.dob.not.greater.date", ["maritalRelationship.endDate", StringUtil.format(memberA.dob)], ["endDate","memberA.dob"])
+                errors << errorMessageService.getRawMessage(RawEntity.MARITAL_RELATIONSHIP, "validation.field.dob.not.greater.date", ["maritalRelationship.endDate", StringUtil.format(memberA.dob)], ["endDate","memberA.dob"])
             }
             if (maritalRelationship.endDate < memberB.dob){
-                errors << errorMessageService.getRawMessage("validation.field.dob.not.greater.date", ["maritalRelationship.endDate", StringUtil.format(memberB.dob)], ["endDate","memberB.dob"])
+                errors << errorMessageService.getRawMessage(RawEntity.MARITAL_RELATIONSHIP, "validation.field.dob.not.greater.date", ["maritalRelationship.endDate", StringUtil.format(memberB.dob)], ["endDate","memberB.dob"])
             }
         }
 
@@ -444,19 +445,19 @@ class MaritalRelationshipService {
             //must exist
             if (currentMaritalRelationship == null) {
                 //THERE IS NO CURRENT RELATIONSHIP TO CLOSE
-                errors << errorMessageService.getRawMessage("validation.field.maritalRelationship.close.not.exists.error", [memberA.code, memberB.code], ["memberA.code", "memberB.code"])
+                errors << errorMessageService.getRawMessage(RawEntity.MARITAL_RELATIONSHIP, "validation.field.maritalRelationship.close.not.exists.error", [memberA.code, memberB.code], ["memberA.code", "memberB.code"])
                 return errors
             }
 
             //must not be closed
             //P1. Check If endStatus is empty or NA
             if ( !(currentMaritalRelationship.endStatus == null || currentMaritalRelationship.endStatus == MaritalEndStatus.NOT_APPLICABLE) ){
-                errors << errorMessageService.getRawMessage("validation.field.maritalRelationship.closed.already.error", [currentMaritalRelationship.id, currentMaritalRelationship.endStatus.code], ["previous.endStatus"])
+                errors << errorMessageService.getRawMessage(RawEntity.MARITAL_RELATIONSHIP, "validation.field.maritalRelationship.closed.already.error", [currentMaritalRelationship.id, currentMaritalRelationship.endStatus.code], ["previous.endStatus"])
             }
 
             //C6. Check If the proposed endDate is before or equal to the startDate of this relationship
             if (currentMaritalRelationship.startDate >= endDate){ //endDate <= startDate
-                errors << errorMessageService.getRawMessage("validation.field.maritalRelationship.enddate.before.startdate.error", [memberA.code, memberB.code], ["currentMaritalRelationship.startDate", "new.endDate"])
+                errors << errorMessageService.getRawMessage(RawEntity.MARITAL_RELATIONSHIP, "validation.field.maritalRelationship.enddate.before.startdate.error", [memberA.code, memberB.code], ["currentMaritalRelationship.startDate", "new.endDate"])
             }
 
         }

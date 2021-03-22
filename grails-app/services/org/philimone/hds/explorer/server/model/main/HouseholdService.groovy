@@ -4,6 +4,7 @@ import grails.gorm.transactions.Transactional
 import net.betainteractive.utilities.StringUtil
 import org.philimone.hds.explorer.server.model.authentication.User
 import org.philimone.hds.explorer.server.model.collect.raw.RawHousehold
+import org.philimone.hds.explorer.server.model.enums.RawEntity
 import org.philimone.hds.explorer.server.model.main.collect.raw.RawExecutionResult
 import org.philimone.hds.explorer.server.model.main.collect.raw.RawMessage
 
@@ -59,7 +60,7 @@ class HouseholdService {
         //Validate using Gorm Validations
         if (household.hasErrors()){
 
-            errors = errorMessageService.getRawMessages(household)
+            errors = errorMessageService.getRawMessages(RawEntity.HOUSEHOLD, household)
 
             RawExecutionResult<Household> obj = RawExecutionResult.newErrorResult(errors)
             return obj
@@ -79,36 +80,36 @@ class HouseholdService {
 
         //C1. Check Blank Fields (code)
         if (isBlankHouseholdCode){
-            errors << errorMessageService.getRawMessage("validation.field.blank", ["householdCode"], ["householdCode"])
+            errors << errorMessageService.getRawMessage(RawEntity.HOUSEHOLD, "validation.field.blank", ["householdCode"], ["householdCode"])
         }
         //C1. Check Blank Fields (name)
         if (isBlankHouseholdName){
-            errors << errorMessageService.getRawMessage("validation.field.blank", ["householdName"], ["householdName"])
+            errors << errorMessageService.getRawMessage(RawEntity.HOUSEHOLD, "validation.field.blank", ["householdName"], ["householdName"])
         }
         //C1. Check Blank Fields (region)
         if (isBlankRegionCode){
-            errors << errorMessageService.getRawMessage("validation.field.blank", ["regionCode"], ["regionCode"])
+            errors << errorMessageService.getRawMessage(RawEntity.HOUSEHOLD, "validation.field.blank", ["regionCode"], ["regionCode"])
         }
         //C2. Check Code Regex Pattern
         if (!isBlankHouseholdCode && !codeGeneratorService.isHouseholdCodeValid(household.householdCode)) {
-            errors << errorMessageService.getRawMessage("validation.field.pattern.no.matches", ["householdCode", "TXUPF1001"], ["householdCode"])
+            errors << errorMessageService.getRawMessage(RawEntity.HOUSEHOLD, "validation.field.pattern.no.matches", ["householdCode", "TXUPF1001"], ["householdCode"])
         }
         //C3. Check Region reference existence
         if (!isBlankRegionCode && !regionService.exists(household.regionCode)){
-            errors << errorMessageService.getRawMessage("validation.field.reference.error", ["Region", "regionCode", household.regionCode], ["regionCode"])
+            errors << errorMessageService.getRawMessage(RawEntity.HOUSEHOLD, "validation.field.reference.error", ["Region", "regionCode", household.regionCode], ["regionCode"])
         }
         //C4. Check Code Prefix Reference existence (Region Existence)
         if (!isBlankHouseholdCode && !regionService.prefixExists(household.householdCode)){
-            errors << errorMessageService.getRawMessage("validation.field.pattern.prefix.region.reference.error", [household.householdCode], ["householdCode"])
+            errors << errorMessageService.getRawMessage(RawEntity.HOUSEHOLD, "validation.field.pattern.prefix.region.reference.error", [household.householdCode], ["householdCode"])
         }
         //C5. Check User existence
         if (!isBlankCollectedBy && !userService.exists(household.collectedBy)){
-            errors << errorMessageService.getRawMessage("validation.field.user.dont.exists.error", [household.collectedBy], ["collectedBy"])
+            errors << errorMessageService.getRawMessage(RawEntity.HOUSEHOLD, "validation.field.user.dont.exists.error", [household.collectedBy], ["collectedBy"])
         }
 
         //C6. Check Duplicate of householdCode
         if (!isBlankHouseholdCode && exists(household.householdCode)){
-            errors << errorMessageService.getRawMessage("validation.field.reference.duplicate.error", ["Household", "householdCode", household.householdCode], ["householdCode"])
+            errors << errorMessageService.getRawMessage(RawEntity.HOUSEHOLD, "validation.field.reference.duplicate.error", ["Household", "householdCode", household.householdCode], ["householdCode"])
         }
 
         return errors
