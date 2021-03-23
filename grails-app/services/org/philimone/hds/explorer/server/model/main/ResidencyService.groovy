@@ -139,27 +139,29 @@ class ResidencyService {
 
         if (!errors.isEmpty()){
             //create result and close
-            RawExecutionResult<Residency> obj = RawExecutionResult.newErrorResult(errors)
+            RawExecutionResult<Residency> obj = RawExecutionResult.newErrorResult(RawEntity.RESIDENCY, errors)
             return obj
         }
 
         def residency = newResidencyInstance(rawResidency)
 
-        residency = residency.save(flush:true)
+        def result = residency.save(flush:true)
 
         //Validate using Gorm Validations
         if (residency.hasErrors()){
 
             errors = errorMessageService.getRawMessages(RawEntity.RESIDENCY, residency)
 
-            RawExecutionResult<Residency> obj = RawExecutionResult.newErrorResult(errors)
+            RawExecutionResult<Residency> obj = RawExecutionResult.newErrorResult(RawEntity.RESIDENCY, errors)
             return obj
+        } else {
+            residency = result
         }
 
         //Update Member with start status
         errors = updatesAfterCreatingResidency(residency)
 
-        RawExecutionResult<Residency> obj = RawExecutionResult.newSuccessResult(residency, errors)
+        RawExecutionResult<Residency> obj = RawExecutionResult.newSuccessResult(RawEntity.RESIDENCY, residency, errors)
         return obj
     }
 
@@ -171,27 +173,30 @@ class ResidencyService {
 
         if (!errors.isEmpty()){
             //create result and close
-            RawExecutionResult<Residency> obj = RawExecutionResult.newErrorResult(errors)
+            RawExecutionResult<Residency> obj = RawExecutionResult.newErrorResult(RawEntity.RESIDENCY, errors)
             return obj
         }
 
         def residency = closeResidencyInstance(rawResidency)
 
-        residency = residency.save(flush:true)
+        def result = residency.save(flush:true)
+
         //Validate using Gorm Validations
         if (residency.hasErrors()){
 
             errors = errorMessageService.getRawMessages(RawEntity.RESIDENCY, residency)
 
-            RawExecutionResult<Residency> obj = RawExecutionResult.newErrorResult(errors)
+            RawExecutionResult<Residency> obj = RawExecutionResult.newErrorResult(RawEntity.RESIDENCY, errors)
             return obj
+        } else {
+            residency = result
         }
 
         //Update Member with start status
         errors = updatesAfterClosingResidency(residency)
 
 
-        RawExecutionResult<Residency> obj = RawExecutionResult.newSuccessResult(residency, errors)
+        RawExecutionResult<Residency> obj = RawExecutionResult.newSuccessResult(RawEntity.RESIDENCY, residency, errors)
         return obj
     }
 

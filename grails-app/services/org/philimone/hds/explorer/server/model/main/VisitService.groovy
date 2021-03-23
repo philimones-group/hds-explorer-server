@@ -50,7 +50,7 @@ class VisitService {
 
         if (!errors.isEmpty()){
             //create result and close
-            RawExecutionResult<Visit> obj = RawExecutionResult.newErrorResult(errors)
+            RawExecutionResult<Visit> obj = RawExecutionResult.newErrorResult(RawEntity.VISIT, errors)
             return obj
         }
 
@@ -62,13 +62,13 @@ class VisitService {
 
             errors = errorMessageService.getRawMessages(RawEntity.VISIT, visit)
 
-            RawExecutionResult<Visit> obj = RawExecutionResult.newErrorResult(errors)
+            RawExecutionResult<Visit> obj = RawExecutionResult.newErrorResult(RawEntity.VISIT, errors)
             return obj
         } else {
             visit = result
         }
 
-        RawExecutionResult<Visit> obj = RawExecutionResult.newSuccessResult(visit)
+        RawExecutionResult<Visit> obj = RawExecutionResult.newSuccessResult(RawEntity.VISIT, visit)
         return obj
     }
 

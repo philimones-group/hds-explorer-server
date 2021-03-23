@@ -88,7 +88,7 @@ class OutMigrationService {
 
         if (!errors.isEmpty()){
             //create result and close
-            RawExecutionResult<OutMigration> obj = RawExecutionResult.newErrorResult(errors)
+            RawExecutionResult<OutMigration> obj = RawExecutionResult.newErrorResult(RawEntity.OUT_MIGRATION, errors)
             return obj
         }
 
@@ -100,7 +100,7 @@ class OutMigrationService {
 
             errors = errorMessageService.getRawMessages(RawEntity.OUT_MIGRATION, outmigration)
 
-            RawExecutionResult<OutMigration> obj = RawExecutionResult.newErrorResult(errors)
+            RawExecutionResult<OutMigration> obj = RawExecutionResult.newErrorResult(RawEntity.OUT_MIGRATION, errors)
             return obj
         } else {
             outmigration = result
@@ -112,7 +112,7 @@ class OutMigrationService {
 
         errors = afterCreateOutMigration(outmigration)
 
-        RawExecutionResult<OutMigration> obj = RawExecutionResult.newSuccessResult(outmigration, errors)
+        RawExecutionResult<OutMigration> obj = RawExecutionResult.newSuccessResult(RawEntity.OUT_MIGRATION, outmigration, errors)
         return obj
     }
 

@@ -88,24 +88,26 @@ class RegionService {
 
         if (!errors.isEmpty()){
             //create result and close
-            RawExecutionResult<Region> obj = RawExecutionResult.newErrorResult(errors)
+            RawExecutionResult<Region> obj = RawExecutionResult.newErrorResult(RawEntity.REGION, errors)
             return obj
         }
 
         def region = newRegionInstance(rawRegion)
 
         //Validate using Gorm Validations
-        region = region.save(flush:true)
+        def result = region.save(flush:true)
 
         if (region.hasErrors()){
 
             errors = errorMessageService.getRawMessages(RawEntity.REGION, region)
 
-            RawExecutionResult<Region> obj = RawExecutionResult.newErrorResult(errors)
+            RawExecutionResult<Region> obj = RawExecutionResult.newErrorResult(RawEntity.REGION, errors)
             return obj
+        } else {
+            region = result
         }
 
-        RawExecutionResult<Region> obj = RawExecutionResult.newSuccessResult(region)
+        RawExecutionResult<Region> obj = RawExecutionResult.newSuccessResult(RawEntity.REGION, region)
         return obj
     }
 

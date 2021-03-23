@@ -48,23 +48,25 @@ class RoundService {
 
         if (!errors.isEmpty()){
             //create result and close
-            RawExecutionResult<Round> obj = RawExecutionResult.newErrorResult(errors)
+            RawExecutionResult<Round> obj = RawExecutionResult.newErrorResult(RawEntity.ROUND, errors)
             return obj
         }
 
         //save round
-        round = round.save(flush:true)
+        def result = round.save(flush:true)
 
         //Validate using Gorm Validations
         if (round.hasErrors()){
 
             errors = errorMessageService.getRawMessages(RawEntity.ROUND, round)
 
-            RawExecutionResult<Round> obj = RawExecutionResult.newErrorResult(errors)
+            RawExecutionResult<Round> obj = RawExecutionResult.newErrorResult(RawEntity.ROUND, errors)
             return obj
+        } else {
+            round = result
         }
 
-        RawExecutionResult<Round> obj = RawExecutionResult.newSuccessResult(round)
+        RawExecutionResult<Round> obj = RawExecutionResult.newSuccessResult(RawEntity.ROUND, round)
         return obj
     }
 

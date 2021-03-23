@@ -217,27 +217,29 @@ class MaritalRelationshipService {
 
         if (!errors.isEmpty()){
             //create result and close
-            RawExecutionResult<MaritalRelationship> obj = RawExecutionResult.newErrorResult(errors)
+            RawExecutionResult<MaritalRelationship> obj = RawExecutionResult.newErrorResult(RawEntity.MARITAL_RELATIONSHIP, errors)
             return obj
         }
 
         def maritalRelationship = newCreateMaritalRelationshipInstance(rawMaritalRelationship)
 
-        maritalRelationship = maritalRelationship.save(flush:true)
+        def result = maritalRelationship.save(flush:true)
 
         //Validate using Gorm Validations
         if (maritalRelationship.hasErrors()){
 
             errors = errorMessageService.getRawMessages(RawEntity.MARITAL_RELATIONSHIP, maritalRelationship)
 
-            RawExecutionResult<MaritalRelationship> obj = RawExecutionResult.newErrorResult(errors)
+            RawExecutionResult<MaritalRelationship> obj = RawExecutionResult.newErrorResult(RawEntity.MARITAL_RELATIONSHIP, errors)
             return obj
+        } else {
+            maritalRelationship = result
         }
 
         //Update Member with start status
         errors += updatesAfterCreatingRelationship(maritalRelationship)
 
-        RawExecutionResult<MaritalRelationship> obj = RawExecutionResult.newSuccessResult(maritalRelationship, errors)
+        RawExecutionResult<MaritalRelationship> obj = RawExecutionResult.newSuccessResult(RawEntity.MARITAL_RELATIONSHIP, maritalRelationship, errors)
         return obj
     }
 
@@ -249,26 +251,29 @@ class MaritalRelationshipService {
 
         if (!errors.isEmpty()){
             //create result and close
-            RawExecutionResult<MaritalRelationship> obj = RawExecutionResult.newErrorResult(errors)
+            RawExecutionResult<MaritalRelationship> obj = RawExecutionResult.newErrorResult(RawEntity.MARITAL_RELATIONSHIP, errors)
             return obj
         }
 
         def maritalRelationship = newCloseMaritalRelationshipInstance(rawMaritalRelationship)
 
-        maritalRelationship = maritalRelationship.save(flush:true)
+        def result = maritalRelationship.save(flush:true)
+
         //Validate using Gorm Validations
         if (maritalRelationship.hasErrors()){
 
             errors = errorMessageService.getRawMessages(RawEntity.MARITAL_RELATIONSHIP, maritalRelationship)
 
-            RawExecutionResult<MaritalRelationship> obj = RawExecutionResult.newErrorResult(errors)
+            RawExecutionResult<MaritalRelationship> obj = RawExecutionResult.newErrorResult(RawEntity.MARITAL_RELATIONSHIP, errors)
             return obj
+        } else {
+            maritalRelationship = result
         }
 
         //Update Household - remove head if member was one
         errors = updatesAfterClosingRelationship(maritalRelationship)
 
-        RawExecutionResult<MaritalRelationship> obj = RawExecutionResult.newSuccessResult(maritalRelationship, errors)
+        RawExecutionResult<MaritalRelationship> obj = RawExecutionResult.newSuccessResult(RawEntity.MARITAL_RELATIONSHIP, maritalRelationship, errors)
         return obj
     }
 

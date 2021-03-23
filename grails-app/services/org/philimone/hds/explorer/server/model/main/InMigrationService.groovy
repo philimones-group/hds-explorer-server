@@ -71,7 +71,7 @@ class InMigrationService {
 
         if (!errors.isEmpty()){
             //create result and close
-            RawExecutionResult<InMigration> obj = RawExecutionResult.newErrorResult(errors)
+            RawExecutionResult<InMigration> obj = RawExecutionResult.newErrorResult(RawEntity.IN_MIGRATION, errors)
             return obj
         }
 
@@ -84,7 +84,7 @@ class InMigrationService {
 
             errors = errorMessageService.getRawMessages(RawEntity.IN_MIGRATION, inmigration)
 
-            RawExecutionResult<InMigration> obj = RawExecutionResult.newErrorResult(errors)
+            RawExecutionResult<InMigration> obj = RawExecutionResult.newErrorResult(RawEntity.IN_MIGRATION, errors)
             return obj
         } else {
             inmigration = result
@@ -96,7 +96,7 @@ class InMigrationService {
 
         errors = afterCreateInMigration(inmigration)
 
-        RawExecutionResult<InMigration> obj = RawExecutionResult.newSuccessResult(inmigration, errors)
+        RawExecutionResult<InMigration> obj = RawExecutionResult.newSuccessResult(RawEntity.IN_MIGRATION, inmigration, errors)
         return obj
     }
 

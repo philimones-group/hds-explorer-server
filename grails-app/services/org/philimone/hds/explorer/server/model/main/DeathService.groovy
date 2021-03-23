@@ -149,7 +149,7 @@ class DeathService {
 
         if (!errors.isEmpty()){
             //create result and close
-            RawExecutionResult<Death> obj = RawExecutionResult.newErrorResult(errors)
+            RawExecutionResult<Death> obj = RawExecutionResult.newErrorResult(RawEntity.DEATH, errors)
             return obj
         }
 
@@ -161,7 +161,7 @@ class DeathService {
 
             errors = errorMessageService.getRawMessages(RawEntity.DEATH, death)
 
-            RawExecutionResult<Death> obj = RawExecutionResult.newErrorResult(errors)
+            RawExecutionResult<Death> obj = RawExecutionResult.newErrorResult(RawEntity.DEATH, errors)
             return obj
         } else {
             death = result
@@ -173,7 +173,7 @@ class DeathService {
 
         errors = afterDeathRegistered(death)
 
-        RawExecutionResult<Death> obj = RawExecutionResult.newSuccessResult(death, errors)
+        RawExecutionResult<Death> obj = RawExecutionResult.newSuccessResult(RawEntity.DEATH, death, errors)
         return obj
     }
 

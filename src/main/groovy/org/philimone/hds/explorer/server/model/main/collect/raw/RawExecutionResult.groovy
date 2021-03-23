@@ -1,5 +1,7 @@
 package org.philimone.hds.explorer.server.model.main.collect.raw
 
+import org.philimone.hds.explorer.server.model.enums.RawEntity
+
 class RawExecutionResult<D> {
     enum Status {
         SUCCESS, SEMI_ERROR, ERROR
@@ -8,39 +10,40 @@ class RawExecutionResult<D> {
     Status status
     List<RawMessage> errorMessages = new ArrayList<>();
     D domainInstance //Result of Execution
+    RawEntity entity
 
-    RawExecutionResult(Status status, List<RawMessage> errorMessages) {
+    RawExecutionResult(RawEntity entity, Status status, List<RawMessage> errorMessages) {
+        this.entity = entity
         this.status = status
         if (errorMessages != null) { this.errorMessages.addAll(errorMessages) }
     }
 
-    RawExecutionResult(Status status, D instance, List<RawMessage> errorMessages) {
-        this.status = status
+    RawExecutionResult(RawEntity entity, Status status, D instance, List<RawMessage> errorMessages) {
+        this(entity, status, errorMessages)
         this.domainInstance = instance
-        if (errorMessages != null) { this.errorMessages.addAll(errorMessages) }
     }
 
-    static RawExecutionResult<D> newResult(Status status, List<RawMessage> errorMessages){
-        new RawExecutionResult(status, errorMessages)
+    static RawExecutionResult<D> newResult(RawEntity entity, Status status, List<RawMessage> errorMessages){
+        new RawExecutionResult(entity, status, errorMessages)
     }
 
-    static RawExecutionResult<D> newSuccessResult(){
-        new RawExecutionResult(Status.SUCCESS, null)
+    static RawExecutionResult<D> newSuccessResult(RawEntity entity){
+        new RawExecutionResult(entity, Status.SUCCESS, null)
     }
 
-    static RawExecutionResult<D> newSuccessResult(D instance){
-        new RawExecutionResult(Status.SUCCESS, instance,null)
+    static RawExecutionResult<D> newSuccessResult(RawEntity entity, D instance){
+        new RawExecutionResult(entity, Status.SUCCESS, instance,null)
     }
 
-    static RawExecutionResult<D> newSuccessResult(D instance, List<RawMessage> otherErrors){
-        new RawExecutionResult(Status.SUCCESS, instance, otherErrors)
+    static RawExecutionResult<D> newSuccessResult(RawEntity entity, D instance, List<RawMessage> otherErrors){
+        new RawExecutionResult(entity, Status.SUCCESS, instance, otherErrors)
     }
 
-    static RawExecutionResult<D> newErrorResult(List<RawMessage> errorMessages){
-        new RawExecutionResult(Status.ERROR, errorMessages)
+    static RawExecutionResult<D> newErrorResult(RawEntity entity, List<RawMessage> errorMessages){
+        new RawExecutionResult(entity, Status.ERROR, errorMessages)
     }
 
-    static RawExecutionResult<D> newSemiErrorResult(List<RawMessage> errorMessages){
-        new RawExecutionResult(Status.SEMI_ERROR, errorMessages)
+    static RawExecutionResult<D> newSemiErrorResult(RawEntity entity, List<RawMessage> errorMessages){
+        new RawExecutionResult(entity, Status.SEMI_ERROR, errorMessages)
     }
 }

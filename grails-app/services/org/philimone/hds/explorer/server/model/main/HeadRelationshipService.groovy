@@ -179,27 +179,29 @@ class HeadRelationshipService {
 
         if (!errors.isEmpty()){
             //create result and close
-            RawExecutionResult<HeadRelationship> obj = RawExecutionResult.newErrorResult(errors)
+            RawExecutionResult<HeadRelationship> obj = RawExecutionResult.newErrorResult(RawEntity.HEAD_RELATIONSHIP, errors)
             return obj
         }
 
         def headRelationship = newHeadRelationshipInstance(rawHeadRelationship)
 
-        headRelationship = headRelationship.save(flush:true)
+        def result = headRelationship.save(flush:true)
 
         //Validate using Gorm Validations
         if (headRelationship.hasErrors()){
 
             errors = errorMessageService.getRawMessages(RawEntity.HEAD_RELATIONSHIP, headRelationship)
 
-            RawExecutionResult<HeadRelationship> obj = RawExecutionResult.newErrorResult(errors)
+            RawExecutionResult<HeadRelationship> obj = RawExecutionResult.newErrorResult(RawEntity.HEAD_RELATIONSHIP, errors)
             return obj
+        } else {
+            headRelationship = result
         }
 
         //Update Member with start status
         errors += updatesAfterCreatingRelationship(headRelationship)
 
-        RawExecutionResult<HeadRelationship> obj = RawExecutionResult.newSuccessResult(headRelationship, errors)
+        RawExecutionResult<HeadRelationship> obj = RawExecutionResult.newSuccessResult(RawEntity.HEAD_RELATIONSHIP, headRelationship, errors)
         return obj
     }
 
@@ -211,26 +213,28 @@ class HeadRelationshipService {
 
         if (!errors.isEmpty()){
             //create result and close
-            RawExecutionResult<HeadRelationship> obj = RawExecutionResult.newErrorResult(errors)
+            RawExecutionResult<HeadRelationship> obj = RawExecutionResult.newErrorResult(RawEntity.HEAD_RELATIONSHIP, errors)
             return obj
         }
 
         def headRelationship = closeHeadRelationshipInstance(rawHeadRelationship)
 
-        headRelationship = headRelationship.save(flush:true)
+        def result = headRelationship.save(flush:true)
         //Validate using Gorm Validations
         if (headRelationship.hasErrors()){
 
             errors = errorMessageService.getRawMessages(RawEntity.HEAD_RELATIONSHIP, headRelationship)
 
-            RawExecutionResult<HeadRelationship> obj = RawExecutionResult.newErrorResult(errors)
+            RawExecutionResult<HeadRelationship> obj = RawExecutionResult.newErrorResult(RawEntity.HEAD_RELATIONSHIP, errors)
             return obj
+        } else {
+            headRelationship = result
         }
 
         //Update Household - remove head if member was one
         errors = updatesAfterClosingRelationship(headRelationship)
 
-        RawExecutionResult<HeadRelationship> obj = RawExecutionResult.newSuccessResult(headRelationship, errors)
+        RawExecutionResult<HeadRelationship> obj = RawExecutionResult.newSuccessResult(RawEntity.HEAD_RELATIONSHIP, headRelationship, errors)
         return obj
     }
 

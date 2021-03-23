@@ -52,23 +52,25 @@ class MemberService {
 
         if (!errors.isEmpty()){
             //create result and close
-            RawExecutionResult<Member> obj = RawExecutionResult.newErrorResult(errors)
+            RawExecutionResult<Member> obj = RawExecutionResult.newErrorResult(RawEntity.MEMBER, errors)
             return obj
         }
 
         def member = newMemberInstance(rawMember)
 
-        member = member.save(flush:true)
+        def result = member.save(flush:true)
         //Validate using Gorm Validations
         if (member.hasErrors()){
 
             errors = errorMessageService.getRawMessages(RawEntity.MEMBER, member)
 
-            RawExecutionResult<Member> obj = RawExecutionResult.newErrorResult(errors)
+            RawExecutionResult<Member> obj = RawExecutionResult.newErrorResult(RawEntity.MEMBER, errors)
             return obj
+        } else {
+            member = result
         }
 
-        RawExecutionResult<Member> obj = RawExecutionResult.newSuccessResult(member)
+        RawExecutionResult<Member> obj = RawExecutionResult.newSuccessResult(RawEntity.MEMBER, member)
         return obj
     }
 

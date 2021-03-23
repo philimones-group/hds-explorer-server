@@ -50,23 +50,25 @@ class HouseholdService {
 
         if (!errors.isEmpty()){
             //create result and close
-            RawExecutionResult<Household> obj = RawExecutionResult.newErrorResult(errors)
+            RawExecutionResult<Household> obj = RawExecutionResult.newErrorResult(RawEntity.HOUSEHOLD, errors)
             return obj
         }
 
         def household = newHouseholdInstance(rawHousehold)
 
-        household = household.save(flush:true)
+        def result = household.save(flush:true)
         //Validate using Gorm Validations
         if (household.hasErrors()){
 
             errors = errorMessageService.getRawMessages(RawEntity.HOUSEHOLD, household)
 
-            RawExecutionResult<Household> obj = RawExecutionResult.newErrorResult(errors)
+            RawExecutionResult<Household> obj = RawExecutionResult.newErrorResult(RawEntity.HOUSEHOLD, errors)
             return obj
+        } else {
+            household = result
         }
 
-        RawExecutionResult<Household> obj = RawExecutionResult.newSuccessResult(household)
+        RawExecutionResult<Household> obj = RawExecutionResult.newSuccessResult(RawEntity.HOUSEHOLD, household)
         return obj
     }
 
