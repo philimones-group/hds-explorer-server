@@ -4,6 +4,8 @@ import com.google.gson.Gson
 import org.philimone.hds.explorer.server.model.enums.RawEntity
 import org.philimone.hds.explorer.server.model.main.collect.raw.RawMessage
 
+import java.time.LocalDateTime
+
 class RawErrorLog {
 
     /*
@@ -23,6 +25,10 @@ class RawErrorLog {
      *
      */
     String message
+    /*
+     * Timestamp of Execution
+     */
+    LocalDateTime createdDate
 
     void setMessage(ArrayList<RawMessage> messages){
         Gson gson = new Gson()
@@ -52,5 +58,6 @@ class RawErrorLog {
         entity column: "entity", indexColumn: [name: "idx_entity", type: Integer]
         code column: "code", indexColumn: [name: "idx_code", type: Integer]
         message column: "message"
+        createdDate column: "created_date"
     }
 }

@@ -2,15 +2,22 @@ package org.philimone.hds.explorer.server.model.enums
 
 enum RawEntity {
 
-    CENSUS_REGION,
-    CENSUS_HOUSEHOLD,
-    CENSUS_MEMBER,
-    PREGNANCY_REG,
-    PREGNANCY_BIRTH,
-    EXTERNAL_INMIGRATION,
+    REGION,
+    HOUSEHOLD,
+    MEMBER,
+    MEMBER_ENUMERATION,
+    RESIDENCY,
+    HEAD_RELATIONSHIP,
+    MARITAL_RELATIONSHIP,
+    ROUND,
+    VISIT,
     IN_MIGRATION,
     OUT_MIGRATION,
-    DEATH_REG,
+    PREGNANCY_REGISTRATION,
+    PREGNANCY_OUTCOME,
+    PREGNANCY_CHILD,
+    EXTERNAL_INMIGRATION,
+    DEATH,
     CHANGE_HOH
 
     /* Finding Enum by code */
