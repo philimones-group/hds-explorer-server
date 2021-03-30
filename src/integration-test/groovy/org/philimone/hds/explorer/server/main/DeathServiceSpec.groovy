@@ -223,17 +223,17 @@ class DeathServiceSpec extends Specification {
 
         def rv1 = new RawVisit(id: "uuuid1", code: codeGeneratorService.generateVisitCode(household1), householdCode: household1.code,
                 visitDate: GeneralUtil.getDate(2021, 2, 3), visitLocation: VisitLocationItem.HOME.code, roundNumber: 0,
-                respondentCode: member11.code, hasInterpreter: false, collectedBy: "dragon", collectedDate: GeneralUtil.getDate(2021, 3, 4)
+                respondentCode: member11.code, hasInterpreter: false, collectedBy: "dragon", collectedDate: GeneralUtil.getDate(2021, 3, 4, 0, 0, 0)
         )
 
         def rv2 = new RawVisit(id: "uuuid2", code: codeGeneratorService.generateVisitCode(household1), householdCode: household1.code,
                 visitDate: GeneralUtil.getDate(2021, 2, 4), visitLocation: VisitLocationItem.HOME.code, roundNumber: 0,
-                respondentCode: member12.code, hasInterpreter: false, collectedBy: "dragon", collectedDate: GeneralUtil.getDate(2021, 3, 4)
+                respondentCode: member12.code, hasInterpreter: false, collectedBy: "dragon", collectedDate: GeneralUtil.getDate(2021, 3, 4, 0, 0, 0)
         )
 
         def rv3 = new RawVisit(id: "uuuid3", code: codeGeneratorService.generateVisitCode(household2), householdCode: household2.code,
                 visitDate: GeneralUtil.getDate(2021, 2, 4), visitLocation: VisitLocationItem.OTHER_PLACE.code, visitLocationOther: "HEALTHCENTER", roundNumber: 0,
-                respondentCode: member21.code, hasInterpreter: false, collectedBy: "dragon", collectedDate: GeneralUtil.getDate(2021, 2, 4)
+                respondentCode: member21.code, hasInterpreter: false, collectedBy: "dragon", collectedDate: GeneralUtil.getDate(2021, 2, 4, 0, 0, 0)
         )
 
         //rv1.save()
@@ -290,8 +290,8 @@ class DeathServiceSpec extends Specification {
                 migrationDate: GeneralUtil.getDate(2020, 1, 19),
                 migrationReason: "RETURNING FROM MINES",
                 collectedBy: "dragon",
-                collectedDate: GeneralUtil.getDate(2020, 4, 12),
-                uploadedDate: GeneralUtil.getDate(2020, 4, 14)
+                collectedDate: GeneralUtil.getDate(2020, 4, 12, 0, 0, 0),
+                uploadedDate: GeneralUtil.getDate(2020, 4, 14, 0, 0, 0)
         )
 
         def rin2 = new RawInMigration(
@@ -305,8 +305,8 @@ class DeathServiceSpec extends Specification {
                 migrationDate: GeneralUtil.getDate(2020, 1, 19),
                 migrationReason: "RETURNING FROM MINES",
                 collectedBy: "dragon",
-                collectedDate: GeneralUtil.getDate(2020, 4, 12),
-                uploadedDate: GeneralUtil.getDate(2020, 4, 14)
+                collectedDate: GeneralUtil.getDate(2020, 4, 12, 0, 0, 0),
+                uploadedDate: GeneralUtil.getDate(2020, 4, 14, 0, 0, 0)
         )
 
         def rin3 = new RawInMigration(
@@ -320,8 +320,8 @@ class DeathServiceSpec extends Specification {
                 migrationDate: GeneralUtil.getDate(2020, 1, 17),
                 migrationReason: "job changes",
                 collectedBy: "dragon",
-                collectedDate: GeneralUtil.getDate(2020, 4, 12),
-                uploadedDate: GeneralUtil.getDate(2020, 4, 14)
+                collectedDate: GeneralUtil.getDate(2020, 4, 12, 0, 0, 0),
+                uploadedDate: GeneralUtil.getDate(2020, 4, 14, 0, 0, 0)
         )
 
 
@@ -336,8 +336,8 @@ class DeathServiceSpec extends Specification {
                 migrationDate: GeneralUtil.getDate(2020, 1, 17),
                 migrationReason: "job changes",
                 collectedBy: "dragon",
-                collectedDate: GeneralUtil.getDate(2020, 4, 12),
-                uploadedDate: GeneralUtil.getDate(2020, 4, 14)
+                collectedDate: GeneralUtil.getDate(2020, 4, 12, 0, 0, 0),
+                uploadedDate: GeneralUtil.getDate(2020, 4, 14, 0, 0, 0)
         )
 
         def rin5 = new RawInMigration(
@@ -351,8 +351,8 @@ class DeathServiceSpec extends Specification {
                 migrationDate: GeneralUtil.getDate(2020, 2, 28),
                 migrationReason: "job changes",
                 collectedBy: "dragon",
-                collectedDate: GeneralUtil.getDate(2020, 4, 12),
-                uploadedDate: GeneralUtil.getDate(2020, 4, 14)
+                collectedDate: GeneralUtil.getDate(2020, 4, 12, 0, 0, 0),
+                uploadedDate: GeneralUtil.getDate(2020, 4, 14, 0, 0, 0)
         )
 
         def rh1 = new RawHeadRelationship(id: "uuuid1", memberCode: member11.code, householdCode: household1.code, relationshipType: HeadRelationshipType.HEAD_OF_HOUSEHOLD.code,
@@ -485,8 +485,8 @@ class DeathServiceSpec extends Specification {
                 deathCause: "MALARIA",
                 deathPlace: "HOME",
                 collectedBy: "dragon",
-                collectedDate: GeneralUtil.getDate(2020, 4, 12),
-                uploadedDate: GeneralUtil.getDate(2020, 4, 14)
+                collectedDate: GeneralUtil.getDate(2020, 4, 12, 0, 0, 0),
+                uploadedDate: GeneralUtil.getDate(2020, 4, 14, 0, 0, 0)
         )
 
         def rd2 = new RawDeath(
@@ -497,8 +497,8 @@ class DeathServiceSpec extends Specification {
                 deathCause: "MALARIA",
                 deathPlace: "HOME",
                 collectedBy: "dragon",
-                collectedDate: GeneralUtil.getDate(2020, 4, 12),
-                uploadedDate: GeneralUtil.getDate(2020, 4, 14)
+                collectedDate: GeneralUtil.getDate(2020, 4, 12, 0, 0, 0),
+                uploadedDate: GeneralUtil.getDate(2020, 4, 14, 0, 0, 0)
         )
 
         def rd3 = new RawDeath(
@@ -509,8 +509,8 @@ class DeathServiceSpec extends Specification {
                 deathCause: "MALARIA",
                 deathPlace: "HOME",
                 collectedBy: "dragon",
-                collectedDate: GeneralUtil.getDate(2020, 4, 12),
-                uploadedDate: GeneralUtil.getDate(2020, 4, 14)
+                collectedDate: GeneralUtil.getDate(2020, 4, 12, 0, 0, 0),
+                uploadedDate: GeneralUtil.getDate(2020, 4, 14, 0, 0, 0)
         )
 
         def rd4 = new RawDeath(
@@ -521,8 +521,8 @@ class DeathServiceSpec extends Specification {
                 deathCause: "MALARIA",
                 deathPlace: "HOME",
                 collectedBy: "dragon",
-                collectedDate: GeneralUtil.getDate(2020, 4, 12),
-                uploadedDate: GeneralUtil.getDate(2020, 4, 14)
+                collectedDate: GeneralUtil.getDate(2020, 4, 12, 0, 0, 0),
+                uploadedDate: GeneralUtil.getDate(2020, 4, 14, 0, 0, 0)
         )
 
         //rv1.save()

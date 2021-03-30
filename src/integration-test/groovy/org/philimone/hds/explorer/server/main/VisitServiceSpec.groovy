@@ -158,8 +158,8 @@ class VisitServiceSpec extends Specification {
     }
 
     def setupRounds(){
-        def result1 = roundService.createRound(GeneralUtil.getDate(2021, 0, 1), GeneralUtil.getDate(2021, 0, 31), "baseline round")
-        def result2 = roundService.createRound(GeneralUtil.getDate(2021, 0, 31), GeneralUtil.getDate(2021, 1, 28), "first round")
+        def result1 = roundService.createRound(GeneralUtil.getDate(2021, 1, 1), GeneralUtil.getDate(2021, 1, 31), "baseline round")
+        def result2 = roundService.createRound(GeneralUtil.getDate(2021, 1, 31), GeneralUtil.getDate(2021, 1, 28), "first round")
         def result3 = roundService.createRound(GeneralUtil.getDate(2021, 2, 1), GeneralUtil.getDate(2021, 1, 20), "second round")
 
         printResults(result1)
@@ -217,8 +217,8 @@ class VisitServiceSpec extends Specification {
 
         setupAll()
 
-        def result1 = roundService.createRound(GeneralUtil.getDate(2021, 0, 1), GeneralUtil.getDate(2021, 0, 31), "baseline round")
-        def result2 = roundService.createRound(GeneralUtil.getDate(2021, 0, 31), GeneralUtil.getDate(2021, 1, 28), "first round")
+        def result1 = roundService.createRound(GeneralUtil.getDate(2021, 1, 1), GeneralUtil.getDate(2021, 1, 31), "baseline round")
+        def result2 = roundService.createRound(GeneralUtil.getDate(2021, 1, 31), GeneralUtil.getDate(2021, 1, 28), "first round")
         def result3 = roundService.createRound(GeneralUtil.getDate(2021, 2, 1), GeneralUtil.getDate(2021, 1, 20), "second round")
 
         printResults(result1)
@@ -269,7 +269,7 @@ class VisitServiceSpec extends Specification {
                 gpsLatitude: null,
                 gpsLongitude: null,
                 collectedBy: "dragon",
-                collectedDate: GeneralUtil.getDate(2021, 3, 4)
+                collectedDate: GeneralUtil.getDate(2021, 3, 4, 0, 0, 0)
         )
 
         def rv2 = new RawVisit(
@@ -288,7 +288,7 @@ class VisitServiceSpec extends Specification {
                 gpsLatitude: null,
                 gpsLongitude: null,
                 collectedBy: "dragon",
-                collectedDate: GeneralUtil.getDate(2021, 3, 4)
+                collectedDate: GeneralUtil.getDate(2021, 3, 4, 0, 0, 0)
         )
 
         def rv3 = new RawVisit(
@@ -307,7 +307,7 @@ class VisitServiceSpec extends Specification {
                 gpsLatitude: null,
                 gpsLongitude: null,
                 collectedBy: "dragon",
-                collectedDate: GeneralUtil.getDate(2021, 2, 4)
+                collectedDate: GeneralUtil.getDate(2021, 2, 4, 0, 0, 0)
         )
 
         //rv1.save()
