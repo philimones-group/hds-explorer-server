@@ -5,6 +5,7 @@ import net.betainteractive.utilities.StringUtil
 import org.philimone.hds.explorer.server.model.authentication.User
 import org.philimone.hds.explorer.server.model.main.Household
 import org.philimone.hds.explorer.server.model.main.Member
+import org.philimone.hds.explorer.server.model.main.PregnancyRegistration
 import org.philimone.hds.explorer.server.model.main.Region
 import org.philimone.hds.explorer.server.model.main.Visit
 
@@ -31,6 +32,10 @@ class CodeGeneratorService {
 
     boolean isUserCodeValid(String code) {
         return codeGenerator.isUserCodeValid(code)
+    }
+
+    boolean isPregnancyCodeValid(String code){
+        return codeGenerator.isPregnancyCodeValid(code)
     }
 
     String generateRegionCode(String regionName) {
@@ -68,5 +73,12 @@ class CodeGeneratorService {
         def codes = User.list().collect{ t -> t.code}
 
         return codeGenerator.generateUserCode(user, codes)
+    }
+
+    String generatePregnancyCode(Member mother) {
+        def cbase = "${mother.code}"
+        def codes = PregnancyRegistration.findAllByCodeLike("${cbase}%", [sort:'code', order: 'asc']).collect{ t -> t.code}
+
+        return codeGenerator.generatePregnancyCode(cbase, codes)
     }
 }

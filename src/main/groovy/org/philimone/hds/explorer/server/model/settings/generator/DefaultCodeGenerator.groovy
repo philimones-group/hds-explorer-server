@@ -14,6 +14,7 @@ class DefaultCodeGenerator implements CodeGenerator {
     final String MEMBER_CODE_PATTERN = '^[A-Z0-9]{6}[0-9]{6}$'
     final String VISIT_CODE_PATTERN = '^[A-Z0-9]{6}[0-9]{6}$'
     final String USER_CODE_PATTERN = '^[A-Z0-9]{3}$'
+    final String PREGNANCY_CODE_PATTERN = '^[A-Z0-9]{6}[0-9]{6}-[0-9]{2}$'
 
     @Override
     boolean isRegionCodeValid(String code) {
@@ -38,6 +39,11 @@ class DefaultCodeGenerator implements CodeGenerator {
     @Override
     boolean isUserCodeValid(String code) {
         return !StringUtil.isBlank(code) && code.matches(USER_CODE_PATTERN)
+    }
+
+    @Override
+    boolean isPregnancyCodeValid(String code){
+        return !StringUtil.isBlank(code) && code.matches(PREGNANCY_CODE_PATTERN)
     }
 
     @Override
@@ -164,5 +170,28 @@ class DefaultCodeGenerator implements CodeGenerator {
         }
 
         return null
+    }
+
+    @Override
+    String generatePregnancyCode(String baseCode, List<String> existentCodes) {
+        if (StringUtil.isBlank(baseCode)) return null
+
+        if (existentCodes.size()==0){
+            return "${baseCode}-01"
+        } else {
+
+            def first = existentCodes.last()
+            def sorder = first.replaceAll("${baseCode}-", "")
+            def n = StringUtil.getInteger(sorder)
+
+            if (n==null) n = 1
+            for (int i=n; i <= 99; i++){
+                def code = "${baseCode}-${String.format('%02d', i)}" as String
+                if (!existentCodes.contains(code)){
+                    return code
+                }
+            }
+        }
+
     }
 }

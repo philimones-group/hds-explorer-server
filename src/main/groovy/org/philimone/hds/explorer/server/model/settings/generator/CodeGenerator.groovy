@@ -14,6 +14,8 @@ interface CodeGenerator {
 
     boolean isUserCodeValid(String code)
 
+    boolean isPregnancyCodeValid(String code)
+
     String generateRegionCode(String regionName, List<String> existentCodes)
 
     String generateHouseholdCode(String baseCode, List<String> existentCodes)
@@ -23,5 +25,7 @@ interface CodeGenerator {
     String generateVisitCode(String baseCode, List<String> existentCodes)
 
     String generateUserCode(User user, List<String> existentCodes)
+
+    String generatePregnancyCode(String baseCode, List<String> existentCodes)
 
 }

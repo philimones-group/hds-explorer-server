@@ -17,7 +17,7 @@ import org.philimone.hds.explorer.server.model.settings.Codes
 import java.time.LocalDate
 
 @Transactional
-class PregnancyService {
+class PregnancyRegistrationService {
 
     def householdService
     def memberService
@@ -40,7 +40,7 @@ class PregnancyService {
 
     PregnancyRegistration getLastPregnancyRegistration(String motherCode) {
         if (memberService.exists(motherCode)){
-            def pregnancies = PregnancyRegistration.executeQuery("select p from PregnancyRegistration p where p.mother.code=? order by r.recordedDate desc", [motherCode], [offset:0, max:1]) // limit 1
+            def pregnancies = PregnancyRegistration.executeQuery("select p from PregnancyRegistration p where p.mother.code=? order by p.recordedDate desc", [motherCode], [offset:0, max:1]) // limit 1
 
             if (pregnancies != null && pregnancies.size()>0){
                 return pregnancies.first()
@@ -92,14 +92,14 @@ class PregnancyService {
         //code, motherCode, pregMonths, expectedDeliveryDate, status, visitCode
         def isBlankCode = StringUtil.isBlank(pregnancyRegistration.code)
         def isBlankMotherCode = StringUtil.isBlank(pregnancyRegistration.motherCode)
-        def isBlankRecordedDate = StringUtil.isBlankDate(recordedDate)
+        def isBlankRecordedDate = StringUtil.isBlankDate(pregnancyRegistration.recordedDate)
         def isBlankPregMonths = StringUtil.isBlankInteger(pregnancyRegistration.pregMonths)
         def isBlankEddKnown = StringUtil.isBlankBoolean(pregnancyRegistration.eddKnown)
         def isBlankHasPrenatalRecord = StringUtil.isBlankBoolean(pregnancyRegistration.hasPrenatalRecord)
 
         def isBlankEddDate = StringUtil.isBlankDate(pregnancyRegistration.eddDate)
         def isBlankEddType = StringUtil.isBlank(pregnancyRegistration.eddType)
-        def isBlankLmpKnown = StringUtil.isBlankDate(pregnancyRegistration.lmpKnown)
+        def isBlankLmpKnown = StringUtil.isBlankBoolean(pregnancyRegistration.lmpKnown)
 
         def isBlankLmpDate = StringUtil.isBlankDate(pregnancyRegistration.lmpDate)
         def isBlankExpectedDeliveryDate = StringUtil.isBlankDate(pregnancyRegistration.expectedDeliveryDate)
@@ -116,12 +116,12 @@ class PregnancyService {
         def visitExists = visit != null
 
         //fields we want be checking for now
-        isBlankEddKnown = false
-        isBlankHasPrenatalRecord = false
-        isBlankEddDate = false
-        isBlankEddType = false
-        isBlankLmpKnown = false
-        isBlankLmpDate = false
+        def ignoreBlankEddKnown = true
+        def ignoreBlankHasPrenatalRecord = true
+        def ignoreBlankEddDate = true
+        def ignoreBlankEddType = true
+        def ignoreBlankLmpKnown = true
+        def ignoreBlankLmpDate = true
 
         //C1. Check Blank Fields (code)
         if (isBlankCode){
@@ -140,27 +140,27 @@ class PregnancyService {
             errors << errorMessageService.getRawMessage(RawEntity.PREGNANCY_REGISTRATION, "validation.field.blank", ["pregMonths"], ["pregMonths"])
         }
         //C1. Check Blank Fields (eddKnown)
-        if (isBlankEddKnown){
+        if (isBlankEddKnown && !ignoreBlankEddKnown){
             errors << errorMessageService.getRawMessage(RawEntity.PREGNANCY_REGISTRATION, "validation.field.blank", ["eddKnown"], ["eddKnown"])
         }
         //C1. Check Blank Fields (hasPrenatalRecord)
-        if (isBlankHasPrenatalRecord){
+        if (isBlankHasPrenatalRecord && !ignoreBlankHasPrenatalRecord){
             errors << errorMessageService.getRawMessage(RawEntity.PREGNANCY_REGISTRATION, "validation.field.blank", ["hasPrenatalRecord"], ["hasPrenatalRecord"])
         }
         //C1. Check Blank Fields (eddDate)
-        if (isBlankEddDate){
+        if (isBlankEddDate && !ignoreBlankEddDate){
             errors << errorMessageService.getRawMessage(RawEntity.PREGNANCY_REGISTRATION, "validation.field.blank", ["eddDate"], ["eddDate"])
         }
         //C1. Check Blank Fields (eddType)
-        if (isBlankEddType){
+        if (isBlankEddType && !ignoreBlankEddType){
             errors << errorMessageService.getRawMessage(RawEntity.PREGNANCY_REGISTRATION, "validation.field.blank", ["eddType"], ["eddType"])
         }
         //C1. Check Nullable Fields (lmpKnown)
-        if (isBlankLmpKnown){
+        if (isBlankLmpKnown && !ignoreBlankLmpKnown){
             errors << errorMessageService.getRawMessage(RawEntity.PREGNANCY_REGISTRATION, "validation.field.blank", ["lmpKnown"], ["lmpKnown"])
         }
         //C1. Check Nullable Fields (lmpDate)
-        if (isBlankLmpDate){
+        if (isBlankLmpDate && !ignoreBlankLmpDate){
             errors << errorMessageService.getRawMessage(RawEntity.PREGNANCY_REGISTRATION, "validation.field.blank", ["lmpDate"], ["lmpDate"])
         }
         //C1. Check Nullable Fields (expectedDeliveryDate)
@@ -191,22 +191,30 @@ class PregnancyService {
             errors << errorMessageService.getRawMessage(RawEntity.PREGNANCY_REGISTRATION, "validation.field.reference.error", ["Visit", "visitCode", pregnancyRegistration.visitCode], ["visitCode"])
         }
 
+        //C3. Check Date is greater than today (recordedDate)
+        if (!isBlankRecordedDate && pregnancyRegistration.recordedDate > LocalDate.now()){
+            errors << errorMessageService.getRawMessage(RawEntity.PREGNANCY_REGISTRATION, "validation.field.date.not.greater.today", ["recordedDate", StringUtil.format(pregnancyRegistration.recordedDate)], ["recordedDate"])
+        }
         //C3. Check Date is greater than today (lmpDate)
-        if (!isBlankLmpDate && pregnancyRegistration.lmpDate > LocalDate.now()){
+        if (!isBlankLmpDate && !ignoreBlankLmpDate && pregnancyRegistration.lmpDate > LocalDate.now()){
             errors << errorMessageService.getRawMessage(RawEntity.PREGNANCY_REGISTRATION, "validation.field.date.not.greater.today", ["lmpDate", StringUtil.format(pregnancyRegistration.lmpDate)], ["lmpDate"])
         }
 
+        //C4. Check Dates is older than Member Date of Birth (recordedDate)
+        if (!isBlankRecordedDate && motherExists && pregnancyRegistration.recordedDate < mother.dob){
+            errors << errorMessageService.getRawMessage(RawEntity.PREGNANCY_REGISTRATION, "validation.field.dob.not.greater.date", ["recordedDate", StringUtil.format(mother.dob)], ["dob"])
+        }
         //C4. Check Dates is older than Member Date of Birth (eddDate)
-        if (!isBlankEddDate && motherExists && pregnancyRegistration.eddDate < mother.dob){
+        if (!isBlankEddDate && !ignoreBlankEddDate && motherExists && pregnancyRegistration.eddDate < mother.dob){
             errors << errorMessageService.getRawMessage(RawEntity.PREGNANCY_REGISTRATION, "validation.field.dob.not.greater.date", ["eddDate", StringUtil.format(mother.dob)], ["dob"])
         }
         //C4. Check Dates is older than Member Date of Birth (lmpDate)
-        if (!isBlankLmpDate && motherExists && pregnancyRegistration.lmpDate < mother.dob){
+        if (!isBlankLmpDate && !ignoreBlankLmpDate && motherExists && pregnancyRegistration.lmpDate < mother.dob){
             errors << errorMessageService.getRawMessage(RawEntity.PREGNANCY_REGISTRATION, "validation.field.dob.not.greater.date", ["lmpDate", StringUtil.format(mother.dob)], ["dob"])
         }
 
         //C5. Validate Enum Options (edd_type)
-        if (!isBlankEddType && EstimatedDateOfDeliveryType.getFrom(pregnancyRegistration.eddType)==null){
+        if (!isBlankEddType && !ignoreBlankEddType && EstimatedDateOfDeliveryType.getFrom(pregnancyRegistration.eddType)==null){
             errors << errorMessageService.getRawMessage(RawEntity.PREGNANCY_REGISTRATION, "validation.field.enum.choices.error", [pregnancyRegistration.eddType, "eddType"], ["eddType"])
         }
         //C5. Validate Enum Options (pregnancyStatus)
@@ -225,7 +233,7 @@ class PregnancyService {
         }
 
         //C8. Check mother Dob must be greater or equal to 12
-        if (!motherExists && GeneralUtil.getAge(mother.dob) < Codes.MIN_MOTHER_AGE_VALUE ){
+        if (motherExists && GeneralUtil.getAge(mother.dob) < Codes.MIN_MOTHER_AGE_VALUE ){
             errors << errorMessageService.getRawMessage(RawEntity.PREGNANCY_REGISTRATION, "validation.field.pregnancy.registration.age.error", [StringUtil.format(mother.dob), Codes.MIN_MOTHER_AGE_VALUE+""], ["mother.dob"])
         }
 
