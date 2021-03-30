@@ -28,7 +28,7 @@ class RawMemberEnu {
 
     String householdCode
     String householdName
-    String relationshipWithHead
+    String headRelationshipType
     LocalDate residencyStartDate
     String isHouseholdHead
 
@@ -38,8 +38,8 @@ class RawMemberEnu {
 
     ProcessedStatus processedMember
     ProcessedStatus processedResidency
-    ProcessedStatus processedMembership
-    ProcessedStatus processedRelationship
+    ProcessedStatus processedHeadRelationship
+    ProcessedStatus processedMaritalRelationship
 
     ProcessedStatus processedStatus = ProcessedStatus.NOT_PROCESSED /* General Status, 1-All Processed, 0-Not All Processed*/
 
@@ -62,7 +62,7 @@ class RawMemberEnu {
 
         householdCode blank: false
         householdName blank: false
-        relationshipWithHead blank: false
+        headRelationshipType blank: false
         residencyStartDate blank: false
         isHouseholdHead blank: false
 
@@ -72,8 +72,8 @@ class RawMemberEnu {
 
         processedMember  nullable: false
         processedResidency nullable: false
-        processedMembership nullable: false
-        processedRelationship nullable: false
+        processedHeadRelationship nullable: false
+        processedMaritalRelationship nullable: false
 
         processedStatus nullable: false
     }
@@ -103,7 +103,7 @@ class RawMemberEnu {
 
         householdCode column: 'household_code'
         householdName column: 'household_name'
-        relationshipWithHead column: 'relationship_with_head'
+        headRelationshipType column: 'head_relationship_type'
         residencyStartDate column: 'residency_start_date'
         isHouseholdHead column: 'is_household_head'
 
@@ -113,8 +113,8 @@ class RawMemberEnu {
 
         processedMember column: 'processed_member', enumType: "identity"
         processedResidency column: 'processed_residency', enumType: "identity"
-        processedMembership column: 'processed_membership', enumType: "identity"
-        processedRelationship column: 'processed_relationship', enumType: "identity"
+        processedHeadRelationship column: 'processed_head_relationship', enumType: "identity"
+        processedMaritalRelationship column: 'processed_marital_relationship', enumType: "identity"
 
         processedStatus column: "processed", enumType: "identity"
     }

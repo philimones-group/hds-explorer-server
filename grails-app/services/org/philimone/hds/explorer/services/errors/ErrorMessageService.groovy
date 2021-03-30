@@ -58,7 +58,7 @@ class ErrorMessageService {
             //err = removeClassDefFromErrDetails(err)
             msg = StringUtil.removePackageNames(msg)
 
-            errors << new RawMessage(msg, [obj.field])
+            errors << new RawMessage(entity, msg, [obj.field])
         }
 
         return errors
@@ -72,5 +72,18 @@ class ErrorMessageService {
     RawMessage getRawMessage(RawEntity entity, String messageCode, List<String> args, List<String> fields){
         def msg = messageSource.getMessage(messageCode, args!=null ? args.toArray() : null, LocaleContextHolder.getLocale())
         new RawMessage(entity, msg, fields)
+    }
+
+    ArrayList<RawMessage> addPrefixToMessages(ArrayList<RawMessage> rawMessages, String prefixMessageCode, List<String> prefixArgs){
+        rawMessages.each { rawMessage ->
+            def prefixMsg = messageSource.getMessage(prefixMessageCode, prefixArgs!=null ? prefixArgs.toArray() : null, LocaleContextHolder.getLocale())
+            rawMessage.text = prefixMsg + " -> " + rawMessage.text
+        }
+
+        return rawMessages
+    }
+
+    ArrayList<RawMessage> addPrefixToMessages(ArrayList<RawMessage> rawMessages, String prefixMessageCode){
+        return addPrefixToMessages(rawMessages, prefixMessageCode, null)
     }
 }

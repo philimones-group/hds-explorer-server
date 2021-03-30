@@ -147,7 +147,7 @@ class MemberService {
 
         //C5. Check dob max date
         if (!isNullDob && member.dob > LocalDate.now()){
-            errors << errorMessageService.getRawMessage(RawEntity.MEMBER, "validation.field.date.not.greater.today", [StringUtil.format(member.dob)], ["dob"])
+            errors << errorMessageService.getRawMessage(RawEntity.MEMBER, "validation.field.date.not.greater.today", ["dob", StringUtil.format(member.dob)], ["dob"])
         }
 
         //C4. Check Household reference existence

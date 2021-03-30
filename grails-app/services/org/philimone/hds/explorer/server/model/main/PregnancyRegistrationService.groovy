@@ -1,0 +1,294 @@
+package org.philimone.hds.explorer.server.model.main
+
+import grails.gorm.transactions.Transactional
+import net.betainteractive.utilities.GeneralUtil
+import net.betainteractive.utilities.StringUtil
+import org.philimone.hds.explorer.server.model.collect.raw.RawPregnancyOutcome
+import org.philimone.hds.explorer.server.model.collect.raw.RawPregnancyRegistration
+import org.philimone.hds.explorer.server.model.enums.EstimatedDateOfDeliveryType
+import org.philimone.hds.explorer.server.model.enums.Gender
+import org.philimone.hds.explorer.server.model.enums.MaritalStatus
+import org.philimone.hds.explorer.server.model.enums.PregnancyStatus
+import org.philimone.hds.explorer.server.model.enums.RawEntity
+import org.philimone.hds.explorer.server.model.main.collect.raw.RawExecutionResult
+import org.philimone.hds.explorer.server.model.main.collect.raw.RawMessage
+import org.philimone.hds.explorer.server.model.settings.Codes
+
+import java.time.LocalDate
+
+@Transactional
+class PregnancyService {
+
+    def householdService
+    def memberService
+    def userService
+    def residencyService
+    def headRelationshipService
+    def deathService
+    def visitService
+    def codeGeneratorService
+    def errorMessageService
+
+    //<editor-fold desc="Pregnancy Utilities Methods">
+    boolean pregnancyRegistrationExists(String code) {
+        PregnancyRegistration.countByCode(code) > 0
+    }
+
+    PregnancyRegistration getPregnancyRegistration(String code) {
+        return PregnancyRegistration.findByCode(code)
+    }
+
+    PregnancyRegistration getLastPregnancyRegistration(String motherCode) {
+        if (memberService.exists(motherCode)){
+            def pregnancies = PregnancyRegistration.executeQuery("select p from PregnancyRegistration p where p.mother.code=? order by r.recordedDate desc", [motherCode], [offset:0, max:1]) // limit 1
+
+            if (pregnancies != null && pregnancies.size()>0){
+                return pregnancies.first()
+            }
+        }
+
+        return null
+    }
+
+    String generateCode(Member mother){
+        return codeGeneratorService.generatePregnancyCode(mother)
+    }
+
+    //</editor-fold>
+
+    //<editor-fold desc="Pregnancy Factory/Manager Methods">
+    RawExecutionResult<PregnancyRegistration> createPregnancyRegistration(RawPregnancyRegistration rawPregnancyRegistration) {
+
+        /* Run Checks and Validations */
+
+        def errors = validate(rawPregnancyRegistration)
+
+        if (!errors.isEmpty()){
+            //create result and close
+            RawExecutionResult<PregnancyRegistration> obj = RawExecutionResult.newErrorResult(RawEntity.PREGNANCY_REGISTRATION, errors)
+            return obj
+        }
+
+        def pregnancyRegistration = newPregnancyRegistrationInstance(rawPregnancyRegistration)
+
+        pregnancyRegistration = pregnancyRegistration.save(flush:true)
+
+        //Validate using Gorm Validations
+        if (pregnancyRegistration.hasErrors()){
+
+            errors = errorMessageService.getRawMessages(RawEntity.PREGNANCY_REGISTRATION, pregnancyRegistration)
+
+            RawExecutionResult<Member> obj = RawExecutionResult.newErrorResult(RawEntity.PREGNANCY_REGISTRATION, errors)
+            return obj
+        }
+
+        RawExecutionResult<Member> obj = RawExecutionResult.newSuccessResult(RawEntity.PREGNANCY_REGISTRATION, pregnancyRegistration)
+        return obj
+    }
+
+    ArrayList<RawMessage> validate(RawPregnancyRegistration pregnancyRegistration){
+        def errors = new ArrayList<RawMessage>()
+
+        //code, motherCode, pregMonths, expectedDeliveryDate, status, visitCode
+        def isBlankCode = StringUtil.isBlank(pregnancyRegistration.code)
+        def isBlankMotherCode = StringUtil.isBlank(pregnancyRegistration.motherCode)
+        def isBlankRecordedDate = StringUtil.isBlankDate(recordedDate)
+        def isBlankPregMonths = StringUtil.isBlankInteger(pregnancyRegistration.pregMonths)
+        def isBlankEddKnown = StringUtil.isBlankBoolean(pregnancyRegistration.eddKnown)
+        def isBlankHasPrenatalRecord = StringUtil.isBlankBoolean(pregnancyRegistration.hasPrenatalRecord)
+
+        def isBlankEddDate = StringUtil.isBlankDate(pregnancyRegistration.eddDate)
+        def isBlankEddType = StringUtil.isBlank(pregnancyRegistration.eddType)
+        def isBlankLmpKnown = StringUtil.isBlankDate(pregnancyRegistration.lmpKnown)
+
+        def isBlankLmpDate = StringUtil.isBlankDate(pregnancyRegistration.lmpDate)
+        def isBlankExpectedDeliveryDate = StringUtil.isBlankDate(pregnancyRegistration.expectedDeliveryDate)
+        def isBlankStatus = StringUtil.isBlank(pregnancyRegistration.status)
+        def isBlankVisitCode = StringUtil.isBlank(pregnancyRegistration.visitCode)
+
+        def isBlankCollectedBy = StringUtil.isBlank(pregnancyRegistration.collectedBy)
+
+
+        def mother = memberService.getMember(pregnancyRegistration.motherCode)
+        def visit = visitService.getVisit(pregnancyRegistration.visitCode)
+
+        def motherExists = mother != null
+        def visitExists = visit != null
+
+        //fields we want be checking for now
+        isBlankEddKnown = false
+        isBlankHasPrenatalRecord = false
+        isBlankEddDate = false
+        isBlankEddType = false
+        isBlankLmpKnown = false
+        isBlankLmpDate = false
+
+        //C1. Check Blank Fields (code)
+        if (isBlankCode){
+            errors << errorMessageService.getRawMessage(RawEntity.PREGNANCY_REGISTRATION, "validation.field.blank", ["code"], ["code"])
+        }
+        //C1. Check Blank Fields (motherCode)
+        if (isBlankMotherCode){
+            errors << errorMessageService.getRawMessage(RawEntity.PREGNANCY_REGISTRATION, "validation.field.blank", ["motherCode"], ["motherCode"])
+        }
+        //C1. Check Blank Fields (recordedDate)
+        if (isBlankRecordedDate){
+            errors << errorMessageService.getRawMessage(RawEntity.PREGNANCY_REGISTRATION, "validation.field.blank", ["recordedDate"], ["recordedDate"])
+        }
+        //C1. Check Blank Fields (pregMonths)
+        if (isBlankPregMonths){
+            errors << errorMessageService.getRawMessage(RawEntity.PREGNANCY_REGISTRATION, "validation.field.blank", ["pregMonths"], ["pregMonths"])
+        }
+        //C1. Check Blank Fields (eddKnown)
+        if (isBlankEddKnown){
+            errors << errorMessageService.getRawMessage(RawEntity.PREGNANCY_REGISTRATION, "validation.field.blank", ["eddKnown"], ["eddKnown"])
+        }
+        //C1. Check Blank Fields (hasPrenatalRecord)
+        if (isBlankHasPrenatalRecord){
+            errors << errorMessageService.getRawMessage(RawEntity.PREGNANCY_REGISTRATION, "validation.field.blank", ["hasPrenatalRecord"], ["hasPrenatalRecord"])
+        }
+        //C1. Check Blank Fields (eddDate)
+        if (isBlankEddDate){
+            errors << errorMessageService.getRawMessage(RawEntity.PREGNANCY_REGISTRATION, "validation.field.blank", ["eddDate"], ["eddDate"])
+        }
+        //C1. Check Blank Fields (eddType)
+        if (isBlankEddType){
+            errors << errorMessageService.getRawMessage(RawEntity.PREGNANCY_REGISTRATION, "validation.field.blank", ["eddType"], ["eddType"])
+        }
+        //C1. Check Nullable Fields (lmpKnown)
+        if (isBlankLmpKnown){
+            errors << errorMessageService.getRawMessage(RawEntity.PREGNANCY_REGISTRATION, "validation.field.blank", ["lmpKnown"], ["lmpKnown"])
+        }
+        //C1. Check Nullable Fields (lmpDate)
+        if (isBlankLmpDate){
+            errors << errorMessageService.getRawMessage(RawEntity.PREGNANCY_REGISTRATION, "validation.field.blank", ["lmpDate"], ["lmpDate"])
+        }
+        //C1. Check Nullable Fields (expectedDeliveryDate)
+        if (isBlankExpectedDeliveryDate){
+            errors << errorMessageService.getRawMessage(RawEntity.PREGNANCY_REGISTRATION, "validation.field.blank", ["expectedDeliveryDate"], ["expectedDeliveryDate"])
+        }
+        //C1. Check Nullable Fields (status)
+        if (isBlankStatus){
+            errors << errorMessageService.getRawMessage(RawEntity.PREGNANCY_REGISTRATION, "validation.field.blank", ["status"], ["status"])
+        }
+        //C1. Check Nullable Fields (visitCode)
+        if (isBlankVisitCode){
+            errors << errorMessageService.getRawMessage(RawEntity.PREGNANCY_REGISTRATION, "validation.field.blank", ["visitCode"], ["visitCode"])
+        }
+
+        //C1.1 Check Code Regex Pattern
+        if (!isBlankCode && !codeGeneratorService.isPregnancyCodeValid(pregnancyRegistration.code)) {
+            errors << errorMessageService.getRawMessage(RawEntity.PREGNANCY_REGISTRATION, "validation.field.pattern.no.matches", ["code", "TXUPF1001001-01"], ["code"])
+        }
+
+        //C2. Check Mother reference existence
+        if (!isBlankMotherCode && !motherExists){
+            errors << errorMessageService.getRawMessage(RawEntity.PREGNANCY_REGISTRATION, "validation.field.reference.error", ["Member", "motherCode", pregnancyRegistration.motherCode], ["motherCode"])
+        }
+
+        //C2. Check Visit reference existence
+        if (!visitExists){
+            errors << errorMessageService.getRawMessage(RawEntity.PREGNANCY_REGISTRATION, "validation.field.reference.error", ["Visit", "visitCode", pregnancyRegistration.visitCode], ["visitCode"])
+        }
+
+        //C3. Check Date is greater than today (lmpDate)
+        if (!isBlankLmpDate && pregnancyRegistration.lmpDate > LocalDate.now()){
+            errors << errorMessageService.getRawMessage(RawEntity.PREGNANCY_REGISTRATION, "validation.field.date.not.greater.today", ["lmpDate", StringUtil.format(pregnancyRegistration.lmpDate)], ["lmpDate"])
+        }
+
+        //C4. Check Dates is older than Member Date of Birth (eddDate)
+        if (!isBlankEddDate && motherExists && pregnancyRegistration.eddDate < mother.dob){
+            errors << errorMessageService.getRawMessage(RawEntity.PREGNANCY_REGISTRATION, "validation.field.dob.not.greater.date", ["eddDate", StringUtil.format(mother.dob)], ["dob"])
+        }
+        //C4. Check Dates is older than Member Date of Birth (lmpDate)
+        if (!isBlankLmpDate && motherExists && pregnancyRegistration.lmpDate < mother.dob){
+            errors << errorMessageService.getRawMessage(RawEntity.PREGNANCY_REGISTRATION, "validation.field.dob.not.greater.date", ["lmpDate", StringUtil.format(mother.dob)], ["dob"])
+        }
+
+        //C5. Validate Enum Options (edd_type)
+        if (!isBlankEddType && EstimatedDateOfDeliveryType.getFrom(pregnancyRegistration.eddType)==null){
+            errors << errorMessageService.getRawMessage(RawEntity.PREGNANCY_REGISTRATION, "validation.field.enum.choices.error", [pregnancyRegistration.eddType, "eddType"], ["eddType"])
+        }
+        //C5. Validate Enum Options (pregnancyStatus)
+        if (!isBlankStatus && PregnancyStatus.getFrom(pregnancyRegistration.status)==null){
+            errors << errorMessageService.getRawMessage(RawEntity.PREGNANCY_REGISTRATION, "validation.field.enum.choices.error", [pregnancyRegistration.status, "status"], ["status"])
+        }
+
+        //C6. Check Mother Death Status
+        if (motherExists && deathService.isMemberDead(pregnancyRegistration.motherCode)){
+            errors << errorMessageService.getRawMessage(RawEntity.PREGNANCY_REGISTRATION, "validation.field.pregnancy.registration.death.exists.error", [pregnancyRegistration.motherCode], ["motherCode"])
+        }
+
+        //C7. Check mother Gender
+        if (Codes.GENDER_CHECKING && motherExists && mother.gender==Gender.MALE){
+            errors << errorMessageService.getRawMessage(RawEntity.PREGNANCY_REGISTRATION, "validation.field.gender.mother.error", [], ["mother.gender"])
+        }
+
+        //C8. Check mother Dob must be greater or equal to 12
+        if (!motherExists && GeneralUtil.getAge(mother.dob) < Codes.MIN_MOTHER_AGE_VALUE ){
+            errors << errorMessageService.getRawMessage(RawEntity.PREGNANCY_REGISTRATION, "validation.field.pregnancy.registration.age.error", [StringUtil.format(mother.dob), Codes.MIN_MOTHER_AGE_VALUE+""], ["mother.dob"])
+        }
+
+        //C5. Check CollectedBy User existence
+        if (!isBlankCollectedBy && !userService.exists(pregnancyRegistration.collectedBy)){
+            errors << errorMessageService.getRawMessage(RawEntity.PREGNANCY_REGISTRATION, "validation.field.user.dont.exists.error", [pregnancyRegistration.collectedBy], ["collectedBy"])
+        }
+
+        //C9. Check Duplicate of Pregnancy Registration
+        if (!isBlankCode && pregnancyRegistrationExists(pregnancyRegistration.code)){
+            errors << errorMessageService.getRawMessage(RawEntity.PREGNANCY_REGISTRATION, "validation.field.reference.duplicate.error", ["PregnancyRegistration", "code", pregnancyRegistration.code], ["code"])
+        }
+
+        //C9. Check If last previous is Opened
+        if (errors.empty){
+            def lastPregnancy = getLastPregnancyRegistration(pregnancyRegistration.motherCode)
+
+            if (lastPregnancy != null && lastPregnancy.status==PregnancyStatus.PREGNANT) {
+                errors << errorMessageService.getRawMessage(RawEntity.PREGNANCY_REGISTRATION, "validation.field.pregnancy.registration.status.opened.error", ["status"], ["status"])
+            }
+
+        }
+
+
+        return errors
+    }
+
+    private PregnancyRegistration newPregnancyRegistrationInstance(RawPregnancyRegistration pr){
+
+        def mother = memberService.getMember(pr.motherCode)
+        def visit = visitService.getVisit(pr.visitCode)
+        def status = PregnancyStatus.getFrom(pr.status)
+        def eddType = EstimatedDateOfDeliveryType.getFrom(pr.eddType)
+
+        PregnancyRegistration pregnancyRegistration = new PregnancyRegistration()
+
+        pregnancyRegistration.code = pr.code
+        pregnancyRegistration.mother = mother
+        pregnancyRegistration.motherCode = pr.motherCode
+        pregnancyRegistration.recordedDate = pr.recordedDate
+        pregnancyRegistration.pregMonths = pr.pregMonths
+        pregnancyRegistration.eddKnown = pr.eddKnown
+        pregnancyRegistration.hasPrenatalRecord = pr.hasPrenatalRecord
+        pregnancyRegistration.eddDate = pr.eddDate
+        pregnancyRegistration.eddType = eddType
+
+        pregnancyRegistration.lmpKnown = pr.lmpKnown
+        pregnancyRegistration.lmpDate = pr.lmpDate
+        pregnancyRegistration.expectedDeliveryDate = pr.expectedDeliveryDate
+
+        pregnancyRegistration.status = status
+
+        pregnancyRegistration.visit = visit
+        pregnancyRegistration.visitCode = pr.visitCode
+
+
+        //set collected by info
+        pregnancyRegistration.collectedBy = userService.getUser(pr.collectedBy)
+        pregnancyRegistration.collectedDate = pr.collectedDate
+        pregnancyRegistration.updatedDate = pr.uploadedDate
+
+        return pregnancyRegistration
+
+    }
+    //</editor-fold>
+}
