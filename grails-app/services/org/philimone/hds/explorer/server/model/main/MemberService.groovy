@@ -220,20 +220,22 @@ class MemberService {
 
         member.maritalStatus = MaritalStatus.SINGLE
 
-        member.household = household
-        member.householdCode = household.code
-        member.householdName = household.name
+        if (household != null) {
+            member.household = household
+            member.householdCode = household.code
+            member.householdName = household.name
 
-        member.gpsAccuracy = household.gpsAccuracy
-        member.gpsAltitude = household.gpsAltitude
-        member.gpsLatitude = household.gpsLatitude
-        member.gpsLongitude = household.gpsLongitude
-        member.gpsNull = member.gpsLatitude==null || member.gpsLongitude
+            member.gpsAccuracy = household.gpsAccuracy
+            member.gpsAltitude = household.gpsAltitude
+            member.gpsLatitude = household.gpsLatitude
+            member.gpsLongitude = household.gpsLongitude
+            member.gpsNull = member.gpsLatitude==null || member.gpsLongitude
 
-        member.cosLatitude =  member.gpsLatitude==null ?  null : Math.cos(member.gpsLatitude*Math.PI / 180.0)
-        member.sinLatitude =  member.gpsLatitude==null ?  null : Math.sin(member.gpsLatitude*Math.PI / 180.0)
-        member.cosLongitude = member.gpsLongitude==null ? null : Math.cos(member.gpsLongitude*Math.PI / 180.0)
-        member.sinLongitude = member.gpsLongitude==null ? null : Math.sin(member.gpsLongitude*Math.PI / 180.0)
+            member.cosLatitude =  member.gpsLatitude==null ?  null : Math.cos(member.gpsLatitude*Math.PI / 180.0)
+            member.sinLatitude =  member.gpsLatitude==null ?  null : Math.sin(member.gpsLatitude*Math.PI / 180.0)
+            member.cosLongitude = member.gpsLongitude==null ? null : Math.cos(member.gpsLongitude*Math.PI / 180.0)
+            member.sinLongitude = member.gpsLongitude==null ? null : Math.sin(member.gpsLongitude*Math.PI / 180.0)
+        }
 
         //set collected by info
         member.collectedBy = userService.getUser(rm.collectedBy)

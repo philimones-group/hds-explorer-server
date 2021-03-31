@@ -103,6 +103,18 @@ class ResidencyService {
 
         member.startType = residency.startType
         member.startDate = residency.startDate
+
+        member.gpsAccuracy = household.gpsAccuracy
+        member.gpsAltitude = household.gpsAltitude
+        member.gpsLatitude = household.gpsLatitude
+        member.gpsLongitude = household.gpsLongitude
+        member.gpsNull = member.gpsLatitude==null || member.gpsLongitude
+
+        member.cosLatitude =  member.gpsLatitude==null ?  null : Math.cos(member.gpsLatitude*Math.PI / 180.0)
+        member.sinLatitude =  member.gpsLatitude==null ?  null : Math.sin(member.gpsLatitude*Math.PI / 180.0)
+        member.cosLongitude = member.gpsLongitude==null ? null : Math.cos(member.gpsLongitude*Math.PI / 180.0)
+        member.sinLongitude = member.gpsLongitude==null ? null : Math.sin(member.gpsLongitude*Math.PI / 180.0)
+
         member.save(flush:true)
 
         //get errors if they occur and send with the success report

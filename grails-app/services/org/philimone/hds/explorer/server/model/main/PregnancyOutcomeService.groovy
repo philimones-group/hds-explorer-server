@@ -45,7 +45,7 @@ class PregnancyOutcomeService {
 
     PregnancyOutcome getLastPregnancyOutcome(String motherCode) {
         if (memberService.exists(motherCode)){
-            def pregnancies = PregnancyRegistration.executeQuery("select p from PregnancyRegistration p where p.mother.code=? order by p.outcomeDate desc", [motherCode], [offset:0, max:1]) // limit 1
+            def pregnancies = PregnancyOutcome.executeQuery("select p from PregnancyOutcome p where p.mother.code=? order by p.outcomeDate desc", [motherCode], [offset:0, max:1]) // limit 1
 
             if (pregnancies != null && pregnancies.size()>0){
                 return pregnancies.first()
@@ -70,7 +70,7 @@ class PregnancyOutcomeService {
 
         if (!errors.isEmpty()){
             //create result and close
-            RawExecutionResult<PregnancyRegistration> obj = RawExecutionResult.newErrorResult(RawEntity.PREGNANCY_OUTCOME, errors)
+            RawExecutionResult<PregnancyOutcome> obj = RawExecutionResult.newErrorResult(RawEntity.PREGNANCY_OUTCOME, errors)
             return obj
         }
 
