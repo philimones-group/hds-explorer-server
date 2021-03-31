@@ -84,7 +84,7 @@ class MemberService {
         def isBlankHouseholdCode = StringUtil.isBlank(member.householdCode)
         def isBlankMotherCode = StringUtil.isBlank(member.motherCode)
         def isBlankFatherCode = StringUtil.isBlank(member.fatherCode)
-        def isBlankMaritalStatus = StringUtil.isBlank(member.maritalStatus)
+        //def isBlankMaritalStatus = StringUtil.isBlank(member.maritalStatus)
         def isBlankCollectedBy = StringUtil.isBlank(member.collectedBy)
         def isNullDob = member.dob == null
         def mother = getMember(member.motherCode)
@@ -118,10 +118,12 @@ class MemberService {
         if (isBlankFatherCode){
             errors << errorMessageService.getRawMessage(RawEntity.MEMBER, "validation.field.blank", ["fatherCode"], ["fatherCode"])
         }
-        //C1. Check Blank Fields (maritalStatus)
-        if (isBlankMaritalStatus){
-            errors << errorMessageService.getRawMessage(RawEntity.MEMBER, "validation.field.blank", ["maritalStatus"], ["maritalStatus"])
-        }
+
+        //C1. Check Blank Fields (maritalStatus) - no longer in RawMember/Enu, should be added only with MaritalRelationship
+        //if (isBlankMaritalStatus){
+        //    errors << errorMessageService.getRawMessage(RawEntity.MEMBER, "validation.field.blank", ["maritalStatus"], ["maritalStatus"])
+        //}
+
         //C1. Check Nullable Fields (dob)
         if (isNullDob){
             errors << errorMessageService.getRawMessage(RawEntity.MEMBER, "validation.field.blank", ["dob"], ["dob"])
@@ -140,10 +142,11 @@ class MemberService {
         if (!isBlankMemberGender && Gender.getFrom(member.gender)==null){
             errors << errorMessageService.getRawMessage(RawEntity.MEMBER, "validation.field.enum.choices.error", [member.gender, "gender"], ["gender"])
         }
-        //C12. Validate MaritalStatus Enum Options
-        if (!isBlankMaritalStatus && MaritalStatus.getFrom(member.maritalStatus)==null){
-            errors << errorMessageService.getRawMessage(RawEntity.MEMBER, "validation.field.enum.choices.error", [member.maritalStatus, "maritalStatus"], ["maritalStatus"])
-        }
+
+        //C12. Validate MaritalStatus Enum Options - no longer in RawMember/Enu, should be added only with MaritalRelationship
+        //if (!isBlankMaritalStatus && MaritalStatus.getFrom(member.maritalStatus)==null){
+        //    errors << errorMessageService.getRawMessage(RawEntity.MEMBER, "validation.field.enum.choices.error", [member.maritalStatus, "maritalStatus"], ["maritalStatus"])
+        //}
 
         //C5. Check dob max date
         if (!isNullDob && member.dob > LocalDate.now()){
@@ -215,7 +218,7 @@ class MemberService {
         member.fatherCode = father.code
         member.fatherName = father.name
 
-        member.maritalStatus = MaritalStatus.getFrom(rm.maritalStatus)
+        member.maritalStatus = MaritalStatus.SINGLE
 
         member.household = household
         member.householdCode = household.code

@@ -163,8 +163,6 @@ class MemberServiceSpec extends Specification implements ServiceUnitTest<MemberS
                 fatherCode: "UNK",
                 fatherName: "",
 
-                maritalStatus: "SIN",
-
                 householdCode: household.code,
 
                 collectedBy: "dragon",
@@ -203,8 +201,6 @@ class MemberServiceSpec extends Specification implements ServiceUnitTest<MemberS
                 fatherCode: "UNK",
                 fatherName: "",
 
-                maritalStatus: "SIN",
-
                 householdCode: household.code,
 
                 collectedBy: "dragon",
@@ -222,8 +218,6 @@ class MemberServiceSpec extends Specification implements ServiceUnitTest<MemberS
                 motherName: "",
                 fatherCode: "UNK",
                 fatherName: "",
-
-                maritalStatus: "SIN",
 
                 householdCode: household.code,
 

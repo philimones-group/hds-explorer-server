@@ -13,6 +13,9 @@ import org.philimone.hds.explorer.server.model.main.Region
 import org.philimone.hds.explorer.server.model.main.Visit
 import spock.lang.Specification
 
+import java.time.LocalDate
+import java.time.LocalDateTime
+
 class CodeGeneratorServiceSpec extends Specification implements ServiceUnitTest<CodeGeneratorService>, DataTest, AutowiredTest{
 
     def setup() {
@@ -52,11 +55,11 @@ class CodeGeneratorServiceSpec extends Specification implements ServiceUnitTest<
     void setupMembers(){
         def household = Household.findByCode("MAPTXI001")
 
-        new Member(code: "MAPTXI001001", name: "Member 1", gender: Gender.MALE, dob: LocalDateTime.now(), maritalStatus: MaritalStatus.SINGLE).save(flush:true)
-        new Member(code: "MAPTXI001003", name: "Member 3", gender: Gender.MALE, dob: LocalDateTime.now(), maritalStatus: MaritalStatus.SINGLE).save(flush:true)
-        new Member(code: "MAPTXI001005", name: "Member 5", gender: Gender.MALE, dob: LocalDateTime.now(), maritalStatus: MaritalStatus.SINGLE).save(flush:true)
-        new Member(code: "MAPTXI001006", name: "Member 6", gender: Gender.MALE, dob: LocalDateTime.now(), maritalStatus: MaritalStatus.SINGLE).save(flush:true)
-        new Member(code: "MAPTXI001007", name: "Member 7", gender: Gender.MALE, dob: LocalDateTime.now(), maritalStatus: MaritalStatus.SINGLE).save(flush:true)
+        new Member(code: "MAPTXI001001", name: "Member 1", gender: Gender.MALE, dob: LocalDate.now(), maritalStatus: MaritalStatus.SINGLE).save(flush:true)
+        new Member(code: "MAPTXI001003", name: "Member 3", gender: Gender.MALE, dob: LocalDate.now(), maritalStatus: MaritalStatus.SINGLE).save(flush:true)
+        new Member(code: "MAPTXI001005", name: "Member 5", gender: Gender.MALE, dob: LocalDate.now(), maritalStatus: MaritalStatus.SINGLE).save(flush:true)
+        new Member(code: "MAPTXI001006", name: "Member 6", gender: Gender.MALE, dob: LocalDate.now(), maritalStatus: MaritalStatus.SINGLE).save(flush:true)
+        new Member(code: "MAPTXI001007", name: "Member 7", gender: Gender.MALE, dob: LocalDate.now(), maritalStatus: MaritalStatus.SINGLE).save(flush:true)
 
 
         //println "members: ${Member.count()}"
@@ -243,7 +246,7 @@ class CodeGeneratorServiceSpec extends Specification implements ServiceUnitTest<
             if (gen != null) {
                 count++
                 //codes.add(gen)
-                new Member(code: gen, name: "Member ${name}", gender: Gender.MALE, dob: LocalDateTime.now(), maritalStatus: MaritalStatus.SINGLE).save(flush:true)
+                new Member(code: gen, name: "Member ${name}", gender: Gender.MALE, dob: LocalDate.now(), maritalStatus: MaritalStatus.SINGLE).save(flush:true)
             }
         }
         println()

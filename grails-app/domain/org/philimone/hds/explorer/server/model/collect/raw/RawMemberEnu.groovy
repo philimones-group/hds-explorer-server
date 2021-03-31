@@ -21,11 +21,6 @@ class RawMemberEnu {
     String fatherCode
     String fatherName
 
-    String maritalStatus
-    String spouseCode
-    String spouseName
-    LocalDate spouseDate
-
     String householdCode
     String householdName
     String headRelationshipType

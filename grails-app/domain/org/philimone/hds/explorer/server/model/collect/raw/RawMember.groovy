@@ -20,8 +20,6 @@ class RawMember {
     String fatherCode
     String fatherName
 
-    String maritalStatus
-
     String householdCode
 
     String collectedBy
@@ -41,8 +39,6 @@ class RawMember {
         motherName blank: false
         fatherCode blank: false
         fatherName blank: false
-
-        maritalStatus blank: false
 
         householdCode blank: false
 
@@ -64,8 +60,6 @@ class RawMember {
         name column: 'name'
         gender column: 'gender'
         dob column: 'dob'
-
-        maritalStatus column: 'marital_status'
 
         motherCode column: 'mother_code'
         motherName column: 'mother_name'
