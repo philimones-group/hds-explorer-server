@@ -103,6 +103,8 @@ class ResidencyService {
 
         member.startType = residency.startType
         member.startDate = residency.startDate
+        member.endType = ResidencyEndType.NOT_APPLICABLE
+        member.endDate = null
 
         member.gpsAccuracy = household.gpsAccuracy
         member.gpsAltitude = household.gpsAltitude

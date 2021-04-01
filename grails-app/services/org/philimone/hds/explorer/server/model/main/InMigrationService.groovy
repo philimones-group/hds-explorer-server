@@ -211,7 +211,7 @@ class InMigrationService {
             def newRawResidency = createNewResidencyFromInMig(rawInMigration)   //possible new residency
 
             /* Member must be Living in current Household */
-            if (currentResidency != null){
+            if (migrationType == InMigrationType.INTERNAL && currentResidency != null){
 
                 //origin code vs residency.householdCode
                 if (currentResidency.householdCode != rawInMigration.originCode){
@@ -219,13 +219,17 @@ class InMigrationService {
                     return errors
                 }
 
-            } else if (migrationType == InMigrationType.INTERNAL) { //Internals InMigs must have residency
+            }
+
+            if (migrationType == InMigrationType.INTERNAL && currentResidency==null) { //Internals InMigs must have residency
 
                 //The individual doesnt have a residency registry in the system
                 errors << errorMessageService.getRawMessage(RawEntity.IN_MIGRATION, "validation.field.inmigration.residency.not.found.error", [member.code], ["memberCode"])
 
                 return errors
-            } else if (migrationType == InMigrationType.EXTERNAL) { //Coming from outside the area
+            }
+
+            if (migrationType == InMigrationType.EXTERNAL && currentResidency == null) { //Coming from outside the area
 
                 //if coming from outside and its his first time - the codes must be validated (memberCode must contains destinationCode)
 
@@ -234,6 +238,8 @@ class InMigrationService {
                 }
 
             }
+
+            //Try create/close
 
             if (migrationType==InMigrationType.INTERNAL){
 

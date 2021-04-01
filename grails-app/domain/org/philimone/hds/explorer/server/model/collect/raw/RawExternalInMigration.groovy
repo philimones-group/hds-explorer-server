@@ -1,6 +1,7 @@
 package org.philimone.hds.explorer.server.model.collect.raw
 
 import org.philimone.hds.explorer.server.model.enums.ProcessedStatus
+import org.philimone.hds.explorer.server.model.enums.temporal.InMigrationType
 
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -20,7 +21,7 @@ class RawExternalInMigration {
 
     String headRelationshipType
 
-    String migrationType
+    String migrationType = InMigrationType.EXTERNAL.code
     String originCode
     String originOther
     String destinationCode
@@ -37,6 +38,12 @@ class RawExternalInMigration {
         id maxSize: 32
 
         memberCode blank: false, nullable: false
+        memberName blank: true, nullable: true
+        memberGender blank: true, nullable: true
+        memberDob nullable: true
+        memberMotherCode blank: true, nullable: true
+        memberFatherCode blank: true, nullable: true
+
         migrationType nullable: false, blank: false
         originCode nullable: true, blank: true
         originOther nullable: true, blank: true
@@ -53,13 +60,19 @@ class RawExternalInMigration {
     }
 
     static mapping = {
-        table '_raw_inmigration'
+        table '_raw_ext_inmigration'
 
         id column: "id", generator: 'assigned'
 
         version false
 
         memberCode column: "member_code"
+        memberName column: "member_name"
+        memberGender column: "member_gender"
+        memberDob column: "member_dob"
+        memberMotherCode column: "member_mother_code"
+        memberFatherCode column: "member_father_code"
+
         migrationType       column: "migration_type"
         originCode  column: "origin_code"
         originOther column: "origin_other"
