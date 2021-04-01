@@ -7,12 +7,8 @@ import org.philimone.hds.explorer.server.model.collect.raw.RawExternalInMigratio
 import org.philimone.hds.explorer.server.model.collect.raw.RawHeadRelationship
 import org.philimone.hds.explorer.server.model.collect.raw.RawInMigration
 import org.philimone.hds.explorer.server.model.collect.raw.RawMember
-import org.philimone.hds.explorer.server.model.collect.raw.RawPregnancyChild
-import org.philimone.hds.explorer.server.model.collect.raw.RawPregnancyOutcome
-import org.philimone.hds.explorer.server.model.enums.BirthPlace
 import org.philimone.hds.explorer.server.model.enums.Gender
 import org.philimone.hds.explorer.server.model.enums.HeadRelationshipType
-import org.philimone.hds.explorer.server.model.enums.PregnancyOutcomeType
 import org.philimone.hds.explorer.server.model.enums.RawEntity
 import org.philimone.hds.explorer.server.model.enums.temporal.HeadRelationshipEndType
 import org.philimone.hds.explorer.server.model.enums.temporal.HeadRelationshipStartType
@@ -179,7 +175,7 @@ class ExternalInMigrationService {
 
 
         //SUCCESS
-        RawExecutionResult<PregnancyOutcome> obj = RawExecutionResult.newSuccessResult(RawEntity.EXTERNAL_INMIGRATION, resultInMigration.domainInstance)
+        RawExecutionResult<InMigration> obj = RawExecutionResult.newSuccessResult(RawEntity.EXTERNAL_INMIGRATION, resultInMigration.domainInstance)
         return obj
     }
 

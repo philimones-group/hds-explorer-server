@@ -25,7 +25,6 @@ class RawMemberEnu {
     String householdName
     String headRelationshipType
     LocalDate residencyStartDate
-    String isHouseholdHead
 
     String collectedBy //fieldWorkerId
     LocalDateTime collectedDate //visitDate / creationDate
@@ -50,16 +49,10 @@ class RawMemberEnu {
         fatherCode blank: false
         fatherName blank: false
 
-        maritalStatus blank: false
-        spouseCode blank: true
-        spouseName blank: true
-        spouseDate blank: true
-
         householdCode blank: false
         householdName blank: false
         headRelationshipType blank: false
         residencyStartDate blank: false
-        isHouseholdHead blank: false
 
         collectedBy blank: true
         collectedDate nullable: true
