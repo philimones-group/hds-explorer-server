@@ -64,6 +64,34 @@ class ErrorMessageService {
         return errors
     }
 
+    String getRawMessagesText(GormEntity domain){
+        def errors = ""
+
+        domain.errors.fieldErrors.each { obj ->
+            def msg = messageSource.getMessage(obj, LocaleContextHolder.getLocale())
+            //err = removeClassDefFromErrDetails(err)
+            msg = StringUtil.removePackageNames(msg)
+
+            errors += msg + "\n"
+        }
+
+        return errors
+    }
+
+    String getRawMessagesText(List<RawMessage> rawMessages){
+        def errors = ""
+
+        rawMessages.each { msg ->
+            errors += msg.text + "\n"
+        }
+
+        return errors
+    }
+
+    List<RawMessage> getRawMessages(GormEntity domain){
+        return getRawMessages(null, domain)
+    }
+
     RawMessage getRawMessage(RawEntity entity, String messageCode, String[] args, String[] fields){
         def msg = messageSource.getMessage(messageCode, args, LocaleContextHolder.getLocale())
         new RawMessage(entity, msg, fields)
@@ -72,6 +100,21 @@ class ErrorMessageService {
     RawMessage getRawMessage(RawEntity entity, String messageCode, List<String> args, List<String> fields){
         def msg = messageSource.getMessage(messageCode, args!=null ? args.toArray() : null, LocaleContextHolder.getLocale())
         new RawMessage(entity, msg, fields)
+    }
+
+    RawMessage getRawMessage(String messageCode, String[] args, String[] fields){
+        def msg = messageSource.getMessage(messageCode, args, LocaleContextHolder.getLocale())
+        new RawMessage(msg, fields)
+    }
+
+    RawMessage getRawMessage(String messageCode, List<String> args, List<String> fields){
+        def msg = messageSource.getMessage(messageCode, args!=null ? args.toArray() : null, LocaleContextHolder.getLocale())
+        new RawMessage(msg, fields)
+    }
+
+    RawMessage getRawMessage(String messageCode, List<String> args){
+        def msg = messageSource.getMessage(messageCode, args!=null ? args.toArray() : null, LocaleContextHolder.getLocale())
+        new RawMessage(msg, null)
     }
 
     ArrayList<RawMessage> addPrefixToMessages(ArrayList<RawMessage> rawMessages, String prefixMessageCode, List<String> prefixArgs){

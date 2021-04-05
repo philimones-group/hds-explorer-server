@@ -429,6 +429,24 @@ public class StringUtil {
 
         return dateTime.format(formatter);
     }
+
+    public static LocalDate toLocalDate(String dateString) {
+        try {
+            return LocalDate.parse(dateString, DateTimeFormatter.ISO_LOCAL_DATE);
+        } catch (Exception ex){
+            //ex.printStackTrace();
+            return null;
+        }
+    }
+
+    public static LocalDateTime toLocalDateTime(String dateString) {
+        try {
+            return LocalDateTime.parse(dateString, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        } catch (Exception ex) {
+            //ex.printStackTrace();
+            return null;
+        }
+    }
 /*
     public static String format(Date date, boolean longDateFormat){
         if (date == null) return "null";

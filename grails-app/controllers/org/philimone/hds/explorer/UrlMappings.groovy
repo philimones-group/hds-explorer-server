@@ -58,6 +58,20 @@ class UrlMappings {
 
         "/api/export/sync-report/${id}"(controller: "syncFiles", action: "syncFilesReport", id: "${id}")
 
+        //API
+        "/api/import/households"(controller: "RawImportApi", action: "households")
+        "/api/import/regions"(controller: "RawImportApi", action: "regions")
+        "/api/import/members"(controller: "RawImportApi", action: "members")
+        "/api/import/visits"(controller: "RawImportApi", action: "visits")
+        "/api/import/memberenus"(controller: "RawImportApi", action: "memberenus")
+        "/api/import/externalinmigrations"(controller: "RawImportApi", action: "externalinmigrations")
+        "/api/import/inmigrations"(controller: "RawImportApi", action: "inmigrations")
+        "/api/import/outmigrations"(controller: "RawImportApi", action: "outmigrations")
+        "/api/import/headrelationships"(controller: "RawImportApi", action: "headrelationships")
+        "/api/import/maritalrelationships"(controller: "RawImportApi", action: "maritalrelationships")
+        "/api/import/pregnancyregistrations"(controller: "RawImportApi", action: "pregnancyregistrations")
+        "/api/import/pregnancyoutcomes"(controller: "RawImportApi", action: "pregnancyoutcomes")
+        "/api/import/deaths"(controller: "RawImportApi", action: "deaths")
 
     }
 }
