@@ -30,12 +30,15 @@ class RawMemberEnu {
     LocalDateTime collectedDate //visitDate / creationDate
     LocalDateTime uploadedDate
 
-    ProcessedStatus processedMember
-    ProcessedStatus processedResidency
-    ProcessedStatus processedHeadRelationship
-    ProcessedStatus processedMaritalRelationship
+    //ProcessedStatus processedMember = ProcessedStatus.NOT_PROCESSED
+    //ProcessedStatus processedResidency = ProcessedStatus.NOT_PROCESSED
+    //ProcessedStatus processedHeadRelationship = ProcessedStatus.NOT_PROCESSED
+    //ProcessedStatus processedMaritalRelationship = ProcessedStatus.NOT_PROCESSED
 
     ProcessedStatus processedStatus = ProcessedStatus.NOT_PROCESSED /* General Status, 1-All Processed, 0-Not All Processed*/
+
+    boolean postExecution = false
+
 
     static constraints = {
         id maxSize: 32
@@ -58,10 +61,10 @@ class RawMemberEnu {
         collectedDate nullable: true
         uploadedDate nullable: true
 
-        processedMember  nullable: false
-        processedResidency nullable: false
-        processedHeadRelationship nullable: false
-        processedMaritalRelationship nullable: false
+        //processedMember  nullable: false
+        //processedResidency nullable: false
+        //processedHeadRelationship nullable: false
+        //processedMaritalRelationship nullable: false
 
         processedStatus nullable: false
     }
@@ -69,7 +72,7 @@ class RawMemberEnu {
     static mapping = {
         table '_raw_member_enu'
 
-        id column: "id", generator: 'assigned'
+        id column: "id", generator: 'uuid'
 
         version false
 
@@ -77,11 +80,6 @@ class RawMemberEnu {
         name column: 'name'
         gender column: 'gender'
         dob column: 'dob'
-
-        maritalStatus column: 'marital_status'
-        spouseCode column: 'spouse_code'
-        spouseName column: 'spouse_name'
-        spouseDate column: 'spouse_date'
 
         motherCode column: 'mother_code'
         motherName column: 'mother_name'
@@ -93,16 +91,15 @@ class RawMemberEnu {
         householdName column: 'household_name'
         headRelationshipType column: 'head_relationship_type'
         residencyStartDate column: 'residency_start_date'
-        isHouseholdHead column: 'is_household_head'
 
         collectedBy column: 'collected_by'
         collectedDate column: 'collected_date'
         uploadedDate column: 'uploaded_date'
 
-        processedMember column: 'processed_member', enumType: "identity"
-        processedResidency column: 'processed_residency', enumType: "identity"
-        processedHeadRelationship column: 'processed_head_relationship', enumType: "identity"
-        processedMaritalRelationship column: 'processed_marital_relationship', enumType: "identity"
+        //processedMember column: 'processed_member', enumType: "identity"
+        //processedResidency column: 'processed_residency', enumType: "identity"
+        //processedHeadRelationship column: 'processed_head_relationship', enumType: "identity"
+        //processedMaritalRelationship column: 'processed_marital_relationship', enumType: "identity"
 
         processedStatus column: "processed", enumType: "identity"
     }

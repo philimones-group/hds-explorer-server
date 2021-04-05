@@ -26,11 +26,14 @@ class RawPregnancyRegistration {
     String status
     String visitCode
 
-    String collectedBy //fieldWorkerId
-    LocalDateTime collectedDate //visitDate / creationDate
-    LocalDateTime uploadedDate  //submissionDate
+    String collectedBy
+    LocalDateTime collectedDate
+    LocalDateTime uploadedDate
 
     ProcessedStatus processedStatus = ProcessedStatus.NOT_PROCESSED
+
+    boolean postExecution = false
+
 
     static constraints = {
         id maxSize: 32

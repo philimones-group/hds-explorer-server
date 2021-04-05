@@ -21,6 +21,9 @@ class RawDeath {
 
     ProcessedStatus processedStatus = ProcessedStatus.NOT_PROCESSED
 
+    boolean postExecution = false
+
+
     static constraints = {
         id maxSize: 32
 
@@ -40,7 +43,7 @@ class RawDeath {
     static mapping = {
         table '_raw_death'
 
-        id column: "id", generator: 'assigned'
+        id column: "id", generator: 'uuid'
 
         version false
 

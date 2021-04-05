@@ -16,6 +16,9 @@ class RawResidency {
 
     ProcessedStatus processedStatus = ProcessedStatus.NOT_PROCESSED /* General Status, 1-All Processed, 0-Not All Processed*/
 
+    boolean postExecution = false
+
+
     static constraints = {
         id maxSize: 32
         householdCode blank: false

@@ -15,7 +15,6 @@ class RawPregnancyOutcome {
     String motherCode
     String fatherCode
     Integer numberOfOutcomes
-    //Integer numberOfLivebirths
     LocalDate outcomeDate
     String birthPlace
     String birthPlaceOther
@@ -28,6 +27,9 @@ class RawPregnancyOutcome {
     ProcessedStatus processedStatus = ProcessedStatus.NOT_PROCESSED
 
     static hasMany = [childs:RawPregnancyChild]
+
+    boolean postExecution = false
+
 
     static constraints = {
         id maxSize: 32

@@ -14,7 +14,6 @@ class RawPregnancyChild {
     String childCode
     String childName
     String childGender
-    //LocalDate childDob - we use outcomeDate
     Integer childOrdinalPosition
     String headRelationshipType
 

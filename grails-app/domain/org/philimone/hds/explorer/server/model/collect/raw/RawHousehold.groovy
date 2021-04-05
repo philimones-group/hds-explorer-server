@@ -28,6 +28,9 @@ class RawHousehold {
 
     ProcessedStatus processedStatus = ProcessedStatus.NOT_PROCESSED
 
+    boolean postExecution = false
+
+
     static constraints = {
         id maxSize: 32
 
@@ -52,7 +55,7 @@ class RawHousehold {
     static mapping = {
         table '_raw_household'
 
-        id column: "id", generator: 'assigned'
+        id column: "id", generator: 'uuid'
 
         version false
 

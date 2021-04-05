@@ -28,6 +28,9 @@ class RawMember {
 
     ProcessedStatus processedStatus = ProcessedStatus.NOT_PROCESSED /* General Status, 1-All Processed, 0-Not All Processed*/
 
+    boolean postExecution = false
+
+
     static constraints = {
         id maxSize: 32
 
@@ -52,7 +55,7 @@ class RawMember {
     static mapping = {
         table '_raw_member'
 
-        id column: "id", generator: 'assigned'
+        id column: "id", generator: 'uuid'
 
         version false
 

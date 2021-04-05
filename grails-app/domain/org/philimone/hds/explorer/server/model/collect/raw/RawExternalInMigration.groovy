@@ -34,6 +34,9 @@ class RawExternalInMigration {
 
     ProcessedStatus processedStatus = ProcessedStatus.NOT_PROCESSED
 
+    boolean postExecution = false
+
+
     static constraints = {
         id maxSize: 32
 
@@ -62,7 +65,7 @@ class RawExternalInMigration {
     static mapping = {
         table '_raw_ext_inmigration'
 
-        id column: "id", generator: 'assigned'
+        id column: "id", generator: 'uuid'
 
         version false
 

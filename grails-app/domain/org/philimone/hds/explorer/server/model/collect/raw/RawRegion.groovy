@@ -21,6 +21,9 @@ class RawRegion {
 
     ProcessedStatus processedStatus = ProcessedStatus.NOT_PROCESSED
 
+    boolean postExecution = false
+
+
     static constraints = {
         id maxSize: 32
 
@@ -38,7 +41,7 @@ class RawRegion {
     static mapping = {
         table '_raw_region'
 
-        id column: "id", generator: 'assigned'
+        id column: "id", generator: 'uuid'
 
         version false
 
