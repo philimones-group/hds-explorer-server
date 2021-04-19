@@ -13,10 +13,10 @@ class Visit {
 	String extId
 	Integer roundNumber
 	Date visitDate
-	User userByVoidByUuid
+	User voidBy
 	Location location
 	Fieldworker fieldworker
-	User userByInsertByUuid
+	User insertBy
 
 	static hasMany = [deaths: Death,
 	                  inmigrations: Inmigration,
@@ -44,8 +44,8 @@ class Visit {
 
         fieldworker column: 'collectedBy_uuid'
         location column: 'visitLocation_uuid'
-        userByVoidByUuid column: 'voidBy_uuid'
-        userByInsertByUuid column: 'insertBy_uuid'
+        voidBy column: 'voidBy_uuid'
+        insertBy column: 'insertBy_uuid'
 	}
 
 	static constraints = {

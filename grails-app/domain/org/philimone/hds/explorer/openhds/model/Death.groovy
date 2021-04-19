@@ -15,10 +15,10 @@ class Death {
 	Date deathDate
 	String deathPlace
 	Individual individual
-	User userByVoidByUuid
-	Fieldworker fieldworker
+	User voidBy
+	Fieldworker collectedBy
 	Visit visit
-	User userByInsertByUuid
+	User insertBy
 
 	static belongsTo = [Fieldworker, Individual, User, Visit]
 
@@ -40,11 +40,11 @@ class Death {
 		deathDate column:'deathDate'
 		deathPlace column:'deathPlace'
 
-        fieldworker column: 'collectedBy_uuid'
+        collectedBy column: 'collectedBy_uuid'
         individual column: 'individual_uuid'
         visit column: 'visitDeath_uuid'
-        userByVoidByUuid column: 'voidBy_uuid'
-        userByInsertByUuid column: 'insertBy_uuid'
+        voidBy column: 'voidBy_uuid'
+        insertBy column: 'insertBy_uuid'
 	}
 
 	static constraints = {

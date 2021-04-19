@@ -13,10 +13,10 @@ class Pregnancyobservation {
 	Date expectedDeliveryDate
 	Date recordedDate
 	Individual individual
-	User userByVoidByUuid
+	User voidBy
 	Fieldworker fieldworker
 	Visit visit
-	User userByInsertByUuid
+	User insertBy
 
 	static belongsTo = [Fieldworker, Individual, User, Visit]
 
@@ -39,8 +39,8 @@ class Pregnancyobservation {
 		fieldworker column: 'collectedBy_uuid'
 		individual column: 'mother_uuid'
 		visit column: 'visit_uuid'
-		userByVoidByUuid column: 'voidBy_uuid'
-		userByInsertByUuid column: 'insertBy_uuid'
+		voidBy column: 'voidBy_uuid'
+		insertBy column: 'insertBy_uuid'
 	}
 
 	static constraints = {

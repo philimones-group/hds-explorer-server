@@ -14,11 +14,11 @@ class Pregnancyoutcome {
 	Integer numberOfLiveBirths
 	Date outcomeDate
 	Individual mother
-	User userByVoidByUuid
+	User voidBy
 	Fieldworker fieldworker
 	Visit visit
 	Individual father
-	User userByInsertByUuid
+	User insertBy
 
 	static hasMany = [pregnancyoutcomeOutcomes: PregnancyoutcomeOutcome]
 	static belongsTo = [Fieldworker, Individual, User, Visit]

@@ -12,8 +12,8 @@ class Fieldworker {
 	String firstName
 	String lastName
 	String passwordHash
-	User userByVoidByUuid
-	User userByInsertByUuid
+	User voidBy
+	User insertBy
 
 	static hasMany = [deaths: Death,
 	                  individuals: Individual,
@@ -45,8 +45,8 @@ class Fieldworker {
 		lastName column:'lastName'
 		passwordHash column:'passwordHash'
 
-        userByVoidByUuid column: 'voidBy_uuid'
-        userByInsertByUuid column: 'insertBy_uuid'
+        voidBy column: 'voidBy_uuid'
+        insertBy column: 'insertBy_uuid'
 	}
 
 	static constraints = {

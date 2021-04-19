@@ -17,10 +17,10 @@ class Location {
 	String locationName
 	String locationType
 	String longitude
-	User userByVoidByUuid
+	User voidBy
 	Fieldworker fieldworker
 	Locationhierarchy locationhierarchy
-	User userByInsertByUuid
+	User insertBy
 
 	static hasMany = [residencies: Residency,
 	                  visits: Visit]
@@ -49,8 +49,8 @@ class Location {
 
         fieldworker column: 'collectedBy_uuid'
         locationhierarchy column: 'locationLevel_uuid'
-        userByVoidByUuid column: 'voidBy_uuid'
-        userByInsertByUuid column: 'insertBy_uuid'
+        voidBy column: 'voidBy_uuid'
+        insertBy column: 'insertBy_uuid'
 	}
 
 	static constraints = {

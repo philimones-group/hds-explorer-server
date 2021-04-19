@@ -15,10 +15,10 @@ class Relationship {
     String endType
     Date startDate
     Individual individualB
-    User userByVoidByUuid
+    User voidBy
     Fieldworker fieldworker
     Individual individualA
-    User userByInsertByUuid
+    User insertBy
 
     static belongsTo = [Fieldworker, Individual, User]
 
@@ -43,8 +43,8 @@ class Relationship {
         fieldworker column: 'collectedBy_uuid'
         individualA column: 'individualA_uuid'
         individualB column: 'individualB_uuid'
-        userByVoidByUuid column: 'voidBy_uuid'
-        userByInsertByUuid column: 'insertBy_uuid'
+        voidBy column: 'voidBy_uuid'
+        insertBy column: 'insertBy_uuid'
     }
 
     static constraints = {

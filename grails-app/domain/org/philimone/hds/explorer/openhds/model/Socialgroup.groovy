@@ -14,9 +14,9 @@ class Socialgroup {
 	String groupName
 	String groupType
 	Individual individual
-	User userByVoidByUuid
+	User voidBy
 	Fieldworker fieldworker
-	User userByInsertByUuid
+	User insertBy
 
 	static hasMany = [memberships: Membership]
 	static belongsTo = [Fieldworker, Individual, User]
@@ -40,8 +40,8 @@ class Socialgroup {
 
         fieldworker column: 'collectedBy_uuid'
         individual column: 'groupHead_uuid'
-        userByVoidByUuid column: 'voidBy_uuid'
-        userByInsertByUuid column: 'insertBy_uuid'
+        voidBy column: 'voidBy_uuid'
+        insertBy column: 'insertBy_uuid'
 	}
 
 	static constraints = {

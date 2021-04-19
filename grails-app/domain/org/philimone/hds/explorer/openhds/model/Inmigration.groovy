@@ -17,10 +17,10 @@ class Inmigration {
 	Boolean unknownIndividual
 	Individual individual
 	Residency residency
-	User userByVoidByUuid
+	User voidBy
 	Fieldworker fieldworker
 	Visit visit
-	User userByInsertByUuid
+	User insertBy
 
 	static belongsTo = [Fieldworker, Individual, Residency, User, Visit]
 
@@ -47,8 +47,8 @@ class Inmigration {
         individual column: 'individual_uuid'
         visit column: 'visit_uuid'
         residency column: 'residency_uuid'
-        userByVoidByUuid column: 'voidBy_uuid'
-        userByInsertByUuid column: 'insertBy_uuid'
+        voidBy column: 'voidBy_uuid'
+        insertBy column: 'insertBy_uuid'
 	}
 
 	static constraints = {

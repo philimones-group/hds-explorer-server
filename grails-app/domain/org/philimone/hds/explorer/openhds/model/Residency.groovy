@@ -15,10 +15,10 @@ class Residency {
 	Date startDate
 	String startType
 	Individual individual
-	User userByVoidByUuid
+	User voidBy
 	Fieldworker fieldworker
 	Location location
-	User userByInsertByUuid
+	User insertBy
 
 	static hasMany = [inmigrations: Inmigration,
 	                  outmigrations: Outmigration]
@@ -45,8 +45,8 @@ class Residency {
         fieldworker column: 'collectedBy_uuid'
         individual column: 'individual_uuid'
         location column: 'location_uuid'
-        userByVoidByUuid column: 'voidBy_uuid'
-        userByInsertByUuid column: 'insertBy_uuid'
+        voidBy column: 'voidBy_uuid'
+        insertBy column: 'insertBy_uuid'
 	}
 
 	static constraints = {

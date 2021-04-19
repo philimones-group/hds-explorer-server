@@ -16,10 +16,10 @@ class Membership {
 	Date startDate
 	String startType
 	Individual individual
-	User userByVoidByUuid
+	User voidBy
 	Fieldworker fieldworker
 	Socialgroup socialgroup
-	User userByInsertByUuid
+	User insertBy
 
 	static hasMany = [outcomes: Outcome]
 	static belongsTo = [Fieldworker, Individual, Socialgroup, User]
@@ -46,8 +46,8 @@ class Membership {
         fieldworker column: 'collectedBy_uuid'
         individual column: 'individual_uuid'
         socialgroup column: 'socialGroup_uuid'
-        userByVoidByUuid column: 'voidBy_uuid'
-        userByInsertByUuid column: 'insertBy_uuid'
+        voidBy column: 'voidBy_uuid'
+        insertBy column: 'insertBy_uuid'
 	}
 
 	static constraints = {

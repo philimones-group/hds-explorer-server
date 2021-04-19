@@ -19,10 +19,10 @@ class Individual {
 	String middleName
 
     Individual mother
-    User userByVoidByUuid
+    User voidBy
     Fieldworker fieldworker
     Individual father
-    User userByInsertByUuid
+    User insertBy
 
 	static hasMany = [deaths: Death,
 	                  individualsForFatherUuid: Individual,
@@ -73,8 +73,8 @@ class Individual {
         fieldworker column: 'collectedBy_uuid'
         mother column: 'mother_uuid'
         father column: 'father_uuid'
-        userByVoidByUuid column: 'voidBy_uuid'
-        userByInsertByUuid column: 'insertBy_uuid'
+        voidBy column: 'voidBy_uuid'
+        insertBy column: 'insertBy_uuid'
 	}
 
 	static constraints = {
