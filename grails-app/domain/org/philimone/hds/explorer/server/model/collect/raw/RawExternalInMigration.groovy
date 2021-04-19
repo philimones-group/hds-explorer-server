@@ -22,6 +22,8 @@ class RawExternalInMigration {
     String headRelationshipType
 
     String migrationType = InMigrationType.EXTERNAL.code
+    String extMigrationType //ENTRY OR REENTRY
+
     String originCode
     String originOther
     String destinationCode
@@ -48,6 +50,8 @@ class RawExternalInMigration {
         memberFatherCode blank: true, nullable: true
 
         migrationType nullable: false, blank: false
+        extMigrationType nullable: false, blank: false
+
         originCode nullable: true, blank: true
         originOther nullable: true, blank: true
         destinationCode nullable: false, blank: false
@@ -77,6 +81,8 @@ class RawExternalInMigration {
         memberFatherCode column: "member_father_code"
 
         migrationType       column: "migration_type"
+        extMigrationType column: "ext_migration_type"
+
         originCode  column: "origin_code"
         originOther column: "origin_other"
         destinationCode      column: "destination_code"

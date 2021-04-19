@@ -10,6 +10,7 @@ import org.philimone.hds.explorer.server.model.collect.raw.RawMember
 import org.philimone.hds.explorer.server.model.enums.Gender
 import org.philimone.hds.explorer.server.model.enums.HeadRelationshipType
 import org.philimone.hds.explorer.server.model.enums.RawEntity
+import org.philimone.hds.explorer.server.model.enums.temporal.ExternalInMigrationType
 import org.philimone.hds.explorer.server.model.enums.temporal.HeadRelationshipEndType
 import org.philimone.hds.explorer.server.model.enums.temporal.HeadRelationshipStartType
 import org.philimone.hds.explorer.server.model.enums.temporal.InMigrationType
@@ -119,8 +120,8 @@ class ExternalInMigrationService {
         }
 
 
-        def member = memberService.getMember(rawExternalInMigration.memberCode)
-        def isReturningToStudyArea = member != null
+        def extInMigType = ExternalInMigrationType.getFrom(rawExternalInMigration.extMigrationType)
+        def isReturningToStudyArea = extInMigType==ExternalInMigrationType.REENTRY
 
         def newRawMember = createNewRawMemberFrom(rawExternalInMigration)
         def newRawInMigration =  createRawInMigration(rawExternalInMigration)
@@ -193,6 +194,7 @@ class ExternalInMigrationService {
 
         def isBlankVisitCode = StringUtil.isBlank(externalInMigration.visitCode)
         def isBlankMigrationType = StringUtil.isBlank(externalInMigration.migrationType)
+        def isBlankExtMigrationType = StringUtil.isBlank(externalInMigration.extMigrationType)
         def isBlankOriginCode = StringUtil.isBlank(externalInMigration.originCode)
         def isBlankDestinationCode = StringUtil.isBlank(externalInMigration.destinationCode)
         def isBlankMigrationDate = StringUtil.isBlankDate(externalInMigration.migrationDate)
@@ -207,15 +209,18 @@ class ExternalInMigrationService {
         def motherUnknown = motherExists && mother?.code == Codes.MEMBER_UNKNOWN_CODE
         def fatherUnknown = fatherExists && father?.code == Codes.MEMBER_UNKNOWN_CODE
         def migrationType = InMigrationType.getFrom(externalInMigration.migrationType)
+        def extMigrationType = ExternalInMigrationType.getFrom(externalInMigration.extMigrationType)
         def visit = visitService.getVisit(externalInMigration.visitCode)
         def origin = householdService.getHousehold(externalInMigration.originCode)
         def destination = householdService.getHousehold(externalInMigration.destinationCode)
+        def member = memberService.getMember(externalInMigration.memberCode)
 
         def originExists = origin != null
         def destinationExists = destination != null
         def visitExists = visit != null
+        def memberExists = member != null
 
-        def isReturningToStudyArea = isMemberReturningToStudyArea(externalInMigration.memberCode)
+        def isReturningToStudyArea = extMigrationType==ExternalInMigrationType.REENTRY //isMemberReturningToStudyArea(externalInMigration.memberCode)
 
         //C1. Check Blank Fields (visitCode)
         if (isBlankVisitCode){
@@ -305,6 +310,10 @@ class ExternalInMigrationService {
         if (isBlankMigrationType){
             errors << errorMessageService.getRawMessage(RawEntity.EXTERNAL_INMIGRATION, "validation.field.blank", ["migrationType"], ["migrationType"])
         }
+        //C1. Check Blank Fields (extMigrationType)
+        if (isBlankExtMigrationType){
+            errors << errorMessageService.getRawMessage(RawEntity.EXTERNAL_INMIGRATION, "validation.field.blank", ["extMigrationType"], ["extMigrationType"])
+        }
         //C1. Check Blank Fields (destinationCode)
         if (isBlankDestinationCode){
             errors << errorMessageService.getRawMessage(RawEntity.EXTERNAL_INMIGRATION, "validation.field.blank", ["destinationCode"], ["destinationCode"])
@@ -324,6 +333,10 @@ class ExternalInMigrationService {
         //C6. Validate migrationType Enum Options
         if (!isBlankMigrationType && migrationType==null){
             errors << errorMessageService.getRawMessage(RawEntity.EXTERNAL_INMIGRATION, "validation.field.enum.choices.error", [externalInMigration.migrationType, "migrationType"], ["migrationType"])
+        }
+        //C6. Validate extMigrationType Enum Options
+        if (!isBlankExtMigrationType && ExternalInMigrationType.getFrom(externalInMigration.extMigrationType)==null){
+            errors << errorMessageService.getRawMessage(RawEntity.EXTERNAL_INMIGRATION, "validation.field.enum.choices.error", [externalInMigration.migrationType, "extMigrationType"], ["extMigrationType"])
         }
 
         //CX. Validate the visitCode with the destinationCode(household being visited)
@@ -355,7 +368,7 @@ class ExternalInMigrationService {
         }
 
         //C6. Check Duplicate of memberCode - only if is the first entry
-        if (!isReturningToStudyArea && !isBlankMemberCode && memberService.exists(externalInMigration.memberCode)){
+        if (!isReturningToStudyArea && memberExists){
             errors << errorMessageService.getRawMessage(RawEntity.EXTERNAL_INMIGRATION, "validation.field.reference.duplicate.error", ["Member", "code", externalInMigration.memberCode], ["code"])
         }
 

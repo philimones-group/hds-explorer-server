@@ -9,6 +9,7 @@ import org.philimone.hds.explorer.server.model.authentication.User
 import org.philimone.hds.explorer.server.model.authentication.UserService
 import org.philimone.hds.explorer.server.model.collect.raw.*
 import org.philimone.hds.explorer.server.model.enums.*
+import org.philimone.hds.explorer.server.model.enums.temporal.ExternalInMigrationType
 import org.philimone.hds.explorer.server.model.enums.temporal.InMigrationType
 import org.philimone.hds.explorer.server.model.enums.temporal.OutMigrationType
 import org.philimone.hds.explorer.server.model.main.*
@@ -537,6 +538,7 @@ class ExternalInMigrationServiceSpec extends Specification {
                 memberCode: member22.code,
                 headRelationshipType: "SPO",
                 migrationType: InMigrationType.EXTERNAL.code,
+                extMigrationType: ExternalInMigrationType.REENTRY.code,
                 originCode: null,
                 originOther: "USA",
                 destinationCode: household2.code,
@@ -558,6 +560,7 @@ class ExternalInMigrationServiceSpec extends Specification {
                 memberFatherCode: Codes.MEMBER_UNKNOWN_CODE,
                 headRelationshipType: "SON",
                 migrationType: InMigrationType.EXTERNAL.code,
+                extMigrationType: ExternalInMigrationType.ENTRY.code,
                 originCode: null,
                 originOther: "SA - JOHANNESBURG",
                 destinationCode: household2.code,

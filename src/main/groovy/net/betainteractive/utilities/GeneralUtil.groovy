@@ -65,16 +65,12 @@ class GeneralUtil {
         def duration = Duration.between(startTime, endTime)
 
         List buffer = new ArrayList();
-        int years = duration.get(ChronoUnit.YEARS)
-        int months = duration.get(ChronoUnit.MONTHS)
-        int days = duration.get(ChronoUnit.DAYS)
-        int hours = duration.get(ChronoUnit.HOURS)
-        int minutes = duration.get(ChronoUnit.MINUTES)
+        int days = duration.toDays()
+        int hours = duration.toHours()
+        int minutes = duration.toMinutes()
         int seconds = duration.get(ChronoUnit.SECONDS)
-        int millis = duration.get(ChronoUnit.MILLIS)
+        int millis = duration.toMillis()
 
-        if (years != 0) buffer.add(years + " years");
-        if (months != 0) buffer.add(months + " months");
         if (days != 0) buffer.add(days + " days");
         if (hours != 0) buffer.add(hours + " hours");
         if (minutes != 0) buffer.add(minutes + " minutes");
