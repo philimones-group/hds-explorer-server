@@ -18,7 +18,7 @@ enum RawEntity {
     PREGNANCY_CHILD,
     EXTERNAL_INMIGRATION,
     DEATH,
-    CHANGE_HOH
+    CHANGE_HEAD_OF_HOUSEHOLD
 
     /* Finding Enum by code */
     private static final Map<String, RawEntity> MAP = new HashMap<>();

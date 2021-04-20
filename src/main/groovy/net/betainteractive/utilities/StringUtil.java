@@ -396,11 +396,20 @@ public class StringUtil {
     }
 
     public static String format(LocalDate date){
+        if (date == null) return "";
+        //"yyyy-MM-dd"
+        return date.format(DateTimeFormatter.ISO_LOCAL_DATE);
+    }
+
+    public static String formatLocalDate(LocalDate date){
+        if (date == null) return "";
         //"yyyy-MM-dd"
         return date.format(DateTimeFormatter.ISO_LOCAL_DATE);
     }
 
     public static String format(LocalDate date, String format) {
+        if (date == null) return "";
+
         DateTimeFormatter formatter = null;
 
         if (isBlank(format)){
@@ -413,12 +422,16 @@ public class StringUtil {
     }
 
     public static String format(LocalDateTime dateTime){
+        if (dateTime == null) return "";
+
         //"yyyy-MM-dd"
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         return dateTime.format(formatter);
     }
 
     public static String format(LocalDateTime dateTime, String format){
+        if (dateTime == null) return "";
+
         DateTimeFormatter formatter = null;
 
         if (isBlank(format)){
@@ -460,6 +473,8 @@ public class StringUtil {
     }*/
 
     public static String format(Date date, String format){
+        if (date == null) return "";
+
         java.text.DateFormat formatter = new java.text.SimpleDateFormat(format);
         return formatter.format(date);
     }

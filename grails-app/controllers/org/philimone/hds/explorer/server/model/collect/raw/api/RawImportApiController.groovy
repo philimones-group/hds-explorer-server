@@ -25,7 +25,8 @@ class RawImportApiController {
                              maritalrelationships: "POST",
                              pregnancyregistrations: "POST",
                              pregnancyoutcomes: "POST",
-                             deaths: "POST"]
+                             deaths: "POST",
+                             changeheads: "POST"]
 
     def rawImportApiService
     def rawExecutionService
@@ -525,6 +526,42 @@ class RawImportApiController {
 
         if (resultSave.postExecution){ //execute creation
             def result = rawExecutionService.createDeath(resultSave)
+
+            if (result.status== RawExecutionResult.Status.ERROR){
+                render text: errorMessageService.getRawMessagesText(result.errorMessages), status: HttpStatus.BAD_REQUEST
+                return
+            }
+        }
+
+        render text: "OK", status: HttpStatus.OK
+    }
+
+    def changeheads = {
+
+        if (request.format != "xml") {
+            def message = message(code: 'validation.field.raw.xml.invalid.error')
+            render text: message, status:  HttpStatus.BAD_REQUEST // Only XML expected
+            return
+        }
+
+        def node = request.getXML() as NodeChild
+        def parseResult = rawImportApiService.parseChangeHead(node)
+
+        if (parseResult.hasErrors()) {
+            render text: parseResult.getErrorsText(), status: HttpStatus.BAD_REQUEST
+            return
+        }
+
+        def rawInstance = parseResult.domainInstance
+        def resultSave = rawInstance.save(flush: true)
+
+        if (rawInstance.hasErrors()){
+            render text: errorMessageService.getRawMessagesText(rawInstance), status: HttpStatus.BAD_REQUEST
+            return
+        }
+
+        if (resultSave.postExecution){ //execute creation
+            def result = rawExecutionService.createChangeHead(resultSave)
 
             if (result.status== RawExecutionResult.Status.ERROR){
                 render text: errorMessageService.getRawMessagesText(result.errorMessages), status: HttpStatus.BAD_REQUEST

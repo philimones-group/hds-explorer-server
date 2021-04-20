@@ -605,4 +605,80 @@ class RawImportApiService {
         return new RawParseResult<RawDeath>(new RawDeath(params), errors)
 
     }
+
+    RawParseResult<RawChangeHead> parseChangeHead(NodeChild xmlNode) {
+
+        //has a especial handler
+
+        def errors = new ArrayList<RawMessage>()
+        def params = [:]
+        def paramsRelationships = new ArrayList<LinkedHashMap>()
+        def rootnode = xmlNode?.name()
+
+        xmlNode.childNodes().each { Node node ->
+
+            if (node.childNodes().size()>0 && node.name().equalsIgnoreCase("relationships")){
+                //println "children ${node.name()}"
+
+                node.childNodes().eachWithIndex { Node child, index ->
+
+                    if (child.name().equalsIgnoreCase("RawChangeHeadRelationship")){
+                        def cparams = [:]
+                        child.childNodes().each { innernode ->
+                            cparams.put(innernode.name(), innernode.text())
+                        }
+
+                        paramsRelationships.add(cparams)
+                    }
+
+                }
+            } else {
+                params.put(node.name(), node.text())
+            }
+        }
+
+        if (!rootnode.equalsIgnoreCase("RawChangeHead")) {
+            errors << errorMessageService.getRawMessage("validation.field.raw.parsing.rootnode.invalid.error", [rootnode])
+            return new RawParseResult<RawChangeHead>(null, errors)
+        }
+
+        /* converting non-primitive types must be parsed manually */
+
+        if (xmlNode?.eventDate != null) {
+            params.eventDate = StringUtil.toLocalDate(xmlNode.eventDate.text())
+
+            if (params.eventDate==null) {
+                errors << errorMessageService.getRawMessage("validation.field.raw.parsing.localdate.error", [xmlNode?.eventDate.text(), "eventDate"])
+            }
+        }
+
+        if (xmlNode?.collectedDate != null) {
+            params.collectedDate = StringUtil.toLocalDateTime(xmlNode.collectedDate.text())
+
+            if (params.collectedDate==null) {
+                errors << errorMessageService.getRawMessage("validation.field.raw.parsing.localdatetime.error", [xmlNode?.collectedDate.text(), "collectedDate"])
+            }
+        }
+
+        if (xmlNode?.uploadedDate != null) {
+            params.uploadedDate = StringUtil.toLocalDateTime(xmlNode.uploadedDate.text())
+
+            if (params.uploadedDate==null) {
+                errors << errorMessageService.getRawMessage("validation.field.raw.parsing.localdatetime.error", [xmlNode?.uploadedDate.text(), "uploadedDate"])
+            }
+        }
+
+        def rawInstance = new RawChangeHead(params)
+
+        if (paramsRelationships.size() > 0) {
+            paramsRelationships.each { cparams ->
+                def rawRelationship = new RawChangeHeadRelationship(cparams)
+                rawRelationship.changeHead = rawInstance
+                rawInstance.addToRelationships(rawRelationship)
+            }
+        }
+
+        return new RawParseResult<RawChangeHead>(rawInstance, errors)
+
+    }
 }

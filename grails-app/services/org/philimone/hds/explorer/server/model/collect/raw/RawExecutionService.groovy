@@ -4,6 +4,7 @@ import grails.gorm.transactions.Transactional
 import org.philimone.hds.explorer.openhds.model.Death
 import org.philimone.hds.explorer.server.model.enums.PregnancyStatus
 import org.philimone.hds.explorer.server.model.enums.ProcessedStatus
+import org.philimone.hds.explorer.server.model.main.HeadRelationship
 import org.philimone.hds.explorer.server.model.main.Household
 import org.philimone.hds.explorer.server.model.main.InMigration
 import org.philimone.hds.explorer.server.model.main.MaritalRelationship
@@ -32,6 +33,7 @@ class RawExecutionService {
     def outMigrationService
     def deathService
     def visitService
+    def changeHeadService
 
     //Receive a RawModel, execute it and flag errors
 
@@ -234,6 +236,27 @@ class RawExecutionService {
         if (result.status == RawExecutionResult.Status.ERROR){
             //create errorLog
             def errorLog = new RawErrorLog(uuid: rawDomainInstance.id, entity: result.entity, code: rawDomainInstance.code)
+            errorLog.setMessage(result.errorMessages)
+            errorLog.save()
+        }
+
+        rawDomainInstance.refresh()
+        rawDomainInstance.processedStatus = getProcessedStatus(result.status)
+        rawDomainInstance.save()
+
+        return result
+
+    }
+
+    RawExecutionResult<HeadRelationship> createChangeHead(RawChangeHead rawDomainInstance){
+
+        def relationships = RawChangeHeadRelationship.findAllByChangeHead(rawDomainInstance)
+
+        def result = changeHeadService.createChangeHead(rawDomainInstance, relationships)
+
+        if (result.status == RawExecutionResult.Status.ERROR){
+            //create errorLog
+            def errorLog = new RawErrorLog(uuid: rawDomainInstance.id, entity: result.entity, code: rawDomainInstance.newHeadCode)
             errorLog.setMessage(result.errorMessages)
             errorLog.save()
         }

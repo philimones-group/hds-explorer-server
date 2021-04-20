@@ -36,6 +36,19 @@ class HeadRelationshipService {
         return null
     }
 
+    HeadRelationship getCurrentHeadRelationship(String memberCode) {
+        if (!StringUtil.isBlank(memberCode)) {
+
+            def headRelationships = HeadRelationship.executeQuery("select r from HeadRelationship r where r.member.code=? order by r.startDate desc", [memberCode], [offset:0, max:1]) // limit 1
+
+            if (headRelationships != null && headRelationships.size()>0) {
+                return headRelationships.first()
+            }
+
+        }
+        return null
+    }
+
     HeadRelationship getCurrentHeadRelationship(Member member, Household household) {
         if (member != null && member.id != null && household != null && household.id != null) {
 
@@ -65,6 +78,36 @@ class HeadRelationshipService {
         return null
     }
 
+    HeadRelationship getCurrentHouseholdHead(Member member){
+
+        if (member != null && member?.id != null){
+            def headRelationships = HeadRelationship.executeQuery("select r from HeadRelationship r where r.member.id=? and r.relationshipType=? order by r.startDate desc", [member.id, HeadRelationshipType.HEAD_OF_HOUSEHOLD], [offset:0, max:1]) // limit 1
+
+            if (headRelationships != null && headRelationships.size()>0) {
+                return headRelationships.first()
+            }
+        }
+
+        return null
+    }
+
+    boolean isHeadOfHousehold(Member member) {
+        def headRelationship = getCurrentHouseholdHead(member)
+
+        if (headRelationship != null) {
+            return (headRelationship.endType == HeadRelationshipEndType.NOT_APPLICABLE) //if true is a head of an household currently, otherwise he was an head of a household
+        }
+
+        return false
+    }
+
+    boolean isCurrentHeadOfHousehold(Household household, Member member){
+        def currentHeadRelationship = getCurrentHouseholdHead(household)
+        def currentHead = currentHeadRelationship?.member
+
+        return currentHead?.code==member?.code
+    }
+
     List<HeadRelationship> getCurrentHeadRelationships(Member headOfHousehold, Household household){
         if (headOfHousehold != null && headOfHousehold.id != null && household != null && household.id != null) {
 
@@ -84,6 +127,11 @@ class HeadRelationshipService {
 
     RawHeadRelationship getCurrentHeadRelationshipAsRaw(Member member) {
         def headRelationship = getCurrentHeadRelationship(member)
+        return convertToRaw(headRelationship)
+    }
+
+    RawHeadRelationship getCurrentHeadRelationshipAsRaw(String memberCode) {
+        def headRelationship = getCurrentHeadRelationship(memberCode)
         return convertToRaw(headRelationship)
     }
 
@@ -238,6 +286,122 @@ class HeadRelationshipService {
         return obj
     }
 
+    ArrayList<RawMessage> validateCreateHeadRelationship(RawHeadRelationship headRelationship, HeadRelationship fakePreviousHeadRelationship, HeadRelationship fakePreviousHouseholdHead){
+        def errors = new ArrayList<RawMessage>()
+
+        def isBlankMemberCode = StringUtil.isBlank(headRelationship.memberCode)
+        def isBlankHouseholdCode = StringUtil.isBlank(headRelationship.householdCode)
+        def isBlankStartType = StringUtil.isBlank(headRelationship.startType)
+        def isNullStartDate = headRelationship.startDate == null
+        def isBlankRelationshipType = StringUtil.isBlank(headRelationship.relationshipType)
+        def relationshipType = !isBlankRelationshipType ? HeadRelationshipType.getFrom(headRelationship.relationshipType) : null
+        def member = !isBlankMemberCode ? memberService.getMember(headRelationship.memberCode) : null
+        def household = !isBlankHouseholdCode ? householdService.getHousehold(headRelationship.householdCode) : null
+        def head = !isBlankHouseholdCode ? getCurrentHouseholdHead(household) : null
+        def memberExists = member != null
+        def householdExists = household != null
+        def headExists = head != null
+
+        //C1. Check Blank Fields (memberCode)
+        if (isBlankMemberCode){
+            errors << errorMessageService.getRawMessage(RawEntity.HEAD_RELATIONSHIP, "validation.field.blank", ["memberCode"], ["memberCode"])
+        }
+        //C1. Check Blank Fields (householdCode)
+        if (isBlankHouseholdCode){
+            errors << errorMessageService.getRawMessage(RawEntity.HEAD_RELATIONSHIP, "validation.field.blank", ["householdCode"], ["householdCode"])
+        }
+        //C1. Check Blank Fields (startType)
+        if (isBlankStartType){
+            errors << errorMessageService.getRawMessage(RawEntity.HEAD_RELATIONSHIP, "validation.field.blank", ["startType"], ["startType"])
+        }
+        //C1. Check Nullable Fields (startDate)
+        if (isNullStartDate){
+            errors << errorMessageService.getRawMessage(RawEntity.HEAD_RELATIONSHIP, "validation.field.blank", ["startDate"], ["startDate"])
+        }
+        //C3. Validate startType Enum Options
+        if (!isBlankStartType && HeadRelationshipStartType.getFrom(headRelationship.startType)==null){
+            errors << errorMessageService.getRawMessage(RawEntity.HEAD_RELATIONSHIP, "validation.field.enum.starttype.error", [headRelationship.startType], ["startType"])
+        }
+        //C3. Validate relationshipType Enum Options
+        if (!isBlankRelationshipType && HeadRelationshipType.getFrom(headRelationship.relationshipType)==null){
+            errors << errorMessageService.getRawMessage(RawEntity.HEAD_RELATIONSHIP, "validation.field.headRelationship.type.valid.error", [headRelationship.relationshipType], ["relationshipType"])
+        }
+        //C4. Check Member reference existence
+        if (!isBlankMemberCode && !memberExists){
+            errors << errorMessageService.getRawMessage(RawEntity.HEAD_RELATIONSHIP, "validation.field.reference.error", ["Member", "memberCode", headRelationship.memberCode], ["memberCode"])
+        }
+        //C4. Check Household reference existence
+        if (!isBlankHouseholdCode && !householdExists){
+            errors << errorMessageService.getRawMessage(RawEntity.HEAD_RELATIONSHIP, "validation.field.reference.error", ["Household", "householdCode", headRelationship.householdCode], ["householdCode"])
+        }
+        //C5. Check startDate max date
+        if (!isNullStartDate && headRelationship.startDate > LocalDate.now()){
+            errors << errorMessageService.getRawMessage(RawEntity.HEAD_RELATIONSHIP, "validation.field.date.not.greater.today", ["headRelationship.startDate"], ["startDate"])
+        }
+        //C5.2. Check Dates against DOB
+        if (!isNullStartDate && memberExists && headRelationship.startDate < member.dob){
+            errors << errorMessageService.getRawMessage(RawEntity.HEAD_RELATIONSHIP, "validation.field.dob.not.greater.date", ["headRelationship.startDate", StringUtil.format(member.dob)], ["startDate","member.dob"])
+        }
+        //C6. Check Age of Head of Household
+        if (memberExists && (relationshipType == HeadRelationshipType.HEAD_OF_HOUSEHOLD && GeneralUtil.getAge(member.dob)< Codes.MIN_HEAD_AGE_VALUE )){
+            errors << errorMessageService.getRawMessage(RawEntity.HEAD_RELATIONSHIP, "validation.field.dob.head.minage.error", [StringUtil.format(member.dob), Codes.MIN_HEAD_AGE_VALUE+""], ["member.dob"])
+        }
+        //C7. Check Current Head Existence and the new relation is not a head of household - We must have a existent Head of Household in order to create new Relationship with the Head
+        if (!headExists && relationshipType != HeadRelationshipType.HEAD_OF_HOUSEHOLD){
+            errors << errorMessageService.getRawMessage(RawEntity.HEAD_RELATIONSHIP, "validation.field.headRelationship.head.not.exists.error", [headRelationship.householdCode], ["householdCode"])
+        }
+
+        //Validation part 2: Previous HeadRelationship against new HeadRelationship
+        if (memberExists && householdExists){
+            def previous = fakePreviousHeadRelationship //getCurrentHeadRelationship(member) - get new head of household previous relationship
+            def newStartType = HeadRelationshipStartType.getFrom(headRelationship.startType)
+            def newStartDate = headRelationship.startDate
+
+            if (previous == null) {
+                return errors
+            }
+
+            //P1. Check If endType is empty or NA
+            if (previous.endType == null || previous.endType == HeadRelationshipEndType.NOT_APPLICABLE){
+                errors << errorMessageService.getRawMessage(RawEntity.HEAD_RELATIONSHIP, "validation.field.headRelationship.endtype.na.error", null, ["previous.endType"])
+            }
+            //P2. Check If endType is DTH or Member has DTH Reg
+            if (previous.endType == HeadRelationshipEndType.DEATH || memberService.isDead(member)){
+                errors << errorMessageService.getRawMessage(RawEntity.HEAD_RELATIONSHIP, "validation.field.headRelationship.endtype.dth.error", null, ["previous.endType"])
+            }
+            //P3. Check If endType is CHG and new startType isnt ENT
+            if (previous.endType == HeadRelationshipEndType.INTERNAL_OUTMIGRATION && newStartType != HeadRelationshipStartType.INTERNAL_INMIGRATION){
+                errors << errorMessageService.getRawMessage(RawEntity.HEAD_RELATIONSHIP, "validation.field.headRelationship.endtype.chg.error", null, ["previous.endType"])
+            }
+            //P4. Check If endType is EXT and new startType isnt XEN
+            if (previous.endType == HeadRelationshipEndType.EXTERNAL_OUTMIGRATION && newStartType != HeadRelationshipStartType.EXTERNAL_INMIGRATION){
+                errors << errorMessageService.getRawMessage(RawEntity.HEAD_RELATIONSHIP, "validation.field.headRelationship.endtype.ext.error", null, ["previous.endType"])
+            }
+            //P5. Check If endType is DHH/CHH and new startType isnt NHH
+            if ((previous.endType == HeadRelationshipEndType.DEATH_OF_HEAD_OF_HOUSEHOLD || previous.endType == HeadRelationshipEndType.CHANGE_OF_HEAD_OF_HOUSEHOLD) &&
+                 newStartType != HeadRelationshipStartType.NEW_HEAD_OF_HOUSEHOLD){
+                errors << errorMessageService.getRawMessage(RawEntity.HEAD_RELATIONSHIP, "validation.field.headRelationship.endtype.dhh.chh.error", null, ["previous.endType"])
+            }
+            //P6. Check If endDate is greater than new startDate
+            if (previous.endDate != null && (previous.endDate >= newStartDate)){
+                errors << errorMessageService.getRawMessage(RawEntity.HEAD_RELATIONSHIP, "validation.field.headRelationship.enddate.greater.new.startdate.error", null, ["previous.endType"])
+            }
+
+            //P7. C7. Check If relationshipType is HEAD and if previous head is closed
+            if (relationshipType == HeadRelationshipType.HEAD_OF_HOUSEHOLD){
+                //get current household head, we can get that using the household.headMember and/or HeadRelationship
+                def previousHead = fakePreviousHouseholdHead //getCurrentHouseholdHead(household)  - get old/current head of household relationship
+
+                if (previousHead != null && (previousHead.endType == null || previousHead.endType == HeadRelationshipEndType.NOT_APPLICABLE)){
+                    errors << errorMessageService.getRawMessage(RawEntity.HEAD_RELATIONSHIP, "validation.field.headRelationship.type.head.not.closed.error", null, ["lastHead.endType"])
+                }
+            }
+        }
+
+
+        return errors
+    }
+
     ArrayList<RawMessage> validateCreateHeadRelationship(RawHeadRelationship headRelationship){
         def errors = new ArrayList<RawMessage>()
 
@@ -331,7 +495,7 @@ class HeadRelationshipService {
             }
             //P5. Check If endType is DHH/CHH and new startType isnt NHH
             if ((previous.endType == HeadRelationshipEndType.DEATH_OF_HEAD_OF_HOUSEHOLD || previous.endType == HeadRelationshipEndType.CHANGE_OF_HEAD_OF_HOUSEHOLD) &&
-                 newStartType != HeadRelationshipStartType.NEW_HEAD_OF_HOUSEHOLD){
+                    newStartType != HeadRelationshipStartType.NEW_HEAD_OF_HOUSEHOLD){
                 errors << errorMessageService.getRawMessage(RawEntity.HEAD_RELATIONSHIP, "validation.field.headRelationship.endtype.dhh.chh.error", null, ["previous.endType"])
             }
             //P6. Check If endDate is greater than new startDate
