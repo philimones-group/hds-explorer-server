@@ -35,11 +35,11 @@ class RawHousehold {
         id maxSize: 32
 
         regionCode blank: false
-        regionName blank: false
+        regionName blank: true, nullable: true
         householdCode blank: true, unique: true
         householdName blank: true
-        headCode blank: true
-        headName blank: true
+        headCode blank: true, nullable: true
+        headName blank: true, nullable: true
         gpsLng blank: true, nullable: true
         gpsAlt blank: true, nullable: true
         gpsLat blank: true, nullable: true

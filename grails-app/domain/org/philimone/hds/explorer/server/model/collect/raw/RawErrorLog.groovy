@@ -28,14 +28,14 @@ class RawErrorLog {
     /*
      * Timestamp of Execution
      */
-    LocalDateTime createdDate
+    LocalDateTime createdDate = LocalDateTime.now()
 
-    void setMessage(ArrayList<RawMessage> messages){
+    void setMessages(ArrayList<RawMessage> messages){
         Gson gson = new Gson()
         this.message = gson.toJson(messages)
     }
 
-    ArrayList<RawMessage> getMessage(){
+    ArrayList<RawMessage> getMessages(){
         def list = new ArrayList<RawMessage>()
         if (message==null || message.isEmpty()) return list;
 
@@ -44,7 +44,7 @@ class RawErrorLog {
     }
 
     static constraints = {
-        uuid unique: true, nullable: false
+        uuid unique: true, nullable: false, maxSize: 32
         entity nullable: false
         code blank: true, nullable: true
         message blank: false, maxSize: 1000
@@ -53,7 +53,7 @@ class RawErrorLog {
     static mapping = {
         table "_raw_error_log"
 
-        id name: "uuid", generator: "assigned"
+        id name: "uuid", generator: "uuid"
 
         entity column: "entity", indexColumn: [name: "idx_entity", type: Integer]
         code column: "code", indexColumn: [name: "idx_code", type: Integer]

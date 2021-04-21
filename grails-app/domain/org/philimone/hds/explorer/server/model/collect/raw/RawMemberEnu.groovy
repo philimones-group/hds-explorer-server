@@ -48,12 +48,12 @@ class RawMemberEnu {
         gender blank: false
         dob blank: false
         motherCode blank: false
-        motherName blank: false
+        motherName blank: true, nullable: true
         fatherCode blank: false
-        fatherName blank: false
+        fatherName blank: true, nullable: true
 
         householdCode blank: false
-        householdName blank: false
+        householdName blank: true, nullable: true
         headRelationshipType blank: false
         residencyStartDate blank: false
 

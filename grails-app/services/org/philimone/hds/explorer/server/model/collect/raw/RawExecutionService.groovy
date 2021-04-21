@@ -2,7 +2,6 @@ package org.philimone.hds.explorer.server.model.collect.raw
 
 import grails.gorm.transactions.Transactional
 import org.philimone.hds.explorer.openhds.model.Death
-import org.philimone.hds.explorer.server.model.enums.PregnancyStatus
 import org.philimone.hds.explorer.server.model.enums.ProcessedStatus
 import org.philimone.hds.explorer.server.model.main.HeadRelationship
 import org.philimone.hds.explorer.server.model.main.Household
@@ -44,7 +43,7 @@ class RawExecutionService {
         if (result.status == RawExecutionResult.Status.ERROR){
             //create errorLog
             def errorLog = new RawErrorLog(uuid: rawDomainInstance.id, entity: result.entity, code: rawDomainInstance.regionCode)
-            errorLog.setMessage(result.errorMessages)
+            errorLog.setMessages(result.errorMessages)
             errorLog.save()
         }
 
@@ -63,7 +62,7 @@ class RawExecutionService {
         if (result.status == RawExecutionResult.Status.ERROR){
             //create errorLog
             def errorLog = new RawErrorLog(uuid: rawDomainInstance.id, entity: result.entity, code: rawDomainInstance.householdCode)
-            errorLog.setMessage(result.errorMessages)
+            errorLog.setMessages(result.errorMessages)
             errorLog.save()
         }
 
@@ -82,7 +81,7 @@ class RawExecutionService {
         if (result.status == RawExecutionResult.Status.ERROR){
             //create errorLog
             def errorLog = new RawErrorLog(uuid: rawDomainInstance.id, entity: result.entity, code: rawDomainInstance.code)
-            errorLog.setMessage(result.errorMessages)
+            errorLog.setMessages(result.errorMessages)
             errorLog.save()
         }
 
@@ -101,7 +100,7 @@ class RawExecutionService {
         if (result.status == RawExecutionResult.Status.ERROR){
             //create errorLog
             def errorLog = new RawErrorLog(uuid: rawDomainInstance.id, entity: result.entity, code: rawDomainInstance.memberCode)
-            errorLog.setMessage(result.errorMessages)
+            errorLog.setMessages(result.errorMessages)
             errorLog.save()
         }
 
@@ -120,7 +119,7 @@ class RawExecutionService {
         if (result.status == RawExecutionResult.Status.ERROR){
             //create errorLog
             def errorLog = new RawErrorLog(uuid: rawDomainInstance.id, entity: result.entity, code: rawDomainInstance.code)
-            errorLog.setMessage(result.errorMessages)
+            errorLog.setMessages(result.errorMessages)
             errorLog.save()
         }
 
@@ -141,7 +140,7 @@ class RawExecutionService {
         if (result.status == RawExecutionResult.Status.ERROR){
             //create errorLog
             def errorLog = new RawErrorLog(uuid: rawDomainInstance.id, entity: result.entity, code: rawDomainInstance.code)
-            errorLog.setMessage(result.errorMessages)
+            errorLog.setMessages(result.errorMessages)
             errorLog.save()
         }
 
@@ -160,7 +159,7 @@ class RawExecutionService {
         if (result.status == RawExecutionResult.Status.ERROR){
             //create errorLog
             def errorLog = new RawErrorLog(uuid: rawDomainInstance.id, entity: result.entity, code: "")
-            errorLog.setMessage(result.errorMessages)
+            errorLog.setMessages(result.errorMessages)
             errorLog.save()
         }
 
@@ -179,7 +178,7 @@ class RawExecutionService {
         if (result.status == RawExecutionResult.Status.ERROR){
             //create errorLog
             def errorLog = new RawErrorLog(uuid: rawDomainInstance.id, entity: result.entity, code: rawDomainInstance.memberCode)
-            errorLog.setMessage(result.errorMessages)
+            errorLog.setMessages(result.errorMessages)
             errorLog.save()
         }
 
@@ -198,7 +197,7 @@ class RawExecutionService {
         if (result.status == RawExecutionResult.Status.ERROR){
             //create errorLog
             def errorLog = new RawErrorLog(uuid: rawDomainInstance.id, entity: result.entity, code: rawDomainInstance.memberCode)
-            errorLog.setMessage(result.errorMessages)
+            errorLog.setMessages(result.errorMessages)
             errorLog.save()
         }
 
@@ -217,7 +216,7 @@ class RawExecutionService {
         if (result.status == RawExecutionResult.Status.ERROR){
             //create errorLog
             def errorLog = new RawErrorLog(uuid: rawDomainInstance.id, entity: result.entity, code: rawDomainInstance.memberCode)
-            errorLog.setMessage(result.errorMessages)
+            errorLog.setMessages(result.errorMessages)
             errorLog.save()
         }
 
@@ -236,8 +235,10 @@ class RawExecutionService {
         if (result.status == RawExecutionResult.Status.ERROR){
             //create errorLog
             def errorLog = new RawErrorLog(uuid: rawDomainInstance.id, entity: result.entity, code: rawDomainInstance.code)
-            errorLog.setMessage(result.errorMessages)
+            errorLog.setMessages(result.errorMessages)
             errorLog.save()
+
+            println "visit: ${errorLog.errors}"
         }
 
         rawDomainInstance.refresh()
@@ -257,7 +258,7 @@ class RawExecutionService {
         if (result.status == RawExecutionResult.Status.ERROR){
             //create errorLog
             def errorLog = new RawErrorLog(uuid: rawDomainInstance.id, entity: result.entity, code: rawDomainInstance.newHeadCode)
-            errorLog.setMessage(result.errorMessages)
+            errorLog.setMessages(result.errorMessages)
             errorLog.save()
         }
 
@@ -270,6 +271,6 @@ class RawExecutionService {
     }
 
     ProcessedStatus getProcessedStatus(RawExecutionResult.Status resultStatus) {
-        return  resultStatus==RawExecutionResult.Status.SUCCESS ? ProcessedStatus.SUCCESS : ProcessedStatus.ERROR
+        return resultStatus==RawExecutionResult.Status.SUCCESS ? ProcessedStatus.SUCCESS : ProcessedStatus.ERROR
     }
 }
