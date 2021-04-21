@@ -32,6 +32,7 @@ import java.time.LocalDateTime
 import static grails.async.Promises.task
 import static grails.async.Promises.waitAll
 
+@Deprecated
 class ImportDataFromOpenHDSService {
     static datasource = ['openhds']
 

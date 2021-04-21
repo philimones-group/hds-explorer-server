@@ -22,6 +22,7 @@ import org.philimone.hds.explorer.server.openhds.xml.model.Residency
 import org.philimone.hds.explorer.server.openhds.xml.model.SocialGroup
 import org.philimone.hds.explorer.server.openhds.xml.model.Visit
 
+@Deprecated
 class DssSynchronizationService {
 
     static datasource = ['odk', 'openhds']

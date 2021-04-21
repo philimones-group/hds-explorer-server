@@ -5,6 +5,7 @@ import org.philimone.hds.explorer.odk.model.CensusHouseholdCore
 import org.philimone.hds.explorer.odk.model.CensusMemberCore
 import org.philimone.hds.explorer.server.model.json.SyncProcessedStatus
 
+@Deprecated
 @Transactional
 class DssSynchronizationStatusService {
 

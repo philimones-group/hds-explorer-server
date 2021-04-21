@@ -5,6 +5,7 @@ import org.philimone.hds.explorer.server.model.enums.settings.LogReportCode
 import org.philimone.hds.explorer.server.model.logs.LogReport
 import org.philimone.hds.explorer.server.model.enums.LogStatus
 
+@Deprecated
 class ImportOpenHDSController {
 
     def importDataFromOpenHDSService
