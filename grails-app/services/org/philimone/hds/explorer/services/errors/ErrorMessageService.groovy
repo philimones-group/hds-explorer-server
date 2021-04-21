@@ -78,6 +78,20 @@ class ErrorMessageService {
         return errors
     }
 
+    String getRawMessagesText(Exception exception){
+        def errors = ""
+
+        errors += exception.getMessage() +"\n"
+
+        def throwable = exception.getCause()
+        while (throwable != null) {
+            errors += throwable.message +"\n"
+            throwable = throwable.getCause()
+        }
+
+        return errors
+    }
+
     String getRawMessagesText(List<RawMessage> rawMessages){
         def errors = ""
 

@@ -25,8 +25,7 @@ class RawImportApiService {
         }
 
         /* converting non-primitive types must be parsed manually */
-
-        if (xmlNode.collectedDate != null) {
+        if (xmlNode.collectedDate.size() > 0) {
             params.collectedDate = StringUtil.toLocalDateTime(xmlNode.collectedDate.text())
 
             if (params.collectedDate==null) {
@@ -34,7 +33,7 @@ class RawImportApiService {
             }
         }
 
-        if (xmlNode.uploadedDate != null) {
+        if (xmlNode.uploadedDate.size() > 0) {
             params.uploadedDate = StringUtil.toLocalDateTime(xmlNode.uploadedDate.text())
 
             if (params.uploadedDate==null) {
@@ -59,7 +58,7 @@ class RawImportApiService {
 
         /* converting non-primitive types must be parsed manually */
 
-        if (xmlNode.collectedDate != null) {
+        if (xmlNode.collectedDate.size() > 0) {
             params.collectedDate = StringUtil.toLocalDateTime(xmlNode.collectedDate.text())
 
             if (params.collectedDate==null) {
@@ -67,7 +66,7 @@ class RawImportApiService {
             }
         }
 
-        if (xmlNode.uploadedDate != null) {
+        if (xmlNode.uploadedDate.size() > 0) {
             params.uploadedDate = StringUtil.toLocalDateTime(xmlNode.uploadedDate.text())
 
             if (params.uploadedDate==null) {
@@ -92,7 +91,7 @@ class RawImportApiService {
 
         /* converting non-primitive types must be parsed manually */
 
-        if (xmlNode.dob != null) {
+        if (xmlNode.dob.size() > 0) {
             params.dob = StringUtil.toLocalDate(xmlNode.dob.text())
 
             if (params.dob==null) {
@@ -100,7 +99,7 @@ class RawImportApiService {
             }
         }
 
-        if (xmlNode.collectedDate != null) {
+        if (xmlNode.collectedDate.size() > 0) {
             params.collectedDate = StringUtil.toLocalDateTime(xmlNode.collectedDate.text())
 
             if (params.collectedDate==null) {
@@ -108,7 +107,7 @@ class RawImportApiService {
             }
         }
 
-        if (xmlNode.uploadedDate != null) {
+        if (xmlNode.uploadedDate.size() > 0) {
             params.uploadedDate = StringUtil.toLocalDateTime(xmlNode.uploadedDate.text())
 
             if (params.uploadedDate==null) {
@@ -133,7 +132,7 @@ class RawImportApiService {
 
         /* converting non-primitive types must be parsed manually */
 
-        if (xmlNode.visitDate != null) {
+        if (xmlNode.visitDate.size() > 0) {
             params.visitDate = StringUtil.toLocalDate(xmlNode.visitDate.text())
 
             if (params.visitDate==null) {
@@ -141,7 +140,7 @@ class RawImportApiService {
             }
         }
 
-        if (xmlNode.collectedDate != null) {
+        if (xmlNode.collectedDate.size() > 0) {
             params.collectedDate = StringUtil.toLocalDateTime(xmlNode.collectedDate.text())
 
             if (params.collectedDate==null) {
@@ -149,7 +148,7 @@ class RawImportApiService {
             }
         }
 
-        if (xmlNode.uploadedDate != null) {
+        if (xmlNode.uploadedDate.size() > 0) {
             params.uploadedDate = StringUtil.toLocalDateTime(xmlNode.uploadedDate.text())
 
             if (params.uploadedDate==null) {
@@ -174,7 +173,7 @@ class RawImportApiService {
 
         /* converting non-primitive types must be parsed manually */
 
-        if (xmlNode.dob != null) {
+        if (xmlNode.dob.size() > 0) {
             params.dob = StringUtil.toLocalDate(xmlNode.dob.text())
 
             if (params.dob==null) {
@@ -182,7 +181,7 @@ class RawImportApiService {
             }
         }
 
-        if (xmlNode.residencyStartDate != null) {
+        if (xmlNode.residencyStartDate.size() > 0) {
             params.residencyStartDate = StringUtil.toLocalDate(xmlNode.residencyStartDate.text())
 
             if (params.residencyStartDate==null) {
@@ -190,7 +189,7 @@ class RawImportApiService {
             }
         }
 
-        if (xmlNode.collectedDate != null) {
+        if (xmlNode.collectedDate.size() > 0) {
             params.collectedDate = StringUtil.toLocalDateTime(xmlNode.collectedDate.text())
 
             if (params.collectedDate==null) {
@@ -198,7 +197,7 @@ class RawImportApiService {
             }
         }
 
-        if (xmlNode.uploadedDate != null) {
+        if (xmlNode.uploadedDate.size() > 0) {
             params.uploadedDate = StringUtil.toLocalDateTime(xmlNode.uploadedDate.text())
 
             if (params.uploadedDate==null) {
@@ -223,7 +222,7 @@ class RawImportApiService {
 
         /* converting non-primitive types must be parsed manually */
 
-        if (xmlNode.memberDob != null) {
+        if (xmlNode.memberDob.size() > 0) {
             params.memberDob = StringUtil.toLocalDate(xmlNode.memberDob.text())
 
             if (params.memberDob==null) {
@@ -231,7 +230,7 @@ class RawImportApiService {
             }
         }
 
-        if (xmlNode.migrationDate != null) {
+        if (xmlNode.migrationDate.size() > 0) {
             params.migrationDate = StringUtil.toLocalDate(xmlNode.migrationDate.text())
 
             if (params.migrationDate==null) {
@@ -239,7 +238,7 @@ class RawImportApiService {
             }
         }
 
-        if (xmlNode.collectedDate != null) {
+        if (xmlNode.collectedDate.size() > 0) {
             params.collectedDate = StringUtil.toLocalDateTime(xmlNode.collectedDate.text())
 
             if (params.collectedDate==null) {
@@ -247,7 +246,7 @@ class RawImportApiService {
             }
         }
 
-        if (xmlNode.uploadedDate != null) {
+        if (xmlNode.uploadedDate.size() > 0) {
             params.uploadedDate = StringUtil.toLocalDateTime(xmlNode.uploadedDate.text())
 
             if (params.uploadedDate==null) {
@@ -272,7 +271,7 @@ class RawImportApiService {
 
         /* converting non-primitive types must be parsed manually */
 
-        if (xmlNode.migrationDate != null) {
+        if (xmlNode.migrationDate.size() > 0) {
             params.migrationDate = StringUtil.toLocalDate(xmlNode.migrationDate.text())
 
             if (params.migrationDate==null) {
@@ -280,7 +279,7 @@ class RawImportApiService {
             }
         }
 
-        if (xmlNode.collectedDate != null) {
+        if (xmlNode.collectedDate.size() > 0) {
             params.collectedDate = StringUtil.toLocalDateTime(xmlNode.collectedDate.text())
 
             if (params.collectedDate==null) {
@@ -288,7 +287,7 @@ class RawImportApiService {
             }
         }
 
-        if (xmlNode.uploadedDate != null) {
+        if (xmlNode.uploadedDate.size() > 0) {
             params.uploadedDate = StringUtil.toLocalDateTime(xmlNode.uploadedDate.text())
 
             if (params.uploadedDate==null) {
@@ -313,7 +312,7 @@ class RawImportApiService {
 
         /* converting non-primitive types must be parsed manually */
 
-        if (xmlNode.migrationDate != null) {
+        if (xmlNode.migrationDate.size() > 0) {
             params.migrationDate = StringUtil.toLocalDate(xmlNode.migrationDate.text())
 
             if (params.migrationDate==null) {
@@ -321,7 +320,7 @@ class RawImportApiService {
             }
         }
 
-        if (xmlNode.collectedDate != null) {
+        if (xmlNode.collectedDate.size() > 0) {
             params.collectedDate = StringUtil.toLocalDateTime(xmlNode.collectedDate.text())
 
             if (params.collectedDate==null) {
@@ -329,7 +328,7 @@ class RawImportApiService {
             }
         }
 
-        if (xmlNode.uploadedDate != null) {
+        if (xmlNode.uploadedDate.size() > 0) {
             params.uploadedDate = StringUtil.toLocalDateTime(xmlNode.uploadedDate.text())
 
             if (params.uploadedDate==null) {
@@ -354,7 +353,7 @@ class RawImportApiService {
 
         /* converting non-primitive types must be parsed manually */
 
-        if (xmlNode.startDate != null) {
+        if (xmlNode.startDate.size() > 0) {
             params.startDate = StringUtil.toLocalDate(xmlNode.startDate.text())
 
             if (params.startDate==null) {
@@ -362,7 +361,7 @@ class RawImportApiService {
             }
         }
 
-        if (xmlNode.endDate != null) {
+        if (xmlNode.endDate.size() > 0) {
             params.endDate = StringUtil.toLocalDate(xmlNode.endDate.text())
 
             if (params.endDate==null) {
@@ -387,7 +386,7 @@ class RawImportApiService {
 
         /* converting non-primitive types must be parsed manually */
 
-        if (xmlNode.startDate != null) {
+        if (xmlNode.startDate.size() > 0) {
             params.startDate = StringUtil.toLocalDate(xmlNode.startDate.text())
 
             if (params.startDate==null) {
@@ -395,7 +394,7 @@ class RawImportApiService {
             }
         }
 
-        if (xmlNode.endDate != null) {
+        if (xmlNode.endDate.size() > 0) {
             params.endDate = StringUtil.toLocalDate(xmlNode.endDate.text())
 
             if (params.endDate==null) {
@@ -420,7 +419,7 @@ class RawImportApiService {
 
         /* converting non-primitive types must be parsed manually */
 
-        if (xmlNode.recordedDate != null) {
+        if (xmlNode.recordedDate.size() > 0) {
             params.recordedDate = StringUtil.toLocalDate(xmlNode.recordedDate.text())
 
             if (params.recordedDate==null) {
@@ -428,7 +427,7 @@ class RawImportApiService {
             }
         }
 
-        if (xmlNode.eddDate != null) {
+        if (xmlNode.eddDate.size() > 0) {
             params.eddDate = StringUtil.toLocalDate(xmlNode.eddDate.text())
 
             if (params.eddDate==null) {
@@ -436,7 +435,7 @@ class RawImportApiService {
             }
         }
 
-        if (xmlNode.lmpDate != null) {
+        if (xmlNode.lmpDate.size() > 0) {
             params.lmpDate = StringUtil.toLocalDate(xmlNode.lmpDate.text())
 
             if (params.lmpDate==null) {
@@ -444,7 +443,7 @@ class RawImportApiService {
             }
         }
 
-        if (xmlNode.expectedDeliveryDate != null) {
+        if (xmlNode.expectedDeliveryDate.size() > 0) {
             params.expectedDeliveryDate = StringUtil.toLocalDate(xmlNode.expectedDeliveryDate.text())
 
             if (params.expectedDeliveryDate==null) {
@@ -452,7 +451,7 @@ class RawImportApiService {
             }
         }
 
-        if (xmlNode.collectedDate != null) {
+        if (xmlNode.collectedDate.size() > 0) {
             params.collectedDate = StringUtil.toLocalDateTime(xmlNode.collectedDate.text())
 
             if (params.collectedDate==null) {
@@ -460,7 +459,7 @@ class RawImportApiService {
             }
         }
 
-        if (xmlNode.uploadedDate != null) {
+        if (xmlNode.uploadedDate.size() > 0) {
             params.uploadedDate = StringUtil.toLocalDateTime(xmlNode.uploadedDate.text())
 
             if (params.uploadedDate==null) {
@@ -510,7 +509,7 @@ class RawImportApiService {
 
         /* converting non-primitive types must be parsed manually */
 
-        if (xmlNode?.outcomeDate != null) {
+        if (xmlNode?.outcomeDate.size() > 0) {
             params.outcomeDate = StringUtil.toLocalDate(xmlNode.outcomeDate.text())
 
             if (params.outcomeDate==null) {
@@ -518,7 +517,7 @@ class RawImportApiService {
             }
         }
 
-        if (xmlNode?.collectedDate != null) {
+        if (xmlNode?.collectedDate.size() > 0) {
             params.collectedDate = StringUtil.toLocalDateTime(xmlNode.collectedDate.text())
 
             if (params.collectedDate==null) {
@@ -526,7 +525,7 @@ class RawImportApiService {
             }
         }
 
-        if (xmlNode?.uploadedDate != null) {
+        if (xmlNode?.uploadedDate.size() > 0) {
             params.uploadedDate = StringUtil.toLocalDateTime(xmlNode.uploadedDate.text())
 
             if (params.uploadedDate==null) {
@@ -578,7 +577,7 @@ class RawImportApiService {
 
         /* converting non-primitive types must be parsed manually */
 
-        if (xmlNode.deathDate != null) {
+        if (xmlNode.deathDate.size() > 0) {
             params.deathDate = StringUtil.toLocalDate(xmlNode.deathDate.text())
 
             if (params.deathDate==null) {
@@ -586,7 +585,7 @@ class RawImportApiService {
             }
         }
 
-        if (xmlNode.collectedDate != null) {
+        if (xmlNode.collectedDate.size() > 0) {
             params.collectedDate = StringUtil.toLocalDateTime(xmlNode.collectedDate.text())
 
             if (params.collectedDate==null) {
@@ -594,7 +593,7 @@ class RawImportApiService {
             }
         }
 
-        if (xmlNode.uploadedDate != null) {
+        if (xmlNode.uploadedDate.size() > 0) {
             params.uploadedDate = StringUtil.toLocalDateTime(xmlNode.uploadedDate.text())
 
             if (params.uploadedDate==null) {
@@ -644,7 +643,7 @@ class RawImportApiService {
 
         /* converting non-primitive types must be parsed manually */
 
-        if (xmlNode?.eventDate != null) {
+        if (xmlNode?.eventDate.size() > 0) {
             params.eventDate = StringUtil.toLocalDate(xmlNode.eventDate.text())
 
             if (params.eventDate==null) {
@@ -652,7 +651,7 @@ class RawImportApiService {
             }
         }
 
-        if (xmlNode?.collectedDate != null) {
+        if (xmlNode?.collectedDate.size() > 0) {
             params.collectedDate = StringUtil.toLocalDateTime(xmlNode.collectedDate.text())
 
             if (params.collectedDate==null) {
@@ -660,7 +659,7 @@ class RawImportApiService {
             }
         }
 
-        if (xmlNode?.uploadedDate != null) {
+        if (xmlNode?.uploadedDate.size() > 0) {
             params.uploadedDate = StringUtil.toLocalDateTime(xmlNode.uploadedDate.text())
 
             if (params.uploadedDate==null) {

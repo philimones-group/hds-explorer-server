@@ -1,13 +1,10 @@
 package org.philimone.hds.explorer.server.model.collect.raw.api
 
 import groovy.util.slurpersupport.NodeChild
-import org.grails.datastore.gorm.GormEntity
-import org.philimone.hds.explorer.server.model.collect.raw.RawHousehold
-import org.philimone.hds.explorer.server.model.enums.ProcessedStatus
+import org.philimone.hds.explorer.server.model.collect.raw.*
 import org.philimone.hds.explorer.server.model.main.collect.raw.RawExecutionResult
+import org.philimone.hds.explorer.server.model.main.collect.raw.RawParseResult
 import org.springframework.http.HttpStatus
-
-import java.time.LocalDateTime
 
 class RawImportApiController {
 
@@ -40,9 +37,16 @@ class RawImportApiController {
             return
         }
 
-        def node = request.getXML() as NodeChild
-        def parseResult = rawImportApiService.parseRegion(node)
+        RawParseResult<RawRegion> parseResult = null
 
+        try {
+            def node = request.getXML() as NodeChild
+            parseResult = rawImportApiService.parseRegion(node)
+        } catch(Exception ex) {
+            def msg = errorMessageService.getRawMessagesText(ex)
+            render text: msg, status: HttpStatus.BAD_REQUEST
+            return
+        }
         if (parseResult.hasErrors()) {
             render text: parseResult.getErrorsText(), status: HttpStatus.BAD_REQUEST
             return
@@ -76,9 +80,16 @@ class RawImportApiController {
             return
         }
 
-        def node = request.getXML() as NodeChild
-        def parseResult = rawImportApiService.parseHousehold(node)
+        RawParseResult<RawHousehold> parseResult = null
 
+        try {
+            def node = request.getXML() as NodeChild
+            parseResult = rawImportApiService.parseHousehold(node)
+        } catch(Exception ex) {
+            def msg = errorMessageService.getRawMessagesText(ex)
+            render text: msg, status: HttpStatus.BAD_REQUEST
+            return
+        }
         if (parseResult.hasErrors()) {
             render text: parseResult.getErrorsText(), status: HttpStatus.BAD_REQUEST
             return
@@ -112,9 +123,16 @@ class RawImportApiController {
             return
         }
 
-        def node = request.getXML() as NodeChild
-        def parseResult = rawImportApiService.parseMember(node)
+        RawParseResult<RawMember> parseResult = null
 
+        try {
+            def node = request.getXML() as NodeChild
+            parseResult = rawImportApiService.parseMember(node)
+        } catch(Exception ex) {
+            def msg = errorMessageService.getRawMessagesText(ex)
+            render text: msg, status: HttpStatus.BAD_REQUEST
+            return
+        }
         if (parseResult.hasErrors()) {
             render text: parseResult.getErrorsText(), status: HttpStatus.BAD_REQUEST
             return
@@ -148,9 +166,16 @@ class RawImportApiController {
             return
         }
 
-        def node = request.getXML() as NodeChild
-        def parseResult = rawImportApiService.parseVisit(node)
+        RawParseResult<RawVisit> parseResult = null
 
+        try {
+            def node = request.getXML() as NodeChild
+            parseResult = rawImportApiService.parseVisit(node)
+        } catch(Exception ex) {
+            def msg = errorMessageService.getRawMessagesText(ex)
+            render text: msg, status: HttpStatus.BAD_REQUEST
+            return
+        }
         if (parseResult.hasErrors()) {
             render text: parseResult.getErrorsText(), status: HttpStatus.BAD_REQUEST
             return
@@ -184,9 +209,16 @@ class RawImportApiController {
             return
         }
 
-        def node = request.getXML() as NodeChild
-        def parseResult = rawImportApiService.parseMemberEnu(node)
+        RawParseResult<RawMemberEnu> parseResult = null
 
+        try {
+            def node = request.getXML() as NodeChild
+            parseResult = rawImportApiService.parseMemberEnu(node)
+        } catch(Exception ex) {
+            def msg = errorMessageService.getRawMessagesText(ex)
+            render text: msg, status: HttpStatus.BAD_REQUEST
+            return
+        }
         if (parseResult.hasErrors()) {
             render text: parseResult.getErrorsText(), status: HttpStatus.BAD_REQUEST
             return
@@ -220,9 +252,16 @@ class RawImportApiController {
             return
         }
 
-        def node = request.getXML() as NodeChild
-        def parseResult = rawImportApiService.parseExternalInMigration(node)
+        RawParseResult<RawExternalInMigration> parseResult = null
 
+        try {
+            def node = request.getXML() as NodeChild
+            parseResult = rawImportApiService.parseExternalInMigration(node)
+        } catch(Exception ex) {
+            def msg = errorMessageService.getRawMessagesText(ex)
+            render text: msg, status: HttpStatus.BAD_REQUEST
+            return
+        }
         if (parseResult.hasErrors()) {
             render text: parseResult.getErrorsText(), status: HttpStatus.BAD_REQUEST
             return
@@ -256,9 +295,16 @@ class RawImportApiController {
             return
         }
 
-        def node = request.getXML() as NodeChild
-        def parseResult = rawImportApiService.parseInMigration(node)
+        RawParseResult<RawInMigration> parseResult = null
 
+        try {
+            def node = request.getXML() as NodeChild
+            parseResult = rawImportApiService.parseInMigration(node)
+        } catch(Exception ex) {
+            def msg = errorMessageService.getRawMessagesText(ex)
+            render text: msg, status: HttpStatus.BAD_REQUEST
+            return
+        }
         if (parseResult.hasErrors()) {
             render text: parseResult.getErrorsText(), status: HttpStatus.BAD_REQUEST
             return
@@ -292,9 +338,16 @@ class RawImportApiController {
             return
         }
 
-        def node = request.getXML() as NodeChild
-        def parseResult = rawImportApiService.parseOutMigration(node)
+        RawParseResult<RawOutMigration> parseResult = null
 
+        try {
+            def node = request.getXML() as NodeChild
+            parseResult = rawImportApiService.parseOutMigration(node)
+        } catch(Exception ex) {
+            def msg = errorMessageService.getRawMessagesText(ex)
+            render text: msg, status: HttpStatus.BAD_REQUEST
+            return
+        }
         if (parseResult.hasErrors()) {
             render text: parseResult.getErrorsText(), status: HttpStatus.BAD_REQUEST
             return
@@ -328,9 +381,16 @@ class RawImportApiController {
             return
         }
 
-        def node = request.getXML() as NodeChild
-        def parseResult = rawImportApiService.parseHeadRelationship(node)
+        RawParseResult<RawHeadRelationship> parseResult = null
 
+        try {
+            def node = request.getXML() as NodeChild
+            parseResult = rawImportApiService.parseHeadRelationship(node)
+        } catch(Exception ex) {
+            def msg = errorMessageService.getRawMessagesText(ex)
+            render text: msg, status: HttpStatus.BAD_REQUEST
+            return
+        }
         if (parseResult.hasErrors()) {
             render text: parseResult.getErrorsText(), status: HttpStatus.BAD_REQUEST
             return
@@ -364,9 +424,16 @@ class RawImportApiController {
             return
         }
 
-        def node = request.getXML() as NodeChild
-        def parseResult = rawImportApiService.parseMaritalRelationship(node)
+        RawParseResult<RawMaritalRelationship> parseResult = null
 
+        try {
+            def node = request.getXML() as NodeChild
+            parseResult = rawImportApiService.parseMaritalRelationship(node)
+        } catch(Exception ex) {
+            def msg = errorMessageService.getRawMessagesText(ex)
+            render text: msg, status: HttpStatus.BAD_REQUEST
+            return
+        }
         if (parseResult.hasErrors()) {
             render text: parseResult.getErrorsText(), status: HttpStatus.BAD_REQUEST
             return
@@ -400,9 +467,16 @@ class RawImportApiController {
             return
         }
 
-        def node = request.getXML() as NodeChild
-        def parseResult = rawImportApiService.parsePregnancyRegistration(node)
+        RawParseResult<RawPregnancyRegistration> parseResult = null
 
+        try {
+            def node = request.getXML() as NodeChild
+            parseResult = rawImportApiService.parsePregnancyRegistration(node)
+        } catch(Exception ex) {
+            def msg = errorMessageService.getRawMessagesText(ex)
+            render text: msg, status: HttpStatus.BAD_REQUEST
+            return
+        }
         if (parseResult.hasErrors()) {
             render text: parseResult.getErrorsText(), status: HttpStatus.BAD_REQUEST
             return
@@ -436,9 +510,16 @@ class RawImportApiController {
             return
         }
 
-        def node = request.getXML() as NodeChild
-        def parseResult = rawImportApiService.parsePregnancyOutcome(node)
+        RawParseResult<RawPregnancyOutcome> parseResult = null
 
+        try {
+            def node = request.getXML() as NodeChild
+            parseResult = rawImportApiService.parsePregnancyOutcome(node)
+        } catch(Exception ex) {
+            def msg = errorMessageService.getRawMessagesText(ex)
+            render text: msg, status: HttpStatus.BAD_REQUEST
+            return
+        }
         if (parseResult.hasErrors()) {
             render text: parseResult.getErrorsText(), status: HttpStatus.BAD_REQUEST
             return
@@ -472,9 +553,16 @@ class RawImportApiController {
             return
         }
 
-        def node = request.getXML() as NodeChild
-        def parseResult = rawImportApiService.parsePregnancyChild(node)
+        RawParseResult<RawPregnancyChild> parseResult = null
 
+        try {
+            def node = request.getXML() as NodeChild
+            parseResult = rawImportApiService.parsePregnancyChild(node)
+        } catch(Exception ex) {
+            def msg = errorMessageService.getRawMessagesText(ex)
+            render text: msg, status: HttpStatus.BAD_REQUEST
+            return
+        }
         if (parseResult.hasErrors()) {
             render text: parseResult.getErrorsText(), status: HttpStatus.BAD_REQUEST
             return
@@ -508,9 +596,16 @@ class RawImportApiController {
             return
         }
 
-        def node = request.getXML() as NodeChild
-        def parseResult = rawImportApiService.parseDeath(node)
+        RawParseResult<RawDeath> parseResult = null
 
+        try {
+            def node = request.getXML() as NodeChild
+            parseResult = rawImportApiService.parseDeath(node)
+        } catch(Exception ex) {
+            def msg = errorMessageService.getRawMessagesText(ex)
+            render text: msg, status: HttpStatus.BAD_REQUEST
+            return
+        }
         if (parseResult.hasErrors()) {
             render text: parseResult.getErrorsText(), status: HttpStatus.BAD_REQUEST
             return
@@ -544,9 +639,16 @@ class RawImportApiController {
             return
         }
 
-        def node = request.getXML() as NodeChild
-        def parseResult = rawImportApiService.parseChangeHead(node)
+        RawParseResult<RawChangeHead> parseResult = null
 
+        try {
+            def node = request.getXML() as NodeChild
+            parseResult = rawImportApiService.parseChangeHead(node)
+        } catch(Exception ex) {
+            def msg = errorMessageService.getRawMessagesText(ex)
+            render text: msg, status: HttpStatus.BAD_REQUEST
+            return
+        }
         if (parseResult.hasErrors()) {
             render text: parseResult.getErrorsText(), status: HttpStatus.BAD_REQUEST
             return
