@@ -1,18 +1,49 @@
-package org.philimone.hds.explorer.server.main
+package org.philimone.hds.explorer.server.model.main
 
-import grails.gorm.transactions.Transactional
 import grails.testing.mixin.integration.Integration
+import grails.gorm.transactions.Transactional
 import net.betainteractive.utilities.GeneralUtil
 import net.betainteractive.utilities.StringUtil
 import org.philimone.hds.explorer.server.model.authentication.Role
 import org.philimone.hds.explorer.server.model.authentication.User
 import org.philimone.hds.explorer.server.model.authentication.UserService
-import org.philimone.hds.explorer.server.model.collect.raw.*
-import org.philimone.hds.explorer.server.model.enums.*
-import org.philimone.hds.explorer.server.model.enums.temporal.ExternalInMigrationType
+import org.philimone.hds.explorer.server.model.collect.raw.RawDeath
+import org.philimone.hds.explorer.server.model.collect.raw.RawHeadRelationship
+import org.philimone.hds.explorer.server.model.collect.raw.RawHousehold
+import org.philimone.hds.explorer.server.model.collect.raw.RawInMigration
+import org.philimone.hds.explorer.server.model.collect.raw.RawMaritalRelationship
+import org.philimone.hds.explorer.server.model.collect.raw.RawMember
+import org.philimone.hds.explorer.server.model.collect.raw.RawOutMigration
+import org.philimone.hds.explorer.server.model.collect.raw.RawRegion
+import org.philimone.hds.explorer.server.model.collect.raw.RawVisit
+import org.philimone.hds.explorer.server.model.enums.Gender
+import org.philimone.hds.explorer.server.model.enums.HeadRelationshipType
+import org.philimone.hds.explorer.server.model.enums.MaritalStartStatus
+import org.philimone.hds.explorer.server.model.enums.MaritalStatus
+import org.philimone.hds.explorer.server.model.enums.VisitLocationItem
+import org.philimone.hds.explorer.server.model.enums.temporal.HeadRelationshipStartType
 import org.philimone.hds.explorer.server.model.enums.temporal.InMigrationType
 import org.philimone.hds.explorer.server.model.enums.temporal.OutMigrationType
-import org.philimone.hds.explorer.server.model.main.*
+import org.philimone.hds.explorer.server.model.main.Death
+import org.philimone.hds.explorer.server.model.main.DeathService
+import org.philimone.hds.explorer.server.model.main.HeadRelationship
+import org.philimone.hds.explorer.server.model.main.HeadRelationshipService
+import org.philimone.hds.explorer.server.model.main.Household
+import org.philimone.hds.explorer.server.model.main.HouseholdService
+import org.philimone.hds.explorer.server.model.main.InMigration
+import org.philimone.hds.explorer.server.model.main.InMigrationService
+import org.philimone.hds.explorer.server.model.main.MaritalRelationshipService
+import org.philimone.hds.explorer.server.model.main.Member
+import org.philimone.hds.explorer.server.model.main.MemberService
+import org.philimone.hds.explorer.server.model.main.OutMigration
+import org.philimone.hds.explorer.server.model.main.OutMigrationService
+import org.philimone.hds.explorer.server.model.main.Region
+import org.philimone.hds.explorer.server.model.main.RegionService
+import org.philimone.hds.explorer.server.model.main.Residency
+import org.philimone.hds.explorer.server.model.main.Round
+import org.philimone.hds.explorer.server.model.main.RoundService
+import org.philimone.hds.explorer.server.model.main.Visit
+import org.philimone.hds.explorer.server.model.main.VisitService
 import org.philimone.hds.explorer.server.model.main.collect.raw.RawExecutionResult
 import org.philimone.hds.explorer.server.model.main.collect.raw.RawMessage
 import org.philimone.hds.explorer.server.model.settings.Codes
@@ -25,7 +56,7 @@ import java.time.LocalDateTime
 
 @Integration
 @Transactional //@Rollback
-class ExternalInMigrationServiceSpec extends Specification {
+class DeathServiceSpec extends Specification {
 
     @Autowired
     ErrorMessageService errorMessageService
@@ -44,15 +75,17 @@ class ExternalInMigrationServiceSpec extends Specification {
     @Autowired
     VisitService visitService
     @Autowired
+    HeadRelationshipService headRelationshipService
+    @Autowired
+    MaritalRelationshipService maritalRelationshipService
+    @Autowired
     InMigrationService inMigrationService
     @Autowired
     OutMigrationService outMigrationService
     @Autowired
-    HeadRelationshipService headRelationshipService
-    @Autowired
-    ExternalInMigrationService externalInMigrationService
+    DeathService deathService
 
-
+    @Transactional
     def setupAll() {
         setupUsers()
         setupRegions()
@@ -61,8 +94,6 @@ class ExternalInMigrationServiceSpec extends Specification {
         setupRounds()
         setupVisits()
         setupInMigrations()
-        setupHeadRelationships()
-        setupOutmigrations()
     }
 
     def setupUsers(){
@@ -254,10 +285,10 @@ class ExternalInMigrationServiceSpec extends Specification {
                 memberCode: member11.code,
                 migrationType: InMigrationType.EXTERNAL.code,
                 originCode: null,
-                originOther: "BEIRA",
+                originOther: "SA - JOHANNESBURG",
                 destinationCode: household1.code,
                 migrationDate: GeneralUtil.getDate(2020, 1, 19),
-                migrationReason: "FROM MINES",
+                migrationReason: "RETURNING FROM MINES",
                 collectedBy: "dragon",
                 collectedDate: GeneralUtil.getDate(2020, 4, 12, 0, 0, 0),
                 uploadedDate: GeneralUtil.getDate(2020, 4, 14, 0, 0, 0)
@@ -284,14 +315,15 @@ class ExternalInMigrationServiceSpec extends Specification {
                 memberCode: member21.code,
                 migrationType: InMigrationType.EXTERNAL.code,
                 originCode: null,
-                originOther: "SA - capetown",
+                originOther: "SA - JOHANNESBURG",
                 destinationCode: household2.code,
-                migrationDate: GeneralUtil.getDate(2020, 2, 19),
+                migrationDate: GeneralUtil.getDate(2020, 1, 17),
                 migrationReason: "job changes",
                 collectedBy: "dragon",
                 collectedDate: GeneralUtil.getDate(2020, 4, 12, 0, 0, 0),
                 uploadedDate: GeneralUtil.getDate(2020, 4, 14, 0, 0, 0)
         )
+
 
         def rin4 = new RawInMigration(
                 id: "uuuid4",
@@ -299,7 +331,22 @@ class ExternalInMigrationServiceSpec extends Specification {
                 memberCode: member22.code,
                 migrationType: InMigrationType.EXTERNAL.code,
                 originCode: null,
-                originOther: "Gaza",
+                originOther: "SA - JOHANNESBURG",
+                destinationCode: household2.code,
+                migrationDate: GeneralUtil.getDate(2020, 1, 17),
+                migrationReason: "job changes",
+                collectedBy: "dragon",
+                collectedDate: GeneralUtil.getDate(2020, 4, 12, 0, 0, 0),
+                uploadedDate: GeneralUtil.getDate(2020, 4, 14, 0, 0, 0)
+        )
+
+        def rin5 = new RawInMigration(
+                id: "uuuid5",
+                visitCode: visitHousehold2v1,
+                memberCode: member12.code,
+                migrationType: InMigrationType.INTERNAL.code,
+                originCode: household1.code,
+                originOther: null,
                 destinationCode: household2.code,
                 migrationDate: GeneralUtil.getDate(2020, 2, 28),
                 migrationReason: "job changes",
@@ -308,164 +355,51 @@ class ExternalInMigrationServiceSpec extends Specification {
                 uploadedDate: GeneralUtil.getDate(2020, 4, 14, 0, 0, 0)
         )
 
-        //rv1.save()
-        //rv2.save()
-        //rv3.save()
+        def rh1 = new RawHeadRelationship(id: "uuuid1", memberCode: member11.code, householdCode: household1.code, relationshipType: HeadRelationshipType.HEAD_OF_HOUSEHOLD.code,
+                startType: HeadRelationshipStartType.EXTERNAL_INMIGRATION.code, startDate: GeneralUtil.getDate(2020,1,19), endType: "", endDate: null)
 
-        //This methods validates data twice, first through strict rules of demographics and then through domain model constraints
+        def rh2 = new RawHeadRelationship(id: "uuuid2", memberCode: member12.code, householdCode: household1.code, relationshipType: HeadRelationshipType.SPOUSE.code,
+                startType: HeadRelationshipStartType.EXTERNAL_INMIGRATION.code, startDate: GeneralUtil.getDate(2020,1,19), endType: "", endDate: null)
+
+        def rh3 = new RawHeadRelationship(id: "uuuid2", memberCode: member21.code, householdCode: household2.code, relationshipType: HeadRelationshipType.HEAD_OF_HOUSEHOLD.code,
+                startType: HeadRelationshipStartType.EXTERNAL_INMIGRATION.code, startDate: GeneralUtil.getDate(2020,1,17), endType: "", endDate: null)
+
+        def rh4 = new RawHeadRelationship(id: "uuuid2", memberCode: member22.code, householdCode: household2.code, relationshipType: HeadRelationshipType.SPOUSE.code,
+                startType: HeadRelationshipStartType.EXTERNAL_INMIGRATION.code, startDate: GeneralUtil.getDate(2020,1,17), endType: "", endDate: null)
 
 
+        //create new marital relation
+        def rm1 = new RawMaritalRelationship (id: "uuuid1", memberA: member11.code, memberB: member12.code,
+                startStatus: MaritalStartStatus.LIVING_TOGHETER.code,
+                startDate: GeneralUtil.getDate(2018,06,17),
+                endStatus: "",
+                endDate: ""
+        )
 
+        def rm2 = new RawMaritalRelationship(id: "uuuid2", memberA: member21.code, memberB: member22.code,
+                startStatus: MaritalStartStatus.MARRIED.code,
+                startDate: GeneralUtil.getDate(2005,05,04),
+                endStatus: "",
+                endDate: ""
+        )
 
         def result1 = inMigrationService.createInMigration(rin1)
         def result2 = inMigrationService.createInMigration(rin2)
         def result3 = inMigrationService.createInMigration(rin3)
         def result4 = inMigrationService.createInMigration(rin4)
 
+        headRelationshipService.createHeadRelationship(rh1)
+        headRelationshipService.createHeadRelationship(rh2)
+        headRelationshipService.createHeadRelationship(rh3)
+        headRelationshipService.createHeadRelationship(rh4)
+
+        maritalRelationshipService.createMaritalRelationship(rm1)
+        maritalRelationshipService.createMaritalRelationship(rm2)
+
+        def result5 = inMigrationService.createInMigration(rin5) //internal move
     }
 
-    def setupHeadRelationships(){
-        //create new headRelationship
-        def household1 = Household.findByName("Macandza House")
-        def household2 = Household.findByName("George Benson")
-        def member11 = Member.findByName("John Benedit Macandza")
-        def member12 = Member.findByName("Catarina Loyd Macandza")
-        def member21 = Member.findByName("George Benson")
-        def member22 = Member.findByName("Joyce Mary Benson")
-
-        //println "household1: ${household1}, check: ${Household.count()}"
-        //println "member1: ${member11}, check: ${Member.count()}"
-        //println "household2: ${household2}, check: ${Household.count()}"
-        //println "member2: ${member21}, check: ${Member.count()}"
-
-        //create new head
-        def rw1 = new RawHeadRelationship(
-                id: "uuuid1",
-                memberCode: member11.code,
-                householdCode: household1.code,
-                relationshipType: "HOH",
-                startType: "ENU",
-                startDate: GeneralUtil.getDate(2020,5,17),
-                endType: "",
-                endDate: ""
-        )
-
-        def rw2 = new RawHeadRelationship(
-                id: "uuuid2",
-                memberCode: member12.code,
-                householdCode: household1.code,
-                relationshipType: "SPO",
-                startType: "ENU",
-                startDate: GeneralUtil.getDate(2020,05,04),
-                endType: "",
-                endDate: ""
-        )
-
-        def rw3 = new RawHeadRelationship(
-                id: "uuuid3",
-                memberCode: member21.code,
-                householdCode: household2.code,
-                relationshipType: "HOH",
-                startType: "ENU",
-                startDate: GeneralUtil.getDate(2020,04,17),
-                endType: "",
-                endDate: ""
-        )
-
-        def rw4 = new RawHeadRelationship(
-                id: "uuuid4",
-                memberCode: member22.code,
-                householdCode: household2.code,
-                relationshipType: "SPO",
-                startType: "ENU",
-                startDate: GeneralUtil.getDate(2020,05,04),
-                endType: "",
-                endDate: ""
-        )
-
-        rw1.save()
-        rw2.save()
-        rw3.save()
-        rw4.save()
-
-        //println "Raw Member Errors:"
-        //printRawMessages(errorMessageService.getRawMessages(rw1))
-        //println()
-        //printRawMessages(errorMessageService.getRawMessages(rw2))
-        //printErrors(rw)
-
-        //This methods validates data twice, first through strict rules of demographics and then through domain model constraints
-        def result1 = headRelationshipService.createHeadRelationship(rw1)
-        def result2 = headRelationshipService.createHeadRelationship(rw2)
-        def result3 = headRelationshipService.createHeadRelationship(rw3)
-        def result4 = headRelationshipService.createHeadRelationship(rw4)
-    }
-
-    def setupOutmigrations(){
-        //create new residency
-        def household1 = Household.findByName("Macandza House")
-        def household2 = Household.findByName("George Benson")
-        def member11 = Member.findByName("John Benedit Macandza")
-        def member12 = Member.findByName("Catarina Loyd Macandza")
-        def member21 = Member.findByName("George Benson")
-        def member22 = Member.findByName("Joyce Mary Benson")
-
-        def visitHousehold1v1 = Visit.findAllByHousehold(household1).first().code
-        def visitHousehold2v1 = Visit.findByHousehold(household2)?.code
-
-        //println "household1: ${household1}, check: ${Household.count()}"
-        //println "member1: ${member11}, check: ${Member.count()}"
-        //println "household2: ${household2}, check: ${Household.count()}"
-        //println "member2: ${member21}, check: ${Member.count()}"
-
-        //println "rounds: ${Round.count()}"
-
-        def rout1 = new RawOutMigration(
-                id: "uuuid1",
-                visitCode: visitHousehold2v1,
-                memberCode: member22.code,
-                migrationType: OutMigrationType.EXTERNAL.code,
-                originCode: household2.code,
-                destinationOther: "USA-MICHIGAN",
-                migrationDate: GeneralUtil.getDate(2020, 5, 19),
-                migrationReason: "GOING TO USA WORK",
-                collectedBy: "dragon",
-                collectedDate: GeneralUtil.getDate(2020, 6, 12, 0, 0, 0),
-                uploadedDate: GeneralUtil.getDate(2020, 6, 14, 0, 0, 0)
-        )
-/*
-        def rout2 = new RawOutMigration(
-                id: "uuuid2",
-                visitCode: visitHousehold1v1,
-                memberCode: member12.code,
-                migrationType: OutMigrationType.INTERNAL.code,
-                originCode: household2.code,
-                destinationCode: household1.code,
-                migrationDate: GeneralUtil.getDate(2020, 3, 19),
-                migrationReason: "MARRIED",
-                collectedBy: "dragon",
-                collectedDate: GeneralUtil.getDate(2020, 4, 12, 0, 0, 0),
-                uploadedDate: GeneralUtil.getDate(2020, 4, 14, 0, 0, 0)
-        )*/
-
-
-        //rv1.save()
-        //rv2.save()
-        //rv3.save()
-
-        //This methods validates data twice, first through strict rules of demographics and then through domain model constraints
-
-
-
-
-        def result1 = outMigrationService.createOutMigration(rout1)
-        //def result2 = outMigrationService.createOutMigration(rout2)
-        //def result4 = outMigrationService.createOutMigration(rout4)
-
-        //printResults(result1)
-
-    }
-
+    @Transactional
     def cleanup() {
     }
 
@@ -481,9 +415,19 @@ class ExternalInMigrationServiceSpec extends Specification {
         }
     }
 
-    def printInMig(InMigration migration){
-        if (migration==null) return println("EMPTY")
-        println "migration(id=${migration.id},code=${migration.memberCode},destination=${migration.destinationCode},visit.code=${migration.visitCode},date=${migration.migrationDate})"
+    def printDeath(Death death){
+        if (death==null) return println("EMPTY")
+        println "death(id=${death.id},member=${death.memberCode},v.code=${death.visitCode},deathdate=${death.deathDate},age=${death?.ageAtDeath})"
+    }
+
+    def printOutMig(OutMigration outmig){
+        if (outmig==null) return println("EMPTY")
+        println "outmig(id=${outmig.id},type=${outmig.migrationType},v.code=${outmig.visitCode},v.household=${outmig.destinationCode},v.respondent=${outmig?.memberCode})"
+    }
+
+    def printInMig(InMigration inmig){
+        if (inmig==null) return println("EMPTY")
+        println "inmig(id=${inmig.id},type=${inmig.type},v.code=${inmig.visitCode},v.household=${inmig.destinationCode},v.respondent=${inmig?.memberCode})"
     }
 
     def print(Residency residency){
@@ -506,8 +450,9 @@ class ExternalInMigrationServiceSpec extends Specification {
         println "round(id=${round.id},r.number=${round.roundNumber},r.startdate=${round.startDate},r.enddate=${round.endDate},r.description=${round?.description})"
     }
 
-    void "Test External InMigrations"() {
-        println "\n#### External InMigrations ####"
+    @Transactional
+    void "Test Deaths"() {
+        println "\n#### Test Creation of Deaths ####"
 
         setupAll()
 
@@ -522,7 +467,6 @@ class ExternalInMigrationServiceSpec extends Specification {
         def member22 = Member.findByName("Joyce Mary Benson")
 
         def visitHousehold1v1 = Visit.findAllByHousehold(household1).first().code
-        def visitHousehold1v2 = Visit.findAllByHousehold(household1).last().code
         def visitHousehold2v1 = Visit.findByHousehold(household2)?.code
 
         //println "household1: ${household1}, check: ${Household.count()}"
@@ -532,70 +476,88 @@ class ExternalInMigrationServiceSpec extends Specification {
 
         //println "rounds: ${Round.count()}"
 
-        def rin1 = new RawExternalInMigration( //returning
+        def td1 = new RawDeath(
                 id: "uuuid1",
-                visitCode: visitHousehold2v1,
-                memberCode: member22.code,
-                headRelationshipType: "SPO",
-                migrationType: InMigrationType.EXTERNAL.code,
-                extMigrationType: ExternalInMigrationType.REENTRY.name(),
-                originCode: null,
-                originOther: "USA",
-                destinationCode: household2.code,
-                migrationDate: GeneralUtil.getDate(2020, 11, 19),
-                migrationReason: "family",
-                collectedBy: "dragon",
-                collectedDate: GeneralUtil.getDate(2020, 12, 12, 0, 0, 0),
-                uploadedDate: GeneralUtil.getDate(2020, 12, 14, 0, 0, 0)
-        )
 
-        def rin2 = new RawExternalInMigration(
-                id: "uuuid2",
-                visitCode: visitHousehold2v1,
-                memberCode: codeGeneratorService.generateMemberCode(household2),
-                memberName: "Peter Benson" ,
-                memberGender: "M",
-                memberDob: GeneralUtil.getDate(2010, 1, 19),
-                memberMotherCode: member22.code,
-                memberFatherCode: Codes.MEMBER_UNKNOWN_CODE,
-                headRelationshipType: "SON",
-                migrationType: InMigrationType.EXTERNAL.code,
-                extMigrationType: ExternalInMigrationType.ENTRY.name(),
-                originCode: null,
-                originOther: "SA - JOHANNESBURG",
-                destinationCode: household2.code,
-                migrationDate: GeneralUtil.getDate(2020, 1, 19),
-                migrationReason: "STUDY IN MAPUTO",
+                visitCode: visitHousehold1v1,
+                memberCode: member11.code,
+                deathDate:GeneralUtil.getDate(2020,11,12),
+                deathCause: "MALARIA",
+                deathPlace: "HOME",
                 collectedBy: "dragon",
                 collectedDate: GeneralUtil.getDate(2020, 4, 12, 0, 0, 0),
                 uploadedDate: GeneralUtil.getDate(2020, 4, 14, 0, 0, 0)
         )
 
-        rin1.id = "uuui1"
-        rin2.id = "uuui2"
+        def rd2 = new RawDeath(
+                id: "uuuid2",
+                visitCode: visitHousehold1v1,
+                memberCode: member12.code,
+                deathDate:GeneralUtil.getDate(2020,11,12),
+                deathCause: "MALARIA",
+                deathPlace: "HOME",
+                collectedBy: "dragon",
+                collectedDate: GeneralUtil.getDate(2020, 4, 12, 0, 0, 0),
+                uploadedDate: GeneralUtil.getDate(2020, 4, 14, 0, 0, 0)
+        )
 
-        rin2.validate()
+        def rd3 = new RawDeath(
+                id: "uuuid3",
+                visitCode: visitHousehold2v1,
+                memberCode: member11.code,
+                deathDate:GeneralUtil.getDate(2020,5,12),
+                deathCause: "MALARIA",
+                deathPlace: "HOME",
+                collectedBy: "dragon",
+                collectedDate: GeneralUtil.getDate(2020, 4, 12, 0, 0, 0),
+                uploadedDate: GeneralUtil.getDate(2020, 4, 14, 0, 0, 0)
+        )
+
+        def rd4 = new RawDeath(
+                id: "uuuid4",
+                visitCode: visitHousehold2v1,
+                memberCode: member22.code,
+                deathDate:GeneralUtil.getDate(2020,10,2),
+                deathCause: "MALARIA",
+                deathPlace: "HOME",
+                collectedBy: "dragon",
+                collectedDate: GeneralUtil.getDate(2020, 4, 12, 0, 0, 0),
+                uploadedDate: GeneralUtil.getDate(2020, 4, 14, 0, 0, 0)
+        )
+
+        //rv1.save()
+        //rv2.save()
+        //rv3.save()
+
+        //This methods validates data twice, first through strict rules of demographics and then through domain model constraints
 
 
-        println "id1-${rin2.id},id2=${rin1.id}, ${rin2.hasErrors()}"
 
-        rin1.save()
-        rin2.save()
-
-
-        println("first extin")
-        def result1 = externalInMigrationService.createExternalInMigration(rin1)
+        println("first death")
+        def result1 = deathService.createDeath(td1)
         printResults(result1)
-        printInMig(result1?.domainInstance)
+        printDeath(result1?.domainInstance)
         println()
 
-        println("second extin")
-        def result2 = externalInMigrationService.createExternalInMigration(rin2)
+        println("second death")
+        def result2 = deathService.createDeath(rd2)
         printResults(result2)
-        printInMig(result2?.domainInstance)
+        printDeath(result2?.domainInstance)
+        println()
+
+        println("third death")
+        def result3 = deathService.createDeath(rd3)
+        printResults(result3)
+        printDeath(result3.domainInstance)
+        println()
+
+        println("fourth death")
+        def result4 = deathService.createDeath(rd4)
+        printResults(result4)
+        printDeath(result4?.domainInstance)
         println()
 
         expect:
-        InMigration.count()==6
+        Death.count()==3
     }
 }

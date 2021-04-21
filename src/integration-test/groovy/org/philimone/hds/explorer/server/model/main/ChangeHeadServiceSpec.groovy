@@ -1,49 +1,20 @@
-package org.philimone.hds.explorer.server.main
+package org.philimone.hds.explorer.server.model.main
 
-import grails.testing.mixin.integration.Integration
 import grails.gorm.transactions.Transactional
+import grails.testing.mixin.integration.Integration
 import net.betainteractive.utilities.GeneralUtil
 import net.betainteractive.utilities.StringUtil
 import org.philimone.hds.explorer.server.model.authentication.Role
 import org.philimone.hds.explorer.server.model.authentication.User
 import org.philimone.hds.explorer.server.model.authentication.UserService
-import org.philimone.hds.explorer.server.model.collect.raw.RawHeadRelationship
-import org.philimone.hds.explorer.server.model.collect.raw.RawHousehold
-import org.philimone.hds.explorer.server.model.collect.raw.RawInMigration
-import org.philimone.hds.explorer.server.model.collect.raw.RawMember
-import org.philimone.hds.explorer.server.model.collect.raw.RawPregnancyChild
-import org.philimone.hds.explorer.server.model.collect.raw.RawPregnancyOutcome
-import org.philimone.hds.explorer.server.model.collect.raw.RawPregnancyRegistration
-import org.philimone.hds.explorer.server.model.collect.raw.RawRegion
-import org.philimone.hds.explorer.server.model.collect.raw.RawVisit
-import org.philimone.hds.explorer.server.model.enums.BirthPlace
+import org.philimone.hds.explorer.server.model.collect.raw.*
 import org.philimone.hds.explorer.server.model.enums.Gender
 import org.philimone.hds.explorer.server.model.enums.HeadRelationshipType
-import org.philimone.hds.explorer.server.model.enums.MaritalStatus
-import org.philimone.hds.explorer.server.model.enums.PregnancyOutcomeType
-import org.philimone.hds.explorer.server.model.enums.PregnancyStatus
-import org.philimone.hds.explorer.server.model.enums.RawEntity
 import org.philimone.hds.explorer.server.model.enums.VisitLocationItem
+import org.philimone.hds.explorer.server.model.enums.temporal.ExternalInMigrationType
 import org.philimone.hds.explorer.server.model.enums.temporal.InMigrationType
-import org.philimone.hds.explorer.server.model.main.HeadRelationship
-import org.philimone.hds.explorer.server.model.main.HeadRelationshipService
-import org.philimone.hds.explorer.server.model.main.Household
-import org.philimone.hds.explorer.server.model.main.HouseholdService
-import org.philimone.hds.explorer.server.model.main.InMigration
-import org.philimone.hds.explorer.server.model.main.InMigrationService
-import org.philimone.hds.explorer.server.model.main.Member
-import org.philimone.hds.explorer.server.model.main.MemberService
-import org.philimone.hds.explorer.server.model.main.PregnancyOutcome
-import org.philimone.hds.explorer.server.model.main.PregnancyOutcomeService
-import org.philimone.hds.explorer.server.model.main.PregnancyRegistration
-import org.philimone.hds.explorer.server.model.main.PregnancyRegistrationService
-import org.philimone.hds.explorer.server.model.main.Region
-import org.philimone.hds.explorer.server.model.main.RegionService
-import org.philimone.hds.explorer.server.model.main.Residency
-import org.philimone.hds.explorer.server.model.main.Round
-import org.philimone.hds.explorer.server.model.main.RoundService
-import org.philimone.hds.explorer.server.model.main.Visit
-import org.philimone.hds.explorer.server.model.main.VisitService
+import org.philimone.hds.explorer.server.model.enums.temporal.OutMigrationType
+import org.philimone.hds.explorer.server.model.main.*
 import org.philimone.hds.explorer.server.model.main.collect.raw.RawExecutionResult
 import org.philimone.hds.explorer.server.model.main.collect.raw.RawMessage
 import org.philimone.hds.explorer.server.model.settings.Codes
@@ -56,7 +27,7 @@ import java.time.LocalDateTime
 
 @Integration
 @Transactional //@Rollback
-class PregnancyServiceSpec extends Specification {
+class ChangeHeadServiceSpec extends Specification {
 
     @Autowired
     ErrorMessageService errorMessageService
@@ -77,11 +48,14 @@ class PregnancyServiceSpec extends Specification {
     @Autowired
     InMigrationService inMigrationService
     @Autowired
+    OutMigrationService outMigrationService
+    @Autowired
     HeadRelationshipService headRelationshipService
     @Autowired
-    PregnancyRegistrationService pregnancyRegistrationService
+    ExternalInMigrationService externalInMigrationService
     @Autowired
-    PregnancyOutcomeService pregnancyOutcomeService
+    ChangeHeadService changeHeadService
+
 
     def setupAll() {
         setupUsers()
@@ -92,6 +66,8 @@ class PregnancyServiceSpec extends Specification {
         setupVisits()
         setupInMigrations()
         setupHeadRelationships()
+        setupOutmigrations()
+        setupExternalInMigrations()
     }
 
     def setupUsers(){
@@ -283,10 +259,10 @@ class PregnancyServiceSpec extends Specification {
                 memberCode: member11.code,
                 migrationType: InMigrationType.EXTERNAL.code,
                 originCode: null,
-                originOther: "SA - JOHANNESBURG",
+                originOther: "BEIRA",
                 destinationCode: household1.code,
                 migrationDate: GeneralUtil.getDate(2020, 1, 19),
-                migrationReason: "RETURNING FROM MINES",
+                migrationReason: "FROM MINES",
                 collectedBy: "dragon",
                 collectedDate: GeneralUtil.getDate(2020, 4, 12, 0, 0, 0),
                 uploadedDate: GeneralUtil.getDate(2020, 4, 14, 0, 0, 0)
@@ -309,12 +285,12 @@ class PregnancyServiceSpec extends Specification {
 
         def rin3 = new RawInMigration(
                 id: "uuuid3",
-                visitCode: visitHousehold1v1,
-                memberCode: member22.code,
+                visitCode: visitHousehold2v1,
+                memberCode: member21.code,
                 migrationType: InMigrationType.EXTERNAL.code,
                 originCode: null,
-                originOther: "SA - JOHANNESBURG",
-                destinationCode: household1.code,
+                originOther: "SA - capetown",
+                destinationCode: household2.code,
                 migrationDate: GeneralUtil.getDate(2020, 2, 19),
                 migrationReason: "job changes",
                 collectedBy: "dragon",
@@ -325,10 +301,10 @@ class PregnancyServiceSpec extends Specification {
         def rin4 = new RawInMigration(
                 id: "uuuid4",
                 visitCode: visitHousehold2v1,
-                memberCode: member12.code,
-                migrationType: InMigrationType.INTERNAL.code,
-                originCode: household1.code,
-                originOther: null,
+                memberCode: member22.code,
+                migrationType: InMigrationType.EXTERNAL.code,
+                originCode: null,
+                originOther: "Gaza",
                 destinationCode: household2.code,
                 migrationDate: GeneralUtil.getDate(2020, 2, 28),
                 migrationReason: "job changes",
@@ -348,7 +324,7 @@ class PregnancyServiceSpec extends Specification {
 
         def result1 = inMigrationService.createInMigration(rin1)
         def result2 = inMigrationService.createInMigration(rin2)
-        //def result3 = inMigrationService.createInMigration(rin3)
+        def result3 = inMigrationService.createInMigration(rin3)
         def result4 = inMigrationService.createInMigration(rin4)
 
     }
@@ -370,11 +346,11 @@ class PregnancyServiceSpec extends Specification {
         //create new head
         def rw1 = new RawHeadRelationship(
                 id: "uuuid1",
-                memberCode: member21.code,
-                householdCode: household2.code,
+                memberCode: member11.code,
+                householdCode: household1.code,
                 relationshipType: "HOH",
                 startType: "ENU",
-                startDate: GeneralUtil.getDate(2020,10,17),
+                startDate: GeneralUtil.getDate(2020,5,17),
                 endType: "",
                 endDate: ""
         )
@@ -382,6 +358,28 @@ class PregnancyServiceSpec extends Specification {
         def rw2 = new RawHeadRelationship(
                 id: "uuuid2",
                 memberCode: member12.code,
+                householdCode: household1.code,
+                relationshipType: "SPO",
+                startType: "ENU",
+                startDate: GeneralUtil.getDate(2020,05,04),
+                endType: "",
+                endDate: ""
+        )
+
+        def rw3 = new RawHeadRelationship(
+                id: "uuuid3",
+                memberCode: member21.code,
+                householdCode: household2.code,
+                relationshipType: "HOH",
+                startType: "ENU",
+                startDate: GeneralUtil.getDate(2020,04,17),
+                endType: "",
+                endDate: ""
+        )
+
+        def rw4 = new RawHeadRelationship(
+                id: "uuuid4",
+                memberCode: member22.code,
                 householdCode: household2.code,
                 relationshipType: "SPO",
                 startType: "ENU",
@@ -392,6 +390,8 @@ class PregnancyServiceSpec extends Specification {
 
         rw1.save()
         rw2.save()
+        rw3.save()
+        rw4.save()
 
         //println "Raw Member Errors:"
         //printRawMessages(errorMessageService.getRawMessages(rw1))
@@ -402,60 +402,76 @@ class PregnancyServiceSpec extends Specification {
         //This methods validates data twice, first through strict rules of demographics and then through domain model constraints
         def result1 = headRelationshipService.createHeadRelationship(rw1)
         def result2 = headRelationshipService.createHeadRelationship(rw2)
+        def result3 = headRelationshipService.createHeadRelationship(rw3)
+        def result4 = headRelationshipService.createHeadRelationship(rw4)
     }
 
-    def cleanup() {
+    def setupOutmigrations(){
+        //create new residency
+        def household1 = Household.findByName("Macandza House")
+        def household2 = Household.findByName("George Benson")
+        def member11 = Member.findByName("John Benedit Macandza")
+        def member12 = Member.findByName("Catarina Loyd Macandza")
+        def member21 = Member.findByName("George Benson")
+        def member22 = Member.findByName("Joyce Mary Benson")
+
+        def visitHousehold1v1 = Visit.findAllByHousehold(household1).first().code
+        def visitHousehold2v1 = Visit.findByHousehold(household2)?.code
+
+        //println "household1: ${household1}, check: ${Household.count()}"
+        //println "member1: ${member11}, check: ${Member.count()}"
+        //println "household2: ${household2}, check: ${Household.count()}"
+        //println "member2: ${member21}, check: ${Member.count()}"
+
+        //println "rounds: ${Round.count()}"
+
+        def rout1 = new RawOutMigration(
+                id: "uuuid1",
+                visitCode: visitHousehold2v1,
+                memberCode: member22.code,
+                migrationType: OutMigrationType.EXTERNAL.code,
+                originCode: household2.code,
+                destinationOther: "USA-MICHIGAN",
+                migrationDate: GeneralUtil.getDate(2020, 5, 19),
+                migrationReason: "GOING TO USA WORK",
+                collectedBy: "dragon",
+                collectedDate: GeneralUtil.getDate(2020, 6, 12, 0, 0, 0),
+                uploadedDate: GeneralUtil.getDate(2020, 6, 14, 0, 0, 0)
+        )
+/*
+        def rout2 = new RawOutMigration(
+                id: "uuuid2",
+                visitCode: visitHousehold1v1,
+                memberCode: member12.code,
+                migrationType: OutMigrationType.INTERNAL.code,
+                originCode: household2.code,
+                destinationCode: household1.code,
+                migrationDate: GeneralUtil.getDate(2020, 3, 19),
+                migrationReason: "MARRIED",
+                collectedBy: "dragon",
+                collectedDate: GeneralUtil.getDate(2020, 4, 12, 0, 0, 0),
+                uploadedDate: GeneralUtil.getDate(2020, 4, 14, 0, 0, 0)
+        )*/
+
+
+        //rv1.save()
+        //rv2.save()
+        //rv3.save()
+
+        //This methods validates data twice, first through strict rules of demographics and then through domain model constraints
+
+
+
+
+        def result1 = outMigrationService.createOutMigration(rout1)
+        //def result2 = outMigrationService.createOutMigration(rout2)
+        //def result4 = outMigrationService.createOutMigration(rout4)
+
+        //printResults(result1)
+
     }
 
-    def printResults(RawExecutionResult result){
-        if (result == null) return
-        println("status: ${result.status}")
-        printRawMessages(result.errorMessages)
-    }
-
-    def printRawMessages(List<RawMessage> errorMessages){
-        errorMessages.each { err ->
-            println "${err.columns} -> ${err.text}"
-        }
-    }
-
-    def printPregReg(PregnancyRegistration prereg){
-        if (prereg==null) return println("EMPTY")
-        println "prereg(id=${prereg.id},code=${prereg.code},mother=${prereg.motherCode},visit.code=${prereg.visitCode},status=${prereg.status})"
-    }
-
-    def printPregOut(PregnancyOutcome preout){
-        if (preout==null) return println("EMPTY")
-        println "preout(id=${preout.id},code=${preout.code},mother=${preout.motherCode},visit.code=${preout.visitCode},date=${preout.outcomeDate},outcomes=${preout.numberOfOutcomes})"
-    }
-
-    def print(Residency residency){
-        if (residency==null) return null
-        println "residency(id=${residency.id},m.code=${residency.memberCode},h.code=${residency.householdCode},starttype=${residency.startType},startdate=${StringUtil.format(residency?.startDate)},endtype=${residency.endType},enddate=${StringUtil.format(residency?.endDate)})"
-    }
-
-    def print(HeadRelationship headRelationship){
-        if (headRelationship==null) return null
-        println "headRelationship(id=${headRelationship.id},m.code=${headRelationship.memberCode},h.code=${headRelationship.householdCode},starttype=${headRelationship.startType},startdate=${StringUtil.format(headRelationship?.startDate)},endtype=${headRelationship.endType},enddate=${StringUtil.format(headRelationship?.endDate)})"
-    }
-
-    def print(Visit visit){
-        if (visit==null) return null
-        println "visit(id=${visit.id},v.code=${visit.code},v.household=${visit.householdCode},v.round=${visit.roundNumber},v.visitDate=${StringUtil.format(visit?.visitDate)},v.location=${visit.visitLocation},v.respondent=${visit?.respondentCode})"
-    }
-
-    def print(Round round){
-        if (round==null) return null
-        println "round(id=${round.id},r.number=${round.roundNumber},r.startdate=${round.startDate},r.enddate=${round.endDate},r.description=${round?.description})"
-    }
-
-    void "Test Pregnancy Registrations and Outcomes"() {
-        println "\n#### Test Creation of Pregnancies ####"
-
-        setupAll()
-
-        //println "*3 households - ${Household.findAll().size()}"
-
+    def setupExternalInMigrations() {
         //create new residency
         def household1 = Household.findByName("Macandza House")
         def household2 = Household.findByName("George Benson")
@@ -475,118 +491,189 @@ class PregnancyServiceSpec extends Specification {
 
         //println "rounds: ${Round.count()}"
 
-        def rpr1 = new RawPregnancyRegistration(
+        def rin1 = new RawExternalInMigration( //returning
                 id: "uuuid1",
-                code: codeGeneratorService.generatePregnancyCode(member11),
-                motherCode: member11.code,
-                recordedDate: GeneralUtil.getDate(2020, 4, 12),
-                pregMonths: 5,
-                eddKnown: false,
-                hasPrenatalRecord: false,
-                eddDate: null,
-                eddType: null,
-                lmpKnown: false,
-                lmpDate: null,
-                expectedDeliveryDate: GeneralUtil.getDate(2020, 9, 2),
-                status: "IS_PREGNANT",
-                visitCode: visitHousehold1v1,
+                visitCode: visitHousehold2v1,
+                memberCode: member22.code,
+                headRelationshipType: "SPO",
+                migrationType: InMigrationType.EXTERNAL.code,
+                extMigrationType: ExternalInMigrationType.REENTRY.name(),
+                originCode: null,
+                originOther: "USA",
+                destinationCode: household2.code,
+                migrationDate: GeneralUtil.getDate(2020, 11, 19),
+                migrationReason: "family",
                 collectedBy: "dragon",
-                collectedDate: GeneralUtil.getDate(2020, 4, 12, 0, 0, 0),
-                uploadedDate: GeneralUtil.getDate(2020, 4, 14, 0, 0, 0)
+                collectedDate: GeneralUtil.getDate(2020, 12, 12, 0, 0, 0),
+                uploadedDate: GeneralUtil.getDate(2020, 12, 14, 0, 0, 0)
         )
 
-        def rpr2 = new RawPregnancyRegistration(
+        def rin2 = new RawExternalInMigration(
                 id: "uuuid2",
-                code: codeGeneratorService.generatePregnancyCode(member12),
-                motherCode: member12.code,
-                recordedDate: GeneralUtil.getDate(2020, 4, 12),
-                pregMonths: 8,
-                eddKnown: false,
-                hasPrenatalRecord: false,
-                eddDate: null,
-                eddType: null,
-                lmpKnown: false,
-                lmpDate: null,
-                expectedDeliveryDate: GeneralUtil.getDate(2020, 9, 2),
-                status: PregnancyStatus.PREGNANT,
-                visitCode: visitHousehold1v2,
+                visitCode: visitHousehold2v1,
+                memberCode: codeGeneratorService.generateMemberCode(household2),
+                memberName: "Peter Benson" ,
+                memberGender: "M",
+                memberDob: GeneralUtil.getDate(2006, 1, 19),
+                memberMotherCode: member22.code,
+                memberFatherCode: Codes.MEMBER_UNKNOWN_CODE,
+                headRelationshipType: "SON",
+                migrationType: InMigrationType.EXTERNAL.code,
+                extMigrationType: ExternalInMigrationType.ENTRY.name(),
+                originCode: null,
+                originOther: "SA - JOHANNESBURG",
+                destinationCode: household2.code,
+                migrationDate: GeneralUtil.getDate(2020, 1, 19),
+                migrationReason: "STUDY IN MAPUTO",
                 collectedBy: "dragon",
                 collectedDate: GeneralUtil.getDate(2020, 4, 12, 0, 0, 0),
                 uploadedDate: GeneralUtil.getDate(2020, 4, 14, 0, 0, 0)
         )
 
-        def rpo1 = new RawPregnancyOutcome (
-                id: "uuuid3",
-                code: rpr2.code,
-                motherCode: member12.code,
-                fatherCode: member21.code,
-                numberOfOutcomes: 1,
-                outcomeDate: GeneralUtil.getDate(2020, 4, 12),
-                birthPlace: BirthPlace.HEALTH_CENTER_CLINIC.code,
-                birthPlaceOther: null,
-                visitCode: visitHousehold1v2,
+        rin1.id = "uuui1"
+        rin2.id = "uuui2"
+
+        rin2.validate()
+
+
+        //println "id1-${rin2.id},id2=${rin1.id}, ${rin2.hasErrors()}"
+
+        rin1.save()
+        rin2.save()
+
+
+        def result1 = externalInMigrationService.createExternalInMigration(rin1)
+        def result2 = externalInMigrationService.createExternalInMigration(rin2)
+    }
+
+    def cleanup() {
+    }
+
+    def printResults(RawExecutionResult result){
+        if (result == null) return
+        println("status: ${result.status}")
+        printRawMessages(result.errorMessages)
+    }
+
+    def printRawMessages(List<RawMessage> errorMessages){
+        errorMessages.each { err ->
+            println "${err.columns} -> ${err.text}"
+        }
+    }
+
+    def printInMig(InMigration migration){
+        if (migration==null) return println("EMPTY")
+        println "migration(id=${migration.id},code=${migration.memberCode},destination=${migration.destinationCode},visit.code=${migration.visitCode},date=${migration.migrationDate})"
+    }
+
+    def printHeadR(HeadRelationship headRelationship){
+        if (headRelationship==null) return null
+        println "headRelationship(id=${headRelationship.id},m.code=${headRelationship.memberCode},h.code=${headRelationship.householdCode},starttype=${headRelationship.startType},startdate=${StringUtil.formatLocalDate(headRelationship?.startDate)},endtype=${headRelationship.endType},enddate=${StringUtil.formatLocalDate(headRelationship?.endDate)})"
+    }
+
+    def print(Residency residency){
+        if (residency==null) return null
+        println "residency(id=${residency.id},m.code=${residency.memberCode},h.code=${residency.householdCode},starttype=${residency.startType},startdate=${StringUtil.formatLocalDate(residency?.startDate)},endtype=${residency.endType},enddate=${StringUtil.formatLocalDate(residency?.endDate)})"
+    }
+
+    def print(HeadRelationship headRelationship){
+        if (headRelationship==null) return null
+        println "headRelationship(id=${headRelationship.id},m.code=${headRelationship.memberCode},h.code=${headRelationship.householdCode},starttype=${headRelationship.startType},startdate=${StringUtil.formatLocalDate(headRelationship?.startDate)},endtype=${headRelationship.endType},enddate=${StringUtil.formatLocalDate(headRelationship?.endDate)})"
+    }
+
+    def print(Visit visit){
+        if (visit==null) return null
+        println "visit(id=${visit.id},v.code=${visit.code},v.household=${visit.householdCode},v.round=${visit.roundNumber},v.visitDate=${StringUtil.formatLocalDate(visit?.visitDate)},v.location=${visit.visitLocation},v.respondent=${visit?.respondentCode})"
+    }
+
+    def print(Round round){
+        if (round==null) return null
+        println "round(id=${round.id},r.number=${round.roundNumber},r.startdate=${round.startDate},r.enddate=${round.endDate},r.description=${round?.description})"
+    }
+
+    void "Test Change Head"() {
+        println "\n#### Change Head Of Household ####"
+
+        setupAll()
+
+        //println "*3 households - ${Household.findAll().size()}"
+
+        //create new residency
+        def household1 = Household.findByName("Macandza House")
+        def household2 = Household.findByName("George Benson")
+        def member11 = Member.findByName("John Benedit Macandza")
+        def member12 = Member.findByName("Catarina Loyd Macandza")
+        def member21 = Member.findByName("George Benson")
+        def member22 = Member.findByName("Joyce Mary Benson")
+        def member23 = Member.findByName("Peter Benson")
+
+        def visitHousehold1v1 = Visit.findAllByHousehold(household1).first().code
+        def visitHousehold1v2 = Visit.findAllByHousehold(household1).last().code
+        def visitHousehold2v1 = Visit.findByHousehold(household2)?.code
+
+        //println "household1: ${household1}, check: ${Household.count()}"
+        //println "member1: ${member11}, check: ${Member.count()}"
+        //println "household2: ${household2}, check: ${Household.count()}"
+        //println "member2: ${member21}, check: ${Member.count()}"
+        //println "rounds: ${Round.count()}"
+
+        def rch1 = new RawChangeHead( //returning
+                id: "uuuid1",
+                visitCode: visitHousehold2v1,
+                householdCode: household2.code,
+                oldHeadCode: member21.code,
+                newHeadCode: member23.code,
+                eventDate: GeneralUtil.getDate(2021, 01, 19),
+                reason: "family",
                 collectedBy: "dragon",
-                collectedDate: GeneralUtil.getDate(2020, 4, 12, 0, 0, 0),
-                uploadedDate: GeneralUtil.getDate(2020, 4, 14, 0, 0, 0)
+                collectedDate: GeneralUtil.getDate(2021, 02, 12, 0, 0, 0),
+                uploadedDate: GeneralUtil.getDate(2021, 02, 14, 0, 0, 0)
         )
 
-        def rpo1child1 = new RawPregnancyChild(
-                id: "uuuid4",
-                /*outcome: rpo1,*/
-                outcomeType: PregnancyOutcomeType.LIVEBIRTH.code,
-                childCode: codeGeneratorService.generateMemberCode(household2),
-                childName: "John Macandza",
-                childGender: Gender.MALE.code,
-                childOrdinalPosition: 1,
-                headRelationshipType: HeadRelationshipType.SON_DAUGHTER.code
+        def rch2 = new RawChangeHead(
+                id: "uuuid2",
+                visitCode: visitHousehold2v1,
+                householdCode: household2.code,
+                oldHeadCode: member22.code,
+                newHeadCode: member23.code,
+                eventDate: GeneralUtil.getDate(2021, 01, 19),
+                reason: "family",
+                collectedBy: "dragon",
+                collectedDate: GeneralUtil.getDate(2021, 02, 12, 0, 0, 0),
+                uploadedDate: GeneralUtil.getDate(2021, 02, 14, 0, 0, 0)
         )
 
-        rpr1.save()
-        rpr2.save()
+        rch1.id = "uuui1"
+        rch2.id = "uuui2"
 
-        def resultRpo1 = rpo1.save()
-
-        printRawMessages(errorMessageService.getRawMessages(RawEntity.PREGNANCY_OUTCOME, rpo1))
-        rpo1.errors
-
-        resultRpo1.addToChilds(rpo1child1)
-        resultRpo1.save()
-
-        rpo1 = resultRpo1
-
-        //This methods validates data twice, first through strict rules of demographics and then through domain model constraints
+        rch2.validate()
 
 
+        println "id1-${rch2.id},id2=${rch1.id}, ${rch2.hasErrors()}"
 
-        println("first pr")
-        def result1 = pregnancyRegistrationService.createPregnancyRegistration(rpr1)
+        rch1.save()
+        rch2.save()
+
+
+        rch1.addToRelationships(new RawChangeHeadRelationship(changeHead: rch1, memberCode: member21.code, relationshipType: HeadRelationshipType.PARENT.code))
+        rch1.addToRelationships(new RawChangeHeadRelationship(changeHead: rch1, memberCode: member22.code, relationshipType: HeadRelationshipType.PARENT.code))
+        rch1.save()
+
+        println("first change head")
+        def result1 = changeHeadService.createChangeHead(rch1, rch1.relationships.toList())
         printResults(result1)
-        printPregReg(result1?.domainInstance)
+        printHeadR(result1?.domainInstance)
         println()
-
-        println("second pr")
-        def result2 = pregnancyRegistrationService.createPregnancyRegistration(rpr2)
+/*
+        println("second extin")
+        def result2 = changeHeadService.createChangeHead(rch2)
         printResults(result2)
-        printPregReg(result2?.domainInstance)
-        println()
-
-
-        println("third po")
-        def result3 = pregnancyOutcomeService.createPregnancyOutcome(rpo1, RawPregnancyChild.findAllByOutcome(rpo1))
-        printResults(result3)
-        printPregOut(result3?.domainInstance)
-        println()
-
-        /*
-        println("fourth po")
-        def result4 = pregnancyOutcomeService.createPregnancyOutcome(rpo2)
-        printResults(result4)
-        printPregOut(result4?.domainInstance)
+        printHeadR(result2?.domainInstance)
         println()
         */
 
 
         expect:
-        PregnancyOutcome.count()==1
+        HeadRelationship.count()==9
     }
 }

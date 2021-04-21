@@ -1,40 +1,40 @@
-package org.philimone.hds.explorer.server.main
+package org.philimone.hds.explorer.server.model.main
 
 import grails.gorm.transactions.Transactional
 import grails.testing.mixin.integration.Integration
+import grails.transaction.Rollback
 import net.betainteractive.utilities.GeneralUtil
 import net.betainteractive.utilities.StringUtil
 import org.philimone.hds.explorer.server.model.authentication.Role
 import org.philimone.hds.explorer.server.model.authentication.User
 import org.philimone.hds.explorer.server.model.authentication.UserService
 import org.philimone.hds.explorer.server.model.collect.raw.RawHousehold
-import org.philimone.hds.explorer.server.model.collect.raw.RawMaritalRelationship
 import org.philimone.hds.explorer.server.model.collect.raw.RawMember
 import org.philimone.hds.explorer.server.model.collect.raw.RawRegion
+import org.philimone.hds.explorer.server.model.collect.raw.RawResidency
 import org.philimone.hds.explorer.server.model.enums.Gender
 import org.philimone.hds.explorer.server.model.enums.MaritalStatus
-import org.philimone.hds.explorer.server.model.main.MaritalRelationship
 import org.philimone.hds.explorer.server.model.main.Household
 import org.philimone.hds.explorer.server.model.main.HouseholdService
-import org.philimone.hds.explorer.server.model.main.MaritalRelationshipService
 import org.philimone.hds.explorer.server.model.main.Member
 import org.philimone.hds.explorer.server.model.main.MemberService
 import org.philimone.hds.explorer.server.model.main.Region
 import org.philimone.hds.explorer.server.model.main.RegionService
+import org.philimone.hds.explorer.server.model.main.Residency
+import org.philimone.hds.explorer.server.model.main.ResidencyService
 import org.philimone.hds.explorer.server.model.main.collect.raw.RawExecutionResult
 import org.philimone.hds.explorer.server.model.main.collect.raw.RawMessage
 import org.philimone.hds.explorer.server.model.settings.Codes
 import org.philimone.hds.explorer.server.model.settings.generator.CodeGeneratorService
 import org.philimone.hds.explorer.services.errors.ErrorMessageService
 import org.springframework.beans.factory.annotation.Autowired
-import spock.lang.Ignore
 import spock.lang.Specification
 
 import java.time.LocalDateTime
 
 @Integration
 @Transactional //@Rollback
-class MaritalRelationshipServiceSpec extends Specification {
+class ResidencyServiceSpec extends Specification {
 
     @Autowired
     ErrorMessageService errorMessageService
@@ -47,12 +47,11 @@ class MaritalRelationshipServiceSpec extends Specification {
     @Autowired
     UserService userService
     @Autowired
-    MaritalRelationshipService maritalRelationshipService
+    ResidencyService residencyService
     @Autowired
     CodeGeneratorService codeGeneratorService
 
     def setupAll() {
-
         setupUsers()
         setupRegions()
         setupHouseholds()
@@ -151,6 +150,7 @@ class MaritalRelationshipServiceSpec extends Specification {
         //printResults(res4)
     }
 
+
     def cleanup() {
     }
 
@@ -167,30 +167,30 @@ class MaritalRelationshipServiceSpec extends Specification {
         }
     }
 
-    def printMaritalRelationship(MaritalRelationship maritalRelationship){
-        if (maritalRelationship==null) return null
-        println "maritalRelationship(id=${maritalRelationship.id},memberA=${maritalRelationship.memberA_code},memberB=${maritalRelationship.memberB_code},startstatus=${maritalRelationship.startStatus},startdate=${StringUtil.format(maritalRelationship?.startDate)},endstatus=${maritalRelationship.endStatus},enddate=${StringUtil.format(maritalRelationship?.endDate)})"
+    def printResidency(Residency residency){
+        if (residency==null) return null
+        println "residency(id=${residency.id},m.code=${residency.memberCode},h.code=${residency.householdCode},starttype=${residency.startType},startdate=${StringUtil.format(residency?.startDate)},endtype=${residency.endType},enddate=${StringUtil.format(residency?.endDate)})"
     }
 
+    /*def printResidency(RawExecutionResult<Residency> result){
+        printResidency(result==null ? null : result.domainInstance)
+    }*/
+
     /*
-     * 1. Test Creation of maritalRelationship
-     * 2. Test Closing the maritalRelationship
-     * 3. Test Creating 2 Relationships of same member
-     * 4. Test Closing a Closed maritalRelationship
+     * 1. Test Creation of Residency
+     * 2. Test Closing the Residency
+     * 3. Test Creating 2 Residencies of same member
+     * 4. Test Closing a Closed Residency
      */
-    @Ignore
-    void "Test Creation of Marital Relationship"() {
+    void "Test Creation of Residency"() {
 
-        println "\n#### Test Creation of Marital Relationship ####"
-
-        def count = -1
+        println "\n#### Test Creation of Residency ####"
 
         setupAll()
 
         //println "*3 households - ${Household.findAll().size()}"
 
-
-        //create new maritalRelationship
+        //create new residency
         def household1 = Household.findByName("Macandza House")
         def household2 = Household.findByName("George Benson")
         def member11 = Member.findByName("John Benedit Macandza")
@@ -203,24 +203,23 @@ class MaritalRelationshipServiceSpec extends Specification {
         //println "household2: ${household2}, check: ${Household.count()}"
         //println "member2: ${member21}, check: ${Member.count()}"
 
-        //create new marital relation
-        def rw1 = new RawMaritalRelationship (
+        def rw1 = new RawResidency(
                 id: "uuuid1",
-                memberA: member11.code,
-                memberB: member12.code,
-                startStatus: "LIV",
-                startDate: GeneralUtil.getDate(2020,06,17),
-                endStatus: "",
+                memberCode: member11.code,
+                householdCode: household1.code,
+                startType: "ENU",
+                startDate: GeneralUtil.getDate(2020,1,17),
+                endType: "",
                 endDate: ""
         )
 
-        def rw2 = new RawMaritalRelationship(
+        def rw2 = new RawResidency(
                 id: "uuuid2",
-                memberA: member12.code,
-                memberB: member21.code,
-                startStatus: "MAR",
+                memberCode: member11.code,
+                householdCode: household1.code,
+                startType: "ENT",
                 startDate: GeneralUtil.getDate(2020,05,04),
-                endStatus: "",
+                endType: "",
                 endDate: ""
         )
 
@@ -234,31 +233,27 @@ class MaritalRelationshipServiceSpec extends Specification {
         //printErrors(rw)
 
         //This methods validates data twice, first through strict rules of demographics and then through domain model constraints
-        def result1 = maritalRelationshipService.createMaritalRelationship(rw1)
+        def result1 = residencyService.createResidency(rw1)
         printResults(result1)
 
-        def result2 = maritalRelationshipService.createMaritalRelationship(rw2)
+        def result2 = residencyService.createResidency(rw2)
         printResults(result2)
 
-        printMaritalRelationship(result1?.domainInstance)
-        printMaritalRelationship(result2?.domainInstance)
-
-
-        count = MaritalRelationship.count()
+        printResidency(result1?.domainInstance)
+        printResidency(result2?.domainInstance)
 
         expect:
-        count == 1
+        Residency.count()==1
     }
 
-    //@Ignore
-    void "Test Closing of Marital Relationship"() {
-        println "\n#### Test Closing of Marital Relationship ####"
+    void "Test Closing of Residency"() {
+        println "\n#### Test Closing of Residency ####"
 
         setupAll()
 
         //println "*3 households - ${Household.findAll().size()}"
 
-        //create new maritalRelationship
+        //create new residency
         def household1 = Household.findByName("Macandza House")
         def household2 = Household.findByName("George Benson")
         def member11 = Member.findByName("John Benedit Macandza")
@@ -271,34 +266,34 @@ class MaritalRelationshipServiceSpec extends Specification {
         //println "household2: ${household2}, check: ${Household.count()}"
         //println "member2: ${member21}, check: ${Member.count()}"
 
-        def rw1 = new RawMaritalRelationship (
+        def rw1 = new RawResidency(
                 id: "uuuid1",
-                memberA: member11.code,
-                memberB: member12.code,
-                startStatus: "LIV",
-                startDate: GeneralUtil.getDate(2020,6,17),
-                endStatus: "",
+                memberCode: member11.code,
+                householdCode: household1.code,
+                startType: "ENU",
+                startDate: GeneralUtil.getDate(2020,1,17),
+                endType: "",
                 endDate: ""
         )
 
-        def rw2 = new RawMaritalRelationship(
+        def rw1close = new RawResidency(
                 id: "uuuid2",
-                memberA: member12.code,
-                memberB: member21.code,
-                startStatus: "MAR",
-                startDate: GeneralUtil.getDate(2020,10,4),
-                endStatus: "",
-                endDate: ""
+                memberCode: member11.code,
+                householdCode: household1.code,
+                startType: "",
+                startDate: null,
+                endType: "CHG",
+                endDate: GeneralUtil.getDate(2020,5,3)
         )
 
-        def rw1close = new RawMaritalRelationship(
+        def rw2 = new RawResidency(
                 id: "uuuid3",
-                memberA: member12.code,
-                memberB: member11.code,
-                startStatus: "",
-                startDate: null,
-                endStatus: "DIV",
-                endDate: GeneralUtil.getDate(2020,8,15)
+                memberCode: member11.code,
+                householdCode: household1.code,
+                startType: "ENT",
+                startDate: GeneralUtil.getDate(2020,05,03),
+                endType: "",
+                endDate: ""
         )
 
         rw1.save()
@@ -312,23 +307,19 @@ class MaritalRelationshipServiceSpec extends Specification {
         //printErrors(rw)
 
         //This methods validates data twice, first through strict rules of demographics and then through domain model constraints
-        def result1 = maritalRelationshipService.createMaritalRelationship(rw1)
+        def result1 = residencyService.createResidency(rw1)
         printResults(result1)
-        printMaritalRelationship(result1?.domainInstance)
+        printResidency(result1?.domainInstance)
 
-        def result2 = maritalRelationshipService.closeMaritalRelationship(rw1close)
+        def result2 = residencyService.closeResidency(rw1close)
         printResults(result2)
-        printMaritalRelationship(result2?.domainInstance)
+        printResidency(result2?.domainInstance)
 
-        def result4 = maritalRelationshipService.closeMaritalRelationship(rw1close)
-        printResults(result4)
-        printMaritalRelationship(result4?.domainInstance)
-
-        def result3 = maritalRelationshipService.createMaritalRelationship(rw2)
+        def result3 = residencyService.createResidency(rw2)
         printResults(result3)
-        printMaritalRelationship(result3?.domainInstance)
+        printResidency(result3?.domainInstance)
 
         expect:
-        MaritalRelationship.count()==2
+        Residency.count()==2
     }
 }

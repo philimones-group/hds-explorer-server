@@ -1,43 +1,45 @@
-package org.philimone.hds.explorer.server.main
+package org.philimone.hds.explorer.server.model.main
 
-import grails.gorm.transactions.Transactional
 import grails.testing.mixin.integration.Integration
-import grails.transaction.Rollback
+import grails.gorm.transactions.Transactional
 import net.betainteractive.utilities.GeneralUtil
 import net.betainteractive.utilities.StringUtil
+import org.junit.Ignore
 import org.philimone.hds.explorer.server.model.authentication.Role
 import org.philimone.hds.explorer.server.model.authentication.User
 import org.philimone.hds.explorer.server.model.authentication.UserService
-import org.philimone.hds.explorer.server.model.collect.raw.RawHeadRelationship
 import org.philimone.hds.explorer.server.model.collect.raw.RawHousehold
 import org.philimone.hds.explorer.server.model.collect.raw.RawMember
 import org.philimone.hds.explorer.server.model.collect.raw.RawRegion
+import org.philimone.hds.explorer.server.model.collect.raw.RawResidency
+import org.philimone.hds.explorer.server.model.collect.raw.RawVisit
 import org.philimone.hds.explorer.server.model.enums.Gender
 import org.philimone.hds.explorer.server.model.enums.MaritalStatus
-import org.philimone.hds.explorer.server.model.main.HeadRelationship
-import org.philimone.hds.explorer.server.model.main.HeadRelationshipService
+import org.philimone.hds.explorer.server.model.enums.VisitLocationItem
 import org.philimone.hds.explorer.server.model.main.Household
 import org.philimone.hds.explorer.server.model.main.HouseholdService
 import org.philimone.hds.explorer.server.model.main.Member
 import org.philimone.hds.explorer.server.model.main.MemberService
 import org.philimone.hds.explorer.server.model.main.Region
 import org.philimone.hds.explorer.server.model.main.RegionService
+import org.philimone.hds.explorer.server.model.main.Residency
+import org.philimone.hds.explorer.server.model.main.Round
+import org.philimone.hds.explorer.server.model.main.RoundService
+import org.philimone.hds.explorer.server.model.main.Visit
+import org.philimone.hds.explorer.server.model.main.VisitService
 import org.philimone.hds.explorer.server.model.main.collect.raw.RawExecutionResult
 import org.philimone.hds.explorer.server.model.main.collect.raw.RawMessage
 import org.philimone.hds.explorer.server.model.settings.Codes
 import org.philimone.hds.explorer.server.model.settings.generator.CodeGeneratorService
 import org.philimone.hds.explorer.services.errors.ErrorMessageService
 import org.springframework.beans.factory.annotation.Autowired
-import spock.lang.Ignore
 import spock.lang.Specification
 
 import java.time.LocalDateTime
 
 @Integration
 @Transactional //@Rollback
-class HeadRelationshipServiceSpec extends Specification {
-
-    //static transactional = false
+class VisitServiceSpec extends Specification {
 
     @Autowired
     ErrorMessageService errorMessageService
@@ -50,12 +52,13 @@ class HeadRelationshipServiceSpec extends Specification {
     @Autowired
     UserService userService
     @Autowired
-    HeadRelationshipService headRelationshipService
-    @Autowired
     CodeGeneratorService codeGeneratorService
+    @Autowired
+    RoundService roundService
+    @Autowired
+    VisitService visitService
 
     def setupAll() {
-
         setupUsers()
         setupRegions()
         setupHouseholds()
@@ -154,6 +157,24 @@ class HeadRelationshipServiceSpec extends Specification {
         //printResults(res4)
     }
 
+    def setupRounds(){
+        def result1 = roundService.createRound(GeneralUtil.getDate(2021, 1, 1), GeneralUtil.getDate(2021, 1, 31), "baseline round")
+        def result2 = roundService.createRound(GeneralUtil.getDate(2021, 1, 31), GeneralUtil.getDate(2021, 1, 28), "first round")
+        def result3 = roundService.createRound(GeneralUtil.getDate(2021, 2, 1), GeneralUtil.getDate(2021, 1, 20), "second round")
+
+        printResults(result1)
+        printResults(result2)
+        printResults(result3)
+
+        //print(result1?.domainInstance)
+        //println()
+        //print(result2?.domainInstance)
+        //println()
+        //print(result3?.domainInstance)
+        //println()
+    }
+
+
     def cleanup() {
     }
 
@@ -170,100 +191,54 @@ class HeadRelationshipServiceSpec extends Specification {
         }
     }
 
-    def printHeadRelationship(HeadRelationship headRelationship){
-        if (headRelationship==null) return null
-        println "headRelationship(id=${headRelationship.id},m.code=${headRelationship.memberCode},h.code=${headRelationship.householdCode},starttype=${headRelationship.startType},startdate=${StringUtil.format(headRelationship?.startDate)},endtype=${headRelationship.endType},enddate=${StringUtil.format(headRelationship?.endDate)})"
+    def print(Visit visit){
+        if (visit==null) return null
+        println "visit(id=${visit.id},v.code=${visit.code},v.household=${visit.householdCode},v.round=${visit.roundNumber},v.visitDate=${StringUtil.format(visit?.visitDate)},v.location=${visit.visitLocation},v.respondent=${visit?.respondentCode})"
     }
+
+    def print(Round round){
+        if (round==null) return null
+        println "round(id=${round.id},r.number=${round.roundNumber},r.startdate=${round.startDate},r.enddate=${round.endDate},r.description=${round?.description})"
+    }
+
+    /*def printResidency(RawExecutionResult<Residency> result){
+        printResidency(result==null ? null : result.domainInstance)
+    }*/
 
     /*
-     * 1. Test Creation of headRelationship
-     * 2. Test Closing the headRelationship
-     * 3. Test Creating 2 relationships of same member
-     * 4. Test Closing a Closed headRelationship
+     * 1. Test Creation of Residency
+     * 2. Test Closing the Residency
+     * 3. Test Creating 2 Residencies of same member
+     * 4. Test Closing a Closed Residency
      */
-    @Ignore
-    void "Test Creation of Head Relationship"() {
+    void "Test Rounds"() {
 
-        println "\n#### Test Creation of Head Relationship ####"
-
-        def count = -1
+        println "\n#### Test Creation of Rounds ####"
 
         setupAll()
 
-        //println "*3 households - ${Household.findAll().size()}"
+        def result1 = roundService.createRound(GeneralUtil.getDate(2021, 1, 1), GeneralUtil.getDate(2021, 1, 31), "baseline round")
+        def result2 = roundService.createRound(GeneralUtil.getDate(2021, 1, 31), GeneralUtil.getDate(2021, 1, 28), "first round")
+        def result3 = roundService.createRound(GeneralUtil.getDate(2021, 2, 1), GeneralUtil.getDate(2021, 1, 20), "second round")
 
-
-        //create new headRelationship
-        def household1 = Household.findByName("Macandza House")
-        def household2 = Household.findByName("George Benson")
-        def member11 = Member.findByName("John Benedit Macandza")
-        def member12 = Member.findByName("Catarina Loyd Macandza")
-        def member21 = Member.findByName("George Benson")
-        def member22 = Member.findByName("Joyce Mary Benson")
-
-        //println "household1: ${household1}, check: ${Household.count()}"
-        //println "member1: ${member11}, check: ${Member.count()}"
-        //println "household2: ${household2}, check: ${Household.count()}"
-        //println "member2: ${member21}, check: ${Member.count()}"
-
-        //create new head
-        def rw1 = new RawHeadRelationship(
-                id: "uuuid1",
-                memberCode: member11.code,
-                householdCode: household1.code,
-                relationshipType: "HOH",
-                startType: "ENU",
-                startDate: GeneralUtil.getDate(2020,10,17),
-                endType: "",
-                endDate: ""
-        )
-
-        def rw2 = new RawHeadRelationship(
-                id: "uuuid2",
-                memberCode: member12.code,
-                householdCode: household1.code,
-                relationshipType: "SPO",
-                startType: "ENU",
-                startDate: GeneralUtil.getDate(2020,05,04),
-                endType: "",
-                endDate: ""
-        )
-
-        rw1.save()
-        rw2.save()
-
-        //println "Raw Member Errors:"
-        //printRawMessages(errorMessageService.getRawMessages(rw1))
-        //println()
-        //printRawMessages(errorMessageService.getRawMessages(rw2))
-        //printErrors(rw)
-
-        //This methods validates data twice, first through strict rules of demographics and then through domain model constraints
-        def result1 = headRelationshipService.createHeadRelationship(rw1)
         printResults(result1)
-
-        def result2 = headRelationshipService.createHeadRelationship(rw2)
         printResults(result2)
+        printResults(result3)
 
-        printHeadRelationship(result1?.domainInstance)
-        printHeadRelationship(result2?.domainInstance)
-
-
-        count = HeadRelationship.count()
 
         expect:
-        count == 2
+        Round.count()==2
     }
 
-    //@Ignore
-    void "Test Closing of Head Relationship"() {
-        println "\n#### Test Closing of Head Relationship ####"
+    void "Test Visits"() {
+        println "\n#### Test Creation of Visits ####"
 
         setupAll()
+        setupRounds()
 
         //println "*3 households - ${Household.findAll().size()}"
 
-        //create new headRelationship
+        //create new residency
         def household1 = Household.findByName("Macandza House")
         def household2 = Household.findByName("George Benson")
         def member11 = Member.findByName("John Benedit Macandza")
@@ -276,42 +251,68 @@ class HeadRelationshipServiceSpec extends Specification {
         //println "household2: ${household2}, check: ${Household.count()}"
         //println "member2: ${member21}, check: ${Member.count()}"
 
-        def rw1 = new RawHeadRelationship(
+        //println "rounds: ${Round.count()}"
+
+        def rv1 = new RawVisit(
                 id: "uuuid1",
-                memberCode: member11.code,
+                code: codeGeneratorService.generateVisitCode(household1),
                 householdCode: household1.code,
-                relationshipType: "HOH",
-                startType: "ENU",
-                startDate: GeneralUtil.getDate(2020,02,17),
-                endType: "",
-                endDate: ""
+                visitDate: GeneralUtil.getDate(2021, 2, 4),
+                visitLocation: VisitLocationItem.HOME.code,
+                visitLocationOther: null,
+                roundNumber: 0,
+                respondentCode: member11.code,
+                hasInterpreter: false,
+                interpreterName: null,
+                gpsAccuracy: null,
+                gpsAltitude: null,
+                gpsLatitude: null,
+                gpsLongitude: null,
+                collectedBy: "dragon",
+                collectedDate: GeneralUtil.getDate(2021, 3, 4, 0, 0, 0)
         )
 
-        def rw2 = new RawHeadRelationship(
+        def rv2 = new RawVisit(
                 id: "uuuid2",
-                memberCode: member12.code,
-                householdCode: household1.code,
-                relationshipType: "SPO",
-                startType: "ENU",
-                startDate: GeneralUtil.getDate(2020,05,04),
-                endType: "",
-                endDate: ""
+                code: rv1.code,
+                householdCode: household2.code,
+                visitDate: GeneralUtil.getDate(2021, 2, 4),
+                visitLocation: VisitLocationItem.HOME.code,
+                visitLocationOther: null,
+                roundNumber: 4,
+                respondentCode: member11.code,
+                hasInterpreter: false,
+                interpreterName: null,
+                gpsAccuracy: null,
+                gpsAltitude: null,
+                gpsLatitude: null,
+                gpsLongitude: null,
+                collectedBy: "dragon",
+                collectedDate: GeneralUtil.getDate(2021, 3, 4, 0, 0, 0)
         )
 
-        def rw1close = new RawHeadRelationship(
-                id: "uuuid2",
-                memberCode: member11.code,
+        def rv3 = new RawVisit(
+                id: "uuuid3",
+                code: codeGeneratorService.generateVisitCode(household2),
                 householdCode: household1.code,
-                relationshipType: "HOH",
-                startType: "",
-                startDate: null,
-                endType: "CHG",
-                endDate: GeneralUtil.getDate(2020,05,14)
+                visitDate: GeneralUtil.getDate(2021, 2, 4),
+                visitLocation: VisitLocationItem.OTHER_PLACE.code,
+                visitLocationOther: null,
+                roundNumber: 1,
+                respondentCode: member11.code+"12",
+                hasInterpreter: true,
+                interpreterName: null,
+                gpsAccuracy: null,
+                gpsAltitude: null,
+                gpsLatitude: null,
+                gpsLongitude: null,
+                collectedBy: "dragon",
+                collectedDate: GeneralUtil.getDate(2021, 2, 4, 0, 0, 0)
         )
 
-        rw1.save()
-        rw1close.save()
-        rw2.save()
+        //rv1.save()
+        //rv2.save()
+        //rv3.save()
 
         //println "Raw Member Errors:"
         //printRawMessages(errorMessageService.getRawMessages(rw1))
@@ -320,19 +321,19 @@ class HeadRelationshipServiceSpec extends Specification {
         //printErrors(rw)
 
         //This methods validates data twice, first through strict rules of demographics and then through domain model constraints
-        def result1 = headRelationshipService.createHeadRelationship(rw1)
+        def result1 = visitService.createVisit(rv1)
         printResults(result1)
-        printHeadRelationship(result1?.domainInstance)
+        println(result1?.domainInstance)
 
-        def result2 = headRelationshipService.closeHeadRelationship(rw1close)
+        def result2 = visitService.createVisit(rv2)
         printResults(result2)
-        printHeadRelationship(result2?.domainInstance)
+        println(result2?.domainInstance)
 
-        def result3 = headRelationshipService.createHeadRelationship(rw2)
+        def result3 = visitService.createVisit(rv3)
         printResults(result3)
-        printHeadRelationship(result3?.domainInstance)
+        println(result3?.domainInstance)
 
         expect:
-        HeadRelationship.count()==2
+        Visit.count()==1
     }
 }

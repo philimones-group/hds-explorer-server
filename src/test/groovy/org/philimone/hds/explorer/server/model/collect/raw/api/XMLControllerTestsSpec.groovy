@@ -12,6 +12,7 @@ import net.betainteractive.utilities.XmlFormatter
 import org.philimone.hds.explorer.server.model.collect.raw.RawHousehold
 import org.philimone.hds.explorer.server.model.collect.raw.RawPregnancyChild
 import org.philimone.hds.explorer.server.model.collect.raw.RawPregnancyOutcome
+import org.philimone.hds.explorer.server.model.collect.raw.RawRegion
 import org.philimone.hds.explorer.server.model.enums.BirthPlace
 import org.philimone.hds.explorer.server.model.enums.Gender
 import org.philimone.hds.explorer.server.model.enums.HeadRelationshipType
@@ -21,10 +22,10 @@ import spock.lang.Specification
 import java.lang.reflect.Type
 import java.time.LocalDateTime
 
-class RawImportApiControllerSpec extends Specification implements ControllerUnitTest<RawImportApiController>, DataTest, AutowiredTest {
+class XMLControllerTestsSpec extends Specification implements ControllerUnitTest<RawImportApiController>, DataTest, AutowiredTest {
 
     def setup() {
-        mockDomains RawHousehold, RawPregnancyOutcome, RawPregnancyChild
+        mockDomains RawHousehold, RawPregnancyOutcome, RawPregnancyChild, RawRegion
     }
 
     def cleanup() {
@@ -154,6 +155,7 @@ class RawImportApiControllerSpec extends Specification implements ControllerUnit
 
         def xml1 = (rawHousehold as XML).toString()
         def xml2 = (getPregnancyOutcomes() as XML).toString()
+        def rg1 = new RawRegion(regionCode: "MAP", regionName: "Maputo", parentCode: "", collectedBy: "dragon", collectedDate: LocalDateTime.now(), uploadedDate: LocalDateTime.now())
 
 
         println "list of households json"
@@ -164,6 +166,10 @@ class RawImportApiControllerSpec extends Specification implements ControllerUnit
         println "list of pregnancies json"
         println()
         println XmlFormatter.format(xml2)
+
+        println "list of regions json"
+        println()
+        println XmlFormatter.format((rg1 as XML).toString())
 
 
         expect:"equality"

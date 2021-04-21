@@ -1,23 +1,26 @@
-package org.philimone.hds.explorer.server.main
+package org.philimone.hds.explorer.server.model.main
 
 import grails.testing.mixin.integration.Integration
 import grails.gorm.transactions.Transactional
 import net.betainteractive.utilities.GeneralUtil
 import net.betainteractive.utilities.StringUtil
-import org.junit.Ignore
 import org.philimone.hds.explorer.server.model.authentication.Role
 import org.philimone.hds.explorer.server.model.authentication.User
 import org.philimone.hds.explorer.server.model.authentication.UserService
 import org.philimone.hds.explorer.server.model.collect.raw.RawHousehold
+import org.philimone.hds.explorer.server.model.collect.raw.RawInMigration
 import org.philimone.hds.explorer.server.model.collect.raw.RawMember
 import org.philimone.hds.explorer.server.model.collect.raw.RawRegion
-import org.philimone.hds.explorer.server.model.collect.raw.RawResidency
 import org.philimone.hds.explorer.server.model.collect.raw.RawVisit
 import org.philimone.hds.explorer.server.model.enums.Gender
 import org.philimone.hds.explorer.server.model.enums.MaritalStatus
 import org.philimone.hds.explorer.server.model.enums.VisitLocationItem
+import org.philimone.hds.explorer.server.model.enums.temporal.InMigrationType
+import org.philimone.hds.explorer.server.model.main.HeadRelationship
 import org.philimone.hds.explorer.server.model.main.Household
 import org.philimone.hds.explorer.server.model.main.HouseholdService
+import org.philimone.hds.explorer.server.model.main.InMigration
+import org.philimone.hds.explorer.server.model.main.InMigrationService
 import org.philimone.hds.explorer.server.model.main.Member
 import org.philimone.hds.explorer.server.model.main.MemberService
 import org.philimone.hds.explorer.server.model.main.Region
@@ -38,8 +41,8 @@ import spock.lang.Specification
 import java.time.LocalDateTime
 
 @Integration
-@Transactional //@Rollback
-class VisitServiceSpec extends Specification {
+@Transactional
+class InMigrationServiceSpec extends Specification {
 
     @Autowired
     ErrorMessageService errorMessageService
@@ -57,12 +60,16 @@ class VisitServiceSpec extends Specification {
     RoundService roundService
     @Autowired
     VisitService visitService
+    @Autowired
+    InMigrationService inMigrationService
 
     def setupAll() {
         setupUsers()
         setupRegions()
         setupHouseholds()
         setupMembers()
+        setupRounds()
+        setupVisits()
     }
 
     def setupUsers(){
@@ -159,12 +166,12 @@ class VisitServiceSpec extends Specification {
 
     def setupRounds(){
         def result1 = roundService.createRound(GeneralUtil.getDate(2021, 1, 1), GeneralUtil.getDate(2021, 1, 31), "baseline round")
-        def result2 = roundService.createRound(GeneralUtil.getDate(2021, 1, 31), GeneralUtil.getDate(2021, 1, 28), "first round")
-        def result3 = roundService.createRound(GeneralUtil.getDate(2021, 2, 1), GeneralUtil.getDate(2021, 1, 20), "second round")
+        //def result2 = roundService.createRound(GeneralUtil.getDate(2021, 1, 31), GeneralUtil.getDate(2021, 1, 28), "first round")
+        //def result3 = roundService.createRound(GeneralUtil.getDate(2021, 2, 1), GeneralUtil.getDate(2021, 1, 20), "second round")
 
-        printResults(result1)
-        printResults(result2)
-        printResults(result3)
+        //printResults(result1)
+        //printResults(result2)
+        //printResults(result3)
 
         //print(result1?.domainInstance)
         //println()
@@ -174,77 +181,14 @@ class VisitServiceSpec extends Specification {
         //println()
     }
 
-
-    def cleanup() {
-    }
-
-    def printResults(RawExecutionResult result){
-        if (result == null) return
-        println("status: ${result.status}")
-        printRawMessages(result.errorMessages)
-        println()
-    }
-
-    def printRawMessages(List<RawMessage> errorMessages){
-        errorMessages.each { err ->
-            println "${err.columns} -> ${err.text}"
-        }
-    }
-
-    def print(Visit visit){
-        if (visit==null) return null
-        println "visit(id=${visit.id},v.code=${visit.code},v.household=${visit.householdCode},v.round=${visit.roundNumber},v.visitDate=${StringUtil.format(visit?.visitDate)},v.location=${visit.visitLocation},v.respondent=${visit?.respondentCode})"
-    }
-
-    def print(Round round){
-        if (round==null) return null
-        println "round(id=${round.id},r.number=${round.roundNumber},r.startdate=${round.startDate},r.enddate=${round.endDate},r.description=${round?.description})"
-    }
-
-    /*def printResidency(RawExecutionResult<Residency> result){
-        printResidency(result==null ? null : result.domainInstance)
-    }*/
-
-    /*
-     * 1. Test Creation of Residency
-     * 2. Test Closing the Residency
-     * 3. Test Creating 2 Residencies of same member
-     * 4. Test Closing a Closed Residency
-     */
-    void "Test Rounds"() {
-
-        println "\n#### Test Creation of Rounds ####"
-
-        setupAll()
-
-        def result1 = roundService.createRound(GeneralUtil.getDate(2021, 1, 1), GeneralUtil.getDate(2021, 1, 31), "baseline round")
-        def result2 = roundService.createRound(GeneralUtil.getDate(2021, 1, 31), GeneralUtil.getDate(2021, 1, 28), "first round")
-        def result3 = roundService.createRound(GeneralUtil.getDate(2021, 2, 1), GeneralUtil.getDate(2021, 1, 20), "second round")
-
-        printResults(result1)
-        printResults(result2)
-        printResults(result3)
-
-
-        expect:
-        Round.count()==2
-    }
-
-    void "Test Visits"() {
-        println "\n#### Test Creation of Visits ####"
-
-        setupAll()
-        setupRounds()
-
-        //println "*3 households - ${Household.findAll().size()}"
-
+    def setupVisits(){
         //create new residency
         def household1 = Household.findByName("Macandza House")
         def household2 = Household.findByName("George Benson")
         def member11 = Member.findByName("John Benedit Macandza")
         def member12 = Member.findByName("Catarina Loyd Macandza")
         def member21 = Member.findByName("George Benson")
-        def member22 = Member.findByName("Joyce Mary Benson")
+        //def member22 = Member.findByName("Joyce Mary Benson")
 
         //println "household1: ${household1}, check: ${Household.count()}"
         //println "member1: ${member11}, check: ${Member.count()}"
@@ -253,61 +197,19 @@ class VisitServiceSpec extends Specification {
 
         //println "rounds: ${Round.count()}"
 
-        def rv1 = new RawVisit(
-                id: "uuuid1",
-                code: codeGeneratorService.generateVisitCode(household1),
-                householdCode: household1.code,
-                visitDate: GeneralUtil.getDate(2021, 2, 4),
-                visitLocation: VisitLocationItem.HOME.code,
-                visitLocationOther: null,
-                roundNumber: 0,
-                respondentCode: member11.code,
-                hasInterpreter: false,
-                interpreterName: null,
-                gpsAccuracy: null,
-                gpsAltitude: null,
-                gpsLatitude: null,
-                gpsLongitude: null,
-                collectedBy: "dragon",
-                collectedDate: GeneralUtil.getDate(2021, 3, 4, 0, 0, 0)
+        def rv1 = new RawVisit(id: "uuuid1", code: codeGeneratorService.generateVisitCode(household1), householdCode: household1.code,
+                visitDate: GeneralUtil.getDate(2021, 2, 3), visitLocation: VisitLocationItem.HOME.code, roundNumber: 0,
+                respondentCode: member11.code, hasInterpreter: false, collectedBy: "dragon", collectedDate: GeneralUtil.getDate(2021, 3, 4, 0, 0, 0)
         )
 
-        def rv2 = new RawVisit(
-                id: "uuuid2",
-                code: rv1.code,
-                householdCode: household2.code,
-                visitDate: GeneralUtil.getDate(2021, 2, 4),
-                visitLocation: VisitLocationItem.HOME.code,
-                visitLocationOther: null,
-                roundNumber: 4,
-                respondentCode: member11.code,
-                hasInterpreter: false,
-                interpreterName: null,
-                gpsAccuracy: null,
-                gpsAltitude: null,
-                gpsLatitude: null,
-                gpsLongitude: null,
-                collectedBy: "dragon",
-                collectedDate: GeneralUtil.getDate(2021, 3, 4, 0, 0, 0)
+        def rv2 = new RawVisit(id: "uuuid2", code: codeGeneratorService.generateVisitCode(household1), householdCode: household1.code,
+                visitDate: GeneralUtil.getDate(2021, 2, 4), visitLocation: VisitLocationItem.HOME.code, roundNumber: 0,
+                respondentCode: member12.code, hasInterpreter: false, collectedBy: "dragon", collectedDate: GeneralUtil.getDate(2021, 3, 4, 0, 0, 0)
         )
 
-        def rv3 = new RawVisit(
-                id: "uuuid3",
-                code: codeGeneratorService.generateVisitCode(household2),
-                householdCode: household1.code,
-                visitDate: GeneralUtil.getDate(2021, 2, 4),
-                visitLocation: VisitLocationItem.OTHER_PLACE.code,
-                visitLocationOther: null,
-                roundNumber: 1,
-                respondentCode: member11.code+"12",
-                hasInterpreter: true,
-                interpreterName: null,
-                gpsAccuracy: null,
-                gpsAltitude: null,
-                gpsLatitude: null,
-                gpsLongitude: null,
-                collectedBy: "dragon",
-                collectedDate: GeneralUtil.getDate(2021, 2, 4, 0, 0, 0)
+        def rv3 = new RawVisit(id: "uuuid3", code: codeGeneratorService.generateVisitCode(household2), householdCode: household2.code,
+                visitDate: GeneralUtil.getDate(2021, 2, 4), visitLocation: VisitLocationItem.OTHER_PLACE.code, visitLocationOther: "HEALTHCENTER", roundNumber: 0,
+                respondentCode: member21.code, hasInterpreter: false, collectedBy: "dragon", collectedDate: GeneralUtil.getDate(2021, 2, 4, 0, 0, 0)
         )
 
         //rv1.save()
@@ -322,18 +224,181 @@ class VisitServiceSpec extends Specification {
 
         //This methods validates data twice, first through strict rules of demographics and then through domain model constraints
         def result1 = visitService.createVisit(rv1)
-        printResults(result1)
-        println(result1?.domainInstance)
-
         def result2 = visitService.createVisit(rv2)
-        printResults(result2)
-        println(result2?.domainInstance)
-
         def result3 = visitService.createVisit(rv3)
+
+        //printResults(result1)
+        //println(result1?.domainInstance)
+        //printResults(result2)
+        //println(result2?.domainInstance)
+        //printResults(result3)
+        //println(result3?.domainInstance)
+    }
+
+
+    def cleanup() {
+    }
+
+    def printResults(RawExecutionResult result){
+        if (result == null) return
+        println("status: ${result.status}")
+        printRawMessages(result.errorMessages)
+    }
+
+    def printRawMessages(List<RawMessage> errorMessages){
+        errorMessages.each { err ->
+            println "${err.columns} -> ${err.text}"
+        }
+    }
+
+    def printInMig(InMigration inmig){
+        if (inmig==null) return println("EMPTY")
+        println "inmig(id=${inmig.id},type=${inmig.type},v.code=${inmig.visitCode},v.household=${inmig.destinationCode},v.respondent=${inmig?.memberCode})"
+    }
+
+    def print(Residency residency){
+        if (residency==null) return null
+        println "residency(id=${residency.id},m.code=${residency.memberCode},h.code=${residency.householdCode},starttype=${residency.startType},startdate=${StringUtil.format(residency?.startDate)},endtype=${residency.endType},enddate=${StringUtil.format(residency?.endDate)})"
+    }
+
+    def print(HeadRelationship headRelationship){
+        if (headRelationship==null) return null
+        println "headRelationship(id=${headRelationship.id},m.code=${headRelationship.memberCode},h.code=${headRelationship.householdCode},starttype=${headRelationship.startType},startdate=${StringUtil.format(headRelationship?.startDate)},endtype=${headRelationship.endType},enddate=${StringUtil.format(headRelationship?.endDate)})"
+    }
+
+    def print(Visit visit){
+        if (visit==null) return null
+        println "visit(id=${visit.id},v.code=${visit.code},v.household=${visit.householdCode},v.round=${visit.roundNumber},v.visitDate=${StringUtil.format(visit?.visitDate)},v.location=${visit.visitLocation},v.respondent=${visit?.respondentCode})"
+    }
+
+    def print(Round round){
+        if (round==null) return null
+        println "round(id=${round.id},r.number=${round.roundNumber},r.startdate=${round.startDate},r.enddate=${round.endDate},r.description=${round?.description})"
+    }
+
+    void "Test InMigrations - Insert Using External InMigrations"() {
+        println "\n#### Test Creation of In Migrations 1 ####"
+
+        setupAll()
+
+        //println "*3 households - ${Household.findAll().size()}"
+
+        //create new residency
+        def household1 = Household.findByName("Macandza House")
+        def household2 = Household.findByName("George Benson")
+        def member11 = Member.findByName("John Benedit Macandza")
+        def member12 = Member.findByName("Catarina Loyd Macandza")
+        def member21 = Member.findByName("George Benson")
+        def member22 = Member.findByName("Joyce Mary Benson")
+
+        def visitHousehold1v1 = Visit.findAllByHousehold(household1).first().code
+        def visitHousehold1v2 = Visit.findAllByHousehold(household1).last().code
+        def visitHousehold2v1 = Visit.findByHousehold(household2)?.code
+
+        //println "household1: ${household1}, check: ${Household.count()}"
+        //println "member1: ${member11}, check: ${Member.count()}"
+        //println "household2: ${household2}, check: ${Household.count()}"
+        //println "member2: ${member21}, check: ${Member.count()}"
+
+        //println "rounds: ${Round.count()}"
+
+        def rin1 = new RawInMigration(
+                id: "uuuid1",
+                visitCode: visitHousehold1v1,
+                memberCode: member11.code,
+                migrationType: InMigrationType.EXTERNAL.code,
+                originCode: null,
+                originOther: "SA - JOHANNESBURG",
+                destinationCode: household1.code,
+                migrationDate: GeneralUtil.getDate(2020, 1, 19),
+                migrationReason: "RETURNING FROM MINES",
+                collectedBy: "dragon",
+                collectedDate: GeneralUtil.getDate(2020, 4, 12, 0, 0, 0),
+                uploadedDate: GeneralUtil.getDate(2020, 4, 14, 0, 0, 0)
+        )
+
+        def rin2 = new RawInMigration(
+                id: "uuuid2",
+                visitCode: visitHousehold1v1,
+                memberCode: member12.code,
+                migrationType: InMigrationType.EXTERNAL.code,
+                originCode: null,
+                originOther: "SA - JOHANNESBURG",
+                destinationCode: household1.code,
+                migrationDate: GeneralUtil.getDate(2020, 1, 19),
+                migrationReason: "RETURNING FROM MINES",
+                collectedBy: "dragon",
+                collectedDate: GeneralUtil.getDate(2020, 4, 12, 0, 0, 0),
+                uploadedDate: GeneralUtil.getDate(2020, 4, 14, 0, 0, 0)
+        )
+
+        def rin3 = new RawInMigration(
+                id: "uuuid3",
+                visitCode: visitHousehold1v1,
+                memberCode: member22.code,
+                migrationType: InMigrationType.EXTERNAL.code,
+                originCode: null,
+                originOther: "SA - JOHANNESBURG",
+                destinationCode: household1.code,
+                migrationDate: GeneralUtil.getDate(2020, 2, 19),
+                migrationReason: "job changes",
+                collectedBy: "dragon",
+                collectedDate: GeneralUtil.getDate(2020, 4, 12, 0, 0, 0),
+                uploadedDate: GeneralUtil.getDate(2020, 4, 14, 0, 0, 0)
+        )
+
+        def rin4 = new RawInMigration(
+                id: "uuuid4",
+                visitCode: visitHousehold2v1,
+                memberCode: member12.code,
+                migrationType: InMigrationType.INTERNAL.code,
+                originCode: household1.code,
+                originOther: null,
+                destinationCode: household2.code,
+                migrationDate: GeneralUtil.getDate(2020, 2, 28),
+                migrationReason: "job changes",
+                collectedBy: "dragon",
+                collectedDate: GeneralUtil.getDate(2020, 4, 12, 0, 0, 0),
+                uploadedDate: GeneralUtil.getDate(2020, 4, 14, 0, 0, 0)
+        )
+
+        //rv1.save()
+        //rv2.save()
+        //rv3.save()
+
+        //This methods validates data twice, first through strict rules of demographics and then through domain model constraints
+
+
+
+
+
+        println("first inmig")
+        def result1 = inMigrationService.createInMigration(rin1)
+        printResults(result1)
+        printInMig(result1?.domainInstance)
+        println()
+
+        println("second inmig")
+        def result2 = inMigrationService.createInMigration(rin2)
+        printResults(result2)
+        printInMig(result2?.domainInstance)
+        println()
+
+
+        println("third inmig")
+        def result3 = inMigrationService.createInMigration(rin3)
         printResults(result3)
-        println(result3?.domainInstance)
+        printInMig(result3?.domainInstance)
+        println()
+
+        println("fourth inmig")
+        def result4 = inMigrationService.createInMigration(rin4)
+        printResults(result4)
+        printInMig(result4?.domainInstance)
+        println()
+
 
         expect:
-        Visit.count()==1
+        InMigration.count()==3
     }
 }

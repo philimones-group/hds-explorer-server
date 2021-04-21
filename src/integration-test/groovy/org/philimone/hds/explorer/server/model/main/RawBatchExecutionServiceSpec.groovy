@@ -1,4 +1,4 @@
-package org.philimone.hds.explorer.server.main
+package org.philimone.hds.explorer.server.model.main
 
 import grails.gorm.transactions.Transactional
 import grails.testing.mixin.integration.Integration
