@@ -8,6 +8,8 @@ import org.philimone.hds.explorer.server.model.logs.LogReport
 import org.philimone.hds.explorer.server.model.enums.LogStatus
 import org.philimone.hds.explorer.server.model.main.DataSet
 
+import java.time.LocalDateTime
+
 /**
  * This controller exposes the generated XML/Zip files to be downloaded and controls the export views tasks
  */

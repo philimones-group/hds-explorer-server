@@ -1163,7 +1163,7 @@ class SyncFilesService {
         userElement.appendChild(createAttributeNonNull(doc, "firstName", user.getFirstName()));
         userElement.appendChild(createAttributeNonNull(doc, "lastName", user.getLastName()));
         userElement.appendChild(createAttributeNonNull(doc, "fullName", user.toString()));
-        userElement.appendChild(createAttributeNonNull(doc, "email", user.getEmail()));
+        userElement.appendChild(createAttributeNonNull(doc, "email", user.getEmail()==null ? "" : user.getEmail()));
         userElement.appendChild(createAttributeNonNull(doc, "modules", user.getModulesAsText()));
 
 
@@ -1235,8 +1235,8 @@ class SyncFilesService {
         Element element = doc.createElement("applicationParam");
 
         element.appendChild(createAttributeNonNull(doc, "name", appParam.name));
-        element.appendChild(createAttributeNonNull(doc, "type", appParam.type));
-        element.appendChild(createAttributeNonNull(doc, "value", appParam.value));
+        element.appendChild(createAttributeNonNull(doc, "type", appParam.type.name()));
+        element.appendChild(createAttributeNonNull(doc, "value", appParam.value==null ? "" : appParam.value));
 
         return element;
     }
@@ -1246,7 +1246,7 @@ class SyncFilesService {
 
         element.appendChild(createAttributeNonNull(doc, "code", region.code));
         element.appendChild(createAttributeNonNull(doc, "name", region.name));
-        element.appendChild(createAttributeNonNull(doc, "hierarchyLevel", region.hierarchyLevel));
+        element.appendChild(createAttributeNonNull(doc, "hierarchyLevel", region.hierarchyLevel?.code));
         element.appendChild(createAttributeNonNull(doc, "parent", region.parentCode ));
 
         return element;
@@ -1401,13 +1401,13 @@ class SyncFilesService {
                 ((m.householdCode==null || m.householdCode.isEmpty()) ? "<householdCode />" : "<householdCode>${m.householdCode}</householdCode>") +
                 ((m.householdName==null || m.householdName.isEmpty()) ? "<householdName />" : "<householdName>${m.householdName}</householdName>") +
 
-                ((m.startType==null || m.startType.isEmpty()) ?         "<startType />" : "<startType>${m.startType.code}</startType>") +
+                ((m.startType==null) ?         "<startType />" : "<startType>${m.startType.code}</startType>") +
                 ((m.startDate==null)                        ?           "<startDate />" : "<startDate>${StringUtil.format(m.startDate)}</startDate>") +
-                ((m.endType==null || m.endType.isEmpty())     ?         "<endType />"   : "<endType>${m.endType.code}</endType>") +
+                ((m.endType==null)     ?         "<endType />"   : "<endType>${m.endType.code}</endType>") +
                 ((m.endDate==null)                          ?           "<endDate />"   : "<endDate>${StringUtil.format(m.endDate)}</endDate>") +
 
                 ((m.entryHousehold==null || m.entryHousehold.isEmpty()) ? "<entryHousehold />" : "<entryHousehold>${m.entryHousehold}</entryHousehold>") +
-                ((m.entryType==null || m.entryType.isEmpty())           ? "<entryType />" : "<entryType>${m.entryType.code}</entryType>") +
+                ((m.entryType==null)           ? "<entryType />" : "<entryType>${m.entryType.code}</entryType>") +
                 ((m.entryDate==null)                                    ? "<entryDate />" : "<entryDate>${StringUtil.format(m.entryDate)}</entryDate>") +
 
                 ((m.headRelationshipType==null)                       ? "<headRelationshipType />" : "<headRelationshipType>${m.headRelationshipType.code}</headRelationshipType>") +
