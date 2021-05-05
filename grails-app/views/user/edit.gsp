@@ -36,7 +36,7 @@
                     <f:field bean="user" property="email"/>
 
                     <f:field bean="user" property="modules" input-domainList="${org.philimone.hds.explorer.server.model.main.StudyModule.list()}">
-                        <g:select name="modules"  multiple="multiple" optionKey="id" from="${org.philimone.hds.explorer.server.model.main.StudyModule.list()}" value="${this.user?.modules}"/>
+                        <g:select name="modules"  multiple="multiple" optionKey="id" from="${org.philimone.hds.explorer.server.model.main.StudyModule.list()}" value="${userModules}"/>
                     </f:field>
 
                     <f:field bean="user" property="accountLocked" />

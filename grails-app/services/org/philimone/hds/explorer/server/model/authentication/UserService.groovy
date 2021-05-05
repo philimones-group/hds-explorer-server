@@ -1,12 +1,14 @@
 package org.philimone.hds.explorer.server.model.authentication
 
-import grails.gorm.services.Service
+
+import grails.gorm.transactions.Transactional
 import grails.web.mapping.LinkGenerator
 import net.betainteractive.utilities.StringUtil
-import org.philimone.hds.explorer.server.model.main.Region
+import org.philimone.hds.explorer.server.model.main.StudyModule
+import org.philimone.hds.explorer.server.model.main.UserStudyModule
 import org.philimone.hds.explorer.services.GeneralUtilitiesService
 
-@Service(User)
+@Transactional
 class UserService {
 
     def GeneralUtilitiesService generalUtilitiesService
@@ -60,10 +62,63 @@ class UserService {
         return user
     }
 
+    User addUser(User user, List<Role> roles, List<StudyModule> modules) {
+
+        //generate user code
+        user.code = codeGeneratorService.generateUserCode(user)
+
+        user = user.save(flush: true)
+        UserRole.create(user, roles, true)
+        createUserStudyModule(user, modules)
+
+        println "modules: ${modules}"
+
+        //send email
+        if (!StringUtil.isBlank(user?.email) && !user?.email?.equals("youremail@domain.net")){ //send email with the credentials if mail address exists
+
+            def url = grailsLinkGenerator.serverBaseURL
+            def subject = generalUtilitiesService.getMessage("default.mail.user.subject.created", "")
+            def message = generalUtilitiesService.getMessage("default.mail.user.message.updated_password", [ url, user.username, user.password ] as String[] , "")
+
+            generalUtilitiesService.sendTextEmail(user.email, subject, message)
+        }
+
+        //println "error ${user.errors}"
+
+        return user
+    }
+
+    def createUserStudyModule(User user, List<StudyModule> modules) {
+
+        modules.each { module ->
+            def smodule = new UserStudyModule(user: user, module: module)
+            smodule.save(flush:true)
+
+            println "error: ${smodule.errors}"
+        }
+
+        user.save(flush:true)
+    }
+
     User updateUser(User user){
 
         user.save(flush: true)
         //println "error ${user.errors}"
+    }
+
+    User updateUser(User user, List<Role> userRoles, List<StudyModule> userModules) {
+        println "${userRoles}"
+
+        println "modules: ${userModules}"
+
+        user.save(flush:true)
+
+        //update user roles
+        removeAllRoles(user)
+        removeAllModules(user)
+
+        UserRole.create(user, userRoles, true)
+        createUserStudyModule(user, userModules)
     }
 
     User updatePassword(User user, String newPassword){
@@ -118,6 +173,18 @@ class UserService {
 
     Long count(){
         User.count()
+    }
+
+    def removeAllRoles(User u) {
+        UserRole.where { user == u }.deleteAll()
+    }
+
+    def removeAllRoles(Role r) {
+        UserRole.where { role == r }.deleteAll()
+    }
+
+    def removeAllModules(User u){
+        UserStudyModule.where { user == u }.deleteAll()
     }
 
     void delete(Serializable id){

@@ -21,6 +21,7 @@ import org.philimone.hds.explorer.server.model.enums.temporal.OutMigrationType
 import org.philimone.hds.explorer.server.model.main.*
 import org.philimone.hds.explorer.server.model.main.collect.raw.RawExecutionResult
 import org.philimone.hds.explorer.server.model.main.collect.raw.RawMessage
+import org.philimone.hds.explorer.server.model.settings.ApplicationParamService
 import org.philimone.hds.explorer.server.model.settings.Codes
 import org.philimone.hds.explorer.server.model.settings.generator.CodeGeneratorService
 import org.philimone.hds.explorer.services.errors.ErrorMessageService
@@ -43,8 +44,11 @@ class RawBatchExecutionServiceSpec extends Specification {
     RoundService roundService
     @Autowired
     RawBatchExecutionService rawBatchExecutionService
+    @Autowired
+    ApplicationParamService applicationParamService
 
     def setupAll() {
+        setupAppParams()
         setupUsers()
         setupRounds()
         setupRegions()
@@ -61,6 +65,12 @@ class RawBatchExecutionServiceSpec extends Specification {
         def user = new User(code: "DF1", firstName: "Dragon", lastName: "Fire", username: "dragon", password: "fire")
 
         userService.addUser(user, [admin])
+    }
+
+    def setupAppParams(){
+        applicationParamService.updateApplicationParam("hierarchy1", "Province")
+        applicationParamService.updateApplicationParam("hierarchy2", "District")
+        applicationParamService.updateApplicationParam("hierarchy3", "Neighborhood")
     }
 
     def setupRegions(){

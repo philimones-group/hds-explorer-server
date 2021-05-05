@@ -20,6 +20,17 @@ class ApplicationParamService {
         param.save(flush: true)
     }
 
+    def ApplicationParam updateApplicationParam(String name, String value){
+        def param = ApplicationParam.findByName(name)
+
+        if (param != null){
+            param.value = value
+            param.save(flush: true)
+        }
+
+        return param
+    }
+
     def ApplicationParam addParam(String name, Integer value) {
         def param = new ApplicationParam(name: name, type: ApplicationParamType.INTEGER, value: value.toString())
         addApplicationParam(param)

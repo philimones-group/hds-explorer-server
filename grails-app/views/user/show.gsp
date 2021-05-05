@@ -121,7 +121,12 @@
                             <g:message code="user.modules.label" default="Modules" />
                         </span>
                         <span class="property-value" aria-labelledby="modules-label">
-                            <g:fieldValue bean="${this.user}" field="modules" />
+                            <ul>
+                                <g:each in="${this.user.modules}">
+                                    <li class="list-style-type: square;">${ message(code: it.name) }</li>
+                                </g:each>
+                            </ul>
+
                         </span>
                     </li>
                 </g:if>

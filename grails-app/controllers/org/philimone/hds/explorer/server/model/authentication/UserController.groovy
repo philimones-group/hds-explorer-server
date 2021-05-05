@@ -1,6 +1,8 @@
 package org.philimone.hds.explorer.server.model.authentication
 
 import grails.validation.ValidationException
+import org.philimone.hds.explorer.server.model.main.StudyModule
+
 import static org.springframework.http.HttpStatus.*
 
 class UserController {
@@ -32,8 +34,11 @@ class UserController {
         def userRoles = Role.getAll(params.list("roles.id"))
         params.remove("roles.id")
 
+        def userModules = StudyModule.getAll(params.list("modules"))
+        params.remove("modules")
+
         try {
-            userService.addUser(user, userRoles)
+            userService.addUser(user, userRoles, userModules)
         } catch (ValidationException e) {
             respond user.errors, view:'create'
             return
@@ -51,8 +56,9 @@ class UserController {
     def edit(String id) {
         def user = userService.get(id)
         def userRoles = user.authorities.asList()
+        def userModules = user.modules.asList()
 
-        respond user, model: [userRoles: userRoles]
+        respond user, model: [userRoles: userRoles, userModules: userModules]
     }
 
     def changePassword(String id){
@@ -66,19 +72,14 @@ class UserController {
         }
 
         def userRoles = Role.getAll(params.list("roles.id")) //selected roles
+        def userModules = StudyModule.getAll(params.list("modules"))
 
         try {
-            userService.updateUser(user)
+            userService.updateUser(user, userRoles, userModules)
         } catch (ValidationException e) {
             respond user.errors, view:'edit', model: [userRoles: userRoles]
             return
         }
-
-        println "${userRoles}"
-
-        //update user roles
-        UserRole.removeAll(user)
-        UserRole.create(user, userRoles, true)
 
         request.withFormat {
             form multipartForm {
