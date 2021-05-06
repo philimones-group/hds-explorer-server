@@ -5,7 +5,7 @@ import org.philimone.hds.explorer.io.SystemPath
 
 import static org.springframework.http.HttpStatus.*
 
-class DataSetController {
+class DatasetController {
 
     static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
 

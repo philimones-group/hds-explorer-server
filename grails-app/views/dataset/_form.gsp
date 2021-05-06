@@ -39,7 +39,7 @@
 			<li><g:link controller="dataSetLabel" action="show" id="${m.id}">${m?.encodeAsHTML()}</g:link></li>
 		</g:each>
 		<li class="add">
-			<g:link controller="dataSetLabel" action="create" params="['dataSet.id': dataSetInstance?.id]">${message(code: 'default.add.label', args: [message(code: 'dataSetLabel.label', default: 'DatasetLabel')])}</g:link>
+			<g:link controller="dataSetLabel" action="create" params="['dataset.id': dataSetInstance?.id]">${message(code: 'default.add.label', args: [message(code: 'dataSetLabel.label', default: 'DatasetLabel')])}</g:link>
 		</li>
 	</ul>
 </div>

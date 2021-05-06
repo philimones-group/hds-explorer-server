@@ -72,7 +72,7 @@
 			</ul>
 			</g:hasErrors>
 
-			<g:uploadForm controller="dataSet" action="uploadFile" >
+			<g:uploadForm controller="dataset" action="uploadFile" >
 				<fieldset class="form">
 					<div class="fieldcontain ${hasErrors(bean: dataSetInstance, field: 'filename', 'error')} " >
 						<label for="filename"><g:message code="dataSet.file.label" default="Dataset Filename" /></label>
@@ -82,7 +82,7 @@
 				</fieldset>
 			</g:uploadForm>
 
-			<g:form controller="dataSet" action="save" method="POST" >
+			<g:form controller="dataset" action="save" method="POST" >
 				<div class="nav2">
 					<fieldset class="form">
 
@@ -125,7 +125,7 @@
 									<li><g:link controller="dataSetLabel" action="show" id="${m.id}">${m?.encodeAsHTML()}</g:link></li>
 								</g:each>
 								<li class="add">
-									<g:link controller="dataSetLabel" action="create" params="['dataSet.id': dataSetInstance?.id]">${message(code: 'default.add.label', args: [message(code: 'dataSetLabel.label', default: 'DatasetLabel')])}</g:link>
+									<g:link controller="dataSetLabel" action="create" params="['dataset.id': dataSetInstance?.id]">${message(code: 'default.add.label', args: [message(code: 'dataSetLabel.label', default: 'DatasetLabel')])}</g:link>
 								</li>
 							</ul>
 						</div>
