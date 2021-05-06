@@ -10,7 +10,7 @@ import org.philimone.hds.explorer.server.model.enums.settings.LogReportCode
 import org.philimone.hds.explorer.server.model.logs.LogReport
 import org.philimone.hds.explorer.server.model.logs.LogReportFile
 import org.philimone.hds.explorer.server.model.enums.LogStatus
-import org.philimone.hds.explorer.server.model.main.DataSet
+import org.philimone.hds.explorer.server.model.main.Dataset
 import org.philimone.hds.explorer.server.model.main.Form
 import org.philimone.hds.explorer.server.model.main.FormMapping
 import org.philimone.hds.explorer.server.model.main.HeadRelationship
@@ -1001,7 +1001,7 @@ class SyncFilesService {
             def resultDatasets = []
 
             Region.withTransaction {
-                resultDatasets = DataSet.findAllByEnabled(true)
+                resultDatasets = Dataset.findAllByEnabled(true)
             }
 
             DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
@@ -1252,7 +1252,7 @@ class SyncFilesService {
         return element;
     }
 
-    private Element createDataSet(Document doc, DataSet dataSet) {
+    private Element createDataSet(Document doc, Dataset dataSet) {
         Element element = doc.createElement("dataset");
 
         String labels = "";

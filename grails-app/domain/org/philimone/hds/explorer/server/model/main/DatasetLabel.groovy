@@ -1,13 +1,13 @@
 package org.philimone.hds.explorer.server.model.main
 
-class DataSetLabel {
+class DatasetLabel {
 
     String id
-    DataSet dataSet
+    Dataset dataSet
     String name   /* Column Name */
     String label  /* Label of the Column */
 
-    static belongsTo = [dataSet: DataSet]
+    static belongsTo = [dataSet: Dataset]
 
     String toString(){
         "${name}:${label}"

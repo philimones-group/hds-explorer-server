@@ -4,7 +4,6 @@ import grails.gorm.transactions.Transactional
 import net.betainteractive.io.readers.CSVReader
 import net.betainteractive.io.writers.ZipMaker
 import net.betainteractive.utilities.StringUtil
-import org.philimone.hds.explorer.io.SystemPath
 
 @Transactional
 class DataSetService {
@@ -27,11 +26,11 @@ class DataSetService {
     }
 
     boolean containsDatasetWith(String name){
-        DataSet.countByName(name) > 0
+        Dataset.countByName(name) > 0
     }
 
     List<String> getDatasetColumnsWith(String name){
-        def dataset = DataSet.findByName(name)
+        def dataset = Dataset.findByName(name)
         if (dataset != null){
 
             return getColumns(dataset.filename)
@@ -41,10 +40,10 @@ class DataSetService {
     }
 
     List<String> getDatasetNames(){
-        return DataSet.findAllByEnabled(true).collect{ it.name }
+        return Dataset.findAllByEnabled(true).collect{ it.name }
     }
 
-    def createZipFile(DataSet dataSet){
+    def createZipFile(Dataset dataSet){
 
         //zip file
         ZipMaker zipMaker = new ZipMaker(dataSet.compressedFilename)

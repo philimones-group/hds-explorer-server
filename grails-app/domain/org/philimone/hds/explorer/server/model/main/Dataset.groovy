@@ -3,10 +3,10 @@ package org.philimone.hds.explorer.server.model.main
 import org.philimone.hds.explorer.server.model.audit.AuditableEntity
 
 /**
- * Represents an External DataSet that can be linked with our core domain tables (Household, Member, User)
+ * Represents an External Dataset that can be linked with our core domain tables (Household, Member, User)
  * to provide dynamic datasets to the tablet application
  */
-class DataSet extends AuditableEntity {
+class Dataset extends AuditableEntity {
 
     String id
     String name
@@ -17,7 +17,7 @@ class DataSet extends AuditableEntity {
 
     boolean enabled = false
 
-    static hasMany = [mappingLabels:DataSetLabel]
+    static hasMany = [mappingLabels:DatasetLabel]
 
     String getFilenameOnly(){
         new File(filename).name

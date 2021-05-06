@@ -1,10 +1,10 @@
-<%@ page import="org.philimone.hds.explorer.server.model.main.DataSet" %>
+<%@ page import="org.philimone.hds.explorer.server.model.main.Dataset" %>
 
 <!DOCTYPE html>
 <html>
 	<head>
 		<meta name="layout" content="main">
-		<g:set var="entityName" value="${message(code: 'dataSet.label', default: 'DataSet')}" />
+		<g:set var="entityName" value="${message(code: 'dataSet.label', default: 'Dataset')}" />
 		<title><g:message code="dataSet.add.label" args="[entityName]" /></title>
 
 		<asset:javascript src="application.js"/>
@@ -125,7 +125,7 @@
 									<li><g:link controller="dataSetLabel" action="show" id="${m.id}">${m?.encodeAsHTML()}</g:link></li>
 								</g:each>
 								<li class="add">
-									<g:link controller="dataSetLabel" action="create" params="['dataSet.id': dataSetInstance?.id]">${message(code: 'default.add.label', args: [message(code: 'dataSetLabel.label', default: 'DataSetLabel')])}</g:link>
+									<g:link controller="dataSetLabel" action="create" params="['dataSet.id': dataSetInstance?.id]">${message(code: 'default.add.label', args: [message(code: 'dataSetLabel.label', default: 'DatasetLabel')])}</g:link>
 								</li>
 							</ul>
 						</div>

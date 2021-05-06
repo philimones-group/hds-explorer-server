@@ -1,6 +1,6 @@
 package org.philimone.hds.explorer.server.model.main
 
-import grails.transaction.Transactional
+
 import org.philimone.hds.explorer.io.SystemPath
 
 import static org.springframework.http.HttpStatus.*
@@ -15,11 +15,11 @@ class DataSetController {
 
     def index(Integer max) {
         params.max = Math.min(max ?: 10, 100)
-        respond DataSet.list(params), model:[dataSetInstanceCount: DataSet.count()]
+        respond Dataset.list(params), model:[dataSetInstanceCount: Dataset.count()]
     }
 
     def show(String id) {
-        [dataSetInstance:  DataSet.get(id)]
+        [dataSetInstance:  Dataset.get(id)]
     }
 
     def create = {
@@ -31,7 +31,7 @@ class DataSetController {
         def max = 9
 
         params.max = Math.min(max ?: 10, 100)
-        respond new DataSet(params), model: [tableList:  tableList, dataSetInstanceList: DataSet.list(params)]
+        respond new Dataset(params), model: [tableList:  tableList, dataSetInstanceList: Dataset.list(params)]
     }
 
     def uploadFile = {
@@ -48,14 +48,14 @@ class DataSetController {
         //read csv file and get the list of columns
         def columns = dataSetService.getColumns(newFile)
 
-        def dataset = new DataSet(params)
+        def dataset = new Dataset(params)
         dataset.name = dataSetService.getDatasetName(fileName)
         dataset.filename = newFile
 
         render view: "add", model: [dataSetInstance:dataset, dataSetColumns:columns, tableList:  tableList]
     }
 
-    def save(DataSet dataSetInstance) {
+    def save(Dataset dataSetInstance) {
 
         println "testing"
 
@@ -75,18 +75,18 @@ class DataSetController {
 
         request.withFormat {
             form multipartForm {
-                flash.message = message(code: 'default.created.message', args: [message(code: 'dataSet.label', default: 'DataSet'), dataSetInstance.id])
+                flash.message = message(code: 'default.created.message', args: [message(code: 'dataSet.label', default: 'Dataset'), dataSetInstance.id])
                 redirect dataSetInstance
             }
             '*' { respond dataSetInstance, [status: CREATED] }
         }
     }
 
-    def edit(DataSet dataSetInstance) {
+    def edit(Dataset dataSetInstance) {
         respond dataSetInstance
     }
 
-    def update(DataSet dataSetInstance) {
+    def update(Dataset dataSetInstance) {
         if (dataSetInstance == null) {
             notFound()
             return
@@ -101,14 +101,14 @@ class DataSetController {
 
         request.withFormat {
             form multipartForm {
-                flash.message = message(code: 'default.updated.message', args: [message(code: 'DataSet.label', default: 'DataSet'), dataSetInstance.id])
+                flash.message = message(code: 'default.updated.message', args: [message(code: 'Dataset.label', default: 'Dataset'), dataSetInstance.id])
                 redirect dataSetInstance
             }
             '*'{ respond dataSetInstance, [status: OK] }
         }
     }
 
-    def delete(DataSet dataSetInstance) {
+    def delete(Dataset dataSetInstance) {
 
         if (dataSetInstance == null) {
             notFound()
@@ -119,7 +119,7 @@ class DataSetController {
 
         request.withFormat {
             form multipartForm {
-                flash.message = message(code: 'default.deleted.message', args: [message(code: 'DataSet.label', default: 'DataSet'), dataSetInstance.id])
+                flash.message = message(code: 'default.deleted.message', args: [message(code: 'Dataset.label', default: 'Dataset'), dataSetInstance.id])
                 redirect action:"index", method:"GET"
             }
             '*'{ render status: NO_CONTENT }
@@ -129,7 +129,7 @@ class DataSetController {
     protected void notFound() {
         request.withFormat {
             form multipartForm {
-                flash.message = message(code: 'default.not.found.message', args: [message(code: 'dataSet.label', default: 'DataSet'), params.id])
+                flash.message = message(code: 'default.not.found.message', args: [message(code: 'dataSet.label', default: 'Dataset'), params.id])
                 redirect action: "index", method: "GET"
             }
             '*'{ render status: NOT_FOUND }

@@ -6,7 +6,7 @@ import org.philimone.hds.explorer.server.model.enums.settings.LogReportCode
 import org.philimone.hds.explorer.server.model.enums.SyncEntity
 import org.philimone.hds.explorer.server.model.logs.LogReport
 import org.philimone.hds.explorer.server.model.enums.LogStatus
-import org.philimone.hds.explorer.server.model.main.DataSet
+import org.philimone.hds.explorer.server.model.main.Dataset
 
 import java.time.LocalDateTime
 
@@ -76,7 +76,7 @@ class SyncFilesController {
     }
 
     def dataset(long id){
-        def dataset = DataSet.get(id)
+        def dataset = Dataset.get(id)
 
         def file = new File(dataset.filename)
         render file: file, fileName: file.name
@@ -199,7 +199,7 @@ class SyncFilesController {
     }
 
     def datasetZip(long id){
-        def dataset = DataSet.get(id)
+        def dataset = Dataset.get(id)
 
         def file = new File(dataset.compressedFilename)
         //render file: file, fileName: file.name
