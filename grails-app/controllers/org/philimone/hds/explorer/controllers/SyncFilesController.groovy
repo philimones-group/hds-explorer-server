@@ -75,7 +75,7 @@ class SyncFilesController {
         render file: file
     }
 
-    def dataset(long id){
+    def dataset(String id){
         def dataset = Dataset.get(id)
 
         def file = new File(dataset.filename)
@@ -198,7 +198,7 @@ class SyncFilesController {
         response.outputStream << file.bytes
     }
 
-    def datasetZip(long id){
+    def datasetZip(String id){
         def dataset = Dataset.get(id)
 
         def file = new File(dataset.compressedFilename)
