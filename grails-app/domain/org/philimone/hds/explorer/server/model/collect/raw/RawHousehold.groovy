@@ -18,8 +18,8 @@ class RawHousehold {
     String headCode
     String headName
     String gpsLng
-    String gpsAlt
     String gpsLat
+    String gpsAlt
     String gpsAcc
 
     String collectedBy //fieldWorkerId
@@ -55,7 +55,7 @@ class RawHousehold {
     static mapping = {
         table '_raw_household'
 
-        id column: "id", generator: 'uuid'
+        id column: "id", generator: 'assigned'
 
         version false
 

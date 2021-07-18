@@ -202,10 +202,10 @@ class VisitService {
         visit.hasInterpreter = rv.hasInterpreter
         visit.interpreterName = rv.interpreterName
 
-        visit.gpsAccuracy = StringUtil.getDouble(rv.gpsAccuracy)
-        visit.gpsAltitude = StringUtil.getDouble(rv.gpsAltitude)
-        visit.gpsLatitude = StringUtil.getDouble(rv.gpsLatitude)
-        visit.gpsLongitude = StringUtil.getDouble(rv.gpsLongitude)
+        visit.gpsAccuracy = StringUtil.getDouble(rv.gpsAcc)
+        visit.gpsAltitude = StringUtil.getDouble(rv.gpsAlt)
+        visit.gpsLatitude = StringUtil.getDouble(rv.gpsLat)
+        visit.gpsLongitude = StringUtil.getDouble(rv.gpsLng)
 
         //set collected by info
         visit.collectedBy = userService.getUser(rv.collectedBy)

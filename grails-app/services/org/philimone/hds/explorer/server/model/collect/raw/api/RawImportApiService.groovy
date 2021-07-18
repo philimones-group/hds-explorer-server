@@ -66,6 +66,7 @@ class RawImportApiService {
             }
         }
 
+        //overwrite this - with uploadedDate saved when persisting the data
         if (xmlNode.uploadedDate.size() > 0) {
             params.uploadedDate = StringUtil.toLocalDateTime(xmlNode.uploadedDate.text())
 

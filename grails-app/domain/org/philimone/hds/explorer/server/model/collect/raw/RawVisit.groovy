@@ -18,10 +18,10 @@ class RawVisit {
     String respondentCode
     Boolean hasInterpreter
     String interpreterName
-    String gpsAccuracy;
-    String gpsAltitude;
-    String gpsLatitude;
-    String gpsLongitude;
+    String gpsLat;
+    String gpsLng;
+    String gpsAlt;
+    String gpsAcc;
 
     String collectedBy //fieldWorkerId
     LocalDateTime collectedDate //visitDate / creationDate
@@ -45,10 +45,10 @@ class RawVisit {
         respondentCode blank: true, nullable: true
         hasInterpreter nullable: true
         interpreterName blank: true, nullable: true
-        gpsAccuracy nullable: true
-        gpsAltitude nullable: true
-        gpsLatitude nullable: true
-        gpsLongitude nullable: true
+        gpsAcc nullable: true
+        gpsAlt nullable: true
+        gpsLat nullable: true
+        gpsLng nullable: true
 
         collectedBy blank: true
         collectedDate nullable: true
@@ -74,10 +74,10 @@ class RawVisit {
         respondentCode column: "respondent_code"
         hasInterpreter column: "has_interpreter"
         interpreterName column: "interpreter_name"
-        gpsAccuracy column: "gps_accuracy"
-        gpsAltitude column: "gps_altitude"
-        gpsLatitude column: "gps_latitude"
-        gpsLongitude column: "gps_longitude"
+        gpsAcc column: "gps_accuracy"
+        gpsAlt column: "gps_altitude"
+        gpsLat column: "gps_latitude"
+        gpsLng column: "gps_longitude"
 
         collectedBy column: "collected_by"
         collectedDate column: "collected_date"

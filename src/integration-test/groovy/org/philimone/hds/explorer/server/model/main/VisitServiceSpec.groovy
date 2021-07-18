@@ -4,29 +4,15 @@ import grails.testing.mixin.integration.Integration
 import grails.gorm.transactions.Transactional
 import net.betainteractive.utilities.GeneralUtil
 import net.betainteractive.utilities.StringUtil
-import org.junit.Ignore
 import org.philimone.hds.explorer.server.model.authentication.Role
 import org.philimone.hds.explorer.server.model.authentication.User
 import org.philimone.hds.explorer.server.model.authentication.UserService
 import org.philimone.hds.explorer.server.model.collect.raw.RawHousehold
 import org.philimone.hds.explorer.server.model.collect.raw.RawMember
 import org.philimone.hds.explorer.server.model.collect.raw.RawRegion
-import org.philimone.hds.explorer.server.model.collect.raw.RawResidency
 import org.philimone.hds.explorer.server.model.collect.raw.RawVisit
 import org.philimone.hds.explorer.server.model.enums.Gender
-import org.philimone.hds.explorer.server.model.enums.MaritalStatus
 import org.philimone.hds.explorer.server.model.enums.VisitLocationItem
-import org.philimone.hds.explorer.server.model.main.Household
-import org.philimone.hds.explorer.server.model.main.HouseholdService
-import org.philimone.hds.explorer.server.model.main.Member
-import org.philimone.hds.explorer.server.model.main.MemberService
-import org.philimone.hds.explorer.server.model.main.Region
-import org.philimone.hds.explorer.server.model.main.RegionService
-import org.philimone.hds.explorer.server.model.main.Residency
-import org.philimone.hds.explorer.server.model.main.Round
-import org.philimone.hds.explorer.server.model.main.RoundService
-import org.philimone.hds.explorer.server.model.main.Visit
-import org.philimone.hds.explorer.server.model.main.VisitService
 import org.philimone.hds.explorer.server.model.main.collect.raw.RawExecutionResult
 import org.philimone.hds.explorer.server.model.main.collect.raw.RawMessage
 import org.philimone.hds.explorer.server.model.settings.Codes
@@ -264,10 +250,10 @@ class VisitServiceSpec extends Specification {
                 respondentCode: member11.code,
                 hasInterpreter: false,
                 interpreterName: null,
-                gpsAccuracy: null,
-                gpsAltitude: null,
-                gpsLatitude: null,
-                gpsLongitude: null,
+                gpsAcc: null,
+                gpsAlt: null,
+                gpsLat: null,
+                gpsLng: null,
                 collectedBy: "dragon",
                 collectedDate: GeneralUtil.getDate(2021, 3, 4, 0, 0, 0)
         )
@@ -283,10 +269,10 @@ class VisitServiceSpec extends Specification {
                 respondentCode: member11.code,
                 hasInterpreter: false,
                 interpreterName: null,
-                gpsAccuracy: null,
-                gpsAltitude: null,
-                gpsLatitude: null,
-                gpsLongitude: null,
+                gpsAcc: null,
+                gpsAlt: null,
+                gpsLat: null,
+                gpsLng: null,
                 collectedBy: "dragon",
                 collectedDate: GeneralUtil.getDate(2021, 3, 4, 0, 0, 0)
         )
@@ -302,10 +288,10 @@ class VisitServiceSpec extends Specification {
                 respondentCode: member11.code+"12",
                 hasInterpreter: true,
                 interpreterName: null,
-                gpsAccuracy: null,
-                gpsAltitude: null,
-                gpsLatitude: null,
-                gpsLongitude: null,
+                gpsAcc: null,
+                gpsAlt: null,
+                gpsLat: null,
+                gpsLng: null,
                 collectedBy: "dragon",
                 collectedDate: GeneralUtil.getDate(2021, 2, 4, 0, 0, 0)
         )

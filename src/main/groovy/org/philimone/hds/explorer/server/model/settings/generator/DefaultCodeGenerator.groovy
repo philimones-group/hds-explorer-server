@@ -145,7 +145,7 @@ class DefaultCodeGenerator implements CodeGenerator {
         def regexFw = '^FW[A-Za-z]{3}$'
 
         if (user.username.matches(regexFw)){ //ohds fieldworker
-            return user.username.toUpperCase().replaceAll("FW")
+            return user.username.toUpperCase().replaceAll("FW", "")
         }else {
             //def codes = User.list().collect{ t -> t.code}
 
@@ -192,6 +192,8 @@ class DefaultCodeGenerator implements CodeGenerator {
                 }
             }
         }
+
+        return "${baseCode}-FULL"
 
     }
 }
