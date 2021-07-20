@@ -26,7 +26,7 @@ class RawImportApiService {
 
         /* converting non-primitive types must be parsed manually */
         if (xmlNode.collectedDate.size() > 0) {
-            params.collectedDate = StringUtil.toLocalDateTime(xmlNode.collectedDate.text())
+            params.collectedDate = StringUtil.toLocalDateTimePrecise(xmlNode.collectedDate.text())
 
             if (params.collectedDate==null) {
                 errors << errorMessageService.getRawMessage("validation.field.raw.parsing.localdatetime.error", [xmlNode?.collectedDate.text(), "collectedDate"])
@@ -34,7 +34,7 @@ class RawImportApiService {
         }
 
         if (xmlNode.uploadedDate.size() > 0) {
-            params.uploadedDate = StringUtil.toLocalDateTime(xmlNode.uploadedDate.text())
+            params.uploadedDate = StringUtil.toLocalDateTimePrecise(xmlNode.uploadedDate.text())
 
             if (params.uploadedDate==null) {
                 errors << errorMessageService.getRawMessage("validation.field.raw.parsing.localdatetime.error", [xmlNode?.uploadedDate.text(), "uploadedDate"])
@@ -59,7 +59,7 @@ class RawImportApiService {
         /* converting non-primitive types must be parsed manually */
 
         if (xmlNode.collectedDate.size() > 0) {
-            params.collectedDate = StringUtil.toLocalDateTime(xmlNode.collectedDate.text())
+            params.collectedDate = StringUtil.toLocalDateTimePrecise(xmlNode.collectedDate.text())
 
             if (params.collectedDate==null) {
                 errors << errorMessageService.getRawMessage("validation.field.raw.parsing.localdatetime.error", [xmlNode?.collectedDate.text(), "collectedDate"])
@@ -68,14 +68,20 @@ class RawImportApiService {
 
         //overwrite this - with uploadedDate saved when persisting the data
         if (xmlNode.uploadedDate.size() > 0) {
-            params.uploadedDate = StringUtil.toLocalDateTime(xmlNode.uploadedDate.text())
+            params.uploadedDate = StringUtil.toLocalDateTimePrecise(xmlNode.uploadedDate.text())
 
             if (params.uploadedDate==null) {
                 errors << errorMessageService.getRawMessage("validation.field.raw.parsing.localdatetime.error", [xmlNode?.uploadedDate.text(), "uploadedDate"])
             }
         }
 
-        return new RawParseResult<RawHousehold>(new RawHousehold(params), errors)
+        println("new-id = "+params.id)
+
+
+        def rawHousehold = new RawHousehold(params)
+        rawHousehold.id = params.id
+
+        return new RawParseResult<RawHousehold>(rawHousehold, errors)
 
     }
 
@@ -101,7 +107,7 @@ class RawImportApiService {
         }
 
         if (xmlNode.collectedDate.size() > 0) {
-            params.collectedDate = StringUtil.toLocalDateTime(xmlNode.collectedDate.text())
+            params.collectedDate = StringUtil.toLocalDateTimePrecise(xmlNode.collectedDate.text())
 
             if (params.collectedDate==null) {
                 errors << errorMessageService.getRawMessage("validation.field.raw.parsing.localdatetime.error", [xmlNode?.collectedDate.text(), "collectedDate"])
@@ -109,14 +115,17 @@ class RawImportApiService {
         }
 
         if (xmlNode.uploadedDate.size() > 0) {
-            params.uploadedDate = StringUtil.toLocalDateTime(xmlNode.uploadedDate.text())
+            params.uploadedDate = StringUtil.toLocalDateTimePrecise(xmlNode.uploadedDate.text())
 
             if (params.uploadedDate==null) {
                 errors << errorMessageService.getRawMessage("validation.field.raw.parsing.localdatetime.error", [xmlNode?.uploadedDate.text(), "uploadedDate"])
             }
         }
 
-        return new RawParseResult<RawMember>(new RawMember(params), errors)
+        def rawMember = new RawMember(params)
+        rawMember.id = params.id
+
+        return new RawParseResult<RawMember>(rawMember, errors)
 
     }
 
@@ -142,7 +151,7 @@ class RawImportApiService {
         }
 
         if (xmlNode.collectedDate.size() > 0) {
-            params.collectedDate = StringUtil.toLocalDateTime(xmlNode.collectedDate.text())
+            params.collectedDate = StringUtil.toLocalDateTimePrecise(xmlNode.collectedDate.text())
 
             if (params.collectedDate==null) {
                 errors << errorMessageService.getRawMessage("validation.field.raw.parsing.localdatetime.error", [xmlNode?.collectedDate.text(), "collectedDate"])
@@ -150,14 +159,17 @@ class RawImportApiService {
         }
 
         if (xmlNode.uploadedDate.size() > 0) {
-            params.uploadedDate = StringUtil.toLocalDateTime(xmlNode.uploadedDate.text())
+            params.uploadedDate = StringUtil.toLocalDateTimePrecise(xmlNode.uploadedDate.text())
 
             if (params.uploadedDate==null) {
                 errors << errorMessageService.getRawMessage("validation.field.raw.parsing.localdatetime.error", [xmlNode?.uploadedDate.text(), "uploadedDate"])
             }
         }
 
-        return new RawParseResult<RawVisit>(new RawVisit(params), errors)
+        def rawVisit = new RawVisit(params)
+        rawVisit.id = params.id
+
+        return new RawParseResult<RawVisit>(rawVisit, errors)
 
     }
 
@@ -191,7 +203,7 @@ class RawImportApiService {
         }
 
         if (xmlNode.collectedDate.size() > 0) {
-            params.collectedDate = StringUtil.toLocalDateTime(xmlNode.collectedDate.text())
+            params.collectedDate = StringUtil.toLocalDateTimePrecise(xmlNode.collectedDate.text())
 
             if (params.collectedDate==null) {
                 errors << errorMessageService.getRawMessage("validation.field.raw.parsing.localdatetime.error", [xmlNode?.collectedDate.text(), "collectedDate"])
@@ -199,14 +211,17 @@ class RawImportApiService {
         }
 
         if (xmlNode.uploadedDate.size() > 0) {
-            params.uploadedDate = StringUtil.toLocalDateTime(xmlNode.uploadedDate.text())
+            params.uploadedDate = StringUtil.toLocalDateTimePrecise(xmlNode.uploadedDate.text())
 
             if (params.uploadedDate==null) {
                 errors << errorMessageService.getRawMessage("validation.field.raw.parsing.localdatetime.error", [xmlNode?.uploadedDate.text(), "uploadedDate"])
             }
         }
 
-        return new RawParseResult<RawMemberEnu>(new RawMemberEnu(params), errors)
+        def rawMemberEnu = new RawMemberEnu(params)
+        rawMemberEnu.id = params.id
+
+        return new RawParseResult<RawMemberEnu>(rawMemberEnu, errors)
 
     }
 
@@ -240,7 +255,7 @@ class RawImportApiService {
         }
 
         if (xmlNode.collectedDate.size() > 0) {
-            params.collectedDate = StringUtil.toLocalDateTime(xmlNode.collectedDate.text())
+            params.collectedDate = StringUtil.toLocalDateTimePrecise(xmlNode.collectedDate.text())
 
             if (params.collectedDate==null) {
                 errors << errorMessageService.getRawMessage("validation.field.raw.parsing.localdatetime.error", [xmlNode?.collectedDate.text(), "collectedDate"])
@@ -248,14 +263,17 @@ class RawImportApiService {
         }
 
         if (xmlNode.uploadedDate.size() > 0) {
-            params.uploadedDate = StringUtil.toLocalDateTime(xmlNode.uploadedDate.text())
+            params.uploadedDate = StringUtil.toLocalDateTimePrecise(xmlNode.uploadedDate.text())
 
             if (params.uploadedDate==null) {
                 errors << errorMessageService.getRawMessage("validation.field.raw.parsing.localdatetime.error", [xmlNode?.uploadedDate.text(), "uploadedDate"])
             }
         }
 
-        return new RawParseResult<RawExternalInMigration>(new RawExternalInMigration(params), errors)
+        def rawExternalInMigration = new RawExternalInMigration(params)
+        rawExternalInMigration.id = params.id
+
+        return new RawParseResult<RawExternalInMigration>(rawExternalInMigration, errors)
 
     }
 
@@ -281,7 +299,7 @@ class RawImportApiService {
         }
 
         if (xmlNode.collectedDate.size() > 0) {
-            params.collectedDate = StringUtil.toLocalDateTime(xmlNode.collectedDate.text())
+            params.collectedDate = StringUtil.toLocalDateTimePrecise(xmlNode.collectedDate.text())
 
             if (params.collectedDate==null) {
                 errors << errorMessageService.getRawMessage("validation.field.raw.parsing.localdatetime.error", [xmlNode?.collectedDate.text(), "collectedDate"])
@@ -289,14 +307,17 @@ class RawImportApiService {
         }
 
         if (xmlNode.uploadedDate.size() > 0) {
-            params.uploadedDate = StringUtil.toLocalDateTime(xmlNode.uploadedDate.text())
+            params.uploadedDate = StringUtil.toLocalDateTimePrecise(xmlNode.uploadedDate.text())
 
             if (params.uploadedDate==null) {
                 errors << errorMessageService.getRawMessage("validation.field.raw.parsing.localdatetime.error", [xmlNode?.uploadedDate.text(), "uploadedDate"])
             }
         }
 
-        return new RawParseResult<RawInMigration>(new RawInMigration(params), errors)
+        def rawInMigration = new RawInMigration(params)
+        rawInMigration.id = params.id
+
+        return new RawParseResult<RawInMigration>(rawInMigration, errors)
 
     }
 
@@ -322,7 +343,7 @@ class RawImportApiService {
         }
 
         if (xmlNode.collectedDate.size() > 0) {
-            params.collectedDate = StringUtil.toLocalDateTime(xmlNode.collectedDate.text())
+            params.collectedDate = StringUtil.toLocalDateTimePrecise(xmlNode.collectedDate.text())
 
             if (params.collectedDate==null) {
                 errors << errorMessageService.getRawMessage("validation.field.raw.parsing.localdatetime.error", [xmlNode?.collectedDate.text(), "collectedDate"])
@@ -330,14 +351,17 @@ class RawImportApiService {
         }
 
         if (xmlNode.uploadedDate.size() > 0) {
-            params.uploadedDate = StringUtil.toLocalDateTime(xmlNode.uploadedDate.text())
+            params.uploadedDate = StringUtil.toLocalDateTimePrecise(xmlNode.uploadedDate.text())
 
             if (params.uploadedDate==null) {
                 errors << errorMessageService.getRawMessage("validation.field.raw.parsing.localdatetime.error", [xmlNode?.uploadedDate.text(), "uploadedDate"])
             }
         }
 
-        return new RawParseResult<RawOutMigration>(new RawOutMigration(params), errors)
+        def rawOutMigration = new RawOutMigration(params)
+        rawOutMigration.id = params.id
+
+        return new RawParseResult<RawOutMigration>(rawOutMigration, errors)
 
     }
 
@@ -370,7 +394,10 @@ class RawImportApiService {
             }
         }
 
-        return new RawParseResult<RawHeadRelationship>(new RawHeadRelationship(params), errors)
+        def rawHeadRelationship = new RawHeadRelationship(params)
+        rawHeadRelationship.id = params.id
+
+        return new RawParseResult<RawHeadRelationship>(rawHeadRelationship, errors)
 
     }
 
@@ -403,7 +430,10 @@ class RawImportApiService {
             }
         }
 
-        return new RawParseResult<RawMaritalRelationship>(new RawMaritalRelationship(params), errors)
+        def rawMaritalRelationship = new RawMaritalRelationship(params)
+        rawMaritalRelationship.id = params.id
+
+        return new RawParseResult<RawMaritalRelationship>(rawMaritalRelationship, errors)
 
     }
 
@@ -453,7 +483,7 @@ class RawImportApiService {
         }
 
         if (xmlNode.collectedDate.size() > 0) {
-            params.collectedDate = StringUtil.toLocalDateTime(xmlNode.collectedDate.text())
+            params.collectedDate = StringUtil.toLocalDateTimePrecise(xmlNode.collectedDate.text())
 
             if (params.collectedDate==null) {
                 errors << errorMessageService.getRawMessage("validation.field.raw.parsing.localdatetime.error", [xmlNode?.collectedDate.text(), "collectedDate"])
@@ -461,14 +491,17 @@ class RawImportApiService {
         }
 
         if (xmlNode.uploadedDate.size() > 0) {
-            params.uploadedDate = StringUtil.toLocalDateTime(xmlNode.uploadedDate.text())
+            params.uploadedDate = StringUtil.toLocalDateTimePrecise(xmlNode.uploadedDate.text())
 
             if (params.uploadedDate==null) {
                 errors << errorMessageService.getRawMessage("validation.field.raw.parsing.localdatetime.error", [xmlNode?.uploadedDate.text(), "uploadedDate"])
             }
         }
 
-        return new RawParseResult<RawPregnancyRegistration>(new RawPregnancyRegistration(params), errors)
+        def rawPregnancyRegistration = new RawPregnancyRegistration(params)
+        rawPregnancyRegistration.id = params.id
+
+        return new RawParseResult<RawPregnancyRegistration>(rawPregnancyRegistration, errors)
 
     }
 
@@ -519,7 +552,7 @@ class RawImportApiService {
         }
 
         if (xmlNode?.collectedDate.size() > 0) {
-            params.collectedDate = StringUtil.toLocalDateTime(xmlNode.collectedDate.text())
+            params.collectedDate = StringUtil.toLocalDateTimePrecise(xmlNode.collectedDate.text())
 
             if (params.collectedDate==null) {
                 errors << errorMessageService.getRawMessage("validation.field.raw.parsing.localdatetime.error", [xmlNode?.collectedDate.text(), "collectedDate"])
@@ -527,7 +560,7 @@ class RawImportApiService {
         }
 
         if (xmlNode?.uploadedDate.size() > 0) {
-            params.uploadedDate = StringUtil.toLocalDateTime(xmlNode.uploadedDate.text())
+            params.uploadedDate = StringUtil.toLocalDateTimePrecise(xmlNode.uploadedDate.text())
 
             if (params.uploadedDate==null) {
                 errors << errorMessageService.getRawMessage("validation.field.raw.parsing.localdatetime.error", [xmlNode?.uploadedDate.text(), "uploadedDate"])
@@ -535,6 +568,7 @@ class RawImportApiService {
         }
 
         def rawInstance = new RawPregnancyOutcome(params)
+        rawInstance.id = params.id
 
         if (paramsChild.size() > 0) {
             paramsChild.each { cparams ->
@@ -543,6 +577,8 @@ class RawImportApiService {
                 rawInstance.addToChilds(rawChild)
             }
         }
+
+
 
         return new RawParseResult<RawPregnancyOutcome>(rawInstance, errors)
 
@@ -587,7 +623,7 @@ class RawImportApiService {
         }
 
         if (xmlNode.collectedDate.size() > 0) {
-            params.collectedDate = StringUtil.toLocalDateTime(xmlNode.collectedDate.text())
+            params.collectedDate = StringUtil.toLocalDateTimePrecise(xmlNode.collectedDate.text())
 
             if (params.collectedDate==null) {
                 errors << errorMessageService.getRawMessage("validation.field.raw.parsing.localdatetime.error", [xmlNode?.collectedDate.text(), "collectedDate"])
@@ -595,14 +631,17 @@ class RawImportApiService {
         }
 
         if (xmlNode.uploadedDate.size() > 0) {
-            params.uploadedDate = StringUtil.toLocalDateTime(xmlNode.uploadedDate.text())
+            params.uploadedDate = StringUtil.toLocalDateTimePrecise(xmlNode.uploadedDate.text())
 
             if (params.uploadedDate==null) {
                 errors << errorMessageService.getRawMessage("validation.field.raw.parsing.localdatetime.error", [xmlNode?.uploadedDate.text(), "uploadedDate"])
             }
         }
 
-        return new RawParseResult<RawDeath>(new RawDeath(params), errors)
+        def rawDeath = new RawDeath(params)
+        rawDeath.id = params.id
+
+        return new RawParseResult<RawDeath>(rawDeath, errors)
 
     }
 
@@ -653,7 +692,7 @@ class RawImportApiService {
         }
 
         if (xmlNode?.collectedDate.size() > 0) {
-            params.collectedDate = StringUtil.toLocalDateTime(xmlNode.collectedDate.text())
+            params.collectedDate = StringUtil.toLocalDateTimePrecise(xmlNode.collectedDate.text())
 
             if (params.collectedDate==null) {
                 errors << errorMessageService.getRawMessage("validation.field.raw.parsing.localdatetime.error", [xmlNode?.collectedDate.text(), "collectedDate"])
@@ -661,7 +700,7 @@ class RawImportApiService {
         }
 
         if (xmlNode?.uploadedDate.size() > 0) {
-            params.uploadedDate = StringUtil.toLocalDateTime(xmlNode.uploadedDate.text())
+            params.uploadedDate = StringUtil.toLocalDateTimePrecise(xmlNode.uploadedDate.text())
 
             if (params.uploadedDate==null) {
                 errors << errorMessageService.getRawMessage("validation.field.raw.parsing.localdatetime.error", [xmlNode?.uploadedDate.text(), "uploadedDate"])
@@ -669,6 +708,7 @@ class RawImportApiService {
         }
 
         def rawInstance = new RawChangeHead(params)
+        rawInstance.id = params.id
 
         if (paramsRelationships.size() > 0) {
             paramsRelationships.each { cparams ->

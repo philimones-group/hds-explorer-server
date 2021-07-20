@@ -460,6 +460,15 @@ public class StringUtil {
             return null;
         }
     }
+
+    public static LocalDateTime toLocalDateTimePrecise(String dateString) {
+        try {
+            return LocalDateTime.parse(dateString, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS"));
+        } catch (Exception ex) {
+            //ex.printStackTrace();
+            return null;
+        }
+    }
 /*
     public static String format(Date date, boolean longDateFormat){
         if (date == null) return "null";
