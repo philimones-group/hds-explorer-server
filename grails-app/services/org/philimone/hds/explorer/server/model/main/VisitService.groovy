@@ -205,7 +205,7 @@ class VisitService {
         visit.gpsAccuracy = StringUtil.getDouble(rv.gpsAcc)
         visit.gpsAltitude = StringUtil.getDouble(rv.gpsAlt)
         visit.gpsLatitude = StringUtil.getDouble(rv.gpsLat)
-        visit.gpsLongitude = StringUtil.getDouble(rv.gpsLng)
+        visit.gpsLongitude = StringUtil.getDouble(rv.gpsLon)
 
         //set collected by info
         visit.collectedBy = userService.getUser(rv.collectedBy)

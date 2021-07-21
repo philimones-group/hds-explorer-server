@@ -1,8 +1,6 @@
 package org.philimone.hds.explorer.server.model.collect.raw.api
 
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
-import grails.converters.JSON
+
 import grails.converters.XML
 import grails.testing.gorm.DataTest
 import grails.testing.spring.AutowiredTest
@@ -19,7 +17,6 @@ import org.philimone.hds.explorer.server.model.enums.HeadRelationshipType
 import org.philimone.hds.explorer.server.model.enums.PregnancyOutcomeType
 import spock.lang.Specification
 
-import java.lang.reflect.Type
 import java.time.LocalDateTime
 
 class XMLControllerTestsSpec extends Specification implements ControllerUnitTest<RawImportApiController>, DataTest, AutowiredTest {
@@ -43,7 +40,7 @@ class XMLControllerTestsSpec extends Specification implements ControllerUnitTest
                 householdName: "Macandza House",
                 headCode: "",
                 headName: "",
-                gpsLng: "ASDASD",
+                gpsLon: "ASDASD",
                 gpsAlt: "10.1000",
                 gpsLat: "10.1000",
                 gpsAcc: "10.1000",
@@ -61,7 +58,7 @@ class XMLControllerTestsSpec extends Specification implements ControllerUnitTest
                 householdName: "Macandza House",
                 headCode: "",
                 headName: "",
-                gpsLng: "ASDASD",
+                gpsLon: "ASDASD",
                 gpsAlt: "10.1000",
                 gpsLat: "10.1000",
                 gpsAcc: "10.1000",
@@ -132,7 +129,7 @@ class XMLControllerTestsSpec extends Specification implements ControllerUnitTest
         println "rawHousehold.householdName = ${rawHousehold.householdName}"
         println "rawHousehold.headCode = ${rawHousehold.headCode}"
         println "rawHousehold.headName = ${rawHousehold.headName}"
-        println "rawHousehold.gpsLng = ${rawHousehold.gpsLng}"
+        println "rawHousehold.gpsLng = ${rawHousehold.gpsLon}"
         println "rawHousehold.gpsAlt = ${rawHousehold.gpsAlt}"
         println "rawHousehold.gpsLat = ${rawHousehold.gpsLat}"
         println "rawHousehold.gpsAcc = ${rawHousehold.gpsAcc}"

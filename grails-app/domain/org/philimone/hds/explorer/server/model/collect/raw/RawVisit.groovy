@@ -19,7 +19,7 @@ class RawVisit {
     Boolean hasInterpreter
     String interpreterName
     String gpsLat;
-    String gpsLng;
+    String gpsLon;
     String gpsAlt;
     String gpsAcc;
 
@@ -48,7 +48,7 @@ class RawVisit {
         gpsAcc nullable: true
         gpsAlt nullable: true
         gpsLat nullable: true
-        gpsLng nullable: true
+        gpsLon nullable: true
 
         collectedBy blank: true
         collectedDate nullable: true
@@ -77,7 +77,7 @@ class RawVisit {
         gpsAcc column: "gps_accuracy"
         gpsAlt column: "gps_altitude"
         gpsLat column: "gps_latitude"
-        gpsLng column: "gps_longitude"
+        gpsLon column: "gps_longitude"
 
         collectedBy column: "collected_by"
         collectedDate column: "collected_date"

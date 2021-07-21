@@ -17,8 +17,8 @@ class RawHousehold {
     String householdName
     String headCode
     String headName
-    String gpsLng
     String gpsLat
+    String gpsLon
     String gpsAlt
     String gpsAcc
 
@@ -40,7 +40,7 @@ class RawHousehold {
         householdName blank: true
         headCode blank: true, nullable: true
         headName blank: true, nullable: true
-        gpsLng blank: true, nullable: true
+        gpsLon blank: true, nullable: true
         gpsAlt blank: true, nullable: true
         gpsLat blank: true, nullable: true
         gpsAcc blank: true, nullable: true
@@ -65,7 +65,7 @@ class RawHousehold {
         householdName column: "household_name"
         headCode column: "head_code"
         headName column: "head_name"
-        gpsLng column: "gps_longitude"
+        gpsLon column: "gps_longitude"
         gpsAlt column: "gps_altitude"
         gpsLat column: "gps_latitude"
         gpsAcc column: "gps_accuracy"

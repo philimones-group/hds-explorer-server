@@ -253,7 +253,7 @@ class VisitServiceSpec extends Specification {
                 gpsAcc: null,
                 gpsAlt: null,
                 gpsLat: null,
-                gpsLng: null,
+                gpsLon: null,
                 collectedBy: "dragon",
                 collectedDate: GeneralUtil.getDate(2021, 3, 4, 0, 0, 0)
         )
@@ -272,7 +272,7 @@ class VisitServiceSpec extends Specification {
                 gpsAcc: null,
                 gpsAlt: null,
                 gpsLat: null,
-                gpsLng: null,
+                gpsLon: null,
                 collectedBy: "dragon",
                 collectedDate: GeneralUtil.getDate(2021, 3, 4, 0, 0, 0)
         )
@@ -291,7 +291,7 @@ class VisitServiceSpec extends Specification {
                 gpsAcc: null,
                 gpsAlt: null,
                 gpsLat: null,
-                gpsLng: null,
+                gpsLon: null,
                 collectedBy: "dragon",
                 collectedDate: GeneralUtil.getDate(2021, 2, 4, 0, 0, 0)
         )

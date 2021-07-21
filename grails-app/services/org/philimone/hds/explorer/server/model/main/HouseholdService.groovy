@@ -144,7 +144,7 @@ class HouseholdService {
         household.gpsAccuracy = StringUtil.getDouble(rh.gpsAcc)
         household.gpsAltitude = StringUtil.getDouble(rh.gpsAlt)
         household.gpsLatitude = StringUtil.getDouble(rh.gpsLat)
-        household.gpsLongitude = StringUtil.getDouble(rh.gpsLng)
+        household.gpsLongitude = StringUtil.getDouble(rh.gpsLon)
         household.gpsNull = household.gpsLatitude==null || household.gpsLongitude
 
         household.cosLatitude =  household.gpsLatitude==null ?  null : Math.cos(household.gpsLatitude*Math.PI / 180.0)
