@@ -139,6 +139,9 @@ class BootStrap {
             new SecurityMap(url: "/api/export/residencies/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
             new SecurityMap(url: "/api/export/hrelationships/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
             new SecurityMap(url: "/api/export/mrelationships/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
+            new SecurityMap(url: "/api/export/rounds/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
+            new SecurityMap(url: "/api/export/visits/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
+            new SecurityMap(url: "/api/export/pregnancies/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
             new SecurityMap(url: "/api/export/stats/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
 
             new SecurityMap(url: "/api/export/params/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
@@ -280,31 +283,17 @@ class BootStrap {
 
         /* Group Generate Files */
         new LogReport(
-                reportId: LogReportCode.REPORT_GENERATE_USERS_ZIP_XML_FILES,
-                group: LogGroup.findByGroupId(LogGroupCode.GROUP_GENERATE_FILES),
-                status: LogStatus.NOT_STARTED,
-                description: 'logreport.export.users.zip_xml_files.label'
-        ).save(flush: true)
-
-        new LogReport(
-                reportId: LogReportCode.REPORT_GENERATE_HOUSEHOLDS_ZIP_XML_FILES,
-                group: LogGroup.findByGroupId(LogGroupCode.GROUP_GENERATE_FILES),
-                status: LogStatus.NOT_STARTED,
-                description: 'logreport.export.households.zip_xml_files.label'
-        ).save(flush: true)
-
-        new LogReport(
-                reportId: LogReportCode.REPORT_GENERATE_MEMBERS_ZIP_XML_FILES,
-                group: LogGroup.findByGroupId(LogGroupCode.GROUP_GENERATE_FILES),
-                status: LogStatus.NOT_STARTED,
-                description: 'logreport.export.individuals.zip_xml_files.label'
-        ).save(flush: true)
-
-        new LogReport(
                 reportId: LogReportCode.REPORT_GENERATE_SETTINGS_ZIP_XML_FILES,
                 group: LogGroup.findByGroupId(LogGroupCode.GROUP_GENERATE_FILES),
                 status: LogStatus.NOT_STARTED,
                 description: 'logreport.export.settings.zip_xml_files.label'
+        ).save(flush: true)
+
+        new LogReport(
+                reportId: LogReportCode.REPORT_GENERATE_EXTERNAL_DATASETS_ZIP_XML_FILES,
+                group: LogGroup.findByGroupId(LogGroupCode.GROUP_GENERATE_FILES),
+                status: LogStatus.NOT_STARTED,
+                description: 'logreport.export.extdatasets.zip_xml_files.label'
         ).save(flush: true)
 
         new LogReport(
@@ -315,28 +304,19 @@ class BootStrap {
         ).save(flush: true)
 
         new LogReport(
-                reportId: LogReportCode.REPORT_GENERATE_RESIDENCIES_ZIP_XML_FILES,
+                reportId: LogReportCode.REPORT_GENERATE_HOUSEHOLDS_DATASETS_ZIP_XML_FILES,
                 group: LogGroup.findByGroupId(LogGroupCode.GROUP_GENERATE_FILES),
                 status: LogStatus.NOT_STARTED,
-                description: 'logreport.export.residencies.zip_xml_files.label',
-                enabled: false
+                description: 'logreport.export.households_data.zip_xml_files.label'
         ).save(flush: true)
 
         new LogReport(
-                reportId: LogReportCode.REPORT_GENERATE_HEAD_RELATIONSHIPS_ZIP_XML_FILES,
+                reportId: LogReportCode.REPORT_GENERATE_DSS_EVENTS_ZIP_XML_FILES,
                 group: LogGroup.findByGroupId(LogGroupCode.GROUP_GENERATE_FILES),
                 status: LogStatus.NOT_STARTED,
-                description: 'logreport.export.head_relationships.zip_xml_files.label',
-                enabled: false
+                description: 'logreport.export.dss_events.zip_xml_files.label'
         ).save(flush: true)
 
-        new LogReport(
-                reportId: LogReportCode.REPORT_GENERATE_MARTIAL_RELATIONSHIPS_ZIP_XML_FILES,
-                group: LogGroup.findByGroupId(LogGroupCode.GROUP_GENERATE_FILES),
-                status: LogStatus.NOT_STARTED,
-                description: 'logreport.export.marital_relationships.zip_xml_files.label',
-                enabled: false
-        ).save(flush: true)
 
         //Get defaults system paramaters from properties file
         def maxCols = svc.getConfigValue("${Codes.PARAMS_TRACKLIST_MAX_DATA_COLUMNS}")

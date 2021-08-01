@@ -37,6 +37,10 @@ class UrlMappings {
         "/api/export/residencies"(controller:         "syncFiles", action: "residencies")
         "/api/export/hrelationships"(controller:         "syncFiles", action: "headRelationships")
         "/api/export/mrelationships"(controller:         "syncFiles", action: "maritalRelationships")
+        "/api/export/rounds"(controller:         "syncFiles", action: "rounds")
+        "/api/export/visits"(controller:         "syncFiles", action: "visits")
+        "/api/export/pregnancies"(controller:         "syncFiles", action: "pregnancyRegistrations")
+
 
         "/api/export/households/zip"(controller:    "syncFiles", action: "householdsZip")
         "/api/export/members/zip"(controller:   "syncFiles", action: "membersZip")
@@ -55,6 +59,9 @@ class UrlMappings {
         "/api/export/residencies/zip"(controller:         "syncFiles", action: "residenciesZip")
         "/api/export/hrelationships/zip"(controller:         "syncFiles", action: "headRelationshipsZip")
         "/api/export/mrelationships/zip"(controller:         "syncFiles", action: "maritalRelationshipsZip")
+        "/api/export/rounds/zip"(controller:         "syncFiles", action: "roundsZip")
+        "/api/export/visits/zip"(controller:         "syncFiles", action: "visitsZip")
+        "/api/export/pregnancies/zip"(controller:         "syncFiles", action: "pregnancyRegistrationsZip")
 
         "/api/export/sync-report/${id}"(controller: "syncFiles", action: "syncFilesReport", id: "${id}")
 

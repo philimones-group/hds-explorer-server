@@ -27,10 +27,10 @@ class Visit extends CollectableEntity {
     Boolean hasInterpreter
     String interpreterName
 
-    Double gpsAccuracy;
-    Double gpsAltitude;
-    Double gpsLatitude;
-    Double gpsLongitude;
+    Double gpsAccuracy
+    Double gpsAltitude
+    Double gpsLatitude
+    Double gpsLongitude
 
     static constraints = {
         id maxSize: 32

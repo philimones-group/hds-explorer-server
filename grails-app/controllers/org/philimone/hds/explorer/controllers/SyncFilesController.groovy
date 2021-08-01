@@ -97,6 +97,21 @@ class SyncFilesController {
         render file: file
     }
 
+    def rounds = {
+        def file = new File(SystemPath.getGeneratedFilesPath() + File.separator + "${SyncEntity.ROUNDS.xmlFilename}")
+        render file: file
+    }
+
+    def visits = {
+        def file = new File(SystemPath.getGeneratedFilesPath() + File.separator + "${SyncEntity.VISITS.xmlFilename}")
+        render file: file
+    }
+
+    def pregnancyRegistrations = {
+        def file = new File(SystemPath.getGeneratedFilesPath() + File.separator + "${SyncEntity.PREGNANCY_REGISTRATIONS.xmlFilename}")
+        render file: file
+    }
+
     /* ZIP Files*/
 
     def householdsZip = {
@@ -233,6 +248,21 @@ class SyncFilesController {
         response.outputStream << file.bytes
     }
 
+    def roundsZip = {
+        def file = new File(SystemPath.getGeneratedFilesPath() + File.separator + "${SyncEntity.ROUNDS.zipFilename}")
+        render file: file
+    }
+
+    def visitsZip = {
+        def file = new File(SystemPath.getGeneratedFilesPath() + File.separator + "${SyncEntity.VISITS.zipFilename}")
+        render file: file
+    }
+
+    def pregnancyRegistrationsZip = {
+        def file = new File(SystemPath.getGeneratedFilesPath() + File.separator + "${SyncEntity.PREGNANCY_REGISTRATIONS.zipFilename}")
+        render file: file
+    }
+
     def syncFilesReport(int id){
         def report = syncFilesReportService.get(id)
 
@@ -254,7 +284,7 @@ class SyncFilesController {
     /**/
     def index = {
 
-        def logReports = LogReport.executeQuery("select lr from LogReport lr where lr.group.groupId=?", [LogGroupCode.GROUP_GENERATE_FILES])
+        def logReports = LogReport.executeQuery("select lr from LogReport lr where lr.group.groupId=? order by lr.reportId", [LogGroupCode.GROUP_GENERATE_FILES])
 
         render view: "index", model: [logReports : logReports]
     }
@@ -275,42 +305,22 @@ class SyncFilesController {
 
         def id = logReport.reportId
 
-        if (logReport.reportId== LogReportCode.REPORT_GENERATE_USERS_ZIP_XML_FILES){
-            new Thread(new Runnable() {
-                @Override
-                void run() {
-                    println "executing export files to user xml/zip"
-                    syncFilesService.generateUsersXML(id)
-                }
-            }).start()
-        }
-
-        if (logReport.reportId==LogReportCode.REPORT_GENERATE_HOUSEHOLDS_ZIP_XML_FILES){
-            new Thread(new Runnable() {
-                @Override
-                void run() {
-                    println "executing export files to households xml/zip"
-                    syncFilesService.generateHouseHoldsXML(id)
-                }
-            }).start()
-        }
-
-        if (logReport.reportId== LogReportCode.REPORT_GENERATE_MEMBERS_ZIP_XML_FILES){
-            new Thread(new Runnable() {
-                @Override
-                void run() {
-                    println "executing export files to members xml/zip"
-                    syncFilesService.generateMembersXML(id)
-                }
-            }).start()
-        }
-
         if (logReport.reportId==LogReportCode.REPORT_GENERATE_SETTINGS_ZIP_XML_FILES){
             new Thread(new Runnable() {
                 @Override
                 void run() {
-                    println "executing export files to individuals xml/zip"
+                    println "executing export files to settings xmls/zips"
                     syncFilesService.generateSettingsXML(id)
+                }
+            }).start()
+        }
+
+        if (logReport.reportId== LogReportCode.REPORT_GENERATE_EXTERNAL_DATASETS_ZIP_XML_FILES){
+            new Thread(new Runnable() {
+                @Override
+                void run() {
+                    println "executing export files to external datasets xml/zip"
+                    syncFilesService.generateDatasetsXML(id)
                 }
             }).start()
         }
@@ -325,32 +335,22 @@ class SyncFilesController {
             }).start()
         }
 
-        if (logReport.reportId==LogReportCode.REPORT_GENERATE_RESIDENCIES_ZIP_XML_FILES){
+        if (logReport.reportId==LogReportCode.REPORT_GENERATE_HOUSEHOLDS_DATASETS_ZIP_XML_FILES){
             new Thread(new Runnable() {
                 @Override
                 void run() {
-                    println "executing export files to residencies xml/zip"
-                    syncFilesService.generateResidenciesXML(id)
+                    println "executing export files to households datasets xmls/zips"
+                    syncFilesService.generateHouseholdDatasets(id)
                 }
             }).start()
         }
 
-        if (logReport.reportId==LogReportCode.REPORT_GENERATE_HEAD_RELATIONSHIPS_ZIP_XML_FILES){
+        if (logReport.reportId==LogReportCode.REPORT_GENERATE_DSS_EVENTS_ZIP_XML_FILES){
             new Thread(new Runnable() {
                 @Override
                 void run() {
-                    println "executing export files to h.relationships xml/zip"
-                    syncFilesService.generateHeadRelationshipsXML(id)
-                }
-            }).start()
-        }
-
-        if (logReport.reportId==LogReportCode.REPORT_GENERATE_MARTIAL_RELATIONSHIPS_ZIP_XML_FILES){
-            new Thread(new Runnable() {
-                @Override
-                void run() {
-                    println "executing export files to m.relationships xml/zip"
-                    syncFilesService.generateMaritalRelationshipsXML(id)
+                    println "executing export files to dss events xmls/zips"
+                    syncFilesService.generateDemographicEvents(id)
                 }
             }).start()
         }
