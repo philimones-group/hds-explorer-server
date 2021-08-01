@@ -2,6 +2,7 @@ package org.philimone.hds.explorer.server.model.main
 
 import org.philimone.hds.explorer.server.model.audit.CollectableEntity
 import org.philimone.hds.explorer.server.model.enums.VisitLocationItem
+import org.philimone.hds.explorer.server.model.enums.VisitReason
 
 import java.time.LocalDate
 
@@ -14,6 +15,7 @@ class Visit extends CollectableEntity {
     String householdCode
 
     LocalDate visitDate
+    VisitReason visitReason
     VisitLocationItem visitLocation
     String visitLocationOther
 
@@ -41,6 +43,7 @@ class Visit extends CollectableEntity {
         visitDate nullable: false
         visitLocation blank: true, nullable: true, enumType: "identity"
         visitLocationOther blank: true, nullable: true
+        visitReason blank:true, nullable: true, enumType: "identity"
 
         roundNumber min: 0
 
@@ -70,6 +73,7 @@ class Visit extends CollectableEntity {
         visitDate column: "visit_date"
         visitLocation column: "visit_location"
         visitLocationOther column: "visit_location_other"
+        visitReason column: "visit_reason"
 
         roundNumber column: "round_number"
 

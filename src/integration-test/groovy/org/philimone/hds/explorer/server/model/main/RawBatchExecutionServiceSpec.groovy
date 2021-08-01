@@ -109,6 +109,9 @@ class RawBatchExecutionServiceSpec extends Specification {
         def rw1 = new RawHousehold(id: "u1", regionCode: region.code, householdCode: "TXUDF1001", householdName: "Macandza House", headCode: "", headName: "", collectedBy: user.username, collectedDate: LocalDateTime.now(), uploadedDate: LocalDateTime.now())
         def rw2 = new RawHousehold(id: "u2", regionCode: region.code, householdCode: "TXUDF1002", householdName: "George Benson", headCode: "", headName: "", collectedBy: user.username, collectedDate: LocalDateTime.now(), uploadedDate: LocalDateTime.now())
 
+        rw1.id = "u1"
+        rw2.id = "u2"
+
         rw1.save()
         rw2.save()
 

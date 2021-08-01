@@ -5,6 +5,7 @@ import net.betainteractive.utilities.StringUtil
 import org.philimone.hds.explorer.server.model.collect.raw.RawVisit
 import org.philimone.hds.explorer.server.model.enums.RawEntity
 import org.philimone.hds.explorer.server.model.enums.VisitLocationItem
+import org.philimone.hds.explorer.server.model.enums.VisitReason
 import org.philimone.hds.explorer.server.model.main.collect.raw.RawExecutionResult
 import org.philimone.hds.explorer.server.model.main.collect.raw.RawMessage
 
@@ -81,6 +82,7 @@ class VisitService {
         def isBlankVisitDate = rawVisit.visitDate == null
         def isBlankVisitLocation = StringUtil.isBlank(rawVisit.visitLocation)
         def isBlankVisitLocationOther = StringUtil.isBlank(rawVisit.visitLocationOther)
+        def isBlankVisitReason = StringUtil.isBlank(rawVisit.visitReason)
         def isBlankRoundNumber = StringUtil.isBlankInteger(rawVisit.roundNumber)
         def isBlankRespondentCode = StringUtil.isBlank(rawVisit.respondentCode)
         def isBlankHasInterpreter = StringUtil.isBlankBoolean(rawVisit.hasInterpreter)
@@ -118,6 +120,10 @@ class VisitService {
         if (isVisitLocationOther && isBlankVisitLocationOther){
             errors << errorMessageService.getRawMessage(RawEntity.VISIT, "validation.field.blank", ["visitLocationOther"], ["visitLocationOther"])
         }
+        //C1. Check Blank Fields (visitReason)
+        if (isBlankVisitReason){
+            errors << errorMessageService.getRawMessage(RawEntity.VISIT, "validation.field.blank", ["visitReason"], ["visitReason"])
+        }
         //C1. Check Blank Fields (respondentCode)
         if (isBlankRespondentCode){
             errors << errorMessageService.getRawMessage(RawEntity.VISIT, "validation.field.blank", ["respondentCode"], ["respondentCode"])
@@ -150,6 +156,11 @@ class VisitService {
         //C5. Validate VisitLocation Enum Options
         if (!isBlankVisitLocation && VisitLocationItem.getFrom(rawVisit.visitLocation)==null){
             errors << errorMessageService.getRawMessage(RawEntity.VISIT, "validation.field.enum.choices.error", [rawVisit.visitLocation, "visitLocation"], ["visitLocation"])
+        }
+
+        //C5. Validate VisitReason Enum Options
+        if (!isBlankVisitReason && VisitReason.getFrom(rawVisit.visitReason)==null){
+            errors << errorMessageService.getRawMessage(RawEntity.VISIT, "validation.field.enum.choices.error", [rawVisit.visitReason, "visitReason"], ["visitReason"])
         }
 
         //C6. Check Visit Date max date
@@ -193,6 +204,7 @@ class VisitService {
         visit.visitDate = rv.visitDate
         visit.visitLocation = VisitLocationItem.getFrom(rv.visitLocation)
         visit.visitLocationOther = rv.visitLocationOther
+        visit.visitReason = VisitReason.getFrom(rv.visitReason)
 
         visit.roundNumber = rv.roundNumber
 

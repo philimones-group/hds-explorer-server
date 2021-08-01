@@ -11,10 +11,11 @@ class RawVisit {
 
     String code
     String householdCode
+    Integer roundNumber
     LocalDate visitDate
     String visitLocation
     String visitLocationOther
-    Integer roundNumber
+    String visitReason
     String respondentCode
     Boolean hasInterpreter
     String interpreterName
@@ -38,10 +39,11 @@ class RawVisit {
         code unique: true, nullable: false
 
         householdCode nullable: false
+        roundNumber min: 0
         visitDate nullable: false
         visitLocation blank: true, nullable: true
         visitLocationOther blank: true, nullable: true
-        roundNumber min: 0
+        visitReason blank: true, nullable: true
         respondentCode blank: true, nullable: true
         hasInterpreter nullable: true
         interpreterName blank: true, nullable: true
@@ -70,6 +72,7 @@ class RawVisit {
         visitDate column: "visit_date"
         visitLocation column: "visit_location"
         visitLocationOther column: "visit_location_other"
+        visitReason column: "visit_reason"
         roundNumber column: "round_number"
         respondentCode column: "respondent_code"
         hasInterpreter column: "has_interpreter"
