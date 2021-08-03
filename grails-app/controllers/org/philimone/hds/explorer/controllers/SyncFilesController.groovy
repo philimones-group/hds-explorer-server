@@ -263,8 +263,9 @@ class SyncFilesController {
         render file: file
     }
 
-    def syncFilesReport(int id){
-        def report = syncFilesReportService.get(id)
+    def syncFilesReport = {
+        //println(params.id)
+        def report = syncFilesReportService.get(params?.id)
 
         if (report == null){
             render -1

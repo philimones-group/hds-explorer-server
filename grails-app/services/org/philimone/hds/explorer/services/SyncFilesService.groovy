@@ -65,9 +65,9 @@ class SyncFilesService {
     def generateHouseholdDatasets(LogReportCode logReportId) {
         generateRegionsXML(logReportId)
         generateRoundsXML(logReportId)
-        generateHouseholdDatasets(logReportId)
+        generateHouseHoldsXML(logReportId)
         generateMembersXML(logReportId)
-        generateResidenciesXML(ogReportId)
+        generateResidenciesXML(logReportId)
     }
 
     def generateDemographicEvents(LogReportCode logReportId) {
@@ -1554,9 +1554,9 @@ class SyncFilesService {
 
     def generatePregnancyRegistrationsXML(LogReportCode logReportId) { //read forms
 
-        String filename = SyncEntity.VISITS.filename
-        String xmlFilename = SyncEntity.VISITS.xmlFilename
-        String zipFilename = SyncEntity.VISITS.zipFilename
+        String filename = SyncEntity.PREGNANCY_REGISTRATIONS.filename
+        String xmlFilename = SyncEntity.PREGNANCY_REGISTRATIONS.xmlFilename
+        String zipFilename = SyncEntity.PREGNANCY_REGISTRATIONS.zipFilename
 
         LogOutput log = generalUtilitiesService.getOutput(SystemPath.getLogsPath(), "generate-exp-${filename}-xml");
         PrintStream output = log.output
@@ -1983,7 +1983,7 @@ class SyncFilesService {
         element.appendChild(createAttributeNonNull(doc, "startType", residency.startType.code));
         element.appendChild(createAttributeNonNull(doc, "startDate", residency.startDate));
         element.appendChild(createAttributeNonNull(doc, "endType", residency.endType.code));
-        element.appendChild(createAttributeNonNull(doc, "endDate", residency.endDate));
+        element.appendChild(createAttributeNonNull(doc, "endDate", residency.endDate==null ? "" : StringUtil.format(residency.endDate)));
 
         return element;
     }
@@ -2019,7 +2019,7 @@ class SyncFilesService {
         element.appendChild(createAttributeNonNull(doc, "startType", headRelationship.startType.code));
         element.appendChild(createAttributeNonNull(doc, "startDate", headRelationship.startDate));
         element.appendChild(createAttributeNonNull(doc, "endType", headRelationship.endType.code));
-        element.appendChild(createAttributeNonNull(doc, "endDate", headRelationship.endDate));
+        element.appendChild(createAttributeNonNull(doc, "endDate", headRelationship.endDate==null ? "" : StringUtil.format(headRelationship.endDate)));
 
         return element;
     }
@@ -2031,8 +2031,8 @@ class SyncFilesService {
         element.appendChild(createAttributeNonNull(doc, "memberB_code", maritalRelationship.memberB_code));
         element.appendChild(createAttributeNonNull(doc, "startStatus", maritalRelationship.startStatus.code));
         element.appendChild(createAttributeNonNull(doc, "startDate", maritalRelationship.startDate));
-        element.appendChild(createAttributeNonNull(doc, "endStatus", maritalRelationship.endStatus.code));
-        element.appendChild(createAttributeNonNull(doc, "endDate", maritalRelationship.endDate));
+        element.appendChild(createAttributeNonNull(doc, "endStatus", maritalRelationship.endStatus==null ? "" : maritalRelationship.endStatus.code));
+        element.appendChild(createAttributeNonNull(doc, "endDate", maritalRelationship.endDate==null ? "" : StringUtil.format(maritalRelationship.endDate)));
 
         return element;
     }

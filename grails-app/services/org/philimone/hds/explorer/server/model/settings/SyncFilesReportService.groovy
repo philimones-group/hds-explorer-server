@@ -15,9 +15,11 @@ class SyncFilesReportService {
         report.save(flush:true)
     }
 
-    def SyncFilesReport get(int code){
+    def SyncFilesReport get(String code){
 
-        def entity = SyncEntity.values().find{ it.code == code}
+        if (code == null) return null
+
+        def entity = SyncEntity.values().find{ it.name() == code}
 
         if (entity == null) return null
 

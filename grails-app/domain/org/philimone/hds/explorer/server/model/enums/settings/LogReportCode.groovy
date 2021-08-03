@@ -42,6 +42,11 @@ enum LogReportCode {
         return code
     }
 
+    @Override
+    String toString() {
+        return "${code}"
+    }
+
     /* Finding Enum by code */
     private static final Map<String, LogReportCode> MAP = new HashMap<>();
 

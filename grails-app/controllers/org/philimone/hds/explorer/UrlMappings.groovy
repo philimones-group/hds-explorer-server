@@ -63,7 +63,7 @@ class UrlMappings {
         "/api/export/visits/zip"(controller:         "syncFiles", action: "visitsZip")
         "/api/export/pregnancies/zip"(controller:         "syncFiles", action: "pregnancyRegistrationsZip")
 
-        "/api/export/sync-report/${id}"(controller: "syncFiles", action: "syncFilesReport", id: "${id}")
+        "/api/export/sync-report"(controller: "syncFiles", action: "syncFilesReport")
 
         //API
         "/api/import/households"(controller: "RawImportApi", action: "households")
