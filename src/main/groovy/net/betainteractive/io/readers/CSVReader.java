@@ -106,6 +106,7 @@ public class CSVReader {
 
         for (int i = 0; i < fields.length; i++) {
             String field = fields[i];
+            field = removeQuotes(field);
             mapFields.put(field, i);
             this.fields.add(field);
         }
@@ -124,7 +125,7 @@ public class CSVReader {
 
             FileInputStream fis = new FileInputStream(filecsv);
 
-            reader = new BufferedReader(new InputStreamReader(fis, "Cp1252"));
+            reader = new BufferedReader(new InputStreamReader(fis));
 
             if (hasHeader) {
                 nextLine();
@@ -178,16 +179,24 @@ public class CSVReader {
         String line = reader.readLine(); //scan.nextLine();
         currentLineNumber++;
 
+        //Consider quotes
+        String regex_delimiter = DELIMITER+"(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)";
+
         //System.out.println("Line: "+line);
 
         if (currentLineNumber == 1 && hasHeader) {
-            String[] fields = line.split(DELIMITER);
+            String[] fields = line.split(regex_delimiter);
             fillMapFields(fields);
             return;
         }
 
         currentLine = line;
         reading = false;
+    }
+
+    private String removeQuotes(String str){
+        str = str.replaceAll("^\"|\"$", "");
+        return str;
     }
 
     public Iterable<CSVRow> getRows() {
@@ -198,6 +207,7 @@ public class CSVReader {
         private CSVReader csvReader;
         private String[] row;
         private String rawRow;
+        private String regex_delimiter = DELIMITER+"(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)";
 
         private CSVRow(CSVReader csvReader, String row) {
             this.csvReader = csvReader;
@@ -208,7 +218,7 @@ public class CSVReader {
             }
 
             this.rawRow = row;
-            this.row = row.split(DELIMITER);
+            this.row = row.split(regex_delimiter);
 
             for (int i=0; i<this.row.length; i++){
                 this.row[i] = removeQuotes(this.row[i]);
@@ -318,7 +328,9 @@ public class CSVReader {
             return str;
         }
 
-
+        public int getFieldCount(){
+            return CSVReader.this.fields.size();
+        }
     }
 
     private class RowIterable implements Iterable<CSVRow> {

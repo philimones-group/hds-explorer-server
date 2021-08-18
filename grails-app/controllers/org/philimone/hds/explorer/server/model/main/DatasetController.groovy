@@ -46,13 +46,20 @@ class DatasetController {
         file.transferTo(new File(newFile))
 
         //read csv file and get the list of columns
-        def columns = dataSetService.getColumns(newFile)
+        def columnsMap = dataSetService.getColumns(newFile)
+
+        //retrive labels
+        def labels = ""
+        columnsMap.values().each {
+            labels += (labels.empty ? "":",") + it
+        }
 
         def dataset = new Dataset(params)
         dataset.name = dataSetService.getDatasetName(fileName)
         dataset.filename = newFile
+        dataset.tableColumnLabels = labels
 
-        render view: "add", model: [dataSetInstance:dataset, dataSetColumns:columns, tableList:  tableList]
+        render view: "add", model: [dataSetInstance:dataset, dataSetColumns:columnsMap.keySet(), tableList:  tableList]
     }
 
     def save(Dataset dataSetInstance) {

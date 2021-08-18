@@ -88,6 +88,11 @@ public class StringUtil {
         return allText;
     }
 
+    public static String removeQuotes(String text) {
+        return text.replaceAll("^\"|\"$", "");
+    }
+
+
     public static String getStringValueOrZero(String text){
         if (text == null) return "0";
 

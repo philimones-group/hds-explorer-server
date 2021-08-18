@@ -8,12 +8,25 @@ import net.betainteractive.utilities.StringUtil
 @Transactional
 class DataSetService {
 
-    List<String> getColumns(String filenameCsv) {
+    LinkedHashMap<String,String> getColumns(String filenameCsv) {
         CSVReader reader = new CSVReader(filenameCsv, true, ",")
         def cols = reader.getFieldNames()
         reader.close()
 
-        return cols
+
+        def map = new LinkedHashMap<String,String>()
+
+        cols.each { name ->
+            def spt = name.split(":")
+
+            if (spt.length > 1) {
+                map.put(spt[0], spt[1])
+            } else {
+                map.put(spt[0], spt[0])
+            }
+        }
+
+        return map
     }
 
     String getDatasetName(String filename){

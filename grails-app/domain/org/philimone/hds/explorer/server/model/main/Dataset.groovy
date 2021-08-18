@@ -10,14 +10,16 @@ class Dataset extends AuditableEntity {
 
     String id
     String name
+    String label
     String keyColumn
     String tableName
     String tableColumn
+    String tableColumnLabels
     String filename
 
     boolean enabled = false
 
-    static hasMany = [mappingLabels:DatasetLabel]
+    //static hasMany = [mappingLabels:DatasetLabel]
 
     String getFilenameOnly(){
         new File(filename).name
@@ -35,9 +37,11 @@ class Dataset extends AuditableEntity {
     static constraints = {
         id maxSize: 32
         name nullable: true, unique: true
+        label nullable: true, unique: true
         keyColumn nullable: false, blank: false
         tableName nullable: false, blank: false
         tableColumn nullable: false, blank: false
+        tableColumnLabels nullable: true, maxSize: 2000
 
         enabled nullable:false
     }
@@ -48,9 +52,11 @@ class Dataset extends AuditableEntity {
         id column: "id", generator: 'uuid'
 
         name column: 'name'
+        label column: 'label'
         keyColumn column: 'key_column'
         tableName column: 'table_name'
         tableColumn column: 'table_column'
+        tableColumnLabels column: 'table_column_labels'
         filename column: 'filename'
 
         enabled column: 'enabled'

@@ -4,8 +4,8 @@
 <html>
 	<head>
 		<meta name="layout" content="main">
-		<g:set var="entityName" value="${message(code: 'dataSet.label', default: 'Dataset')}" />
-		<title><g:message code="dataSet.add.label" args="[entityName]" /></title>
+		<g:set var="entityName" value="${message(code: 'dataset.label', default: 'Dataset')}" />
+		<title><g:message code="dataset.add.label" args="[entityName]" /></title>
 
 		<asset:javascript src="application.js"/>
 		<asset:javascript src="bootstrap.js"/>
@@ -49,7 +49,7 @@
 
 	</g:javascript>
 
-		<a href="#create-dataSet" class="skip" tabindex="-1"><g:message code="default.link.skip.label" default="Skip to content&hellip;"/></a>
+		<a href="#create-dataset" class="skip" tabindex="-1"><g:message code="default.link.skip.label" default="Skip to content&hellip;"/></a>
 		<div class="nav" role="navigation">
 			<ul>
 				<li><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
@@ -59,8 +59,8 @@
 				<li><g:link class="list" controller="user" action="index"><g:message code="default.menu.users.label" args="" /></g:link></li>
 			</ul>
 		</div>
-		<div id="create-dataSet" class="content scaffold-create" role="main">
-			<h1><g:message code="dataSet.create.label" args="[entityName]" /></h1>
+		<div id="create-dataset" class="content scaffold-create" role="main">
+			<h1><g:message code="dataset.create.label" args="[entityName]" /></h1>
 			<g:if test="${flash.message}">
 			<div class="message" role="status">${flash.message}</div>
 			</g:if>
@@ -75,9 +75,9 @@
 			<g:uploadForm controller="dataset" action="uploadFile" >
 				<fieldset class="form">
 					<div class="fieldcontain ${hasErrors(bean: dataSetInstance, field: 'filename', 'error')} " >
-						<label for="filename"><g:message code="dataSet.file.label" default="Dataset Filename" /></label>
+						<label for="filename"><g:message code="dataset.file.label" default="Dataset Filename" /></label>
 						<input type="file" id="fileUpload" name="fileUpload" style="display:inline;" />
-						<g:submitButton name="create" class="button_link" value="${message(code: 'dataSet.file.upload.label')}" />
+						<g:submitButton name="create" class="button_link" value="${message(code: 'dataset.file.upload.label')}" />
 					</div>
 				</fieldset>
 			</g:uploadForm>
@@ -87,51 +87,46 @@
 					<fieldset class="form">
 
 						<div class="fieldcontain ${hasErrors(bean: dataSetInstance, field: 'filename', 'error')} required">
-							<label for="filename"><g:message code="dataSet.filename.label" default="Filename" /><span class="required-indicator">*</span></label>
+							<label for="filename"><g:message code="dataset.filename.label" default="Filename" /><span class="required-indicator">*</span></label>
 							<b>${dataSetInstance?.getFilenameOnly()}</b>
 							<g:hiddenField name="filename" value="${dataSetInstance?.filename}" />
 						</div>
 
 						<div class="fieldcontain ${hasErrors(bean: dataSetInstance, field: 'name', 'error')} ">
-							<label for="name"><g:message code="dataSet.name.label" default="Name" /></label>
+							<label for="name"><g:message code="dataset.name.label" default="Name" /></label>
 							<g:textField name="name" required="" value="${dataSetInstance?.name}" />
 						</div>
 
+						<div class="fieldcontain ${hasErrors(bean: dataSetInstance, field: 'label', 'error')} ">
+							<label for="name"><g:message code="dataset.label.label" default="Label" /></label>
+							<g:textField name="label" required="" value="${dataSetInstance?.label}" />
+						</div>
+
 						<div class="fieldcontain ${hasErrors(bean: dataSetInstance, field: 'keyColumn', 'error')} required">
-							<label for="keyColumn"><g:message code="dataSet.keyColumn.label" default="Key Column" /><span class="required-indicator">*</span></label>
+							<label for="keyColumn"><g:message code="dataset.keyColumn.label" default="Key Column" /><span class="required-indicator">*</span></label>
 							<g:select name="keyColumn" required="" value="${dataSetInstance?.keyColumn}" from="${dataSetColumns}" class="many-to-one"/>
 						</div>
 
 						<div class="fieldcontain ${hasErrors(bean: dataSetInstance, field: 'tableName', 'error')} required">
-							<label for="tableName"><g:message code="dataSet.tableName.label" default="Table Name" /><span class="required-indicator">*</span></label>
+							<label for="tableName"><g:message code="dataset.tableName.label" default="Table Name" /><span class="required-indicator">*</span></label>
 							<g:select name="tableName" required="" value="${dataSetInstance?.tableName}" from="${tableList}" class="many-to-one"/>
 						</div>
 
 						<div class="fieldcontain ${hasErrors(bean: dataSetInstance, field: 'tableColumn', 'error')} required">
-							<label for="tableColumn"><g:message code="dataSet.tableColumn.label" default="Table Column" /><span class="required-indicator">*</span></label>
+							<label for="tableColumn"><g:message code="dataset.tableColumn.label" default="Table Column" /><span class="required-indicator">*</span></label>
 							<g:select name="tableColumn" required="" value="${dataSetInstance?.tableColumn}" from=""/>
 						</div>
 
 						<div class="fieldcontain ${hasErrors(bean: dataSetInstance, field: 'enabled', 'error')} ">
-							<label for="enabled"><g:message code="dataSet.enabled.label" default="Enabled" /></label>
+							<label for="enabled"><g:message code="dataset.enabled.label" default="Enabled" /></label>
 							<g:checkBox name="enabled" value="${dataSetInstance?.enabled}" />
 						</div>
 
-						<div class="fieldcontain ${hasErrors(bean: dataSetInstance, field: 'mappingLabels', 'error')} ">
-							<label for="mappingLabels"><g:message code="dataSet.mappingLabels.label" default="Mapping Labels" /></label>
+                        <g:hiddenField name="tableColumnLabels" value="${dataSetInstance?.tableColumnLabels}" />
 
-							<ul class="one-to-many">
-								<g:each in="${dataSetInstance?.mappingLabels?}" var="m">
-									<li><g:link controller="dataSetLabel" action="show" id="${m.id}">${m?.encodeAsHTML()}</g:link></li>
-								</g:each>
-								<li class="add">
-									<g:link controller="dataSetLabel" action="create" params="['dataset.id': dataSetInstance?.id]">${message(code: 'default.add.label', args: [message(code: 'dataSetLabel.label', default: 'DatasetLabel')])}</g:link>
-								</li>
-							</ul>
-						</div>
 					</fieldset>
 					<fieldset class="buttons">
-						<g:submitButton name="create" class="save" value="${message(code: 'dataSet.add.label')}" />
+						<g:submitButton name="create" class="save" value="${message(code: 'dataset.add.label')}" />
 					</fieldset>
 				</div>
 			</g:form>
@@ -143,15 +138,15 @@
 					<thead>
 					<tr>
 
-						<g:sortableColumn property="name" title="${message(code: 'dataSet.name.label', default: 'Name')}" />
+						<g:sortableColumn property="name" title="${message(code: 'dataset.name.label', default: 'Name')}" />
 
-						<g:sortableColumn property="keyColumn" title="${message(code: 'dataSet.keyColumn.label', default: 'Key Column')}" />
+						<g:sortableColumn property="keyColumn" title="${message(code: 'dataset.keyColumn.label', default: 'Key Column')}" />
 
-						<g:sortableColumn property="tableName" title="${message(code: 'dataSet.tableName.link.label', default: 'Table')}" />
+						<g:sortableColumn property="tableName" title="${message(code: 'dataset.tableName.link.label', default: 'Table')}" />
 
-						<g:sortableColumn property="enabled" title="${message(code: 'dataSet.enabled.label', default: 'Enabled')}" />
+						<g:sortableColumn property="enabled" title="${message(code: 'dataset.enabled.label', default: 'Enabled')}" />
 
-						<th><g:message code="dataSet.filename.label" default="Filename" /></th>
+						<th><g:message code="dataset.filename.label" default="Filename" /></th>
 
 					</tr>
 					</thead>

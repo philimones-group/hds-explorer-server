@@ -1945,16 +1945,6 @@ class SyncFilesService {
     private Element createDataSet(Document doc, Dataset dataset) {
         Element element = doc.createElement("dataset");
 
-        String labels = "";
-
-        dataset.mappingLabels.each {
-            if (labels.isEmpty()) {
-                labels = it.toString()
-            } else {
-                labels += ";" + it.toString()
-            }
-        }
-
         String createdDate = dataset.createdDate == null ? null : StringUtil.format(dataset.createdDate, "yyyy-MM-dd");
         String updatedDate = dataset.updatedDate == null ? null : StringUtil.format(dataset.updatedDate, "yyyy-MM-dd");
 
@@ -1962,14 +1952,16 @@ class SyncFilesService {
         element.appendChild(createAttributeNonNull(doc, "datasetId", dataset.getId() + ""));
         //used to download the dataset zip file from the tablet
         element.appendChild(createAttributeNonNull(doc, "name", dataset.name));
+        element.appendChild(createAttributeNonNull(doc, "label", dataset.label));
         element.appendChild(createAttributeNonNull(doc, "keyColumn", dataset.keyColumn));
         element.appendChild(createAttributeNonNull(doc, "tableName", dataset.tableName));
         element.appendChild(createAttributeNonNull(doc, "tableColumn", dataset.tableColumn));
+        element.appendChild(createAttributeNonNull(doc, "tableColumnLabels", dataset.tableColumnLabels));
         element.appendChild(createAttributeNonNull(doc, "createdBy", dataset.createdBy?.toString()));
         element.appendChild(createAttributeNonNull(doc, "creationDate", createdDate));
         element.appendChild(createAttributeNonNull(doc, "updatedBy", dataset.updatedBy == null ? "" : dataset.updatedBy?.toString()));
         element.appendChild(createAttributeNonNull(doc, "updatedDate", updatedDate == null ? "" : updatedDate));
-        element.appendChild(createAttributeNonNull(doc, "labels", labels));
+
 
 
         return element;

@@ -62,7 +62,7 @@ dependencies {
 
     //plugins
     compile 'com.google.guava:guava:22.0'
-    runtime 'mysql:mysql-connector-java:5.1.29'
+    runtime 'mysql:mysql-connector-java:5.1.44'
     //runtime 'org.postgresql:postgresql:9.3-1101-jdbc41'
     compile group: 'org.postgresql', name: 'postgresql', version: '42.2.16'
 
