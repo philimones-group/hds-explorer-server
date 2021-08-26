@@ -122,7 +122,7 @@
 				<li><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
 				<li><g:link class="list" action="index"><g:message code="form.list.label" args="[entityName]" /></g:link></li>
 				<li><g:link class="create" action="create"><g:message code="form.new.label" args="[entityName]" /></g:link></li>
-                <li><g:link class="list" controller="studyModule" action="index"><g:message code="default.menu.updates.modules.label" args="" /></g:link></li>
+                <li><g:link class="list" controller="module" action="index"><g:message code="default.menu.updates.modules.label" args="" /></g:link></li>
                 <li><g:link class="list" controller="user" action="index"><g:message code="default.menu.users.label" args="" /></g:link></li>
             </ul>
 		</div>

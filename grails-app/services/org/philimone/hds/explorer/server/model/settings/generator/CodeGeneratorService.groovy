@@ -1,12 +1,12 @@
 package org.philimone.hds.explorer.server.model.settings.generator
 
 import grails.gorm.transactions.Transactional
-import net.betainteractive.utilities.StringUtil
 import org.philimone.hds.explorer.server.model.authentication.User
 import org.philimone.hds.explorer.server.model.main.Household
 import org.philimone.hds.explorer.server.model.main.Member
 import org.philimone.hds.explorer.server.model.main.PregnancyRegistration
 import org.philimone.hds.explorer.server.model.main.Region
+import org.philimone.hds.explorer.server.model.main.Module
 import org.philimone.hds.explorer.server.model.main.Visit
 
 @Transactional
@@ -36,6 +36,11 @@ class CodeGeneratorService {
 
     boolean isPregnancyCodeValid(String code){
         return codeGenerator.isPregnancyCodeValid(code)
+    }
+
+    String generateModuleCode(String moduleName) {
+        def codes = Module.list().collect { t -> t.code}
+        return codeGenerator.generateModuleCode(moduleName, codes)
     }
 
     String generateRegionCode(String regionName) {

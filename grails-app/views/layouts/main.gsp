@@ -49,7 +49,7 @@
                 <bi:menu label="${g.message(code: 'default.menu.users.label')}" link="${createLink(controller: 'user', action: 'index')}" />
 
                 <bi:dropmenu label="${g.message(code: 'default.menu.updates.label')} ">
-                    <bi:menu label="${g.message(code: 'default.menu.updates.modules.label')}" link="${createLink(controller: 'studyModule', action: 'index')}" />
+                    <bi:menu label="${g.message(code: 'default.menu.updates.modules.label')}" link="${createLink(controller: 'module', action: 'index')}" />
                     <bi:menu label="${g.message(code: 'default.menu.updates.forms.label')}" link="${createLink(controller: 'form', action: 'index')}" />
                     <bi:menuseparator />
                     <bi:menu label="${g.message(code: 'default.menu.updates.households.label')}" />

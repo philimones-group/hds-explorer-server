@@ -4,8 +4,8 @@ package org.philimone.hds.explorer.server.model.authentication
 import grails.gorm.transactions.Transactional
 import grails.web.mapping.LinkGenerator
 import net.betainteractive.utilities.StringUtil
-import org.philimone.hds.explorer.server.model.main.StudyModule
-import org.philimone.hds.explorer.server.model.main.UserStudyModule
+import org.philimone.hds.explorer.server.model.main.Module
+import org.philimone.hds.explorer.server.model.main.UserModule
 import org.philimone.hds.explorer.services.GeneralUtilitiesService
 
 @Transactional
@@ -62,7 +62,7 @@ class UserService {
         return user
     }
 
-    User addUser(User user, List<Role> roles, List<StudyModule> modules) {
+    User addUser(User user, List<Role> roles, List<Module> modules) {
 
         //generate user code
         user.code = codeGeneratorService.generateUserCode(user)
@@ -88,10 +88,10 @@ class UserService {
         return user
     }
 
-    def createUserStudyModule(User user, List<StudyModule> modules) {
+    def createUserStudyModule(User user, List<Module> modules) {
 
         modules.each { module ->
-            def smodule = new UserStudyModule(user: user, module: module)
+            def smodule = new UserModule(user: user, module: module)
             smodule.save(flush:true)
 
             println "error: ${smodule.errors}"
@@ -106,7 +106,7 @@ class UserService {
         //println "error ${user.errors}"
     }
 
-    User updateUser(User user, List<Role> userRoles, List<StudyModule> userModules) {
+    User updateUser(User user, List<Role> userRoles, List<Module> userModules) {
         println "${userRoles}"
 
         println "modules: ${userModules}"
@@ -184,7 +184,7 @@ class UserService {
     }
 
     def removeAllModules(User u){
-        UserStudyModule.where { user == u }.deleteAll()
+        UserModule.where { user == u }.deleteAll()
     }
 
     void delete(Serializable id){

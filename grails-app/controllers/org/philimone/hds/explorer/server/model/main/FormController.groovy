@@ -1,6 +1,6 @@
 package org.philimone.hds.explorer.server.model.main
 
-import grails.converters.JSON
+
 import grails.validation.ValidationException
 import org.philimone.hds.explorer.server.model.authentication.User
 import org.springframework.dao.DataIntegrityViolationException
@@ -10,7 +10,7 @@ import static org.springframework.http.HttpStatus.*
 class FormController {
 
     FormService formService
-    DataSetService dataSetService
+    DatasetService datasetService
 
     static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
 
@@ -19,7 +19,7 @@ class FormController {
 
         def module_id = params['modules.id']
 
-        StudyModule module = (module_id==null || module_id.empty) ? null : StudyModule.get(module_id)
+        Module module = (module_id==null || module_id.empty) ? null : Module.get(module_id)
         List<Form> list = null
 
         if (module != null){
@@ -58,7 +58,7 @@ class FormController {
 
         try {
 
-            def modules = StudyModule.getAll(params.list("all_modules.id"))
+            def modules = Module.getAll(params.list("all_modules.id"))
             modules.each {
                 formInstance.addToModules(it)
             }
@@ -94,7 +94,7 @@ class FormController {
 
         try {
 
-            def modules = StudyModule.getAll(params.list("all_modules.id"))
+            def modules = Module.getAll(params.list("all_modules.id"))
 
             modules.each {
                 formInstance.addToModules(it)
@@ -153,7 +153,7 @@ class FormController {
         def mappings = FormMapping.executeQuery("select m from FormMapping m where m.form=? order by m.id", [formInstance]) //FormMapping.findAllByForm(formInstance)
 
         def tableList = ["Household","Member","User","Region"]
-        tableList.addAll(dataSetService.datasetNames)
+        tableList.addAll(datasetService.datasetNames)
 
         def formMapping = new FormMapping(form: formInstance)
 
@@ -311,8 +311,8 @@ class FormController {
             list = User.ALL_COLUMNS
         } else if (modelName.equals("Region")){
             list = Region.ALL_COLUMNS
-        } else if (dataSetService.containsDatasetWith(modelName)){
-            list = dataSetService.getDatasetColumnsWith(modelName)
+        } else if (datasetService.containsDatasetWith(modelName)){
+            list = datasetService.getDatasetColumnsWith(modelName)
         }
 
         //println "list ${list}"
@@ -335,7 +335,7 @@ class FormController {
 
         if (modelName == "" || modelName==null){
             tableList = ["Household","Member","User","Region"]
-            tableList.addAll(dataSetService.datasetNames)
+            tableList.addAll(datasetService.datasetNames)
         }
 
 

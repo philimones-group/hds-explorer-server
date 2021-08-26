@@ -16,8 +16,9 @@ import org.philimone.hds.explorer.server.model.logs.LogReport
 import org.philimone.hds.explorer.server.model.enums.LogStatus
 import org.philimone.hds.explorer.server.model.main.MappingFormatType
 import org.philimone.hds.explorer.server.model.main.Member
-import org.philimone.hds.explorer.server.model.main.StudyModule
+import org.philimone.hds.explorer.server.model.main.Module
 import org.philimone.hds.explorer.server.model.enums.SyncEntity
+import org.philimone.hds.explorer.server.model.main.Region
 import org.philimone.hds.explorer.server.model.settings.Codes
 import org.philimone.hds.explorer.server.model.settings.SyncFilesReport
 
@@ -26,6 +27,7 @@ class BootStrap {
     def generalUtilitiesService
     def userService
     def applicationParamService
+    def codeGeneratorService
 
     def init = { servletContext ->
 
@@ -34,7 +36,7 @@ class BootStrap {
         defaultAppUser()
         insertDefaults()
         retrieveAndPopulateStaticConstants()
-        //testApp()
+        testApp()
     }
 
     def destroy = {
@@ -114,7 +116,7 @@ class BootStrap {
             new SecurityMap(url: "/generalUtilities/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
             new SecurityMap(url: "/importOpenHDS/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
             new SecurityMap(url: "/dssSynchronization/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
-            new SecurityMap(url: "/studyModule/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
+            new SecurityMap(url: "/module/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
             new SecurityMap(url: "/form/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
             new SecurityMap(url: "/formMapping/*/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
             new SecurityMap(url: "/dataset/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
@@ -190,9 +192,6 @@ class BootStrap {
 
             println ("admin user - hasErrors: "+user.hasErrors())
             println ("admin user - saving: " + userService.addUser(user, [admin]))
-
-
-
             println "admin role: ${admin}"
             //println "admin user role assign: ${UserRole.create(user, [admin])}"
         }
@@ -360,8 +359,8 @@ class BootStrap {
         new MappingFormatType(description: "Date [M-D-Y H:M:S]", type: "Date", format: "MM-dd-yyyy HH:mm:ss").save(flush: true)
 
 
-        //Insert Default StudyModule
-        new StudyModule(code: StudyModule.DSS_SURVEY_MODULE, name: "DSS Surveillance", description: "The default module of HDS-Explorer that allows you to navigate the system").save(flush: true)
+        //Insert Default Module
+        new Module(code: codeGeneratorService.generateModuleCode(null), name: Module.DSS_SURVEY_MODULE, description: "The default module of HDS-Explorer that allows you to navigate the system").save(flush: true)
 
 
         //Insert Sync Reports
@@ -396,6 +395,25 @@ class BootStrap {
         Codes.MIN_HEAD_AGE_VALUE = valueAgh != null ? valueAgh : Codes.MIN_HEAD_AGE_VALUE
         Codes.MIN_SPOUSE_AGE_VALUE = valueAgs != null ? valueAgs : Codes.MIN_SPOUSE_AGE_VALUE
         Codes.GENDER_CHECKING = valueGch != null ? valueGch : Codes.GENDER_CHECKING
+    }
+
+    def testApp() {
+        def region = Region.findByCode("MAP")
+        def module = Module.first()
+
+        if (region != null && module != null) {
+
+            region.modules.add(module.code)
+
+            region.addToModules(module.code)
+
+            println("modules: ${region.modules}, 2")
+            def result = region.save(flush: true)
+
+            println "errors = ${result.errors}"
+        }
+
+
     }
 
 }

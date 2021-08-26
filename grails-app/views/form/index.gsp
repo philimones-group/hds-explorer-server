@@ -1,6 +1,6 @@
 
-<%@ page import="org.philimone.hds.explorer.server.model.main.Form" %>
-<%@ page import="org.philimone.hds.explorer.server.model.main.StudyModule" %>
+<%@ page import="org.philimone.hds.explorer.server.model.main.Module; org.philimone.hds.explorer.server.model.main.Form" %>
+<%@ page import="org.philimone.hds.explorer.server.model.main.Module" %>
 <!DOCTYPE html>
 <html>
 	<head>
@@ -17,7 +17,7 @@
 			<ul>
 				<li><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
 				<li><g:link class="create" action="create"><g:message code="form.new.label" args="[entityName]" /></g:link></li>
-				<li><g:link class="list" controller="studyModule" action="index"><g:message code="default.menu.updates.modules.label" args="" /></g:link></li>
+				<li><g:link class="list" controller="module" action="index"><g:message code="default.menu.updates.modules.label" args="" /></g:link></li>
 				<li><g:link class="list" controller="user" action="index"><g:message code="default.menu.users.label" args="" /></g:link></li>
 			</ul>
 		</div>
@@ -33,8 +33,8 @@
 					<fieldset class="form">
 						<div class="fieldcontain ">
 							<fieldset class="buttons">
-								<label class="label"><g:message code="studyModule.label" default="Study Module" /></label>
-								<g:select id="modules.id" name="modules.id" optionKey="id" from="${StudyModule.list()}" value="${currentModule}" noSelection="['':'All']" />
+								<label class="label"><g:message code="module.label" default="Study Module" /></label>
+								<g:select id="modules.id" name="modules.id" optionKey="id" from="${org.philimone.hds.explorer.server.model.main.Module.list()}" value="${currentModule}" noSelection="['':'All']" />
 								<g:submitButton name="create" class="save" value="${message(code: 'form.viewlist')}" />
 							</fieldset>
 						</div>

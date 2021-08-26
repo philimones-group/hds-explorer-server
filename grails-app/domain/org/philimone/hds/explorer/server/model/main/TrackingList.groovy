@@ -8,7 +8,7 @@ class TrackingList extends AuditableEntity {
     String code
     String name
     String filename
-    StudyModule module
+    Module module
     Boolean hasExtraData = false
     Boolean enabled = true
 

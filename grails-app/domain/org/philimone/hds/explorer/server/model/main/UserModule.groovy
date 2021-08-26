@@ -2,10 +2,10 @@ package org.philimone.hds.explorer.server.model.main
 
 import org.philimone.hds.explorer.server.model.authentication.User
 
-class UserStudyModule {
+class UserModule {
 
     User user
-    StudyModule module
+    Module module
 
     //static belongsTo = [user:User]
 
@@ -15,7 +15,7 @@ class UserStudyModule {
     }
 
     static mapping = {
-        table '_user_study_module'
+        table '_user_module'
 
         version false
 

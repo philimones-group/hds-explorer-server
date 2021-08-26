@@ -3,7 +3,7 @@ package org.philimone.hds.explorer.server.model.main
 import grails.testing.gorm.DomainUnitTest
 import spock.lang.Specification
 
-class UserStudyModuleSpec extends Specification implements DomainUnitTest<UserStudyModule> {
+class UserModuleSpec extends Specification implements DomainUnitTest<UserModule> {
 
     def setup() {
     }

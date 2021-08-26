@@ -47,7 +47,7 @@
 				<g:if test="${trackingListInstance?.module}">
 				<li class="fieldcontain">
 					<span id="module-label" class="property-label"><g:message code="trackingList.module.label" default="Module" /></span>
-					<span class="property-value" aria-labelledby="module-label"><g:link controller="studyModule" action="show" id="${trackingListInstance?.module?.id}">${trackingListInstance?.module?.encodeAsHTML()}</g:link></span>
+					<span class="property-value" aria-labelledby="module-label"><g:link controller="module" action="show" id="${trackingListInstance?.module?.id}">${trackingListInstance?.module?.encodeAsHTML()}</g:link></span>
 				</li>
 				</g:if>
 			

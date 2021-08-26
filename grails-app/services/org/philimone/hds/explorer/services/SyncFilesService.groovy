@@ -27,7 +27,7 @@ import org.philimone.hds.explorer.server.model.main.RedcapMapping
 import org.philimone.hds.explorer.server.model.main.Region
 import org.philimone.hds.explorer.server.model.main.Residency
 import org.philimone.hds.explorer.server.model.main.Round
-import org.philimone.hds.explorer.server.model.main.StudyModule
+import org.philimone.hds.explorer.server.model.main.Module
 import org.philimone.hds.explorer.server.model.main.TrackingList
 import org.philimone.hds.explorer.server.model.main.Visit
 import org.philimone.hds.explorer.server.model.settings.ApplicationParam
@@ -358,8 +358,8 @@ class SyncFilesService {
             //read all modules
             def resultModules = []
 
-            StudyModule.withTransaction {
-                resultModules = StudyModule.list()
+            Module.withTransaction {
+                resultModules = Module.list()
             }
 
             DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
@@ -1848,7 +1848,7 @@ class SyncFilesService {
         return userElement;
     }
 
-    private Element createModule(Document doc, StudyModule module) {
+    private Element createModule(Document doc, Module module) {
         Element element = doc.createElement("module");
 
         element.appendChild(createAttributeNonNull(doc, "code", module.getCode()));

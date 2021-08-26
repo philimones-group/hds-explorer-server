@@ -4,6 +4,8 @@ import org.philimone.hds.explorer.server.model.authentication.User
 
 interface CodeGenerator {
 
+    boolean isModuleCodeValid(String code)
+
     boolean isRegionCodeValid(String code)
 
     boolean isHouseholdCodeValid(String code)
@@ -15,6 +17,8 @@ interface CodeGenerator {
     boolean isUserCodeValid(String code)
 
     boolean isPregnancyCodeValid(String code)
+
+    String generateModuleCode(String moduleName, List<String> existentCodes)
 
     String generateRegionCode(String regionName, List<String> existentCodes)
 

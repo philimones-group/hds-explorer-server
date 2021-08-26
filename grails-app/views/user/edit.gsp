@@ -34,15 +34,14 @@
                     <f:field bean="user" property="lastName" />
                     <f:field bean="user" property="username" />
                     <f:field bean="user" property="email"/>
-
-                    <f:field bean="user" property="modules" input-domainList="${org.philimone.hds.explorer.server.model.main.StudyModule.list()}">
-                        <g:select name="modules"  multiple="multiple" optionKey="id" from="${org.philimone.hds.explorer.server.model.main.StudyModule.list()}" value="${userModules}"/>
-                    </f:field>
-
                     <f:field bean="user" property="accountLocked" />
                     <f:field bean="user" property="accountExpired" />
                     <f:field bean="user" property="passwordExpired" />
                     <f:field bean="user" property="enabled" />
+
+                    <f:field bean="user" property="modules" input-domainList="${org.philimone.hds.explorer.server.model.main.Module.list()}">
+                        <g:select name="modules" multiple="multiple" optionKey="id" from="${org.philimone.hds.explorer.server.model.main.Module.list()}" value="${userModules}"/>
+                    </f:field>
 
                     <div class="fieldcontain ${hasErrors(bean: this.user, field: 'authorities', 'error')} ">
                         <label for="roles">

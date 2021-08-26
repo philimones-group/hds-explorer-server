@@ -41,7 +41,7 @@
 					</tr>
 				</thead>
 				<tbody>
-				<g:each in="${dataSetList}" status="i" var="dataSetInstance">
+				<g:each in="${datasetList}" status="i" var="dataSetInstance">
 					<tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
 					
 						<td><g:link action="show" id="${dataSetInstance.id}">${fieldValue(bean: dataSetInstance, field: "name")}</g:link></td>

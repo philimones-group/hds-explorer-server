@@ -30,7 +30,7 @@ class Form extends AuditableEntity {
     RedcapApi redcapApi
 
     static hasMany = [
-            modules:StudyModule, /* Modules that have access to the Form - this data will be converted to comma separated names */
+            modules:Module, /* Modules that have access to the Form - this data will be converted to comma separated names */
             dependencies:Form,   /* The list of forms that must be collected first before this Form */
             mappings:FormMapping,  /* The list of all variables that will be filled automatically on a Form in Mobile App */
             redcapMappings:RedcapMapping  /* The list of all variables that will be uploaded to a REDCap Form */

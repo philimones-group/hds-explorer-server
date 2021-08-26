@@ -9,12 +9,18 @@ import org.philimone.hds.explorer.server.model.main.Household
  */
 class DefaultCodeGenerator implements CodeGenerator {
 
+    final String MODULE_CODE_PATTERN = '^MX-[0-9]{3}$'
     final String REGION_CODE_PATTERN = '^[A-Z0-9]{3}$'
     final String HOUSEHOLD_CODE_PATTERN = '^[A-Z0-9]{6}[0-9]{3}$'
     final String MEMBER_CODE_PATTERN = '^[A-Z0-9]{6}[0-9]{6}$'
     final String VISIT_CODE_PATTERN = '^[A-Z0-9]{6}[0-9]{6}$'
     final String USER_CODE_PATTERN = '^[A-Z0-9]{3}$'
     final String PREGNANCY_CODE_PATTERN = '^[A-Z0-9]{6}[0-9]{6}-[0-9]{2}$'
+
+    @Override
+    boolean isModuleCodeValid(String code) {
+        return !StringUtil.isBlank(code) && code.matches(MODULE_CODE_PATTERN)
+    }
 
     @Override
     boolean isRegionCodeValid(String code) {
@@ -44,6 +50,24 @@ class DefaultCodeGenerator implements CodeGenerator {
     @Override
     boolean isPregnancyCodeValid(String code){
         return !StringUtil.isBlank(code) && code.matches(PREGNANCY_CODE_PATTERN)
+    }
+
+    @Override
+    String generateModuleCode(String moduleName, List<String> existentCodes) {
+        //MX-001,MX-002,MX-099
+        def base = "MX-"
+        println "exists ${existentCodes}"
+        if (existentCodes == null) return "${base}001"
+
+        for (int i = 1; i <= 99 ; i++) {
+            def test = "${base}${String.format("%03d", i)}" as String
+            if (!existentCodes.contains(test)) {
+                return test
+            }
+        }
+
+        return null
+
     }
 
     @Override

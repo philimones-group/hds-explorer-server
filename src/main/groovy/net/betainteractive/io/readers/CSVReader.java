@@ -106,6 +106,7 @@ public class CSVReader {
 
         for (int i = 0; i < fields.length; i++) {
             String field = fields[i];
+            //System.out.println("real name: "+field);
             field = removeQuotes(field);
             mapFields.put(field, i);
             this.fields.add(field);
@@ -195,7 +196,7 @@ public class CSVReader {
     }
 
     private String removeQuotes(String str){
-        str = str.replaceAll("^\"|\"$", "");
+        str = str.replaceAll("\"", "");
         return str;
     }
 

@@ -1,7 +1,7 @@
 package org.philimone.hds.explorer.server.model.authentication
 
 import grails.validation.ValidationException
-import org.philimone.hds.explorer.server.model.main.StudyModule
+import org.philimone.hds.explorer.server.model.main.Module
 
 import static org.springframework.http.HttpStatus.*
 
@@ -34,7 +34,7 @@ class UserController {
         def userRoles = Role.getAll(params.list("roles.id"))
         params.remove("roles.id")
 
-        def userModules = StudyModule.getAll(params.list("modules"))
+        def userModules = Module.getAll(params.list("modules"))
         params.remove("modules")
 
         try {
@@ -46,7 +46,7 @@ class UserController {
 
         request.withFormat {
             form multipartForm {
-                flash.message = message(code: 'default.created.message', args: [message(code: 'user.label', default: 'User'), user.id])
+                flash.message = message(code: 'default.created.message', args: [message(code: 'user.label', default: 'User'), user.username])
                 redirect controler:"user", action: 'show', id: user.id
             }
             '*' { respond user, [status: CREATED] }
@@ -72,7 +72,7 @@ class UserController {
         }
 
         def userRoles = Role.getAll(params.list("roles.id")) //selected roles
-        def userModules = StudyModule.getAll(params.list("modules"))
+        def userModules = Module.getAll(params.list("modules"))
 
         try {
             userService.updateUser(user, userRoles, userModules)
@@ -83,7 +83,7 @@ class UserController {
 
         request.withFormat {
             form multipartForm {
-                flash.message = message(code: 'default.updated.message', args: [message(code: 'user.label', default: 'User'), user.id])
+                flash.message = message(code: 'default.updated.message', args: [message(code: 'user.label', default: 'User'), user.username])
                 redirect user
             }
             '*'{ respond user, [status: OK] }

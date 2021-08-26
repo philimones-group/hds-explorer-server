@@ -52,7 +52,7 @@
 			<ul>
 				<li><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
 				<li><g:link class="list" action="index"><g:message code="default.list.label" args="[entityName]" /></g:link></li>
-				<li><g:link class="list" controller="studyModule" action="index"><g:message code="default.menu.updates.modules.label" args="" /></g:link></li>
+				<li><g:link class="list" controller="module" action="index"><g:message code="default.menu.updates.modules.label" args="" /></g:link></li>
 				<li><g:link class="list" controller="form" action="index"><g:message code="default.menu.updates.forms.label" args="" /></g:link></li>
 				<li><g:link class="list" controller="user" action="index"><g:message code="default.menu.users.label" args="" /></g:link></li>
 			</ul>
@@ -101,7 +101,7 @@
 
 					<div class="fieldcontain ${hasErrors(bean: trackingListInstance, field: 'module', 'error')} required">
 						<label for="module"><g:message code="trackingList.module.label" default="Module" /><span class="required-indicator">*</span></label>
-						<g:select id="module" name="module.id" from="${org.philimone.hds.explorer.server.model.main.StudyModule.list()}" optionKey="id" required="" value="${trackingListInstance?.module?.id}" class="many-to-one"/>
+						<g:select id="module" name="module.id" from="${org.philimone.hds.explorer.server.model.main.Module.list()}" optionKey="id" required="" value="${trackingListInstance?.module?.id}" class="many-to-one"/>
 					</div>
 
 					<div class="fieldcontain ${hasErrors(bean: trackingListInstance, field: 'enabled', 'error')} ">

@@ -34,7 +34,7 @@
 		<g:message code="trackingList.module.label" default="Module" />
 		<span class="required-indicator">*</span>
 	</label>
-	<g:select id="module" name="module.id" from="${org.philimone.hds.explorer.server.model.main.StudyModule.list()}" optionKey="id" required="" value="${trackingListInstance?.module?.id}" class="many-to-one"/>
+	<g:select id="module" name="module.id" from="${org.philimone.hds.explorer.server.model.main.Module.list()}" optionKey="id" required="" value="${trackingListInstance?.module?.id}" class="many-to-one"/>
 
 </div>
 

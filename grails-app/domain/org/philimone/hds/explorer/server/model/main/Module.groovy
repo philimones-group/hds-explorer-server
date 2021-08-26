@@ -6,9 +6,9 @@ import org.philimone.hds.explorer.server.model.audit.AuditableEntity
 /**
  * A Study Module represents a specific module that can have its own users and access its own information
  */
-class StudyModule extends AuditableEntity {
+class Module extends AuditableEntity {
 
-    static String DSS_SURVEY_MODULE = "DSS-SURVEY" /* Default Module */
+    static String DSS_SURVEY_MODULE = "DSS Surveillance" /* Default Module */
 
     String id
     String code
@@ -27,11 +27,11 @@ class StudyModule extends AuditableEntity {
     }
 
     static mapping = {
-        table 'study_module'
+        table 'module'
 
         id column: "id", generator: 'uuid'
 
-        code column: "code"
+        code column: "code", unique: true
         name column: "name"
         description column: "description"
     }

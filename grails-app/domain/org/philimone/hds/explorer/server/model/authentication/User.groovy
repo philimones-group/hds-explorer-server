@@ -4,10 +4,9 @@ import groovy.transform.EqualsAndHashCode
 import groovy.transform.ToString
 import grails.compiler.GrailsCompileStatic
 import net.betainteractive.utilities.StringUtil
-import org.grails.datastore.mapping.core.connections.ConnectionSource
 import org.philimone.hds.explorer.server.model.audit.AuditableEntity
-import org.philimone.hds.explorer.server.model.main.StudyModule
-import org.philimone.hds.explorer.server.model.main.UserStudyModule
+import org.philimone.hds.explorer.server.model.main.Module
+import org.philimone.hds.explorer.server.model.main.UserModule
 
 /**
  * This domain represents a Application User that can be an Administrator, Data Manager or a Field Worker, they can have access do the server or client app
@@ -34,7 +33,7 @@ class User extends AuditableEntity {
 
     boolean isPasswordEncoded
 
-    //static hasMany = [modules: UserStudyModule] /* Modules that the user has access */
+    //static hasMany = [modules: UserModule] /* Modules that the user has access */
 
     String toString(){
         return StringUtil.getFullname(firstName, "", lastName)
@@ -48,8 +47,8 @@ class User extends AuditableEntity {
         (UserRole.findAllByUser(this) as List<UserRole>)*.role as Set<Role>
     }
 
-    Set<StudyModule> getModules() {
-        (UserStudyModule.findAllByUser(this) as List<UserStudyModule>)*.module as Set<StudyModule>
+    Set<Module> getModules() {
+        (UserModule.findAllByUser(this) as List<UserModule>)*.module as Set<Module>
     }
 
     String getAuthoritiesText(){

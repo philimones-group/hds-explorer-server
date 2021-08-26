@@ -9,7 +9,7 @@ class DatasetController {
 
     static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
 
-    def dataSetService
+    def datasetService
 
     def tableList = ["Household","Member","Region","User"]
 
@@ -39,14 +39,18 @@ class DatasetController {
         def file = request.getFile('fileUpload')
         def fileName = file.originalFilename
         def newFile = SystemPath.externalDocsPath + File.separator + fileName
-
+        def tmpFileStr = SystemPath.externalDocsPath + File.separator + fileName + ".tmp"
+        def tmpFile = new File(tmpFileStr)
         println "test2 ${file}"
         println "test3 ${file.originalFilename}"
 
-        file.transferTo(new File(newFile))
+        file.transferTo(tmpFile)
 
         //read csv file and get the list of columns
-        def columnsMap = dataSetService.getColumns(newFile)
+        def columnsMap = datasetService.getColumns(tmpFileStr)
+
+        datasetService.copyFileAndRemoveLabels(tmpFileStr, newFile)
+        tmpFile.delete()
 
         //retrive labels
         def labels = ""
@@ -55,7 +59,7 @@ class DatasetController {
         }
 
         def dataset = new Dataset(params)
-        dataset.name = dataSetService.getDatasetName(fileName)
+        dataset.name = datasetService.getDatasetName(fileName)
         dataset.filename = newFile
         dataset.tableColumnLabels = labels
 
@@ -77,7 +81,7 @@ class DatasetController {
         }
 
         if (dataSetInstance.save(flush:true)){
-            dataSetService.createZipFile(dataSetInstance)
+            datasetService.createZipFile(dataSetInstance)
         }
 
         request.withFormat {

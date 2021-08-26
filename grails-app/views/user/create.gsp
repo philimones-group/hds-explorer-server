@@ -33,13 +33,15 @@
                     <f:field bean="user" property="username" />
                     <f:field bean="user" property="password" />
                     <f:field bean="user" property="email"/>
-
-                    <f:field bean="user" property="modules" input-domainList="${org.philimone.hds.explorer.server.model.main.StudyModule.list()}">
-                        <g:select name="modules"  multiple="multiple" optionKey="id" from="${org.philimone.hds.explorer.server.model.main.StudyModule.list()}" value="${this.form?.modules}"/>
-                    </f:field>
-
                     <f:field bean="user" property="accountLocked" />
                     <f:field bean="user" property="enabled" />
+
+                    <div class="fieldcontain ${hasErrors(bean: this.user, field: 'modules', 'error')} ">
+                        <label for="roles">
+                            <g:message code="user.modules.label" />
+                        </label>
+                        <g:select name="modules" multiple="multiple" optionKey="id" from="${org.philimone.hds.explorer.server.model.main.Module.list()}" />
+                    </div>
 
                     <div class="fieldcontain ${hasErrors(bean: this.user, field: 'authorities', 'error')} ">
                         <label for="roles">
