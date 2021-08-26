@@ -4,6 +4,8 @@
         <meta name="layout" content="main" />
         <g:set var="entityName" value="${message(code: 'module.label', default: 'Module')}" />
         <title><g:message code="default.list.label" args="[entityName]" /></title>
+
+        <dt:defaultResources />
     </head>
     <body>
         <a href="#list-module" class="skip" tabindex="-1"><g:message code="default.link.skip.label" default="Skip to content&hellip;"/></a>
@@ -18,11 +20,14 @@
             <g:if test="${flash.message}">
                 <div class="message" role="status">${flash.message}</div>
             </g:if>
-            <f:table collection="${moduleList}" properties="code, name, description, createdBy, createdDate, updatedBy, updatedDate" />
+
+            <f:table id="modulesTable" collection="${moduleList}" properties="code, name, description, createdBy, createdDate, updatedBy, updatedDate"  template="table" />
 
             <div class="pagination">
                 <g:paginate total="${moduleCount ?: 0}" />
             </div>
         </div>
+
+        <dt:loadDatatable name="modulesTable" />
     </body>
 </html>

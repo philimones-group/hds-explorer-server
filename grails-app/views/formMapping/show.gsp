@@ -19,7 +19,7 @@
             <g:if test="${flash.message}">
             <div class="message" role="status">${flash.message}</div>
             </g:if>
-            <f:display bean="formMapping" />
+            <f:display bean="formMapping" template="list" />
             <g:form resource="${this.formMapping}" method="DELETE">
                 <fieldset class="buttons">
                     <g:link class="edit" action="edit" resource="${this.formMapping}"><g:message code="default.button.edit.label" default="Edit" /></g:link>

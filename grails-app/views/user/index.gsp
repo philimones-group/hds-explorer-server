@@ -6,7 +6,6 @@
         <title><g:message code="default.list.label" args="[entityName]" /></title>
 
         <dt:defaultResources />
-
     </head>
     <body>
         <a href="#list-user" class="skip" tabindex="-1"><g:message code="default.link.skip.label" default="Skip to content&hellip;"/></a>

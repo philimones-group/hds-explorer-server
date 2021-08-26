@@ -20,32 +20,7 @@
             <div class="message" role="status">${flash.message}</div>
             </g:if>
 
-            <fieldset class="form">
-                <f:with bean="module">
-                    <f:field property="code">
-                        <f:display property="code"/>
-                    </f:field>
-                    <f:field property="name">
-                        <f:display property="name"/>
-                    </f:field>
-                    <f:field property="description">
-                        <f:display property="description"/>
-                    </f:field>
-                    <f:field property="createdBy">
-                        <f:display property="createdBy"/>
-                    </f:field>
-                    <f:field property="createdDate">
-                        <f:display property="createdDate"/>
-                    </f:field>
-                    <f:field property="updatedBy">
-                        <f:display property="updatedBy"/>
-                    </f:field>
-                    <f:field property="updatedDate">
-                        <f:display property="updatedDate"/>
-                    </f:field>
-                </f:with>
-
-            </fieldset>
+            <f:display bean="module" order="code, name, description, createdBy, createdDate, updatedBy, updatedDate" />
 
             <g:form resource="${this.module}" method="DELETE">
                 <fieldset class="buttons">
