@@ -15,6 +15,7 @@ import org.philimone.hds.explorer.server.model.collect.raw.RawVisit
 import org.philimone.hds.explorer.server.model.enums.Gender
 import org.philimone.hds.explorer.server.model.enums.MaritalStatus
 import org.philimone.hds.explorer.server.model.enums.VisitLocationItem
+import org.philimone.hds.explorer.server.model.enums.VisitReason
 import org.philimone.hds.explorer.server.model.enums.temporal.InMigrationType
 import org.philimone.hds.explorer.server.model.main.HeadRelationship
 import org.philimone.hds.explorer.server.model.main.Household
@@ -197,17 +198,17 @@ class InMigrationServiceSpec extends Specification {
 
         //println "rounds: ${Round.count()}"
 
-        def rv1 = new RawVisit(id: "uuuid1", code: codeGeneratorService.generateVisitCode(household1), householdCode: household1.code,
+        def rv1 = new RawVisit(id: "uuuid1", code: codeGeneratorService.generateVisitCode(household1), householdCode: household1.code, visitReason: VisitReason.BASELINE,
                 visitDate: GeneralUtil.getDate(2021, 2, 3), visitLocation: VisitLocationItem.HOME.code, roundNumber: 0,
                 respondentCode: member11.code, hasInterpreter: false, collectedBy: "dragon", collectedDate: GeneralUtil.getDate(2021, 3, 4, 0, 0, 0)
         )
 
-        def rv2 = new RawVisit(id: "uuuid2", code: codeGeneratorService.generateVisitCode(household1), householdCode: household1.code,
+        def rv2 = new RawVisit(id: "uuuid2", code: codeGeneratorService.generateVisitCode(household1), householdCode: household1.code, visitReason: VisitReason.BASELINE,
                 visitDate: GeneralUtil.getDate(2021, 2, 4), visitLocation: VisitLocationItem.HOME.code, roundNumber: 0,
                 respondentCode: member12.code, hasInterpreter: false, collectedBy: "dragon", collectedDate: GeneralUtil.getDate(2021, 3, 4, 0, 0, 0)
         )
 
-        def rv3 = new RawVisit(id: "uuuid3", code: codeGeneratorService.generateVisitCode(household2), householdCode: household2.code,
+        def rv3 = new RawVisit(id: "uuuid3", code: codeGeneratorService.generateVisitCode(household2), householdCode: household2.code, visitReason: VisitReason.BASELINE,
                 visitDate: GeneralUtil.getDate(2021, 2, 4), visitLocation: VisitLocationItem.OTHER_PLACE.code, visitLocationOther: "HEALTHCENTER", roundNumber: 0,
                 respondentCode: member21.code, hasInterpreter: false, collectedBy: "dragon", collectedDate: GeneralUtil.getDate(2021, 2, 4, 0, 0, 0)
         )

@@ -15,6 +15,7 @@ import org.philimone.hds.explorer.server.model.enums.HeadRelationshipType
 import org.philimone.hds.explorer.server.model.enums.PregnancyOutcomeType
 import org.philimone.hds.explorer.server.model.enums.PregnancyStatus
 import org.philimone.hds.explorer.server.model.enums.VisitLocationItem
+import org.philimone.hds.explorer.server.model.enums.VisitReason
 import org.philimone.hds.explorer.server.model.enums.temporal.ExternalInMigrationType
 import org.philimone.hds.explorer.server.model.enums.temporal.InMigrationType
 import org.philimone.hds.explorer.server.model.enums.temporal.OutMigrationType
@@ -289,27 +290,27 @@ class RawBatchExecutionServiceSpec extends Specification {
         def visit4 = "${household2}003" //ext
         def visit5 = "${household2}004" //xen
 
-        def rv1 = new RawVisit(id: "uuuid1", code: visit1, householdCode: household1,
+        def rv1 = new RawVisit(id: "uuuid1", code: visit1, householdCode: household1, visitReason: VisitReason.BASELINE,
                 visitDate: GeneralUtil.getDate(2012, 10, 11), visitLocation: VisitLocationItem.HOME.code, roundNumber: 0,
                 respondentCode: member11, hasInterpreter: false, collectedBy: "dragon", collectedDate: GeneralUtil.getDate(2012, 10, 15, 0, 0, 0)
         )
 
-        def rv2 = new RawVisit(id: "uuuid2", code: visit2, householdCode: household2,
+        def rv2 = new RawVisit(id: "uuuid2", code: visit2, householdCode: household2, visitReason: VisitReason.BASELINE,
                 visitDate: GeneralUtil.getDate(2012, 9, 19), visitLocation: VisitLocationItem.HOME.code, roundNumber: 0,
                 respondentCode: member12, hasInterpreter: false, collectedBy: "dragon", collectedDate: GeneralUtil.getDate(2012, 9, 22, 0, 0, 0)
         )
 
-        def rv3 = new RawVisit(id: "uuuid3", code: visit3, householdCode: household2,
+        def rv3 = new RawVisit(id: "uuuid3", code: visit3, householdCode: household2, visitReason: VisitReason.BASELINE,
                 visitDate: GeneralUtil.getDate(2012, 12, 25), visitLocation: VisitLocationItem.OTHER_PLACE.code, visitLocationOther: "HEALTHCENTER", roundNumber: 0,
                 respondentCode: member21, hasInterpreter: false, collectedBy: "dragon", collectedDate: GeneralUtil.getDate(2012, 12, 26, 0, 0, 0)
         )
 
-        def rv4 = new RawVisit(id: "uuuid3", code: visit4, householdCode: household2,
+        def rv4 = new RawVisit(id: "uuuid3", code: visit4, householdCode: household2, visitReason: VisitReason.BASELINE,
                 visitDate: GeneralUtil.getDate(2015, 2, 4), visitLocation: VisitLocationItem.OTHER_PLACE.code, visitLocationOther: "HEALTHCENTER", roundNumber: 0,
                 respondentCode: member21, hasInterpreter: false, collectedBy: "dragon", collectedDate: GeneralUtil.getDate(2015, 2, 4, 0, 0, 0)
         )
 
-        def rv5 = new RawVisit(id: "uuuid3", code: visit5, householdCode: household2,
+        def rv5 = new RawVisit(id: "uuuid3", code: visit5, householdCode: household2, visitReason: VisitReason.BASELINE,
                 visitDate: GeneralUtil.getDate(2019, 2, 4), visitLocation: VisitLocationItem.OTHER_PLACE.code, visitLocationOther: "HEALTHCENTER", roundNumber: 0,
                 respondentCode: member21, hasInterpreter: false, collectedBy: "dragon", collectedDate: GeneralUtil.getDate(2019, 2, 4, 0, 0, 0)
         )

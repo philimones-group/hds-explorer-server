@@ -28,7 +28,7 @@ import spock.lang.Specification
 import java.time.LocalDateTime
 
 @Ignore
-class ResidencyServiceSpec extends Specification implements ServiceUnitTest<ResidencyService>, DataTest, AutowiredTest{
+class ResidencyServiceNOTSpec extends Specification implements ServiceUnitTest<ResidencyService>, DataTest, AutowiredTest{
 
     /* Injecting Needed Services */
     Closure doWithSpring() {{ ->
