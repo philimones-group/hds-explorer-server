@@ -5,8 +5,7 @@ import groovy.transform.ToString
 import grails.compiler.GrailsCompileStatic
 import net.betainteractive.utilities.StringUtil
 import org.philimone.hds.explorer.server.model.audit.AuditableEntity
-import org.philimone.hds.explorer.server.model.main.Module
-import org.philimone.hds.explorer.server.model.main.UserModule
+import org.philimone.hds.explorer.server.model.types.StringCollectionType
 
 /**
  * This domain represents a Application User that can be an Administrator, Data Manager or a Field Worker, they can have access do the server or client app
@@ -33,7 +32,7 @@ class User extends AuditableEntity {
 
     boolean isPasswordEncoded
 
-    //static hasMany = [modules: UserModule] /* Modules that the user has access */
+    static hasMany = [modules: String] /* Modules that the user has access */
 
     String toString(){
         return StringUtil.getFullname(firstName, "", lastName)
@@ -47,10 +46,6 @@ class User extends AuditableEntity {
         (UserRole.findAllByUser(this) as List<UserRole>)*.role as Set<Role>
     }
 
-    Set<Module> getModules() {
-        (UserModule.findAllByUser(this) as List<UserModule>)*.module as Set<Module>
-    }
-
     String getAuthoritiesText(){
         def text = ""
         getAuthorities().eachWithIndex { it, index ->
@@ -60,14 +55,6 @@ class User extends AuditableEntity {
                 text += ", ${it.name}"
             }
         }
-    }
-
-    String getModulesAsText() {
-        String mds = ""
-        getModules().each {
-            mds += (mds.empty ? "":",") + it.code
-        }
-        return mds
     }
 
     static transients = ['isPasswordEncoded', 'getFullname']
@@ -86,6 +73,7 @@ class User extends AuditableEntity {
         accountLocked()
         enabled()
 
+        modules nullable: true
     }
 
     static mapping = {
@@ -105,6 +93,7 @@ class User extends AuditableEntity {
         accountLocked column: 'account_locked'
         passwordExpired column: 'password_expired'
 
+        modules column: "modules", type: StringCollectionType
     }
 
     def static ALL_COLUMNS = ['code','firstName', 'lastName', 'username', 'password', 'email']

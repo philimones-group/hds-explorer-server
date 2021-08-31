@@ -1,6 +1,7 @@
 package org.philimone.hds.explorer.server.model.main
 
 import org.philimone.hds.explorer.server.model.audit.CollectableEntity
+import org.philimone.hds.explorer.server.model.types.StringCollectionType
 
 /**
  * Represents an distinct Household in the system that belongs to a administrative division (region or hieararchy)
@@ -38,6 +39,8 @@ class Household extends CollectableEntity {
     Double cosLongitude;
     Double sinLongitude;
 
+    static hasMany = [modules:String]
+
     static constraints = {
         id maxSize: 32
         code unique: true
@@ -69,6 +72,8 @@ class Household extends CollectableEntity {
         sinLatitude nullable: true
         cosLongitude nullable: true
         sinLongitude nullable: true
+
+        modules nullable: true
     }
 
     static mapping = {
@@ -105,6 +110,8 @@ class Household extends CollectableEntity {
         sinLatitude column: 'sin_latitude'
         cosLongitude column: 'cos_longitude'
         sinLongitude column: 'sin_longitude'
+
+        modules column: "modules", type: StringCollectionType
     }
 
     def static ALL_COLUMNS = ['code', 'region', 'name', 'headCode', 'headName', 'secHeadCode', 'hierarchy1', 'hierarchy2', 'hierarchy3', 'hierarchy4', 'hierarchy5', 'hierarchy6', 'hierarchy7', 'hierarchy8', 'gpsAccuracy', 'gpsAltitude', 'gpsLatitude', 'gpsLongitude']

@@ -11,6 +11,7 @@ class FormController {
 
     FormService formService
     DatasetService datasetService
+    ModuleService moduleService
 
     static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
 
@@ -32,12 +33,13 @@ class FormController {
             list = Form.list() //Form.list(params)
         }
 
-
         respond list, model:[formCount: formService.count(), currentModule: module]
     }
 
     def show(String id) {
-        respond Form.get(id), model: [formService: formService]
+        def form = Form.get(id)
+        def modules = moduleService.findAllByCodes(form.modules)
+        respond form, model: [formService: formService, modules: modules]
     }
 
     def create() {
@@ -60,7 +62,7 @@ class FormController {
 
             def modules = Module.getAll(params.list("all_modules.id"))
             modules.each {
-                formInstance.addToModules(it)
+                formInstance.addToModules(it.code)
             }
 
             formInstance.save(flush:true)
@@ -83,7 +85,9 @@ class FormController {
     }
 
     def edit(String id) {
-        respond formService.get(id)
+        def form = formService.get(id)
+        def modules = moduleService.findAllByCodes(form.modules)
+        respond form, model: [modules: modules]
     }
 
     def update(Form formInstance) {
@@ -95,13 +99,9 @@ class FormController {
         try {
 
             def modules = Module.getAll(params.list("all_modules.id"))
-
-            modules.each {
-                formInstance.addToModules(it)
-            }
-
-
+            formService.updateModules(formInstance, modules)
             formService.save(formInstance)
+
         } catch (ValidationException e) {
             respond formInstance.errors, view:'edit'
             return

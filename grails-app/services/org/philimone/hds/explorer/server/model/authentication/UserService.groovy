@@ -14,6 +14,7 @@ class UserService {
     def GeneralUtilitiesService generalUtilitiesService
     def codeGeneratorService
     def springSecurityService
+    def moduleService
 
     LinkGenerator grailsLinkGenerator
 
@@ -47,6 +48,12 @@ class UserService {
         user = user.save(flush: true)
         UserRole.create(user, roles, true)
 
+        def module = moduleService.getDefaultModule()
+
+        if (user?.modules?.empty && module!=null){
+            user.addToModules(module.code)
+        }
+
         //send email
         if (!StringUtil.isBlank(user?.email) && !user?.email?.equals("youremail@domain.net")){ //send email with the credentials if mail address exists
 
@@ -69,7 +76,16 @@ class UserService {
 
         user = user.save(flush: true)
         UserRole.create(user, roles, true)
-        createUserStudyModule(user, modules)
+
+        def module = moduleService.getDefaultModule()
+
+        if (modules?.empty && module!=null){
+            modules.add(module)
+        }
+
+        modules.each {
+            user.addToModules(it.code)
+        }
 
         println "modules: ${modules}"
 
@@ -86,18 +102,6 @@ class UserService {
         //println "error ${user.errors}"
 
         return user
-    }
-
-    def createUserStudyModule(User user, List<Module> modules) {
-
-        modules.each { module ->
-            def smodule = new UserModule(user: user, module: module)
-            smodule.save(flush:true)
-
-            println "error: ${smodule.errors}"
-        }
-
-        user.save(flush:true)
     }
 
     User updateUser(User user){
@@ -118,11 +122,13 @@ class UserService {
         removeAllModules(user)
 
         UserRole.create(user, userRoles, true)
-        createUserStudyModule(user, userModules)
+
+        userModules.each {
+            user.addToModules(it.code)
+        }
     }
 
     User updatePassword(User user, String newPassword){
-
         //timestamp
         user.password = newPassword
 
@@ -141,9 +147,7 @@ class UserService {
     }
 
     boolean passwordEquals(User user, String newPassword){
-
         def pe = springSecurityService.passwordEncoder
-
         return pe.isPasswordValid(user.password, newPassword, null)
     }
 
@@ -184,11 +188,13 @@ class UserService {
     }
 
     def removeAllModules(User u){
-        UserModule.where { user == u }.deleteAll()
+        def modules = u.modules.collect { it }
+        modules.each {
+            u.removeFromModules(it)
+        }
     }
 
     void delete(Serializable id){
-
         //remove all the roles first - we dont delete users, just lock and disable
 
         def user = User.get(id)
@@ -199,7 +205,6 @@ class UserService {
         //User.get(id).delete()
 
         user.save(flush: true)
-
     }
 
 }

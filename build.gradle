@@ -61,6 +61,8 @@ dependencies {
     testRuntime "net.sourceforge.htmlunit:htmlunit:2.18"
 
     //plugins
+    compile 'org.grails.plugins:fields:2.2.10'
+
     compile 'com.google.guava:guava:22.0'
     runtime 'mysql:mysql-connector-java:5.1.44'
     //runtime 'org.postgresql:postgresql:9.3-1101-jdbc41'

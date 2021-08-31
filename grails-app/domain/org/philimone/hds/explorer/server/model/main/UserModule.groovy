@@ -2,7 +2,9 @@ package org.philimone.hds.explorer.server.model.main
 
 import org.philimone.hds.explorer.server.model.authentication.User
 
+@Deprecated
 class UserModule {
+    static mapWith = "none"
 
     User user
     Module module

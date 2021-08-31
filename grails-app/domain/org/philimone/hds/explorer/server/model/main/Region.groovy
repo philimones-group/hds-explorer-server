@@ -1,8 +1,9 @@
 package org.philimone.hds.explorer.server.model.main
 
-import org.philimone.hds.explorer.server.model.audit.AuditableEntity
+
 import org.philimone.hds.explorer.server.model.audit.CollectableEntity
 import org.philimone.hds.explorer.server.model.enums.RegionLevel
+import org.philimone.hds.explorer.server.model.types.StringCollectionType
 
 /**
  * Region represents an Administrative division in a country or study area, the Administrative Division or Location Hieararchy it stored here
@@ -14,6 +15,8 @@ class Region extends CollectableEntity {
     String name
     RegionLevel hierarchyLevel
     Region parent
+
+    static hasMany = [modules:String]
 
     String getParentCode(){
         parent==null ? "" : parent.code
@@ -30,6 +33,7 @@ class Region extends CollectableEntity {
         name blank: false
         hierarchyLevel nullable: false, blank: false
         parent nullable: true
+        modules nullable: true
     }
 
     static mapping = {
@@ -42,6 +46,7 @@ class Region extends CollectableEntity {
         name column: 'name'
         hierarchyLevel column: 'level', enumType: "identity"
         parent column: 'parent_region_code'
+        modules column: "modules", type: StringCollectionType
 
     }
 

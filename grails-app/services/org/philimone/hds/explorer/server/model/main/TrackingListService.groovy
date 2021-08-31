@@ -13,6 +13,7 @@ import org.philimone.hds.explorer.io.SystemPath
 @Transactional
 class TrackingListService {
 
+    def moduleService
     /**
      * For tests purposes only
      */
@@ -88,7 +89,7 @@ class TrackingListService {
             def cellName = row.getCell(1)
             def cellTitle = row.getCell(2)
             def cellDetails = row.getCell(3)
-            def cellModule = row.getCell(4)
+            def cellModules = row.getCell(4)
             def cellListId = row.getCell(5)
             def cellListTitle = row.getCell(6)
             def cellListForms = row.getCell(7)
@@ -105,7 +106,7 @@ class TrackingListService {
                 def name = getStringCellValue(cellName)
                 def title = getStringCellValue(cellTitle)
                 def details = getStringCellValue(cellDetails)
-                def module = trackingList.module.code //getStringCellValue(cellModule)
+                def modules = moduleService.getStringListModules(trackingList.modules) //getStringCellValue(cellModule)
                 def listid = getStringCellValue(cellListId)
                 def listtitle = getStringCellValue(cellListTitle)
                 def listforms = getStringCellValue(cellListForms)
@@ -120,9 +121,9 @@ class TrackingListService {
                 }
 
                 //Removing whitespaces
-                if (!module.isEmpty()){
-                    module = module.replaceAll("\\s+", "")
-                }
+                //if (!modules.isEmpty()){
+                //    modules = modules.replaceAll("\\s+", "")
+                //}
                 if (!listforms.isEmpty()){
                     listforms = listforms.replaceAll("\\s+", "")
                 }
@@ -143,7 +144,7 @@ class TrackingListService {
                         xml += "</tracking_list>" + "\n"
                     }
 
-                    xml += "<tracking_list id=\"${i}\" code=\"${code}\" name=\"${name}\" details=\"${details}\" title=\"${title}\" module=\"${module}\">"  + "\n"
+                    xml += "<tracking_list id=\"${i}\" code=\"${code}\" name=\"${name}\" details=\"${details}\" title=\"${title}\" module=\"${modules}\">"  + "\n"
 
                     tlistCount++
                     lastCode = code
@@ -209,7 +210,7 @@ class TrackingListService {
             def cellName = row.getCell(1)
             def cellTitle = row.getCell(2)
             def cellDetails = row.getCell(3)
-            def cellModule = row.getCell(4)
+            def cellModules = row.getCell(4)
             def cellListId = row.getCell(5)
             def cellListTitle = row.getCell(6)
             def cellListForms = row.getCell(7)
@@ -225,7 +226,7 @@ class TrackingListService {
                 def name = getStringCellValue(cellName)
                 def title = getStringCellValue(cellTitle)
                 def details = getStringCellValue(cellDetails)
-                def module = getStringCellValue(cellModule)
+                def modules = getStringCellValue(cellModules)
                 def listid = getStringCellValue(cellListId)
                 def listtitle = getStringCellValue(cellListTitle)
                 def listforms = getStringCellValue(cellListForms)

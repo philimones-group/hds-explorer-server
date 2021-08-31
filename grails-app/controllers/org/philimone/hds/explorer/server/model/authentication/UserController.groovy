@@ -2,12 +2,14 @@ package org.philimone.hds.explorer.server.model.authentication
 
 import grails.validation.ValidationException
 import org.philimone.hds.explorer.server.model.main.Module
+import org.philimone.hds.explorer.server.model.main.ModuleService
 
 import static org.springframework.http.HttpStatus.*
 
 class UserController {
 
     UserService userService
+    ModuleService moduleService
 
     static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
 
@@ -18,7 +20,9 @@ class UserController {
     }
 
     def show(String id) {
-        respond userService.get(id)
+        def user = userService.get(id)
+        def modules= moduleService.findAllByCodes(user.modules)
+        respond user, model: [modules: modules]
     }
 
     def create() {
@@ -56,7 +60,8 @@ class UserController {
     def edit(String id) {
         def user = userService.get(id)
         def userRoles = user.authorities.asList()
-        def userModules = user.modules.asList()
+        def modules = user.modules
+        def userModules = Module.findAllByCodeInList(modules)
 
         respond user, model: [userRoles: userRoles, userModules: userModules]
     }

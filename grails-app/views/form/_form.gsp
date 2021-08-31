@@ -127,7 +127,7 @@
         <g:message code="form.modules.label" default="Modules" />
 
     </label>
-    <g:select name="all_modules.id" multiple="multiple" optionKey="id" from="${org.philimone.hds.explorer.server.model.main.Module.list()}" value="${this.form?.modules}"/>
+    <g:select name="all_modules.id" multiple="multiple" optionKey="id" from="${org.philimone.hds.explorer.server.model.main.Module.list()}" value="${this.modules}"/>
 </div>
 
 <div class="fieldcontain ${hasErrors(bean: this.form, field: 'isRegionForm', 'error')} ">

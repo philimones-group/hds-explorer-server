@@ -24,8 +24,6 @@
             <table id="usersTable" class="display nowrap compact cell-border" style="width:99%" cellpadding="0">
                 <thead>
                 <tr>
-                    <th><g:message code="user.id.label" default="Id"/></th>
-
                     <th><g:message code="user.code.label" default="Code"/></th>
 
                     <th><g:message code="user.username.label" default="Username"/></th>
@@ -44,8 +42,6 @@
                 <tbody>
                 <g:each in="${userList}" status="i" var="userInstance">
                     <tr>
-
-                        <td><g:link action="show" id="${userInstance.id}">${fieldValue(bean: userInstance, field: "id")}</g:link></td>
 
                         <td><g:link action="show" id="${userInstance.id}">${fieldValue(bean: userInstance, field: "code")}</g:link></td>
 

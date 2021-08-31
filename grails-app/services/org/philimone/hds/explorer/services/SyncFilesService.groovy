@@ -54,6 +54,7 @@ class SyncFilesService {
     def generalUtilitiesService
     def trackingListService
     def syncFilesReportService
+    def moduleService
 
     def generateSettingsXML(LogReportCode logReportId) {
         generateAppParametersXML(logReportId)
@@ -1842,7 +1843,7 @@ class SyncFilesService {
         userElement.appendChild(createAttributeNonNull(doc, "lastName", user.getLastName()));
         userElement.appendChild(createAttributeNonNull(doc, "fullName", user.toString()));
         userElement.appendChild(createAttributeNonNull(doc, "email", user.getEmail() == null ? "" : user.getEmail()));
-        userElement.appendChild(createAttributeNonNull(doc, "modules", user.getModulesAsText()));
+        userElement.appendChild(createAttributeNonNull(doc, "modules", moduleService.getStringListModules(user.modules)));
 
 
         return userElement;
@@ -1894,7 +1895,7 @@ class SyncFilesService {
         element.appendChild(createAttributeNonNull(doc, "gender", form.getGender()));
         element.appendChild(createAttributeNonNull(doc, "minAge", form.getMinAge() + ""));
         element.appendChild(createAttributeNonNull(doc, "maxAge", form.getMaxAge() + ""));
-        element.appendChild(createAttributeNonNull(doc, "modules", form.getModulesAsText()));
+        element.appendChild(createAttributeNonNull(doc, "modules", moduleService.getStringListModules(form.modules)));
         element.appendChild(createAttributeNonNull(doc, "isRegionForm", "" + form.getIsRegionForm().toString()));
         element.appendChild(createAttributeNonNull(doc, "isHouseholdForm", "" + form.getIsHouseholdForm().toString()));
         element.appendChild(createAttributeNonNull(doc, "isHouseholdHeadForm", "" + form.getIsHouseholdHeadForm().toString()));
@@ -1938,6 +1939,7 @@ class SyncFilesService {
         element.appendChild(createAttributeNonNull(doc, "name", region.name));
         element.appendChild(createAttributeNonNull(doc, "hierarchyLevel", region.hierarchyLevel?.code));
         element.appendChild(createAttributeNonNull(doc, "parent", region.parentCode));
+        element.appendChild(createAttributeNonNull(doc, "modules", moduleService.getStringListModules(region.modules)));
 
         return element;
     }
@@ -1957,6 +1959,7 @@ class SyncFilesService {
         element.appendChild(createAttributeNonNull(doc, "tableName", dataset.tableName));
         element.appendChild(createAttributeNonNull(doc, "tableColumn", dataset.tableColumn));
         element.appendChild(createAttributeNonNull(doc, "tableColumnLabels", dataset.tableColumnLabels));
+        element.appendChild(createAttributeNonNull(doc, "modules", moduleService.getStringListModules(dataset.modules)));
         element.appendChild(createAttributeNonNull(doc, "createdBy", dataset.createdBy?.toString()));
         element.appendChild(createAttributeNonNull(doc, "creationDate", createdDate));
         element.appendChild(createAttributeNonNull(doc, "updatedBy", dataset.updatedBy == null ? "" : dataset.updatedBy?.toString()));
@@ -2161,6 +2164,8 @@ class SyncFilesService {
                 ((h.gpsAltitude == null) ?   "<gpsAltitude />" : "<gpsAltitude>${h.gpsAltitude}</gpsAltitude>") +
                 ((h.gpsLatitude == null) ?   "<gpsLatitude />" : "<gpsLatitude>${h.gpsLatitude}</gpsLatitude>") +
                 ((h.gpsLongitude == null) ? "<gpsLongitude />" : "<gpsLongitude>${h.gpsLongitude}</gpsLongitude>") +
+
+                ((h.modules.empty)        ?  "<modules />"     : "<modules>${moduleService.getStringListModules(h.modules)}</modules>")+
                 ("</household>")
     }
 
@@ -2203,6 +2208,9 @@ class SyncFilesService {
                 ((m.gpsAltitude == null)                              ? "<gpsAltitude />" : "<gpsAltitude>${m.gpsAltitude}</gpsAltitude>") +
                 ((m.gpsLatitude == null)                              ? "<gpsLatitude />" : "<gpsLatitude>${m.gpsLatitude}</gpsLatitude>") +
                 ((m.gpsLongitude == null)                             ? "<gpsLongitude />" : "<gpsLongitude>${m.gpsLongitude}</gpsLongitude>") +
+
+                ((m.modules.empty)        ?  "<modules />"     : "<modules>${moduleService.getStringListModules(m.modules)}</modules>")+
+
                 ("</member>")
     }
 }

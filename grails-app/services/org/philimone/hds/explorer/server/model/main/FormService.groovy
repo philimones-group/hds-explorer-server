@@ -32,6 +32,18 @@ class FormService {
         form.save(flush:true)
     }
 
+    void updateModules(Form form, List<Module> modules) {
+        def modList = form.modules.collect { it}
+        //delete previous modules
+        modList.each {
+            form.removeFromModules(it)
+        }
+        //add new modules
+        modules.each {
+            form.addToModules(it.code)
+        }
+    }
+
     List<JRegionLevel> getRegionLevels(){
         def list = []
         ApplicationParam.executeQuery("select p from ApplicationParam p where p.name like '%hierarchy%' and p.value is not null order by p.name asc" ).each {

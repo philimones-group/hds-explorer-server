@@ -7,6 +7,7 @@ import org.philimone.hds.explorer.server.model.enums.HeadRelationshipType
 import org.philimone.hds.explorer.server.model.enums.MaritalStatus
 import org.philimone.hds.explorer.server.model.enums.temporal.ResidencyEndType
 import org.philimone.hds.explorer.server.model.enums.temporal.ResidencyStartType
+import org.philimone.hds.explorer.server.model.types.StringCollectionType
 
 import java.time.LocalDate
 
@@ -127,6 +128,8 @@ class Member extends CollectableEntity {
     Double cosLongitude
     Double sinLongitude
 
+    static hasMany = [modules:String]
+
     boolean isHouseholdHead(){
         headRelationshipType==HeadRelationshipType.HEAD_OF_HOUSEHOLD
     }
@@ -183,6 +186,8 @@ class Member extends CollectableEntity {
         sinLatitude nullable: true
         cosLongitude nullable: true
         sinLongitude nullable: true
+
+        modules nullable: true
     }
 
     static mapping = {
@@ -239,6 +244,8 @@ class Member extends CollectableEntity {
         sinLatitude column: 'sin_latitude'
         cosLongitude column: 'cos_longitude'
         sinLongitude column: 'sin_longitude'
+
+        modules column: "modules", type: StringCollectionType
     }
 
     def static ALL_COLUMNS = ['code', 'name', 'gender', 'dob', 'age', 'ageAtDeath', 'motherCode', 'motherName', 'fatherCode', 'fatherName', 'maritalStatus', 'spouseCode', 'spouseName', 'spouseType',

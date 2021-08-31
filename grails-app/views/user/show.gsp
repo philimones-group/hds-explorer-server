@@ -122,7 +122,7 @@
                         </span>
                         <span class="property-value" aria-labelledby="modules-label">
                             <ul>
-                                <g:each in="${this.user.modules}">
+                                <g:each in="${this.modules}">
                                     <li class="list-style-type: square;">${ message(code: it.name) }</li>
                                 </g:each>
                             </ul>

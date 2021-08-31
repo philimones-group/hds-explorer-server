@@ -1,6 +1,7 @@
 package org.philimone.hds.explorer.server.model.main
 
 import org.philimone.hds.explorer.server.model.audit.AuditableEntity
+import org.philimone.hds.explorer.server.model.types.StringCollectionType
 
 class TrackingList extends AuditableEntity {
 
@@ -8,9 +9,11 @@ class TrackingList extends AuditableEntity {
     String code
     String name
     String filename
-    Module module
     Boolean hasExtraData = false
     Boolean enabled = true
+
+    static hasMany = [mappings:TrackingListMapping,
+                      modules:String]
 
     String getFilenameOnly(){
         new File(filename).name
@@ -25,17 +28,16 @@ class TrackingList extends AuditableEntity {
         return f.parent + File.separator + nfn
     }
 
-    static hasMany = [mappings:TrackingListMapping]
-
     static constraints = {
         id maxSize: 32
         code unique: true
         name blank: false
         filename unique: true
-        module nullable: false
 
         hasExtraData nullable: false
         enabled nullable: false
+
+        modules nullable: true
     }
 
     static mapping = {
@@ -46,8 +48,8 @@ class TrackingList extends AuditableEntity {
         code column: 'code'
         name column: 'name'
         filename column: 'filename'
-        module column: 'module'
         hasExtraData column: 'has_extra_data'
         enabled column: 'enabled'
+        modules column: 'modules', type: StringCollectionType
     }
 }

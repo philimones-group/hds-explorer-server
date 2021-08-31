@@ -83,7 +83,13 @@
 				<li class="fieldcontain">
 					<span id="modules-label" class="property-label"><g:message code="form.modules.label" default="Modules" /></span>
 					
-					<span class="property-value" aria-labelledby="modules-label"><g:fieldValue bean="${this.form}" field="modules"/></span>
+					<span class="property-value" aria-labelledby="modules-label">
+						<ul>
+							<g:each in="${this.modules}">
+								<li class="list-style-type: square;">${ message(code: it.name) }</li>
+							</g:each>
+						</ul>
+					</span>
 					
 				</li>
 				</g:if>

@@ -23,7 +23,7 @@ import org.philimone.hds.explorer.server.model.enums.LogStatus
 import org.philimone.hds.explorer.server.model.main.Household
 import org.philimone.hds.explorer.server.model.main.Member
 import org.philimone.hds.explorer.server.model.main.Region
-import org.philimone.hds.explorer.server.model.main.StudyModule
+import org.philimone.hds.explorer.server.model.main.Module
 import org.philimone.hds.explorer.server.model.settings.ApplicationParam
 import org.philimone.hds.explorer.server.report.ExecTaskReport
 
@@ -164,7 +164,7 @@ class ImportDataFromOpenHDSService {
             User.withNewTransaction {
 
                 def role = Role.findByAuthority(Role.ROLE_FIELD_WORKER)
-                def module = StudyModule.findByCode(StudyModule.DSS_SURVEY_MODULE)
+                def module = Module.findByName(Module.DSS_SURVEY_MODULE)
 
                 fieldworkers.subList(from, to).each { Fieldworker fw ->
                     //perform saves
@@ -192,9 +192,9 @@ class ImportDataFromOpenHDSService {
                     user.enabled = newUser ? true : user.enabled
 
 
-                    if (user.modules == null || user.modules.size()==0){
+                    if (user.modules == null || user.modules.empty){
                         //println "adding module dss for user=${user.username}, ${user.modules}"
-                        user.addToModules(module)
+                        user.addToModules(module.code)
                     }
 
                     processed++

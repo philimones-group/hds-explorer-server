@@ -181,6 +181,7 @@ class BootStrap {
         if (User.count()==0){
 
             Role admin = Role.findByAuthority(Role.ROLE_ADMINISTRATOR)
+            def modules = Module.list()
 
             User user = new User()
 
@@ -191,7 +192,7 @@ class BootStrap {
             user.email = "youremail@domain.net"
 
             println ("admin user - hasErrors: "+user.hasErrors())
-            println ("admin user - saving: " + userService.addUser(user, [admin]))
+            println ("admin user - saving: " + userService.addUser(user, [admin], modules))
             println "admin role: ${admin}"
             //println "admin user role assign: ${UserRole.create(user, [admin])}"
         }
@@ -398,21 +399,6 @@ class BootStrap {
     }
 
     def testApp() {
-        def region = Region.findByCode("MAP")
-        def module = Module.first()
-
-        if (region != null && module != null) {
-
-            region.modules.add(module.code)
-
-            region.addToModules(module.code)
-
-            println("modules: ${region.modules}, 2")
-            def result = region.save(flush: true)
-
-            println "errors = ${result.errors}"
-        }
-
 
     }
 

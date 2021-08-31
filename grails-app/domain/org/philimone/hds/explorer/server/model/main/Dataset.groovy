@@ -1,6 +1,7 @@
 package org.philimone.hds.explorer.server.model.main
 
 import org.philimone.hds.explorer.server.model.audit.AuditableEntity
+import org.philimone.hds.explorer.server.model.types.StringCollectionType
 
 /**
  * Represents an External Dataset that can be linked with our core domain tables (Household, Member, User)
@@ -19,7 +20,7 @@ class Dataset extends AuditableEntity {
 
     boolean enabled = false
 
-    //static hasMany = [mappingLabels:DatasetLabel]
+    static hasMany = [modules:String]
 
     String getFilenameOnly(){
         new File(filename).name
@@ -44,6 +45,8 @@ class Dataset extends AuditableEntity {
         tableColumnLabels nullable: true, maxSize: 2000
 
         enabled nullable:false
+
+        modules nullable: true
     }
 
     static mapping = {
@@ -60,5 +63,7 @@ class Dataset extends AuditableEntity {
         filename column: 'filename'
 
         enabled column: 'enabled'
+
+        modules column: "modules", type: StringCollectionType
     }
 }

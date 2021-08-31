@@ -1,6 +1,7 @@
 package org.philimone.hds.explorer.server.model.main
 
 import org.philimone.hds.explorer.server.model.audit.AuditableEntity
+import org.philimone.hds.explorer.server.model.types.StringCollectionType
 
 /**
  * Represents a Form that will be opened for Data Collection, this table store the details of the Form and how it should be used and who will use it
@@ -30,7 +31,7 @@ class Form extends AuditableEntity {
     RedcapApi redcapApi
 
     static hasMany = [
-            modules:Module, /* Modules that have access to the Form - this data will be converted to comma separated names */
+            modules:String, /* Modules that have access to the Form - this data will be converted to comma separated names */
             dependencies:Form,   /* The list of forms that must be collected first before this Form */
             mappings:FormMapping,  /* The list of all variables that will be filled automatically on a Form in Mobile App */
             redcapMappings:RedcapMapping  /* The list of all variables that will be uploaded to a REDCap Form */
@@ -38,14 +39,6 @@ class Form extends AuditableEntity {
 
     String toString(){
         formName
-    }
-
-    String getModulesAsText() {
-        String mds = ""
-        modules.each {
-            mds += (mds.empty ? "":",") + it.code
-        }
-        return mds
     }
 
     String getDependenciesAsText() {
@@ -102,5 +95,6 @@ class Form extends AuditableEntity {
 
         enabled column: 'enabled'
 
+        modules column: "modules", type: StringCollectionType
     }
 }
