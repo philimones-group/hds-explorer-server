@@ -13,6 +13,7 @@ class HouseholdService {
 
     def regionService
     def userService
+    def moduleService
     def codeGeneratorService
     def errorMessageService
 
@@ -79,6 +80,8 @@ class HouseholdService {
         def isBlankHouseholdName = StringUtil.isBlank(household.householdName)
         def isBlankRegionCode = StringUtil.isBlank(household.regionCode)
         def isBlankCollectedBy = StringUtil.isBlank(household.collectedBy)
+        def isBlankModules = StringUtil.isBlank(household.modules)
+        def notFoundModules = moduleService.getNonExistenceModuleCodes(household.modules)
 
         //C1. Check Blank Fields (code)
         if (isBlankHouseholdCode){
@@ -114,12 +117,19 @@ class HouseholdService {
             errors << errorMessageService.getRawMessage(RawEntity.HOUSEHOLD, "validation.field.reference.duplicate.error", ["Household", "householdCode", household.householdCode], ["householdCode"])
         }
 
+        //Check If invalid modules where selected
+        if (!isBlankModules && notFoundModules.size()>0) {
+            errors << errorMessageService.getRawMessage(RawEntity.HOUSEHOLD, "validation.field.module.codes.notfound.error", [notFoundModules], ["modules"])
+        }
+
         return errors
     }
 
     private Household newHouseholdInstance(RawHousehold rh){
 
         def hierarchies = regionService.getHierarchies(rh.regionCode)
+        def modules = moduleService.getListModulesFrom(rh.modules)
+        moduleService.addDefaultModuleTo(modules) //ensure it has a default module = generall access
 
         Household household = new Household()
 
@@ -151,6 +161,10 @@ class HouseholdService {
         household.sinLatitude =  household.gpsLatitude==null ?  null : Math.sin(household.gpsLatitude*Math.PI / 180.0)
         household.cosLongitude = household.gpsLongitude==null ? null : Math.cos(household.gpsLongitude*Math.PI / 180.0)
         household.sinLongitude = household.gpsLongitude==null ? null : Math.sin(household.gpsLongitude*Math.PI / 180.0)
+
+        modules.each {
+            household.addToModules(it)
+        }
 
         //set collected by info
         household.collectedBy = userService.getUser(rh.collectedBy)

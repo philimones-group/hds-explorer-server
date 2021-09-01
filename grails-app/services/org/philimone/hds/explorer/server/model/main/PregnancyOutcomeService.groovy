@@ -447,7 +447,8 @@ class PregnancyOutcomeService {
                 dob: outcomeDate,
                 motherCode: motherCode,
                 fatherCode: fatherCode,
-                householdCode: motherResidency.household.code)
+                householdCode: motherResidency.household.code,
+                modules: pregnancyOutcome.modules)
     }
 
     private RawResidency createNewRawResidencyFrom(RawPregnancyChild pregnancyChild, Residency motherResidency, LocalDate outcomeDate){

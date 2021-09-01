@@ -428,7 +428,8 @@ class ExternalInMigrationService {
                 dob: externalInMigration.memberDob,
                 motherCode: externalInMigration.memberMotherCode,
                 fatherCode: externalInMigration.memberFatherCode,
-                householdCode: externalInMigration.destinationCode)
+                householdCode: externalInMigration.destinationCode,
+                modules: externalInMigration.modules)
     }
 
     private RawInMigration createRawInMigration(RawExternalInMigration rawExternalInMigration) {

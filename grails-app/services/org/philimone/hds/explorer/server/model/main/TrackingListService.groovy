@@ -2,10 +2,8 @@ package org.philimone.hds.explorer.server.model.main
 
 import com.google.common.io.Files
 import grails.gorm.transactions.Transactional
-import net.betainteractive.io.writers.ZipMaker
 import org.apache.poi.ss.usermodel.Cell
 import org.apache.poi.ss.usermodel.DataFormatter
-import org.apache.poi.xssf.usermodel.XSSFSheet
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import org.philimone.hds.explorer.Application
 import org.philimone.hds.explorer.io.SystemPath
@@ -106,7 +104,7 @@ class TrackingListService {
                 def name = getStringCellValue(cellName)
                 def title = getStringCellValue(cellTitle)
                 def details = getStringCellValue(cellDetails)
-                def modules = moduleService.getStringListModules(trackingList.modules) //getStringCellValue(cellModule)
+                def modules = moduleService.getListModulesAsText(trackingList.modules) //getStringCellValue(cellModule)
                 def listid = getStringCellValue(cellListId)
                 def listtitle = getStringCellValue(cellListTitle)
                 def listforms = getStringCellValue(cellListForms)

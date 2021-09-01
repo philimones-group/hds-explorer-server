@@ -22,6 +22,8 @@ class RawHousehold {
     String gpsAlt
     String gpsAcc
 
+    String modules
+
     String collectedBy //fieldWorkerId
     LocalDateTime collectedDate //visitDate / creationDate
     LocalDateTime uploadedDate  //submissionDate
@@ -44,6 +46,8 @@ class RawHousehold {
         gpsAlt blank: true, nullable: true
         gpsLat blank: true, nullable: true
         gpsAcc blank: true, nullable: true
+
+        modules nullable: true
 
         collectedBy blank: true
         collectedDate nullable: true
@@ -69,6 +73,8 @@ class RawHousehold {
         gpsAlt column: "gps_altitude"
         gpsLat column: "gps_latitude"
         gpsAcc column: "gps_accuracy"
+
+        modules column: "modules"
 
         collectedBy column: "collected_by"
         collectedDate column: "collected_date"

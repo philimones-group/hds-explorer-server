@@ -14,6 +14,7 @@ class RegionService {
     def userService
     def codeGeneratorService
     def errorMessageService
+    def moduleService
 
     //<editor-fold desc="Region Utilities Methods">
     boolean exists(String regionCode) {
@@ -118,6 +119,8 @@ class RegionService {
         def isBlankRegionName = StringUtil.isBlank(region.regionName)
         def isBlankParentCode = StringUtil.isBlank(region.parentCode)
         def isBlankCollectedBy = StringUtil.isBlank(region.collectedBy)
+        def isBlankModules = StringUtil.isBlank(region.modules)
+        def notFoundModules = moduleService.getNonExistenceModuleCodes(region.modules)
 
         //C1. Check Blank Fields (regionCode)
         if (isBlankRegionCode){
@@ -150,20 +153,30 @@ class RegionService {
             errors << errorMessageService.getRawMessage(RawEntity.REGION, "validation.field.reference.duplicate.error", ["Region", "regionCode", region.regionCode], ["regionCode"])
         }
 
+        //Check If invalid modules where selected
+        if (!isBlankModules && notFoundModules.size()>0) {
+            errors << errorMessageService.getRawMessage(RawEntity.REGION, "validation.field.module.codes.notfound.error", [notFoundModules], ["modules"])
+        }
+
         return errors
     }
 
     private Region newRegionInstance(RawRegion rr){
 
-        Region region = new Region()
-
         def parent = getRegion(rr.parentCode)
         def nextLevel = getNextLevel(parent)
+        def modules = moduleService.getListModulesFrom(rr.modules)
+        moduleService.addDefaultModuleTo(modules) //ensure it has a default module = generall access
 
+        Region region = new Region()
         region.code = rr.regionCode
         region.name = rr.regionName
         region.hierarchyLevel = nextLevel
         region.parent = parent
+
+        modules.each {
+            region.addToModules(it)
+        }
 
         //set collected by info
         region.collectedBy = userService.getUser(rr.collectedBy)

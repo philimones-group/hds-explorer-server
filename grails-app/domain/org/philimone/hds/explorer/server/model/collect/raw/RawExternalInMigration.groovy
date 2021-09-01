@@ -30,6 +30,8 @@ class RawExternalInMigration {
     LocalDate migrationDate
     String migrationReason
 
+    String modules
+
     String collectedBy //fieldWorkerId
     LocalDateTime collectedDate //visitDate / creationDate
     LocalDateTime uploadedDate  //submissionDate
@@ -58,6 +60,8 @@ class RawExternalInMigration {
         migrationDate nullable: false
         migrationReason nullable: true, blank: true
         visitCode blank: false, nullable: false
+
+        modules nullable: true
 
         collectedBy blank: true
         collectedDate nullable: true
@@ -89,6 +93,8 @@ class RawExternalInMigration {
         migrationDate   column: "migration_date"
         migrationReason column: "migration_reason"
         visitCode column: "visit_code"
+
+        modules column: "modules"
 
         collectedBy column: "collected_by"
         collectedDate column: "collected_date"

@@ -20,6 +20,8 @@ class RawPregnancyOutcome {
     String birthPlaceOther
     String visitCode
 
+    String modules
+
     String collectedBy //fieldWorkerId
     LocalDateTime collectedDate //visitDate / creationDate
     LocalDateTime uploadedDate  //submissionDate
@@ -44,6 +46,8 @@ class RawPregnancyOutcome {
         birthPlaceOther nullable: true, blank: true
 
         visitCode nullable: false, blank: false
+
+        modules nullable: true
     }
 
     static mapping = {
@@ -61,5 +65,7 @@ class RawPregnancyOutcome {
         birthPlaceOther column: "birthplace_other"
 
         visitCode column: "visit_code"
+
+        modules column: "modules"
     }
 }

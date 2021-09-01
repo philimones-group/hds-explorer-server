@@ -15,6 +15,8 @@ class RawRegion {
     String regionName
     String parentCode
 
+    String modules
+
     String collectedBy //fieldWorkerId
     LocalDateTime collectedDate //visitDate / creationDate
     LocalDateTime uploadedDate  //submissionDate
@@ -30,6 +32,8 @@ class RawRegion {
         regionCode blank: false
         regionName blank: false
         parentCode blank: true, nullable: true /* will be hierarchy1 */
+
+        modules nullable: true
 
         collectedBy blank: true
         collectedDate nullable: true
@@ -48,6 +52,8 @@ class RawRegion {
         regionCode column: "region_code"
         regionName column: "region_name"
         parentCode column: "parent_code"
+
+        modules column: "modules"
 
         collectedBy column: "collected_by"
         collectedDate column: "collected_date"

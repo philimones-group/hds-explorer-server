@@ -18,6 +18,7 @@ class MemberService {
 
     def householdService
     def userService
+    def moduleService
     def codeGeneratorService
     def errorMessageService
 
@@ -84,6 +85,7 @@ class MemberService {
         def isBlankHouseholdCode = StringUtil.isBlank(member.householdCode)
         def isBlankMotherCode = StringUtil.isBlank(member.motherCode)
         def isBlankFatherCode = StringUtil.isBlank(member.fatherCode)
+        def isBlankModules = StringUtil.isBlank(member.modules)
         //def isBlankMaritalStatus = StringUtil.isBlank(member.maritalStatus)
         def isBlankCollectedBy = StringUtil.isBlank(member.collectedBy)
         def isNullDob = member.dob == null
@@ -93,6 +95,7 @@ class MemberService {
         def fatherExists = father != null
         def motherUnknown = motherExists && mother?.code == Codes.MEMBER_UNKNOWN_CODE
         def fatherUnknown = fatherExists && father?.code == Codes.MEMBER_UNKNOWN_CODE
+        def notFoundModules = moduleService.getNonExistenceModuleCodes(member.modules)
 
         //C1. Check Blank Fields (code)
         if (isBlankMemberCode){
@@ -189,6 +192,11 @@ class MemberService {
             errors << errorMessageService.getRawMessage(RawEntity.MEMBER, "validation.field.user.dont.exists.error", [member.collectedBy], ["collectedBy"])
         }
 
+        //Check If invalid modules where selected
+        if (!isBlankModules && notFoundModules.size()>0) {
+            errors << errorMessageService.getRawMessage(RawEntity.REGION, "validation.field.module.codes.notfound.error", [notFoundModules], ["modules"])
+        }
+
         //C6. Check Duplicate of memberCode
         if (!isBlankMemberCode && exists(member.code)){
             errors << errorMessageService.getRawMessage(RawEntity.MEMBER, "validation.field.reference.duplicate.error", ["Member", "code", member.code], ["code"])
@@ -202,6 +210,8 @@ class MemberService {
         def father = getMember(rm.fatherCode)
         def mother = getMember(rm.motherCode)
         def household = householdService.getHousehold(rm.householdCode)
+        def modules = moduleService.getListModulesFrom(rm.modules)
+        moduleService.addDefaultModuleTo(modules) //ensure it has a default module = generall access
 
         Member member = new Member()
 
@@ -235,6 +245,10 @@ class MemberService {
             member.sinLatitude =  member.gpsLatitude==null ?  null : Math.sin(member.gpsLatitude*Math.PI / 180.0)
             member.cosLongitude = member.gpsLongitude==null ? null : Math.cos(member.gpsLongitude*Math.PI / 180.0)
             member.sinLongitude = member.gpsLongitude==null ? null : Math.sin(member.gpsLongitude*Math.PI / 180.0)
+        }
+
+        modules.each {
+            member.addToModules(it)
         }
 
         //set collected by info

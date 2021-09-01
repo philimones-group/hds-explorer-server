@@ -26,6 +26,8 @@ class RawMemberEnu {
     String headRelationshipType
     LocalDate residencyStartDate
 
+    String modules
+
     String collectedBy //fieldWorkerId
     LocalDateTime collectedDate //visitDate / creationDate
     LocalDateTime uploadedDate
@@ -56,6 +58,8 @@ class RawMemberEnu {
         householdName blank: true, nullable: true
         headRelationshipType blank: false
         residencyStartDate blank: false
+
+        modules nullable: true
 
         collectedBy blank: true
         collectedDate nullable: true
@@ -91,6 +95,8 @@ class RawMemberEnu {
         householdName column: 'household_name'
         headRelationshipType column: 'head_relationship_type'
         residencyStartDate column: 'residency_start_date'
+
+        modules column: "modules"
 
         collectedBy column: 'collected_by'
         collectedDate column: 'collected_date'

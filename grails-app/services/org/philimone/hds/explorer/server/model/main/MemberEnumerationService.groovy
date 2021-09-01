@@ -363,7 +363,8 @@ class MemberEnumerationService {
                 dob: memberEnu.dob,
                 motherCode: memberEnu.motherCode,
                 fatherCode: memberEnu.fatherCode,
-                householdCode: memberEnu.householdCode)
+                householdCode: memberEnu.householdCode,
+                modules: memberEnu.modules)
     }
 
     private RawResidency createNewResidencyFrom(RawMemberEnu rawMemberEnu){

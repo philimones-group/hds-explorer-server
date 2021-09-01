@@ -22,6 +22,8 @@ class RawMember {
 
     String householdCode
 
+    String modules
+
     String collectedBy
     LocalDateTime collectedDate
     LocalDateTime uploadedDate
@@ -44,6 +46,8 @@ class RawMember {
         fatherName blank: false
 
         householdCode blank: false
+
+        modules nullable: true
 
         collectedBy blank: true
         collectedDate nullable: true
@@ -71,6 +75,8 @@ class RawMember {
         fatherName column: 'father_name'
 
         householdCode column: 'household_code'
+
+        modules column: "modules"
 
         collectedBy column: 'collected_by'
         collectedDate column: 'collected_date'
