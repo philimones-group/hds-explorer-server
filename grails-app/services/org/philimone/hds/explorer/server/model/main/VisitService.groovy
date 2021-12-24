@@ -95,6 +95,7 @@ class VisitService {
         def householdExists = household != null
         def visitLocation = !isBlankVisitLocation ? VisitLocationItem.getFrom(rawVisit.visitLocation) : null
         def isVisitLocationOther = visitLocation != null && visitLocation==VisitLocationItem.OTHER_PLACE
+        def visitReason = VisitReason.getFrom(rawVisit.visitReason)
 
         //C1. Check Blank Fields (code)
         if (isBlankCode){
@@ -124,8 +125,8 @@ class VisitService {
         if (isBlankVisitReason){
             errors << errorMessageService.getRawMessage(RawEntity.VISIT, "validation.field.blank", ["visitReason"], ["visitReason"])
         }
-        //C1. Check Blank Fields (respondentCode)
-        if (isBlankRespondentCode){
+        //C1. Check Blank Fields (respondentCode) conditional
+        if (visitReason != VisitReason.NEW_HOUSEHOLD && isBlankRespondentCode){
             errors << errorMessageService.getRawMessage(RawEntity.VISIT, "validation.field.blank", ["respondentCode"], ["respondentCode"])
         }
         //C1. Check Blank Fields (hasInterpreter)

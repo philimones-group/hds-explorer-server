@@ -126,6 +126,8 @@ class UserService {
         userModules.each {
             user.addToModules(it.code)
         }
+
+        user
     }
 
     User updatePassword(User user, String newPassword){

@@ -177,8 +177,17 @@ class BootStrap {
     }
 
     def defaultAppUser (){
+
+        //Insert Default Module
+        if (Module.count()==0) {
+            new Module(code: codeGeneratorService.generateModuleCode(null), name: Module.DSS_SURVEY_MODULE, description: "The default module of HDS-Explorer that allows you to navigate the system").save(flush: true)
+        }
+
+
         //Default ApplicationUser
         if (User.count()==0){
+
+
 
             Role admin = Role.findByAuthority(Role.ROLE_ADMINISTRATOR)
             def modules = Module.list()
@@ -358,10 +367,6 @@ class BootStrap {
         new MappingFormatType(description: "Date [Y-M-D H:M:S]", type: "Date", format: "yyyy-MM-dd HH:mm:ss").save(flush: true)
         new MappingFormatType(description: "Date [D-M-Y H:M:S]", type: "Date", format: "dd-MM-yyyy HH:mm:ss").save(flush: true)
         new MappingFormatType(description: "Date [M-D-Y H:M:S]", type: "Date", format: "MM-dd-yyyy HH:mm:ss").save(flush: true)
-
-
-        //Insert Default Module
-        new Module(code: codeGeneratorService.generateModuleCode(null), name: Module.DSS_SURVEY_MODULE, description: "The default module of HDS-Explorer that allows you to navigate the system").save(flush: true)
 
 
         //Insert Sync Reports

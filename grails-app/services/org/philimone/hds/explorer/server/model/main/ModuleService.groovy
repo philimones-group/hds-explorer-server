@@ -36,7 +36,10 @@ class ModuleService {
     List<String> getListModulesFrom(String modules) {
         def spt = StringUtil.isBlank(modules) ? new String[0] : modules.split(",")
 
-        return new ArrayList<String>(spt)
+        def list = new ArrayList<String>()
+        list.addAll(spt)
+
+        return list
     }
 
     String getListModulesAsText(Collection<? extends String> listModules) {
@@ -51,13 +54,17 @@ class ModuleService {
     List<String> addDefaultModuleTo(List<String> modules) {
         def module = getDefaultModule()
         if (module != null) {
+            println "${modules}, ${module.code}"
+
             modules.add(module.code)
         }
+
+        return modules
     }
 
     Module getDefaultModule() {
-        def result = Module.executeQuery("select m from Module m order by m.code asc limit 1")
-        if (!result?.empty) {
+        def result = Module.executeQuery("select m from Module m order by m.code asc", [max: 1, offset: 0])
+        if (result != null && !result.empty) {
             return result.first()
         }
 

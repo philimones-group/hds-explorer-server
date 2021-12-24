@@ -61,7 +61,7 @@ class UserController {
         def user = userService.get(id)
         def userRoles = user.authorities.asList()
         def modules = user.modules
-        def userModules = Module.findAllByCodeInList(modules)
+        def userModules = modules.empty ? new HashSet<String>() : Module.findAllByCodeInList(modules)
 
         respond user, model: [userRoles: userRoles, userModules: userModules]
     }

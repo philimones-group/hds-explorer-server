@@ -40,7 +40,7 @@
                     <f:field bean="user" property="enabled" />
 
                     <f:field bean="user" property="modules" input-domainList="${org.philimone.hds.explorer.server.model.main.Module.list()}">
-                        <g:select name="modules" multiple="multiple" optionKey="id" from="${org.philimone.hds.explorer.server.model.main.Module.list()}" value="${userModules}"/>
+                        <g:select name="modules" id="modules" multiple="multiple" optionKey="id" from="${org.philimone.hds.explorer.server.model.main.Module.list()}" value="${userModules}"/>
                     </f:field>
 
                     <div class="fieldcontain ${hasErrors(bean: this.user, field: 'authorities', 'error')} ">

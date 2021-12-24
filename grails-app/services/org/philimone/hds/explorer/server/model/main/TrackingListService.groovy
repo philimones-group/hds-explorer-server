@@ -87,7 +87,7 @@ class TrackingListService {
             def cellName = row.getCell(1)
             def cellTitle = row.getCell(2)
             def cellDetails = row.getCell(3)
-            def cellModules = row.getCell(4)
+            def cellModules = row.getCell(4) //no need to use this
             def cellListId = row.getCell(5)
             def cellListTitle = row.getCell(6)
             def cellListForms = row.getCell(7)
@@ -142,7 +142,7 @@ class TrackingListService {
                         xml += "</tracking_list>" + "\n"
                     }
 
-                    xml += "<tracking_list id=\"${i}\" code=\"${code}\" name=\"${name}\" details=\"${details}\" title=\"${title}\" module=\"${modules}\">"  + "\n"
+                    xml += "<tracking_list id=\"${i}\" code=\"${code}\" name=\"${name}\" details=\"${details}\" title=\"${title}\" modules=\"${modules}\">"  + "\n"
 
                     tlistCount++
                     lastCode = code
