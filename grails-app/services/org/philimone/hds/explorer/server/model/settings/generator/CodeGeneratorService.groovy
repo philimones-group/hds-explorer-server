@@ -1,12 +1,14 @@
 package org.philimone.hds.explorer.server.model.settings.generator
 
 import grails.gorm.transactions.Transactional
+import net.betainteractive.utilities.StringUtil
 import org.philimone.hds.explorer.server.model.authentication.User
 import org.philimone.hds.explorer.server.model.main.Household
 import org.philimone.hds.explorer.server.model.main.Member
 import org.philimone.hds.explorer.server.model.main.PregnancyRegistration
 import org.philimone.hds.explorer.server.model.main.Region
 import org.philimone.hds.explorer.server.model.main.Module
+import org.philimone.hds.explorer.server.model.main.Round
 import org.philimone.hds.explorer.server.model.main.Visit
 
 @Transactional
@@ -66,8 +68,11 @@ class CodeGeneratorService {
     }
 
     String generateVisitCode(Household household) {
+        //use new pattern, household + round number + ordinal
+        def maxround = Round.executeQuery("select max(roundNumber) from Round")
+        long round = maxround.size()>0 ? maxround[0] : 0
 
-        def cbase = "${household.code}"
+        def cbase = "${household.code}" + String.format('%03d', round)
         def codes = Visit.findAllByCodeLike("${cbase}%", [sort:'code', order: 'asc']).collect{ t -> t.code}
 
         return codeGenerator.generateVisitCode(cbase, codes)

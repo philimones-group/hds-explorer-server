@@ -13,7 +13,7 @@ class DefaultCodeGenerator implements CodeGenerator {
     final String REGION_CODE_PATTERN = '^[A-Z0-9]{3}$'
     final String HOUSEHOLD_CODE_PATTERN = '^[A-Z0-9]{6}[0-9]{3}$'
     final String MEMBER_CODE_PATTERN = '^[A-Z0-9]{6}[0-9]{6}$'
-    final String VISIT_CODE_PATTERN = '^[A-Z0-9]{6}[0-9]{6}$'
+    final String VISIT_CODE_PATTERN = '^[A-Z0-9]{6}[0-9]{3}[0-9]{3}[0-9]{3}$' //TXUPF1001-000-001 - HOUSEHOLD+ROUND+ORDINAL
     final String USER_CODE_PATTERN = '^[A-Z0-9]{3}$'
     final String PREGNANCY_CODE_PATTERN = '^[A-Z0-9]{6}[0-9]{6}-[0-9]{2}$'
 
