@@ -1,242 +1,258 @@
 ---
 grails:
-    profile: web
-    codegen:
-        defaultPackage: org.philimone.hds.explorer.server
-    gorm:
-        reactor:
-            # Whether to translate GORM events into Reactor events
-            # Disabled by default for performance reasons
-            events: false
+  profile: web
+  codegen:
+    defaultPackage: org.philimone.hds.explorer.server
+  gorm:
+    reactor:
+      # Whether to translate GORM events into Reactor events
+      # Disabled by default for performance reasons
+      events: false
 info:
-    app:
-        name: '@info.app.name@'
-        version: '@info.app.version@'
-        grailsVersion: '@info.app.grailsVersion@'
+  app:
+    name: '@info.app.name@'
+    version: '@info.app.version@'
+    grailsVersion: '@info.app.grailsVersion@'
 spring:
-    main:
-        banner-mode: "off"
-    groovy:
-        template:
-            check-template-location: false
+  main:
+    banner-mode: "off"
+  groovy:
+    template:
+      check-template-location: false
 
 environments:
-    development:
-        server:
-            contextPath: /hds-explorer-server
+  development:
+    server:
+      contextPath: /hds-explorer-server
 
 # Spring Actuator Endpoints are Disabled by Default
 endpoints:
-    enabled: false
-    jmx:
-        enabled: true
+  enabled: false
+  jmx:
+    enabled: true
 
 ---
 grails:
-    mime:
-        disable:
-            accept:
-                header:
-                    userAgents:
-                        - Gecko
-                        - WebKit
-                        - Presto
-                        - Trident
-        types:
-            all: '*/*'
-            atom: application/atom+xml
-            css: text/css
-            csv: text/csv
-            form: application/x-www-form-urlencoded
-            html:
-              - text/html
-              - application/xhtml+xml
-            js: text/javascript
-            json:
-              - application/json
-              - text/json
-            multipartForm: multipart/form-data
-            pdf: application/pdf
-            rss: application/rss+xml
-            text: text/plain
-            hal:
-              - application/hal+json
-              - application/hal+xml
-            xml:
-              - text/xml
-              - application/xml
-            rtf: application/rtf
-            excel: application/vnd.ms-excel
-            ods:  application/vnd.oasis.opendocument.spreadsheet
-            zip:
-              - application/zip
-              - application/octet-stream
-    urlmapping:
-        cache:
-            maxsize: 1000
-    controllers:
-        defaultScope: singleton
-        upload:
-          maxFileSize: 31457280     # Filesize:    30 MB
-          maxRequestSize: 31457280  # Requestsize: 30 MB
-    converters:
-        encoding: UTF-8
-    views:
-        default:
-            codec: html
-        gsp:
-            encoding: UTF-8
-            htmlcodec: xml
-            codecs:
-                expression: html
-                scriptlets: html
-                taglib: none
-                staticparts: none
+  mime:
+    disable:
+      accept:
+        header:
+          userAgents:
+            - Gecko
+            - WebKit
+            - Presto
+            - Trident
+    types:
+      all: '*/*'
+      atom: application/atom+xml
+      css: text/css
+      csv: text/csv
+      form: application/x-www-form-urlencoded
+      html:
+        - text/html
+        - application/xhtml+xml
+      js: text/javascript
+      json:
+        - application/json
+        - text/json
+      multipartForm: multipart/form-data
+      pdf: application/pdf
+      rss: application/rss+xml
+      text: text/plain
+      hal:
+        - application/hal+json
+        - application/hal+xml
+      xml:
+        - text/xml
+        - application/xml
+      rtf: application/rtf
+      excel: application/vnd.ms-excel
+      ods:  application/vnd.oasis.opendocument.spreadsheet
+      zip:
+        - application/zip
+        - application/octet-stream
+  urlmapping:
+    cache:
+      maxsize: 1000
+  controllers:
+    defaultScope: singleton
+    upload:
+      maxFileSize: 31457280     # Filesize:    30 MB
+      maxRequestSize: 31457280  # Requestsize: 30 MB
+  converters:
+    encoding: UTF-8
+  views:
+    default:
+      codec: html
+    gsp:
+      encoding: UTF-8
+      htmlcodec: xml
+      codecs:
+        expression: html
+        scriptlets: html
+        taglib: none
+        staticparts: none
 endpoints:
-    jmx:
-        unique-names: true
+  jmx:
+    unique-names: true
+---
+grails:
+  plugin:
+    fields:
+      disableLookupCache: true
 
 ---
 hibernate:
-    cache:
-        queries: false
-        use_second_level_cache: false
-        use_query_cache: false
-    allow_update_outside_transaction: true
+  cache:
+    queries: false
+    use_second_level_cache: false
+    use_query_cache: false
+  allow_update_outside_transaction: true
 
 grails:
-     mail:
-          host: "smtp.gmail.com"
-          port: 465
-          username: "youremail@gmail.com"
-          password: "yourpassword"
-          props:
-              mail.smtp.auth: "true"
-              mail.smtp.socketFactory.port: "465"
-              mail.smtp.socketFactory.class: "javax.net.ssl.SSLSocketFactory"
-              mail.smtp.socketFactory.fallback: "false"
+  mail:
+    host: "smtp.gmail.com"
+    port: 465
+    username: "youremail@gmail.com"
+    password: "yourpassword"
+    props:
+      mail.smtp.auth: "true"
+      mail.smtp.socketFactory.port: "465"
+      mail.smtp.socketFactory.class: "javax.net.ssl.SSLSocketFactory"
+      mail.smtp.socketFactory.fallback: "false"
 
 
 dataSource:
-    #MySQL Config
-    #pooled: true
-    #driverClassName: com.mysql.jdbc.Driver
-    #dialect: org.hibernate.dialect.MySQL5InnoDBDialect
-    #username: hds_explorer
-    #password: your_password
-    #url: jdbc:mysql://localhost/hds_explorer_db?createDatabaseIfNotExist=true&autoReconnect=true&zeroDateTimeBehavior=convertToNull
-    #logSql: true
+  #MySQL Config
+  pooled: true
+  driverClassName: com.mysql.jdbc.Driver
+  dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+  username: hds_explorer
+  password: d33_2019xx
+  url: jdbc:mysql://localhost/hds_explorer_db?createDatabaseIfNotExist=true&autoReconnect=true&zeroDateTimeBehavior=convertToNull
+  #logSql: true
 
-    #PostgreSQL Config
-    pooled: true
-    jmxExport: true
-    driverClassName: org.postgresql.Driver
-    username: hds_explorer
-    password: your_password
-    url: jdbc:postgresql://localhost:5432/hds_explorer_db
-    dialect: org.hibernate.dialect.PostgreSQL94Dialect
-    logSql: true
+  #PostgreSQL Config
+#    pooled: true
+#    jmxExport: true
+#    driverClassName: org.postgresql.Driver
+#    username: hds_explorer
+#    password: your_password
+#    url: jdbc:postgresql://localhost:5432/hds_explorer_db
+#    dialect: org.hibernate.dialect.PostgreSQL94Dialect
+#    logSql: true
 dataSources:
-    openhds:
-        pooled: true
-        dbCreate: none
-    odk:
-        pooled: true
-        dbCreate: none
+  openhds:
+    pooled: true
+    dbCreate: none
+  odk:
+    pooled: true
+    dbCreate: none
 
 environments:
-    development:
-        dataSource:
-            dbCreate: update
-        dataSources:
-            openhds:
-                dbCreate: none
-            odk:
-              dbCreate: none
-    test:
-        dataSource:
-            dbCreate: update
-            pooled: true
-            driverClassName: com.mysql.jdbc.Driver
-            dialect: org.hibernate.dialect.MySQL5InnoDBDialect
-            username: hds_test
-            password: hds_test
-            url: jdbc:mysql://localhost/hds_explorer_db_test?createDatabaseIfNotExist=true&autoReconnect=true&zeroDateTimeBehavior=convertToNull
-#            dbCreate: create-drop
-#            username: hds_test
-#            password:
-#            driverClassName: org.h2.Driver
-#            dialect: org.hibernate.dialect.H2Dialect
-#            url: jdbc:h2:file:/tmp/hdsTestDb;MVCC=TRUE;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=FALSE
-            #url: jdbc:h2:mem:hdsTestDb;MVCC=TRUE;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=FALSE
-            logSql: false
-        dataSources:
-            openhds:
-                dbCreate: none
-            odk:
-              dbCreate: none
-    production:
-        dataSource:
-            dbCreate: update
-            polled: true
-            properties:
-              jmxEnabled: true
-              initialSize: 5
-              maxActive: 50
-              minIdle: 5
-              maxIdle: 50
-              maxWait: 10000
-              maxAge: 600000
-              timeBetweenEvictionRunsMillis: 1800000
-              minEvictableIdleTimeMillis: 1800000
-              validationQuery: SELECT 1
-              validationQueryTimeout: 3
-              validationInterval: 15000
-              testOnBorrow: true
-              testWhileIdle: true
-              testOnReturn: false
-              jdbcInterceptors: ConnectionState
-              defaultTransactionIsolation: 2 # TRANSACTION_READ_COMMITTED
-        dataSources:
-            openhds:  # this datasource is optional
-                dbCreate: none
-                polled: true
-                properties:
-                    jmxEnabled: true
-                    initialSize: 5
-                    maxActive: 50
-                    minIdle: 5
-                    maxIdle: 50
-                    maxWait: 10000
-                    maxAge: 600000
-                    timeBetweenEvictionRunsMillis: 1800000
-                    minEvictableIdleTimeMillis: 1800000
-                    validationQuery: SELECT 1
-                    validationQueryTimeout: 3
-                    validationInterval: 15000
-                    testOnBorrow: true
-                    testWhileIdle: true
-                    testOnReturn: false
-                    jdbcInterceptors: ConnectionState
-                    defaultTransactionIsolation: 2 # TRANSACTION_READ_COMMITTED
-            odk:  # this datasource is optional
-              dbCreate: none
-              polled: true
-              properties:
-                jmxEnabled: true
-                initialSize: 5
-                maxActive: 50
-                minIdle: 5
-                maxIdle: 50
-                maxWait: 10000
-                maxAge: 600000
-                timeBetweenEvictionRunsMillis: 1800000
-                minEvictableIdleTimeMillis: 1800000
-                validationQuery: SELECT 1
-                validationQueryTimeout: 3
-                validationInterval: 15000
-                testOnBorrow: true
-                testWhileIdle: true
-                testOnReturn: false
-                jdbcInterceptors: ConnectionState
-                defaultTransactionIsolation: 2 # TRANSACTION_READ_COMMITTED
+  development:
+    dataSource:
+      dbCreate: update
+    dataSources:
+      internal:
+        dbCreate: create-drop
+        driverClassName: org.h2.Driver
+        dialect: org.hibernate.dialect.H2Dialect
+        url: jdbc:h2:mem:hdsTestDb;MVCC=TRUE;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=TRUE
+      openhds:
+        dbCreate: none
+      odk:
+        dbCreate: none
+  test:
+    dataSource:
+      dbCreate: update
+      pooled: true
+      driverClassName: com.mysql.jdbc.Driver
+      dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+      username: hds_explorer #hds_test
+      password: d33_2019xx #hds_test
+      #url: jdbc:mysql://localhost/hds_explorer_db_test?createDatabaseIfNotExist=true&autoReconnect=true&zeroDateTimeBehavior=convertToNull
+      url: jdbc:mysql://localhost/hds_explorer_db?createDatabaseIfNotExist=true&autoReconnect=true&zeroDateTimeBehavior=convertToNull
+      #            dbCreate: create-drop
+      #            username: hds_test
+      #            password:
+      #            driverClassName: org.h2.Driver
+      #            dialect: org.hibernate.dialect.H2Dialect
+      #            url: jdbc:h2:file:/tmp/hdsTestDb;MVCC=TRUE;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=FALSE
+      #url: jdbc:h2:mem:hdsTestDb;MVCC=TRUE;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=FALSE
+      logSql: false
+    dataSources:
+      internal:
+        dbCreate: create-drop
+        driverClassName: org.h2.Driver
+        dialect: org.hibernate.dialect.H2Dialect
+        url: jdbc:h2:mem:hdsTestDb;MVCC=TRUE;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=TRUE
+      openhds:
+        dbCreate: none
+      odk:
+        dbCreate: none
+  production:
+    dataSource:
+      dbCreate: update
+      polled: true
+      properties:
+        jmxEnabled: true
+        initialSize: 5
+        maxActive: 50
+        minIdle: 5
+        maxIdle: 50
+        maxWait: 10000
+        maxAge: 600000
+        timeBetweenEvictionRunsMillis: 1800000
+        minEvictableIdleTimeMillis: 1800000
+        validationQuery: SELECT 1
+        validationQueryTimeout: 3
+        validationInterval: 15000
+        testOnBorrow: true
+        testWhileIdle: true
+        testOnReturn: false
+        jdbcInterceptors: ConnectionState
+        defaultTransactionIsolation: 2 # TRANSACTION_READ_COMMITTED
+    dataSources:
+      openhds:  # this datasource is optional
+        dbCreate: none
+        polled: true
+        properties:
+          jmxEnabled: true
+          initialSize: 5
+          maxActive: 50
+          minIdle: 5
+          maxIdle: 50
+          maxWait: 10000
+          maxAge: 600000
+          timeBetweenEvictionRunsMillis: 1800000
+          minEvictableIdleTimeMillis: 1800000
+          validationQuery: SELECT 1
+          validationQueryTimeout: 3
+          validationInterval: 15000
+          testOnBorrow: true
+          testWhileIdle: true
+          testOnReturn: false
+          jdbcInterceptors: ConnectionState
+          defaultTransactionIsolation: 2 # TRANSACTION_READ_COMMITTED
+      odk:  # this datasource is optional
+        dbCreate: none
+        polled: true
+        properties:
+          jmxEnabled: true
+          initialSize: 5
+          maxActive: 50
+          minIdle: 5
+          maxIdle: 50
+          maxWait: 10000
+          maxAge: 600000
+          timeBetweenEvictionRunsMillis: 1800000
+          minEvictableIdleTimeMillis: 1800000
+          validationQuery: SELECT 1
+          validationQueryTimeout: 3
+          validationInterval: 15000
+          testOnBorrow: true
+          testWhileIdle: true
+          testOnReturn: false
+          jdbcInterceptors: ConnectionState
+          defaultTransactionIsolation: 2 # TRANSACTION_READ_COMMITTED

@@ -92,7 +92,6 @@ public class StringUtil {
         return text.replaceAll("^\"|\"$", "");
     }
 
-
     public static String getStringValueOrZero(String text){
         if (text == null) return "0";
 

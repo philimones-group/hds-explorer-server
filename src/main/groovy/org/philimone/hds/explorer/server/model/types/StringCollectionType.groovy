@@ -54,7 +54,7 @@ class StringCollectionType implements UserType {
 
         String moduleListText = StringType.INSTANCE.get(rs, names[0], session); // already handles null check
 
-        println ">>nullSafeGet(name=${names},${names[0]},"+moduleListText
+        //println ">>nullSafeGet(name=${names},${names[0]},"+moduleListText
 
         if (moduleListText == null || moduleListText.isEmpty()) return new HashSet<String>()
 
@@ -66,7 +66,7 @@ class StringCollectionType implements UserType {
     @Override
     void nullSafeSet(PreparedStatement st, Object value, int index, SharedSessionContractImplementor session) throws HibernateException, SQLException {
 
-        println("<<nullSafeSet=${value}")
+        //println("<<nullSafeSet=${value}")
 
         if ( value == null ) {
             StringType.INSTANCE.set(st, null, index, session);

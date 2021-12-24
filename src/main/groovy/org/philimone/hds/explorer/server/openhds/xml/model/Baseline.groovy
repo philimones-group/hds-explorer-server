@@ -25,6 +25,7 @@ public class Baseline implements Serializable, XmlModel {
     private String reason;
     private String recordedDate;
     private String migType;
+    private String religion;
 
     public String getCollectedBy() {
         return collectedBy;
@@ -154,6 +155,14 @@ public class Baseline implements Serializable, XmlModel {
         this.migType = migType;
     }
 
+    public String getReligion() {
+        return religion
+    }
+
+    public void setReligion(String religion) {
+        this.religion = religion
+    }
+
     @Override
     public String getXml() {
         return  "<inmigration>\n" +
@@ -170,6 +179,7 @@ public class Baseline implements Serializable, XmlModel {
                 "        <gender>"+gender+"</gender>\n" +
                 "        <dob>"+dob+"</dob>\n" +
                 "        <dobAspect>1</dobAspect>\n" +
+                "        <religion>"+religion+"</religion>" +
                 "        <mother>\n" +
                 "            <extId>"+mother+"</extId>\n" +
                 "        </mother>\n" +

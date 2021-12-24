@@ -15,6 +15,7 @@ public class Visit implements Serializable, XmlModel {
     private String round;
     private String collectedBy;
     private String intervieweeId;
+    private String realVisit;
 
     public String getIntervieweeId() {
         return intervieweeId;
@@ -68,6 +69,14 @@ public class Visit implements Serializable, XmlModel {
         this.collectedBy = collectedBy;
     }
 
+    public void setRealVisit(String realVisit) {
+        this.realVisit = realVisit
+    }
+
+    String getRealVisit() {
+        return realVisit
+    }
+
     @Override
     public String getXml() {
         return "<visit>\n" +
@@ -80,6 +89,7 @@ public class Visit implements Serializable, XmlModel {
                "  <visitLocation>\n" +
                "    <extId>"+location+"</extId>\n" +
                "  </visitLocation>\n" +
+               "  <realVisit>"+realVisit+"</realVisit>" +
                "</visit>";
     }
 }
