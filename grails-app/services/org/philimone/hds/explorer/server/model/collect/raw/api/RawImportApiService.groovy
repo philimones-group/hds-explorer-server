@@ -5,6 +5,8 @@ import groovy.util.slurpersupport.NodeChild
 import groovy.util.slurpersupport.Node
 import net.betainteractive.utilities.StringUtil
 import org.philimone.hds.explorer.server.model.collect.raw.*
+import org.philimone.hds.explorer.server.model.enums.MaritalEndStatus
+import org.philimone.hds.explorer.server.model.enums.MaritalStartStatus
 import org.philimone.hds.explorer.server.model.main.collect.raw.RawMessage
 import org.philimone.hds.explorer.server.model.main.collect.raw.RawParseResult
 
@@ -414,19 +416,45 @@ class RawImportApiService {
 
         /* converting non-primitive types must be parsed manually */
 
-        if (xmlNode.startDate.size() > 0) {
-            params.startDate = StringUtil.toLocalDate(xmlNode.startDate.text())
+        //Here the startDate and EndDate will come as eventDate
+        //relationshipType, eventDate
 
-            if (params.startDate==null) {
-                errors << errorMessageService.getRawMessage("validation.field.raw.parsing.localdate.error", [xmlNode?.startDate.text(), "startDate"])
+        MaritalStartStatus startStatus = null
+        MaritalEndStatus endStatus = null
+
+        //Converting relationshipType to startStatus/endStatus
+        if (xmlNode.relationshipType.size()>0){
+            def type = xmlNode.relationshipType.text()
+            startStatus = MaritalStartStatus.getFrom(type)
+            endStatus = MaritalEndStatus.getFrom(type)
+
+            if (startStatus != null){
+                params.startStatus = startStatus.code
+            }
+
+            if (endStatus != null){
+                params.endStatus = endStatus.code
+            }
+
+            if (startStatus == null && endStatus == null) {
+                errors << errorMessageService.getRawMessage("validation.field.raw.parsing.localdate.error", [xmlNode?.relationshipType.text(), "relationshipType"])
             }
         }
 
-        if (xmlNode.endDate.size() > 0) {
-            params.endDate = StringUtil.toLocalDate(xmlNode.endDate.text())
+        if (xmlNode.eventDate.size() > 0) {
+            def eventDate = StringUtil.toLocalDate(xmlNode.eventDate.text())
 
-            if (params.endDate==null) {
-                errors << errorMessageService.getRawMessage("validation.field.raw.parsing.localdate.error", [xmlNode?.endDate.text(), "endDate"])
+            if (eventDate != null) {
+                if (startStatus != null){
+                    params.startDate = eventDate
+                }
+                if (endStatus != null) {
+                    params.endDate = eventDate
+                }
+            }
+
+            if (eventDate == null) {
+                errors << errorMessageService.getRawMessage("validation.field.raw.parsing.localdate.error", [xmlNode?.eventDate.text(), "eventDate"])
             }
         }
 
