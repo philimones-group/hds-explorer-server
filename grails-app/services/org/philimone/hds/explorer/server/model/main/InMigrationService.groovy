@@ -7,6 +7,7 @@ import org.philimone.hds.explorer.server.model.collect.raw.RawInMigration
 import org.philimone.hds.explorer.server.model.collect.raw.RawOutMigration
 import org.philimone.hds.explorer.server.model.collect.raw.RawResidency
 import org.philimone.hds.explorer.server.model.enums.RawEntity
+import org.philimone.hds.explorer.server.model.enums.temporal.ExternalInMigrationType
 import org.philimone.hds.explorer.server.model.enums.temporal.InMigrationType
 import org.philimone.hds.explorer.server.model.enums.temporal.OutMigrationType
 import org.philimone.hds.explorer.server.model.enums.temporal.ResidencyEndType
@@ -284,6 +285,8 @@ class InMigrationService {
 
         //origin
         if (inmigration.type == InMigrationType.EXTERNAL) {
+            inmigration.extMigType = ExternalInMigrationType.getFrom(rin.extMigrationType)
+
             inmigration.originOther = rin.originOther
         }
 

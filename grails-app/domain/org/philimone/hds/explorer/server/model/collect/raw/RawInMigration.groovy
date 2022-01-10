@@ -12,6 +12,7 @@ class RawInMigration {
     String visitCode
     String memberCode
     String migrationType
+    String extMigrationType
     String originCode
     String originOther
     String destinationCode
@@ -32,6 +33,7 @@ class RawInMigration {
 
         memberCode blank: false, nullable: false
         migrationType nullable: false, blank: false
+        extMigrationType nullable: true, blank: true
         originCode nullable: true, blank: true
         originOther nullable: true, blank: true
         destinationCode nullable: false, blank: false
@@ -55,6 +57,7 @@ class RawInMigration {
 
         memberCode column: "member_code"
         migrationType       column: "migration_type"
+        extMigrationType column: "ext_migration_type"
         originCode  column: "origin_code"
         originOther column: "origin_other"
         destinationCode      column: "destination_code"

@@ -1,6 +1,7 @@
 package org.philimone.hds.explorer.server.model.main
 
 import org.philimone.hds.explorer.server.model.audit.CollectableEntity
+import org.philimone.hds.explorer.server.model.enums.temporal.ExternalInMigrationType
 import org.philimone.hds.explorer.server.model.enums.temporal.InMigrationType
 
 import java.time.LocalDate
@@ -21,6 +22,11 @@ class InMigration extends CollectableEntity {
      * Type of InMigration (Internal - for in-dss movements, External for Entrance from outside)
      */
     InMigrationType type
+
+    /*
+     * External InMigration Type - ENTRY OR REENTRY
+     */
+    ExternalInMigrationType extMigType
 
     /*
     * The Household from where the member comes from if it is a Internal InMigration
@@ -70,6 +76,7 @@ class InMigration extends CollectableEntity {
         memberCode blank: false, nullable: false
 
         type nullable: false, blank: false, enumType: "string"
+        extMigType nullable: true, blank: true, enumType: "string"
 
         origin nullable: true
         originCode nullable: true, blank: true
@@ -95,6 +102,7 @@ class InMigration extends CollectableEntity {
         memberCode column: "member_code"
 
         type       column: "type"
+        extMigType column: "ext_migtype"
 
         origin      column: "origin_id"
         originCode  column: "origin_code"

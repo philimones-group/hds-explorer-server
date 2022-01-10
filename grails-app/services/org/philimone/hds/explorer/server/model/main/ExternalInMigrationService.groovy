@@ -438,6 +438,7 @@ class ExternalInMigrationService {
         rawInMig.visitCode = rawExternalInMigration.visitCode
         rawInMig.memberCode = rawExternalInMigration.memberCode
         rawInMig.migrationType = InMigrationType.EXTERNAL.code
+        rawInMig.extMigrationType = rawExternalInMigration.extMigrationType
         rawInMig.originCode = rawExternalInMigration.originCode
         rawInMig.originOther = rawExternalInMigration.originOther
         rawInMig.destinationCode = rawExternalInMigration.destinationCode
