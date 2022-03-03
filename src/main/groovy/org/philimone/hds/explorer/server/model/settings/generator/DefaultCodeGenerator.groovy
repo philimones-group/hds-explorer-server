@@ -13,7 +13,7 @@ class DefaultCodeGenerator implements CodeGenerator {
     final String REGION_CODE_PATTERN = '^[A-Z0-9]{3}$'
     final String HOUSEHOLD_CODE_PATTERN = '^[A-Z0-9]{6}[0-9]{3}$'
     final String MEMBER_CODE_PATTERN = '^[A-Z0-9]{6}[0-9]{6}$'
-    final String VISIT_CODE_PATTERN = '^[A-Z0-9]{6}[0-9]{3}[0-9]{3}[0-9]{3}$' //TXUPF1001-000-001 - HOUSEHOLD+ROUND+ORDINAL
+    final String VISIT_CODE_PATTERN = '^[A-Z0-9]{6}[0-9]{3}-[0-9]{3}-[0-9]{3}$' //TXUPF1001-000-001 - HOUSEHOLD+ROUND+ORDINAL
     final String USER_CODE_PATTERN = '^[A-Z0-9]{3}$'
     final String PREGNANCY_CODE_PATTERN = '^[A-Z0-9]{6}[0-9]{6}-[0-9]{2}$'
 
@@ -145,7 +145,7 @@ class DefaultCodeGenerator implements CodeGenerator {
         if (StringUtil.isBlank(baseCode)) return null
 
         if (existentCodes.size()==0){
-            return "${baseCode}001"
+            return "${baseCode}-001"
         } else {
 
             def first = existentCodes.last()
@@ -154,7 +154,7 @@ class DefaultCodeGenerator implements CodeGenerator {
 
             if (n==null) n = 1
             for (int i=n; i <= 999; i++){
-                def code = "${baseCode}${String.format('%03d', i)}" as String
+                def code = "${baseCode}-${String.format('%03d', i)}" as String
                 if (!existentCodes.contains(code)){
                     return code
                 }

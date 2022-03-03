@@ -2,10 +2,10 @@ package org.philimone.hds.explorer.server.model.enums
 
 enum EstimatedDateOfDeliveryType {
 
-    ULTRASOUND ("1", "eddtype.ultrasound"),
-    LAST_MENSTRUAL_PERIOD ("2", "eddtype.last_menstrual_period"),
-    SYMPHISIS_FUNDAL_EIGHT ("3", "eddtype.symphisis_fundal_eight"),
-    DONT_KNOW ("99", "eddtype.dont_know")
+    ULTRASOUND ("ULTRASOUND", "eddtype.ultrasound"),
+    LAST_MENSTRUAL_PERIOD ("LMP", "eddtype.last_menstrual_period"),
+    SYMPHISIS_FUNDAL_EIGHT ("SFH", "eddtype.symphisis_fundal_eight"),
+    DONT_KNOW ("DONT_KNOW", "eddtype.dont_know")
 
     String code
     String name

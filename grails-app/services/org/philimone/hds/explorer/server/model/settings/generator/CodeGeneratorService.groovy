@@ -72,7 +72,7 @@ class CodeGeneratorService {
         def maxround = Round.executeQuery("select max(roundNumber) from Round")
         long round = maxround.size()>0 ? maxround[0] : 0
 
-        def cbase = "${household.code}" + String.format('%03d', round)
+        def cbase = "${household.code}-" + String.format('%03d', round)
         def codes = Visit.findAllByCodeLike("${cbase}%", [sort:'code', order: 'asc']).collect{ t -> t.code}
 
         return codeGenerator.generateVisitCode(cbase, codes)
