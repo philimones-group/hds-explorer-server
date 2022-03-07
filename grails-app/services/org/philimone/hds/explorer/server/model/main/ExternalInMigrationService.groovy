@@ -37,17 +37,6 @@ class ExternalInMigrationService {
 
     //<editor-fold desc="InMigration Utilities Methods">
 
-    boolean isMemberReturningToStudyArea(String memberCode) {
-
-        def member = memberService.getMember(memberCode)
-        def residency = residencyService.getCurrentResidency(member)
-
-        if (member == null || residency == null) return false
-
-         //current residency
-        return (residency.endType == ResidencyEndType.EXTERNAL_OUTMIGRATION) //if its out of area, now is returning
-    }
-
     List<RawMessage> deleteMember(Member member) {
 
         def errors = new ArrayList<RawMessage>()
@@ -61,49 +50,6 @@ class ExternalInMigrationService {
 
         return errors
     }
-
-    List<RawMessage> deleteMemberResidencies(Member member) {
-
-        def errors = new ArrayList<RawMessage>()
-
-        try {
-            Residency.executeUpdate("delete r from Residency r where r.member.id=?", [member.id])
-        } catch(Exception ex) {
-            errors << errorMessageService.getRawMessage(RawEntity.MEMBER, "validation.general.database.residency.error", [ ex.getMessage() ], [])
-            ex.printStackTrace()
-        }
-
-        return errors
-    }
-
-    List<RawMessage> deleteInMigration(InMigration inMigration) {
-
-        def errors = new ArrayList<RawMessage>()
-
-        try {
-            inMigration.delete(flush: true)
-        } catch(Exception ex) {
-            errors << errorMessageService.getRawMessage(RawEntity.EXTERNAL_INMIGRATION, "validation.general.database.inmigration.error", [ ex.getMessage() ], [])
-            ex.printStackTrace()
-        }
-
-        return errors
-    }
-
-    List<RawMessage> deleteHeadRelationship(HeadRelationship headRelationship) {
-
-        def errors = new ArrayList<RawMessage>()
-
-        try {
-            headRelationship.delete(flush: true)
-        } catch(Exception ex) {
-            errors << errorMessageService.getRawMessage(RawEntity.HEAD_RELATIONSHIP, "validation.general.database.headrelationship.error", [ ex.getMessage() ], [])
-            ex.printStackTrace()
-        }
-
-        return errors
-    }
-
     //</editor-fold>
 
     //<editor-fold desc="Member Factory/Manager Methods">
@@ -125,13 +71,10 @@ class ExternalInMigrationService {
 
         def newRawMember = createNewRawMemberFrom(rawExternalInMigration)
         def newRawInMigration =  createRawInMigration(rawExternalInMigration)
-        def newRawHeadRelationship = createNewRawHeadRelationshipFrom(rawExternalInMigration)
-
 
         //create member and execute inmigration
         def resultMember = (isReturningToStudyArea ? null : memberService.createMember(newRawMember)) as RawExecutionResult<Member>
         def resultInMigration = inMigrationService.createInMigration(newRawInMigration)
-        def resultHeadRelationship = (resultInMigration.status == RawExecutionResult.Status.ERROR) ? null : headRelationshipService.createHeadRelationship(newRawHeadRelationship)
 
         //Couldnt create Member
         if (resultMember != null && resultMember.status == RawExecutionResult.Status.ERROR) {
@@ -143,7 +86,6 @@ class ExternalInMigrationService {
         }
 
         if (resultInMigration.status == RawExecutionResult.Status.ERROR) {
-
             //delete member
             errors += resultInMigration.errorMessages
 
@@ -156,24 +98,6 @@ class ExternalInMigrationService {
             RawExecutionResult<InMigration> obj = RawExecutionResult.newErrorResult(RawEntity.EXTERNAL_INMIGRATION, errors)
             return obj
         }
-
-        if (resultHeadRelationship != null && resultHeadRelationship.status == RawExecutionResult.Status.ERROR) {
-
-            //delete member and inmigration
-            errors += resultHeadRelationship.errorMessages
-            errors += deleteInMigration(resultMember.domainInstance)
-
-            if (isReturningToStudyArea == false) { //its a new member
-                errors += deleteMemberResidencies(resultMember.domainInstance) //delete possible created residency
-                errors += deleteMember(resultMember.domainInstance)
-            }
-
-            errors = errorMessageService.addPrefixToMessages(errors, "validation.field.inmigration.external.prefix.msg.error", [rawExternalInMigration.id])
-
-            RawExecutionResult<InMigration> obj = RawExecutionResult.newErrorResult(RawEntity.EXTERNAL_INMIGRATION, errors)
-            return obj
-        }
-
 
         //SUCCESS
         RawExecutionResult<InMigration> obj = RawExecutionResult.newSuccessResult(RawEntity.EXTERNAL_INMIGRATION, resultInMigration.domainInstance)
@@ -387,31 +311,14 @@ class ExternalInMigrationService {
                     return errors
                 }
 
-                //check if there is a HeadOfHousehold already
-                def headType = HeadRelationshipType.getFrom(externalInMigration.headRelationshipType)
-
-                if (headType == HeadRelationshipType.HEAD_OF_HOUSEHOLD) {
-
-                    def currentHead = headRelationshipService.getCurrentHouseholdHead(destination)
-
-                    if (currentHead != null && currentHead.endType == HeadRelationshipEndType.NOT_APPLICABLE) {
-                        //cant create inmigration-head-relationship, the household
-                        errors << errorMessageService.getRawMessage(RawEntity.EXTERNAL_INMIGRATION, "validation.field.inmigration.external.head.not.closed.error", [externalInMigration.memberCode, externalInMigration.destinationCode], ["memberCode", "destinationCode"])
-                    }
-                }
             }
-
 
             //We cant try to create Residency/HeadRelationship, member doesnt exists yet
             if (isReturningToStudyArea == true) { //member already exists - try new residency and headrelationship
                 def newRawInMigration = createRawInMigration(externalInMigration)
-                def newRawHeadRelationship = createNewRawHeadRelationshipFrom(externalInMigration)
 
                 def innerErrors1 = inMigrationService.validate(newRawInMigration)
                 errors += errorMessageService.addPrefixToMessages(innerErrors1, "validation.field.inmigration.external.prefix.msg.error", [externalInMigration.id])
-
-                def innerErrors2 = headRelationshipService.validateCreateHeadRelationship(newRawHeadRelationship)
-                errors += errorMessageService.addPrefixToMessages(innerErrors2, "validation.field.inmigration.external.prefix.msg.error", [externalInMigration.id])
             }
 
         }
@@ -445,20 +352,13 @@ class ExternalInMigrationService {
         rawInMig.migrationDate = rawExternalInMigration.migrationDate
         rawInMig.migrationReason = rawExternalInMigration.migrationReason
 
+        rawInMig.headRelationshipType = rawExternalInMigration.headRelationshipType
+
         rawInMig.collectedBy = rawExternalInMigration.collectedBy
         rawInMig.collectedDate = rawExternalInMigration.collectedDate
         rawInMig.uploadedDate = rawExternalInMigration.uploadedDate
 
         return rawInMig
-    }
-
-    private RawHeadRelationship createNewRawHeadRelationshipFrom(RawExternalInMigration rawExternalInMigration){
-        return new RawHeadRelationship(
-                memberCode: rawExternalInMigration.memberCode,
-                householdCode: rawExternalInMigration.destinationCode,
-                relationshipType: rawExternalInMigration.headRelationshipType,
-                startType: HeadRelationshipStartType.EXTERNAL_INMIGRATION.code,
-                startDate: rawExternalInMigration.migrationDate)
     }
 
     //</editor-fold>

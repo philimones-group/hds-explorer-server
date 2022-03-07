@@ -3,11 +3,16 @@ package org.philimone.hds.explorer.server.model.main
 import grails.gorm.transactions.Transactional
 import net.betainteractive.utilities.GeneralUtil
 import net.betainteractive.utilities.StringUtil
+import org.philimone.hds.explorer.server.model.collect.raw.RawExternalInMigration
+import org.philimone.hds.explorer.server.model.collect.raw.RawHeadRelationship
 import org.philimone.hds.explorer.server.model.collect.raw.RawInMigration
 import org.philimone.hds.explorer.server.model.collect.raw.RawOutMigration
 import org.philimone.hds.explorer.server.model.collect.raw.RawResidency
+import org.philimone.hds.explorer.server.model.enums.HeadRelationshipType
 import org.philimone.hds.explorer.server.model.enums.RawEntity
 import org.philimone.hds.explorer.server.model.enums.temporal.ExternalInMigrationType
+import org.philimone.hds.explorer.server.model.enums.temporal.HeadRelationshipEndType
+import org.philimone.hds.explorer.server.model.enums.temporal.HeadRelationshipStartType
 import org.philimone.hds.explorer.server.model.enums.temporal.InMigrationType
 import org.philimone.hds.explorer.server.model.enums.temporal.OutMigrationType
 import org.philimone.hds.explorer.server.model.enums.temporal.ResidencyEndType
@@ -25,6 +30,7 @@ class InMigrationService {
     def visitService
     def userService
     def residencyService
+    def headRelationshipService
     def deathService
     def outMigrationService
     def codeGeneratorService
@@ -32,30 +38,43 @@ class InMigrationService {
 
     //<editor-fold desc="InMigration Utilities Methods">
 
-    List<RawMessage> afterCreateInMigration(InMigration inmigration){
-        //1. Close Previous Residency with OutMigration if is an INTERNAL
-        //2. Create new Residency record based on InMigration
+    List<RawMessage> deleteInMigration(InMigration inMigration) {
 
         def errors = new ArrayList<RawMessage>()
 
-        def newRawResidency = createNewResidencyFromInMig(inmigration)
-
-        //1. Create OutMigration from InMig if is a INTERNAL MIGRATION
-        if (inmigration.type==InMigrationType.INTERNAL){
-            def rawOutMigration = createOutMigrationFromInMig(inmigration)
-            def result1 = outMigrationService.createOutMigration(rawOutMigration)
-            errors += result1.errorMessages
+        try {
+            inMigration.delete(flush: true)
+        } catch(Exception ex) {
+            errors << errorMessageService.getRawMessage(RawEntity.EXTERNAL_INMIGRATION, "validation.general.database.inmigration.error", [ ex.getMessage() ], [])
+            ex.printStackTrace()
         }
 
-        //2. Create new Residency
-        def result2 = residencyService.createResidency(newRawResidency)
-        errors += result2.errorMessages
+        return errors
+    }
 
-        if (result2?.domainInstance != null) {
-            //update destinationResidency
-            def residency = result2.domainInstance.refresh()
-            inmigration.destinationResidency = residency
-            inmigration.save(flush:true)
+    List<RawMessage> deleteMemberResidencies(Member member) {
+
+        def errors = new ArrayList<RawMessage>()
+
+        try {
+            Residency.executeUpdate("delete r from Residency r where r.member.id=?", [member.id])
+        } catch(Exception ex) {
+            errors << errorMessageService.getRawMessage(RawEntity.MEMBER, "validation.general.database.residency.error", [ ex.getMessage() ], [])
+            ex.printStackTrace()
+        }
+
+        return errors
+    }
+
+    List<RawMessage> deleteHeadRelationship(HeadRelationship headRelationship) {
+
+        def errors = new ArrayList<RawMessage>()
+
+        try {
+            headRelationship.delete(flush: true)
+        } catch(Exception ex) {
+            errors << errorMessageService.getRawMessage(RawEntity.HEAD_RELATIONSHIP, "validation.general.database.headrelationship.error", [ ex.getMessage() ], [])
+            ex.printStackTrace()
         }
 
         return errors
@@ -76,9 +95,14 @@ class InMigrationService {
             return obj
         }
 
+        //create from raw data
         def inmigration = newInMigrationInstance(rawInMigration)
+        def newRawResidency = createNewResidencyFromInMig(inmigration)
+        def rawOutMigration = inmigration.type==InMigrationType.INTERNAL ? createOutMigrationFromInMig(inmigration) : null
+        def newRawHeadRelationship = createNewRawHeadRelationshipFrom(rawInMigration)
 
-        def result = inmigration.save(flush:true)
+        //1. create inmigration
+        def resultInmigration = inmigration.save(flush:true)
 
         //Validate using Gorm Validations
         if (inmigration.hasErrors()){
@@ -87,15 +111,72 @@ class InMigrationService {
 
             RawExecutionResult<InMigration> obj = RawExecutionResult.newErrorResult(RawEntity.IN_MIGRATION, errors)
             return obj
-        } else {
-            inmigration = result
         }
 
-        //Update After InMigration -
-        //1. closeResidency, closeHeadRelationship
-        //2. Update Member endType, endDate
+        //inmigration executed successfully
+        inmigration = resultInmigration
 
-        errors = afterCreateInMigration(inmigration)
+
+        //errors = afterCreateInMigration(inmigration)
+        //1. Close Previous Residency with OutMigration if is an INTERNAL
+        //2. Create new Residency record based on InMigration
+        //3. Update InMigration destinationResidency
+
+
+        //1. Create OutMigration from InMig if is a INTERNAL MIGRATION (close residency, etc)
+        if (rawOutMigration != null){
+            def resultOutMigIn = outMigrationService.createOutMigration(rawOutMigration)
+
+
+            if (resultOutMigIn.status == RawExecutionResult.Status.ERROR) {
+                errors += resultOutMigIn.errorMessages
+
+                //delete the create inmigration - I can only delete it here (because we cant the rollbacks)
+                inmigration.refresh()
+                errors += deleteInMigration(inmigration)
+
+                RawExecutionResult<InMigration> obj = RawExecutionResult.newErrorResult(RawEntity.IN_MIGRATION, errors)
+                return obj
+            }
+        }
+
+        //2. Create new Residency
+        def resultNewResidency = residencyService.createResidency(newRawResidency)
+        if (resultNewResidency != null && resultNewResidency.status == RawExecutionResult.Status.ERROR){
+            errors += resultNewResidency.errorMessages
+
+            //delete inmigration and outmigration - we need to implement a proper rollback solution
+
+            RawExecutionResult<InMigration> obj = RawExecutionResult.newErrorResult(RawEntity.IN_MIGRATION, errors)
+            return obj
+        }
+
+        //3. Create Head Relationship
+        def resultHeadRelationship = headRelationshipService.createHeadRelationship(newRawHeadRelationship)
+        if (resultHeadRelationship != null && resultHeadRelationship.status == RawExecutionResult.Status.ERROR) {
+
+            //delete member and inmigration
+            errors += resultHeadRelationship.errorMessages
+
+            //errors += deleteInMigration(resultMember.domainInstance)
+
+            /*if (isReturningToStudyArea == false) { //its a new member
+                errors += deleteMemberResidencies(resultMember.domainInstance) //delete possible created residency
+                errors += deleteMember(resultMember.domainInstance)
+            }*/
+            //errors = errorMessageService.addPrefixToMessages(errors, "validation.field.inmigration.external.prefix.msg.error", [rawInMigration.id])
+
+            RawExecutionResult<InMigration> obj = RawExecutionResult.newErrorResult(RawEntity.IN_MIGRATION, errors)
+            return obj
+        }
+
+
+        //X. update destinationResidency
+        if (resultNewResidency?.domainInstance != null) {
+            def residency = resultNewResidency.domainInstance.refresh()
+            inmigration.destinationResidency = residency
+            inmigration.save(flush:true)
+        }
 
         RawExecutionResult<InMigration> obj = RawExecutionResult.newSuccessResult(RawEntity.IN_MIGRATION, inmigration, errors)
         return obj
@@ -107,6 +188,7 @@ class InMigrationService {
         //visitCode, memberCode, migrationType, originCode, destinationCode, migrationDate, migrationReason, InMigrationPlace
         def isBlankVisitCode = StringUtil.isBlank(rawInMigration.visitCode)
         def isBlankMemberCode = StringUtil.isBlank(rawInMigration.memberCode)
+        def isBlankHeadRelationshipType = StringUtil.isBlank(externalInMigration.headRelationshipType)
         def isBlankMigrationType = StringUtil.isBlank(rawInMigration.migrationType)
         def isBlankOriginCode = StringUtil.isBlank(rawInMigration.originCode)
         def isBlankDestinationCode = StringUtil.isBlank(rawInMigration.destinationCode)
@@ -137,6 +219,10 @@ class InMigrationService {
         if (isBlankMigrationType){
             errors << errorMessageService.getRawMessage(RawEntity.IN_MIGRATION, "validation.field.blank", ["migrationType"], ["migrationType"])
         }
+        //C1. Check Blank Fields (headRelationshipType)
+        if (isBlankHeadRelationshipType){
+            errors << errorMessageService.getRawMessage(RawEntity.IN_MIGRATION, "validation.field.blank", ["headRelationshipType"], ["headRelationshipType"])
+        }
         //C1. Check Blank Fields (destinationCode)
         if (isBlankDestinationCode){
             errors << errorMessageService.getRawMessage(RawEntity.IN_MIGRATION, "validation.field.blank", ["destinationCode"], ["destinationCode"])
@@ -156,6 +242,11 @@ class InMigrationService {
         //C6. Validate migrationType Enum Options
         if (!isBlankMigrationType && migrationType==null){
             errors << errorMessageService.getRawMessage(RawEntity.IN_MIGRATION, "validation.field.enum.choices.error", [rawInMigration.migrationType, "migrationType"], ["migrationType"])
+        }
+
+        //C12. Validate Enum Options (headRelationshipType)
+        if (!isBlankHeadRelationshipType && HeadRelationshipType.getFrom(rawInMigration.headRelationshipType)==null){
+            errors << errorMessageService.getRawMessage(RawEntity.IN_MIGRATION, "validation.field.enum.choices.error", [rawInMigration.headRelationshipType, "headRelationshipType"], ["headRelationshipType"])
         }
 
         //CX. Validate the visitCode with the destinationCode(household being visited)
@@ -203,11 +294,26 @@ class InMigrationService {
 
             //println "No Errors Found - Jump to test phase 2"
 
+
+            //check if there is a HeadOfHousehold already
+            def headType = HeadRelationshipType.getFrom(rawInMigration.headRelationshipType)
+
+            if (headType == HeadRelationshipType.HEAD_OF_HOUSEHOLD) {
+
+                def currentHead = headRelationshipService.getCurrentHouseholdHead(destination)
+
+                if (currentHead != null && currentHead.endType == HeadRelationshipEndType.NOT_APPLICABLE) {
+                    //cant create inmigration-head-relationship, the household
+                    errors << errorMessageService.getRawMessage(RawEntity.IN_MIGRATION, "validation.field.inmigration.external.head.not.closed.error", [rawInMigration.memberCode, rawInMigration.destinationCode], ["memberCode", "destinationCode"])
+                }
+            }
+
             /*
              * C7.3. Try to Create an OutMigration (validation)  -  set endType=CHG/EXT, endDate=migrationDate
              * C8.0. Try to create a new Residency (Use a simulated closed Residency)
              */
 
+            def newRawHeadRelationship = createNewRawHeadRelationshipFrom(rawInMigration)
             def currentResidency = residencyService.getCurrentResidency(member) //current residency
             def newRawResidency = createNewResidencyFromInMig(rawInMigration)   //possible new residency
 
@@ -222,7 +328,8 @@ class InMigrationService {
 
             }
 
-            if (migrationType == InMigrationType.INTERNAL && currentResidency==null) { //Internals InMigs must have residency
+            /* Internals InMigs must have residency */
+            if (migrationType == InMigrationType.INTERNAL && currentResidency==null) {
 
                 //The individual doesnt have a residency registry in the system
                 errors << errorMessageService.getRawMessage(RawEntity.IN_MIGRATION, "validation.field.inmigration.residency.not.found.error", [member.code], ["memberCode"])
@@ -230,7 +337,8 @@ class InMigrationService {
                 return errors
             }
 
-            if (migrationType == InMigrationType.EXTERNAL && currentResidency == null) { //Coming from outside the area
+            /* When coming from outside the area - the memberCode must contains the destinationCode */
+            if (migrationType == InMigrationType.EXTERNAL && currentResidency == null) {
 
                 //if coming from outside and its his first time - the codes must be validated (memberCode must contains destinationCode)
 
@@ -238,6 +346,13 @@ class InMigrationService {
                     errors << errorMessageService.getRawMessage(RawEntity.IN_MIGRATION, "validation.field.inmigration.member.code.invalid.error", [member.code, rawInMigration.destinationCode], ["memberCode", "destinationCode"])
                 }
 
+            }
+
+
+            //Try to validate the creation of new Head Relationship
+            def innerErrors1 = headRelationshipService.validateCreateHeadRelationship(newRawHeadRelationship)
+            if (innerErrors1.size()>0){
+                errors += errorMessageService.addPrefixToMessages(innerErrors1, "validation.field.inmigration.external.prefix.msg.error", [rawInMigration.id])
             }
 
             //Try create/close
@@ -310,6 +425,15 @@ class InMigrationService {
 
         return inmigration
 
+    }
+
+    private RawHeadRelationship createNewRawHeadRelationshipFrom(RawInMigration rawInMigration){
+        return new RawHeadRelationship(
+                memberCode: rawInMigration.memberCode,
+                householdCode: rawInMigration.destinationCode,
+                relationshipType: rawInMigration.headRelationshipType,
+                startType: HeadRelationshipStartType.getFrom(rawInMigration.migrationType),
+                startDate: rawInMigration.migrationDate)
     }
 
     private static RawOutMigration createOutMigrationFromInMig(RawInMigration rawInMigration){

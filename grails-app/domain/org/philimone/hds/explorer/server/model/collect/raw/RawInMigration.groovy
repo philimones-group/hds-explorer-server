@@ -11,6 +11,7 @@ class RawInMigration {
 
     String visitCode
     String memberCode
+    String headRelationshipType
     String migrationType
     String extMigrationType
     String originCode
