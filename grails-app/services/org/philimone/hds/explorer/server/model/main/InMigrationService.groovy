@@ -188,7 +188,7 @@ class InMigrationService {
         //visitCode, memberCode, migrationType, originCode, destinationCode, migrationDate, migrationReason, InMigrationPlace
         def isBlankVisitCode = StringUtil.isBlank(rawInMigration.visitCode)
         def isBlankMemberCode = StringUtil.isBlank(rawInMigration.memberCode)
-        def isBlankHeadRelationshipType = StringUtil.isBlank(externalInMigration.headRelationshipType)
+        def isBlankHeadRelationshipType = StringUtil.isBlank(rawInMigration.headRelationshipType)
         def isBlankMigrationType = StringUtil.isBlank(rawInMigration.migrationType)
         def isBlankOriginCode = StringUtil.isBlank(rawInMigration.originCode)
         def isBlankDestinationCode = StringUtil.isBlank(rawInMigration.destinationCode)

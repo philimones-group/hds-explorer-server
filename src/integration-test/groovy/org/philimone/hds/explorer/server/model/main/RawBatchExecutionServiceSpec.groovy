@@ -127,11 +127,11 @@ class RawBatchExecutionServiceSpec extends Specification {
 
         def household1 = "TXUDF1001" //RawHousehold.findByHouseholdName("Macandza House")
         def household2 = "TXUDF1002" //RawHousehold.findByHouseholdName("George Benson")
-        def visit1 = "${household1}001"
-        def visit2 = "${household2}001" //xen
-        def visit3 = "${household2}002" //bir
-        def visit4 = "${household2}003" //ext
-        def visit5 = "${household2}004" //xen
+        def visit1 = "${household1}-000-001"
+        def visit2 = "${household2}-000-001" //xen
+        def visit3 = "${household2}-000-002" //bir
+        def visit4 = "${household2}-000-003" //ext
+        def visit5 = "${household2}-000-004" //xen
 
 
         //ENU + XEN + ENU + XEN + BIR
@@ -284,11 +284,11 @@ class RawBatchExecutionServiceSpec extends Specification {
         def member21 = "TXUDF1002001" //Member.findByName("George Benson")
         def member22 = "TXUDF1002002" //Member.findByName("Joyce Mary Benson")
         def member23 = "TXUDF1002003"
-        def visit1 = "${household1}001"
-        def visit2 = "${household2}001" //xen
-        def visit3 = "${household2}002" //bir
-        def visit4 = "${household2}003" //ext
-        def visit5 = "${household2}004" //xen
+        def visit1 = "${household1}-000-001"
+        def visit2 = "${household2}-000-001" //xen
+        def visit3 = "${household2}-000-002" //bir
+        def visit4 = "${household2}-000-003" //ext
+        def visit5 = "${household2}-000-004" //xen
 
         def rv1 = new RawVisit(id: "uuuid1", code: visit1, householdCode: household1, visitReason: VisitReason.BASELINE,
                 visitDate: GeneralUtil.getDate(2012, 10, 11), visitLocation: VisitLocationItem.HOME.code, roundNumber: 0,
@@ -331,11 +331,11 @@ class RawBatchExecutionServiceSpec extends Specification {
         def member21 = "TXUDF1002001" //Member.findByName("George Benson")
         def member22 = "TXUDF1002002" //Member.findByName("Joyce Mary Benson")
         def member23 = "TXUDF1002003"
-        def visit1 = "${household1}001"
-        def visit2 = "${household2}001" //xen
-        def visit3 = "${household2}002" //bir
-        def visit4 = "${household2}003" //ext
-        def visit5 = "${household2}004" //xen
+        def visit1 = "${household1}-000-001"
+        def visit2 = "${household2}-000-001" //xen
+        def visit3 = "${household2}-000-002" //bir
+        def visit4 = "${household2}-000-003" //ext
+        def visit5 = "${household2}-000-004" //xen
 
 
         def rawOut1 = new RawOutMigration(
@@ -365,11 +365,11 @@ class RawBatchExecutionServiceSpec extends Specification {
         def member21 = "TXUDF1002001" //Member.findByName("George Benson")
         def member22 = "TXUDF1002002" //Member.findByName("Joyce Mary Benson")
         def member23 = "TXUDF1002003"
-        def visit1 = "${household1}001"
-        def visit2 = "${household2}001" //xen
-        def visit3 = "${household2}002" //bir
-        def visit4 = "${household2}003" //ext
-        def visit5 = "${household2}004" //xen
+        def visit1 = "${household1}-000-001"
+        def visit2 = "${household2}-000-001" //xen
+        def visit3 = "${household2}-000-002" //bir
+        def visit4 = "${household2}-000-003" //ext
+        def visit5 = "${household2}-000-004" //xen
 
         def rawXen1 = new RawExternalInMigration( //returning
                 id: "uuuid3",
@@ -400,11 +400,11 @@ class RawBatchExecutionServiceSpec extends Specification {
         def member21 = "TXUDF1002001" //Member.findByName("George Benson")
         def member22 = "TXUDF1002002" //Member.findByName("Joyce Mary Benson")
         def member23 = "TXUDF1002003"
-        def visit1 = "${household1}001"
-        def visit2 = "${household2}001" //xen
-        def visit3 = "${household2}002" //bir
-        def visit4 = "${household2}003" //ext
-        def visit5 = "${household2}004" //xen
+        def visit1 = "${household1}-000-001"
+        def visit2 = "${household2}-000-001" //xen
+        def visit3 = "${household2}-000-002" //bir
+        def visit4 = "${household2}-000-003" //ext
+        def visit5 = "${household2}-000-004" //xen
 
         def rawChgHead1 = new RawChangeHead( //returning
                 id: "uuuid1",

@@ -1,8 +1,8 @@
 package org.philimone.hds.explorer.server.model.collect.raw
 
 import grails.gorm.transactions.Transactional
-import org.philimone.hds.explorer.openhds.model.Death
 import org.philimone.hds.explorer.server.model.enums.ProcessedStatus
+import org.philimone.hds.explorer.server.model.main.Death
 import org.philimone.hds.explorer.server.model.main.HeadRelationship
 import org.philimone.hds.explorer.server.model.main.Household
 import org.philimone.hds.explorer.server.model.main.InMigration

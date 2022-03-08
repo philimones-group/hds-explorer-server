@@ -266,12 +266,13 @@ class SyncFilesController {
     def syncFilesReport = {
         //println(params.id)
         def report = syncFilesReportService.get(params?.id)
+        long records = -1
 
-        if (report == null){
-            render -1
-        } else {
-            render report.records
+        if (report != null){
+            records = report.records
         }
+
+        render records
     }
 
     /**

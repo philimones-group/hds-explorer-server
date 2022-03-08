@@ -149,7 +149,7 @@ class DefaultCodeGenerator implements CodeGenerator {
         } else {
 
             def first = existentCodes.last()
-            def sorder = first.replaceAll(baseCode, "")
+            def sorder = first.replaceAll(baseCode+"-", "")
             def n = StringUtil.getInteger(sorder)
 
             if (n==null) n = 1
