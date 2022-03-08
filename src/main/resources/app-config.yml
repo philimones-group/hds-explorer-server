@@ -10,56 +10,38 @@ hds.explorer.constraints.gender.checking: true
 
 # Access to OpenHDS Web Application
 hds.explorer.openhds_web.url: http://localhost:8081/openhds
-hds.explorer.openhds_web.username: username
-hds.explorer.openhds_web.password: password
+hds.explorer.openhds_web.username: admin
+hds.explorer.openhds_web.password: Simple123!
 
-# Default datasource for HDS-Database
+#dataSources:
+  # Default datasource for HDS-Database
+  # MySQL Config
+  #dataSource.pooled: true
+  #dataSource.driverClassName: com.mysql.jdbc.Driver
+  #dataSource.dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+  #dataSource.username: hds_explorer
+  #dataSource.password: d33_2019xx
+  #dataSource.url: jdbc:mysql://localhost/hds_explorer_db?createDatabaseIfNotExist=true&autoReconnect=true&zeroDateTimeBehavior=convertToNull&useSSL=false
 
-# MySQL Config
-#dataSource.pooled: true
-#dataSource.driverClassName: com.mysql.jdbc.Driver
-#dataSource.dialect: org.hibernate.dialect.MySQL5InnoDBDialect
-#dataSource.username: hds_explorer
-#dataSource.password: your_password
-#dataSource.url: jdbc:mysql://localhost/hds_explorer_db?createDatabaseIfNotExist=true&autoReconnect=true&zeroDateTimeBehavior=convertToNull
-
-# Postgres Config
-dataSource.pooled: true
-dataSource.jmxExport: true
-dataSource.driverClassName: org.postgresql.Driver
-dataSource.dialect: org.hibernate.dialect.PostgreSQL94Dialect
-dataSource.username: hds_explorer
-dataSource.password: your_password
-dataSource.url: "jdbc:postgresql://localhost:5432/hds_explorer_db"
-
-dataSources:
-# Datasource properties for OpenHDS - to be able to access openhds tables - optional
-  openhds.pooled: true
-  openhds.driverClassName: com.mysql.jdbc.Driver
-  openhds.dialect: org.hibernate.dialect.MySQL5InnoDBDialect
-  openhds.username: hds_explorer
-  openhds.password: your_password
-  openhds.url: jdbc:mysql://localhost/openhds?autoReconnect=true&zeroDateTimeBehavior=convertToNull
-
-# Datasource properties for ODK Aggregate database - to be able to access odk tables - optional
-  odk.pooled: true
-  odk.driverClassName: com.mysql.jdbc.Driver
-  odk.dialect: org.hibernate.dialect.MySQL5InnoDBDialect
-  odk.username: hds_explorer
-  odk.password: your_password
-  odk.url: jdbc:mysql://localhost/odk_prod?autoReconnect=true&zeroDateTimeBehavior=convertToNull
-
+  # Postgres Config
+  #dataSource.pooled: true
+  #dataSource.jmxExport: true
+  #dataSource.driverClassName: org.postgresql.Driver
+  #dataSource.dialect: org.hibernate.dialect.PostgreSQL94Dialect
+  #dataSource.username: hds_explorer
+  #dataSource.password: d33_2019xx
+  #dataSource.url: "jdbc:postgresql://localhost:5432/hds_explorer_db"
 
 # Don't forget to turn on access from a less secure app in your Gmail account configuration, otherwise, google will block it and return this error.
 #
 grails:
-     mail:
-          host: "smtp.gmail.com"
-          port: 465
-          username: "youremail@gmail.com"
-          password: "yourpassword"
-          props:
-              mail.smtp.auth: "true"
-              mail.smtp.socketFactory.port: "465"
-              mail.smtp.socketFactory.class: "javax.net.ssl.SSLSocketFactory"
-              mail.smtp.socketFactory.fallback: "false"
+  mail:
+    host: "smtp.gmail.com"
+    port: 465
+    username: "phils.group.noreply@gmail.com"
+    password: "testingacc123"
+    props:
+      mail.smtp.auth: "true"
+      mail.smtp.socketFactory.port: "465"
+      mail.smtp.socketFactory.class: "javax.net.ssl.SSLSocketFactory"
+      mail.smtp.socketFactory.fallback: "false"

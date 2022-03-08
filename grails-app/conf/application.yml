@@ -129,7 +129,7 @@ dataSource:
   dialect: org.hibernate.dialect.MySQL5InnoDBDialect
   username: hds_explorer
   password: d33_2019xx
-  url: jdbc:mysql://localhost/hds_explorer_db?createDatabaseIfNotExist=true&autoReconnect=true&zeroDateTimeBehavior=convertToNull
+  url: jdbc:mysql://localhost/hds_explorer_db?createDatabaseIfNotExist=true&autoReconnect=true&zeroDateTimeBehavior=convertToNull&useSSL=false
   #logSql: true
 
   #PostgreSQL Config
@@ -141,28 +141,12 @@ dataSource:
 #    url: jdbc:postgresql://localhost:5432/hds_explorer_db
 #    dialect: org.hibernate.dialect.PostgreSQL94Dialect
 #    logSql: true
-dataSources:
-  openhds:
-    pooled: true
-    dbCreate: none
-  odk:
-    pooled: true
-    dbCreate: none
 
 environments:
   development:
     dataSource:
       dbCreate: update
-    dataSources:
-      internal:
-        dbCreate: create-drop
-        driverClassName: org.h2.Driver
-        dialect: org.hibernate.dialect.H2Dialect
-        url: jdbc:h2:mem:hdsTestDb;MVCC=TRUE;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=TRUE
-      openhds:
-        dbCreate: none
-      odk:
-        dbCreate: none
+      url: jdbc:mysql://localhost/hds_explorer_db?createDatabaseIfNotExist=true&autoReconnect=true&zeroDateTimeBehavior=convertToNull&useSSL=false
   test:
     dataSource:
       dbCreate: update
@@ -171,8 +155,8 @@ environments:
       dialect: org.hibernate.dialect.MySQL5InnoDBDialect
       username: hds_explorer #hds_test
       password: d33_2019xx #hds_test
-      #url: jdbc:mysql://localhost/hds_explorer_db_test?createDatabaseIfNotExist=true&autoReconnect=true&zeroDateTimeBehavior=convertToNull
-      url: jdbc:mysql://localhost/hds_explorer_db?createDatabaseIfNotExist=true&autoReconnect=true&zeroDateTimeBehavior=convertToNull
+      #url: jdbc:mysql://localhost/hds_explorer_db_test?createDatabaseIfNotExist=true&autoReconnect=true&zeroDateTimeBehavior=convertToNull&useSSL=false
+      url: jdbc:mysql://localhost/hds_explorer_db?createDatabaseIfNotExist=true&autoReconnect=true&zeroDateTimeBehavior=convertToNull&useSSL=false
       #            dbCreate: create-drop
       #            username: hds_test
       #            password:
@@ -181,16 +165,6 @@ environments:
       #            url: jdbc:h2:file:/tmp/hdsTestDb;MVCC=TRUE;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=FALSE
       #url: jdbc:h2:mem:hdsTestDb;MVCC=TRUE;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=FALSE
       logSql: false
-    dataSources:
-      internal:
-        dbCreate: create-drop
-        driverClassName: org.h2.Driver
-        dialect: org.hibernate.dialect.H2Dialect
-        url: jdbc:h2:mem:hdsTestDb;MVCC=TRUE;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=TRUE
-      openhds:
-        dbCreate: none
-      odk:
-        dbCreate: none
   production:
     dataSource:
       dbCreate: update
@@ -213,46 +187,3 @@ environments:
         testOnReturn: false
         jdbcInterceptors: ConnectionState
         defaultTransactionIsolation: 2 # TRANSACTION_READ_COMMITTED
-    dataSources:
-      openhds:  # this datasource is optional
-        dbCreate: none
-        polled: true
-        properties:
-          jmxEnabled: true
-          initialSize: 5
-          maxActive: 50
-          minIdle: 5
-          maxIdle: 50
-          maxWait: 10000
-          maxAge: 600000
-          timeBetweenEvictionRunsMillis: 1800000
-          minEvictableIdleTimeMillis: 1800000
-          validationQuery: SELECT 1
-          validationQueryTimeout: 3
-          validationInterval: 15000
-          testOnBorrow: true
-          testWhileIdle: true
-          testOnReturn: false
-          jdbcInterceptors: ConnectionState
-          defaultTransactionIsolation: 2 # TRANSACTION_READ_COMMITTED
-      odk:  # this datasource is optional
-        dbCreate: none
-        polled: true
-        properties:
-          jmxEnabled: true
-          initialSize: 5
-          maxActive: 50
-          minIdle: 5
-          maxIdle: 50
-          maxWait: 10000
-          maxAge: 600000
-          timeBetweenEvictionRunsMillis: 1800000
-          minEvictableIdleTimeMillis: 1800000
-          validationQuery: SELECT 1
-          validationQueryTimeout: 3
-          validationInterval: 15000
-          testOnBorrow: true
-          testWhileIdle: true
-          testOnReturn: false
-          jdbcInterceptors: ConnectionState
-          defaultTransactionIsolation: 2 # TRANSACTION_READ_COMMITTED
