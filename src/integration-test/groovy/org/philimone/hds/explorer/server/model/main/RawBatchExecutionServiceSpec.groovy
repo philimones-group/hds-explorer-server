@@ -19,7 +19,6 @@ import org.philimone.hds.explorer.server.model.enums.VisitReason
 import org.philimone.hds.explorer.server.model.enums.temporal.ExternalInMigrationType
 import org.philimone.hds.explorer.server.model.enums.temporal.InMigrationType
 import org.philimone.hds.explorer.server.model.enums.temporal.OutMigrationType
-import org.philimone.hds.explorer.server.model.main.*
 import org.philimone.hds.explorer.server.model.main.collect.raw.RawExecutionResult
 import org.philimone.hds.explorer.server.model.main.collect.raw.RawMessage
 import org.philimone.hds.explorer.server.model.settings.ApplicationParamService
@@ -420,8 +419,8 @@ class RawBatchExecutionServiceSpec extends Specification {
         )
 
         rawChgHead1.save(flush: true)
-        rawChgHead1.addToRelationships(new RawChangeHeadRelationship(changeHead: rawChgHead1, memberCode: member21, relationshipType: HeadRelationshipType.PARENT.code))
-        rawChgHead1.addToRelationships(new RawChangeHeadRelationship(changeHead: rawChgHead1, memberCode: member22, relationshipType: HeadRelationshipType.PARENT.code))
+        rawChgHead1.addToRelationships(new RawChangeHeadRelationship(changeHead: rawChgHead1, newMemberCode: member21, newRelationshipType: HeadRelationshipType.PARENT.code))
+        rawChgHead1.addToRelationships(new RawChangeHeadRelationship(changeHead: rawChgHead1, newMemberCode: member22, newRelationshipType: HeadRelationshipType.PARENT.code))
         rawChgHead1.save(flush: true)
     }
 

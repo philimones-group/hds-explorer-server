@@ -15,7 +15,6 @@ import org.philimone.hds.explorer.server.model.enums.VisitReason
 import org.philimone.hds.explorer.server.model.enums.temporal.ExternalInMigrationType
 import org.philimone.hds.explorer.server.model.enums.temporal.InMigrationType
 import org.philimone.hds.explorer.server.model.enums.temporal.OutMigrationType
-import org.philimone.hds.explorer.server.model.main.*
 import org.philimone.hds.explorer.server.model.main.collect.raw.RawExecutionResult
 import org.philimone.hds.explorer.server.model.main.collect.raw.RawMessage
 import org.philimone.hds.explorer.server.model.settings.Codes
@@ -656,8 +655,8 @@ class ChangeHeadServiceSpec extends Specification {
         rch2.save()
 
 
-        rch1.addToRelationships(new RawChangeHeadRelationship(changeHead: rch1, memberCode: member21.code, relationshipType: HeadRelationshipType.PARENT.code))
-        rch1.addToRelationships(new RawChangeHeadRelationship(changeHead: rch1, memberCode: member22.code, relationshipType: HeadRelationshipType.PARENT.code))
+        rch1.addToRelationships(new RawChangeHeadRelationship(changeHead: rch1, newMemberCode: member21.code, newRelationshipType: HeadRelationshipType.PARENT.code))
+        rch1.addToRelationships(new RawChangeHeadRelationship(changeHead: rch1, newMemberCode: member22.code, newRelationshipType: HeadRelationshipType.PARENT.code))
         rch1.save()
 
         println("first change head")

@@ -23,6 +23,7 @@ class RawDeath {
 
     boolean postExecution = false
 
+    static hasMany = [relationships:RawDeathRelationship]
 
     static constraints = {
         id maxSize: 32
@@ -58,5 +59,34 @@ class RawDeath {
         uploadedDate column: "uploaded_date"
 
         processedStatus column: "processed", enumType: "identity"
+    }
+}
+
+class RawDeathRelationship {
+
+    String id
+
+    RawDeath death
+    String newMemberCode
+    String newRelationshipType
+
+    static belongsTo = [death:RawDeath]
+
+    static constraints = {
+        id maxSize: 32
+
+        death nullable: false
+        newMemberCode nullable: false
+        newRelationshipType nullable: false
+    }
+
+    static mapping = {
+        table '_raw_death_relationships'
+
+        id column: "id", generator: 'uuid'
+
+        death column: "death_id"
+        newMemberCode column: "new_member_code"
+        newRelationshipType column: "new_relationship_type"
     }
 }

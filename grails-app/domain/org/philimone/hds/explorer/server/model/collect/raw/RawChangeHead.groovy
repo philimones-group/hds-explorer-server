@@ -66,8 +66,8 @@ class RawChangeHeadRelationship {
     String id
 
     RawChangeHead changeHead
-    String memberCode
-    String relationshipType
+    String newMemberCode
+    String newRelationshipType
 
     static belongsTo = [changeHead:RawChangeHead]
 
@@ -75,8 +75,8 @@ class RawChangeHeadRelationship {
         id maxSize: 32
 
         changeHead nullable: false
-        memberCode nullable: false
-        relationshipType nullable: false
+        newMemberCode nullable: false
+        newRelationshipType nullable: false
     }
 
     static mapping = {
@@ -85,7 +85,7 @@ class RawChangeHeadRelationship {
         id column: "id", generator: 'uuid'
 
         changeHead column: "change_head_id"
-        memberCode column: "member_code"
-        relationshipType column: "relationship_type"
+        newMemberCode column: "new_member_code"
+        newRelationshipType column: "new_relationship_type"
     }
 }

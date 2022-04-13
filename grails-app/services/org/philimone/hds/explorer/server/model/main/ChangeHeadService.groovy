@@ -54,8 +54,8 @@ class ChangeHeadService {
         def rawChangeHead = rawChr.changeHead
 
         rawHeadRelationship.householdCode = rawChangeHead.householdCode
-        rawHeadRelationship.memberCode = rawChr.memberCode
-        rawHeadRelationship.relationshipType = rawChr.relationshipType
+        rawHeadRelationship.memberCode = rawChr.newMemberCode
+        rawHeadRelationship.relationshipType = rawChr.newRelationshipType
         rawHeadRelationship.startType = HeadRelationshipStartType.NEW_HEAD_OF_HOUSEHOLD.code
         rawHeadRelationship.startDate = rawChangeHead.eventDate
 
@@ -362,7 +362,7 @@ class ChangeHeadService {
             //try to create new relationships with the new head
             headRelationships.each { rawChangeHeadRelationship ->
 
-                if (rawChangeHeadRelationship.relationshipType==HeadRelationshipType.HEAD_OF_HOUSEHOLD.code) return
+                if (rawChangeHeadRelationship.newRelationshipType==HeadRelationshipType.HEAD_OF_HOUSEHOLD.code) return
 
                 def rawHeadRelationship = createRawHeadRelationship(rawChangeHeadRelationship)
                 def currentRelationship = headRelationshipService.getCurrentHeadRelationship(rawHeadRelationship.memberCode) //get fake current head relationship for this member (close it)

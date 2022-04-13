@@ -3,12 +3,16 @@ package org.philimone.hds.explorer.server.model.main
 import grails.gorm.transactions.Transactional
 import net.betainteractive.utilities.GeneralUtil
 import net.betainteractive.utilities.StringUtil
+import org.philimone.hds.explorer.server.model.collect.raw.RawChangeHeadRelationship
 import org.philimone.hds.explorer.server.model.collect.raw.RawDeath
+import org.philimone.hds.explorer.server.model.collect.raw.RawDeathRelationship
+import org.philimone.hds.explorer.server.model.collect.raw.RawHeadRelationship
 import org.philimone.hds.explorer.server.model.enums.HeadRelationshipType
 import org.philimone.hds.explorer.server.model.enums.MaritalEndStatus
 import org.philimone.hds.explorer.server.model.enums.MaritalStartStatus
 import org.philimone.hds.explorer.server.model.enums.RawEntity
 import org.philimone.hds.explorer.server.model.enums.temporal.HeadRelationshipEndType
+import org.philimone.hds.explorer.server.model.enums.temporal.HeadRelationshipStartType
 import org.philimone.hds.explorer.server.model.enums.temporal.ResidencyEndType
 import org.philimone.hds.explorer.server.model.main.collect.raw.RawExecutionResult
 import org.philimone.hds.explorer.server.model.main.collect.raw.RawMessage
@@ -47,7 +51,7 @@ class DeathService {
         return Death.findByMember(member)
     }
 
-    List<RawMessage> afterDeathRegistered(Death death){
+    List<RawMessage> afterDeathRegistered(Death death, RawDeath rawDeath){
         //1. closeResidency, closeHeadRelationship, closeMaritalRelationship
         //2. Update Member residencyStatus, maritalStatus
 
@@ -134,8 +138,48 @@ class DeathService {
             }
         }
 
+        //Create new Head Relationships
+        def rawDeathRelationships = RawDeathRelationship.findAllByDeath(rawDeath)
+        if (isHeadOfHousehold && rawDeathRelationships.size()>0) {
+            def newRelationships = createRawHeadRelationships(rawDeathRelationships)
+
+            newRelationships.each {
+                def result = headRelationshipService.createHeadRelationship(it)
+
+                if (result.status==RawExecutionResult.Status.ERROR) {
+                    def innerErrors = result.errorMessages
+                    errors += errorMessageService.addPrefixToMessages(innerErrors, "validation.field.death.prefix.msg.error", [rawDeath.id])
+                }
+            }
+        }
+
         return errors
 
+    }
+
+    List<RawHeadRelationship> createRawHeadRelationships(List<RawDeathRelationship> deathRelationships) {
+        def relationships = new ArrayList<RawHeadRelationship>()
+
+        deathRelationships.each {
+            relationships << createRawHeadRelationship(it)
+        }
+
+        return relationships
+    }
+
+    RawHeadRelationship createRawHeadRelationship(RawDeathRelationship rawDthRel) {
+
+        def rawDeath = rawDthRel.death
+
+        def rawHeadRelationship = new RawHeadRelationship()
+
+        rawHeadRelationship.householdCode = rawDeath.visitCode.substring(0,9)
+        rawHeadRelationship.memberCode = rawDthRel.newMemberCode
+        rawHeadRelationship.relationshipType = rawDthRel.newRelationshipType
+        rawHeadRelationship.startType = HeadRelationshipStartType.NEW_HEAD_OF_HOUSEHOLD.code
+        rawHeadRelationship.startDate = rawDeath.deathDate
+
+        return rawHeadRelationship
     }
 
     //</editor-fold>
@@ -171,7 +215,7 @@ class DeathService {
         //1. closeResidency, closeHeadRelationship, closeMaritalRelationship
         //2. Update Member residencyStatus, maritalStatus
 
-        errors = afterDeathRegistered(death)
+        errors = afterDeathRegistered(death, rawDeath)
 
         RawExecutionResult<Death> obj = RawExecutionResult.newSuccessResult(RawEntity.DEATH, death, errors)
         return obj
@@ -308,6 +352,23 @@ class DeathService {
                         errors += headRelationshipService.validateCloseHeadRelationship(rawHr)
                     }
                 }
+            }
+
+            //try to create new relationships with the new head
+            def newRawDeathRelationships = RawDeathRelationship.findAllByDeath(rawDeath)
+            if (newRawDeathRelationships.size() > 0)
+            newRawDeathRelationships.each { rawDeathRelationship ->
+
+                if (rawDeathRelationship.newRelationshipType==HeadRelationshipType.HEAD_OF_HOUSEHOLD.code) return
+
+                def rawHeadRelationship = createRawHeadRelationship(rawDeathRelationship)
+                def currentRelationship = headRelationshipService.getCurrentHeadRelationship(rawHeadRelationship.memberCode) //get fake current head relationship for this member (close it)
+                currentRelationship.endType = HeadRelationshipEndType.CHANGE_OF_HEAD_OF_HOUSEHOLD.code
+                currentRelationship.endDate = rawDeath.deathDate
+
+                //ignore head of households (its unusual to have relationshipType=HEAD here)
+                def innerErrors = headRelationshipService.validateCreateHeadRelationship(rawHeadRelationship, currentRelationship, null)
+                errors += errorMessageService.addPrefixToMessages(innerErrors, "validation.field.death.prefix.msg.error", [rawDeath.id])
             }
 
         }

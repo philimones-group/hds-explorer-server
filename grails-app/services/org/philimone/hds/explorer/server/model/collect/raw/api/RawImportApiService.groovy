@@ -632,8 +632,31 @@ class RawImportApiService {
     RawParseResult<RawDeath> parseDeath(NodeChild xmlNode) {
 
         def errors = new ArrayList<RawMessage>()
-        def params = xmlNode.childNodes().collectEntries{[it.name(), it.text()]}
+        def params = [:] //xmlNode.childNodes().collectEntries{[it.name(), it.text()]}
+        def paramsRelationships = new ArrayList<LinkedHashMap>()
         def rootnode = xmlNode?.name()
+
+        xmlNode.childNodes().each { Node node ->
+
+            if (node.childNodes().size()>0 && node.name().equalsIgnoreCase("newRelationships")){
+                //println "children ${node.name()}"
+
+                node.childNodes().eachWithIndex { Node child, index ->
+
+                    if (child.name().equalsIgnoreCase("rawDeathRelationship")){
+                        def cparams = [:]
+                        child.childNodes().each { innernode ->
+                            cparams.put(innernode.name(), innernode.text())
+                        }
+
+                        paramsRelationships.add(cparams)
+                    }
+
+                }
+            } else {
+                params.put(node.name(), node.text())
+            }
+        }
 
         if (!rootnode.equalsIgnoreCase("RawDeath")) {
             errors << errorMessageService.getRawMessage("validation.field.raw.parsing.rootnode.invalid.error", [rootnode])
@@ -668,6 +691,14 @@ class RawImportApiService {
 
         def rawDeath = new RawDeath(params)
         rawDeath.id = params.id
+
+        if (paramsRelationships.size() > 0) {
+            paramsRelationships.each { cparams ->
+                def rawRelationship = new RawDeathRelationship(cparams)
+                rawRelationship.death = rawDeath
+                rawDeath.addToRelationships(rawRelationship)
+            }
+        }
 
         return new RawParseResult<RawDeath>(rawDeath, errors)
 
