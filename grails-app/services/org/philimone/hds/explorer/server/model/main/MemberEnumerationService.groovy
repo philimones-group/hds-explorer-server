@@ -364,7 +364,12 @@ class MemberEnumerationService {
                 motherCode: memberEnu.motherCode,
                 fatherCode: memberEnu.fatherCode,
                 householdCode: memberEnu.householdCode,
-                modules: memberEnu.modules)
+                modules: memberEnu.modules,
+                collectedId: memberEnu.id,
+                collectedBy: memberEnu.collectedBy,
+                collectedDate: memberEnu.collectedDate,
+                uploadedDate: memberEnu.uploadedDate
+        )
     }
 
     private RawResidency createNewResidencyFrom(RawMemberEnu rawMemberEnu){

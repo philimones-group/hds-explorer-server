@@ -419,9 +419,9 @@ class InMigrationService {
         inmigration.migrationReason = rin.migrationReason
 
         //set collected by info
+        inmigration.collectedId = rin.id
         inmigration.collectedBy = userService.getUser(rin.collectedBy)
         inmigration.collectedDate = rin.collectedDate
-        inmigration.updatedDate = rin.uploadedDate
 
         return inmigration
 

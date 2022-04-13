@@ -179,6 +179,7 @@ class RegionService {
         }
 
         //set collected by info
+        region.collectedId = rr.id
         region.collectedBy = userService.getUser(rr.collectedBy)
         region.collectedDate = rr.collectedDate
         region.updatedDate = rr.uploadedDate

@@ -484,6 +484,11 @@ class MaritalRelationshipService {
         maritalRelationship.endStatus = MaritalEndStatus.NOT_APPLICABLE
         maritalRelationship.endDate = null
 
+        maritalRelationship.collectedId = mr.id
+        maritalRelationship.collectedBy = userService.getUser(mr.collectedBy)
+        maritalRelationship.collectedDate = mr.collectedDate
+        maritalRelationship.updatedDate = mr.uploadedDate
+
         return maritalRelationship
 
     }

@@ -448,7 +448,11 @@ class PregnancyOutcomeService {
                 motherCode: motherCode,
                 fatherCode: fatherCode,
                 householdCode: motherResidency.household.code,
-                modules: pregnancyOutcome.modules)
+                modules: pregnancyOutcome.modules,
+                collectedId: pregnancyOutcome.id,
+                collectedBy: pregnancyOutcome.collectedBy,
+                collectedDate: pregnancyOutcome.collectedDate,
+                uploadedDate: pregnancyOutcome.uploadedDate)
     }
 
     private RawResidency createNewRawResidencyFrom(RawPregnancyChild pregnancyChild, Residency motherResidency, LocalDate outcomeDate){
@@ -494,6 +498,7 @@ class PregnancyOutcomeService {
         pregnancyOutcome.visitCode = po.visitCode
 
         //set collected by info
+        pregnancyOutcome.collectedId = po.id
         pregnancyOutcome.collectedBy = userService.getUser(po.collectedBy)
         pregnancyOutcome.collectedDate = po.collectedDate
         pregnancyOutcome.updatedDate = po.uploadedDate

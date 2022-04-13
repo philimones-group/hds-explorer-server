@@ -1,8 +1,10 @@
 package org.philimone.hds.explorer.server.model.main
 
+import org.philimone.hds.explorer.server.model.audit.AuditableEntity
+
 import java.time.LocalDate
 
-class Round {
+class Round extends AuditableEntity {
 
     String id
     Integer roundNumber

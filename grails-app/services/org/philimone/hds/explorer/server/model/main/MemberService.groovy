@@ -252,6 +252,7 @@ class MemberService {
         }
 
         //set collected by info
+        member.collectedId = rm.id
         member.collectedBy = userService.getUser(rm.collectedBy)
         member.collectedDate = rm.collectedDate
         member.updatedDate = rm.uploadedDate

@@ -221,6 +221,7 @@ class VisitService {
         visit.gpsLongitude = StringUtil.getDouble(rv.gpsLon)
 
         //set collected by info
+        visit.collectedId = rv.id
         visit.collectedBy = userService.getUser(rv.collectedBy)
         visit.collectedDate = rv.collectedDate
         visit.updatedDate = rv.uploadedDate

@@ -1,8 +1,10 @@
 package org.philimone.hds.explorer.server.model.collect.raw
 
+import org.philimone.hds.explorer.server.model.audit.CollectableEntity
 import org.philimone.hds.explorer.server.model.enums.ProcessedStatus
 
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 class RawMaritalRelationship {
 
@@ -13,6 +15,10 @@ class RawMaritalRelationship {
     LocalDate startDate
     String endStatus
     LocalDate endDate
+
+    String collectedBy //fieldWorkerId
+    LocalDateTime collectedDate //visitDate / creationDate
+    LocalDateTime uploadedDate  //submissionDate
 
     ProcessedStatus processedStatus = ProcessedStatus.NOT_PROCESSED /* General Status, 1-All Processed, 0-Not All Processed*/
 

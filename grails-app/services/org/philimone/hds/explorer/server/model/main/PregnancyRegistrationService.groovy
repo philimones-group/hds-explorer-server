@@ -291,6 +291,7 @@ class PregnancyRegistrationService {
 
 
         //set collected by info
+        pregnancyRegistration.collectedId = pr.id
         pregnancyRegistration.collectedBy = userService.getUser(pr.collectedBy)
         pregnancyRegistration.collectedDate = pr.collectedDate
         pregnancyRegistration.updatedDate = pr.uploadedDate

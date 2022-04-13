@@ -396,6 +396,7 @@ class DeathService {
         death.deathPlace = rd.deathPlace
 
         //set collected by info
+        death.collectedId = rd.id
         death.collectedBy = userService.getUser(rd.collectedBy)
         death.collectedDate = rd.collectedDate
         death.updatedDate = rd.uploadedDate
