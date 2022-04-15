@@ -2001,6 +2001,9 @@ class SyncFilesService {
         element.appendChild(createAttributeNonNull(doc, "gpsLatitude", visit.gpsLatitude==null ? "" : ""+visit.gpsLatitude))
         element.appendChild(createAttributeNonNull(doc, "gpsLongitude", visit.gpsLongitude==null ? "" : ""+visit.gpsLongitude))
 
+        element.appendChild(createAttributeNonNull(doc, "collectedId", visit.collectedId==null ? "" : visit.collectedId))
+
+
         return element
     }
 
@@ -2029,6 +2032,8 @@ class SyncFilesService {
         element.appendChild(createAttributeNonNull(doc, "endStatus", maritalRelationship.endStatus==null ? "" : maritalRelationship.endStatus.code));
         element.appendChild(createAttributeNonNull(doc, "endDate", maritalRelationship.endDate==null ? "" : StringUtil.format(maritalRelationship.endDate)));
 
+        element.appendChild(createAttributeNonNull(doc, "collectedId", maritalRelationship.collectedId==null ? "" : maritalRelationship.collectedId))
+
         return element;
     }
 
@@ -2045,6 +2050,8 @@ class SyncFilesService {
         element.appendChild(createAttributeNonNull(doc, "migrationReason", inmigration.migrationReason==null ? "" : inmigration.migrationReason))
         element.appendChild(createAttributeNonNull(doc, "visitCode", inmigration.visitCode))
 
+        element.appendChild(createAttributeNonNull(doc, "collectedId", inmigration.collectedId==null ? "" : inmigration.collectedId))
+
         return element
     }
 
@@ -2060,6 +2067,8 @@ class SyncFilesService {
         element.appendChild(createAttributeNonNull(doc, "migrationDate", StringUtil.format(outmigration.migrationDate, "yyyy-MM-dd")))
         element.appendChild(createAttributeNonNull(doc, "migrationReason", outmigration.migrationReason==null ? "" : outmigration.migrationReason))
         element.appendChild(createAttributeNonNull(doc, "visitCode", outmigration.visitCode))
+
+        element.appendChild(createAttributeNonNull(doc, "collectedId", outmigration.collectedId==null ? "" : outmigration.collectedId))
 
         return element
     }
@@ -2081,6 +2090,8 @@ class SyncFilesService {
         element.appendChild(createAttributeNonNull(doc, "status", pregnancyregistration.status.code))
         element.appendChild(createAttributeNonNull(doc, "visitCode", pregnancyregistration.visitCode))
 
+        element.appendChild(createAttributeNonNull(doc, "collectedId", pregnancyregistration.collectedId==null ? "" : pregnancyregistration.collectedId))
+
         return element
     }
 
@@ -2097,6 +2108,8 @@ class SyncFilesService {
         element.appendChild(createAttributeNonNull(doc, "birthPlaceOther", pregnancyoutcome.birthPlaceOther==null ? "" : pregnancyoutcome.birthPlaceOther))
         element.appendChild(createAttributeNonNull(doc, "visitCode", pregnancyoutcome.visitCode))
 
+        element.appendChild(createAttributeNonNull(doc, "collectedId", pregnancyoutcome.collectedId==null ? "" : pregnancyoutcome.collectedId))
+
         return element
     }
 
@@ -2109,6 +2122,8 @@ class SyncFilesService {
         element.appendChild(createAttributeNonNull(doc, "deathCause", death.deathCause==null ? "" : death.deathCause))
         element.appendChild(createAttributeNonNull(doc, "deathPlace", death.deathPlace==null ? "" : death.deathPlace))
         element.appendChild(createAttributeNonNull(doc, "visitCode", death.visitCode))
+
+        element.appendChild(createAttributeNonNull(doc, "collectedId", death.collectedId==null ? "" : death.collectedId))
 
         return element
     }
@@ -2165,6 +2180,8 @@ class SyncFilesService {
                 ((h.gpsLatitude == null) ?   "<gpsLatitude />" : "<gpsLatitude>${h.gpsLatitude}</gpsLatitude>") +
                 ((h.gpsLongitude == null) ? "<gpsLongitude />" : "<gpsLongitude>${h.gpsLongitude}</gpsLongitude>") +
 
+                ((h.collectedId == null) ? "<collectedId />" : "<collectedId>${h.collectedId}</collectedId>") +
+
                 ((h.modules.empty)        ?  "<modules />"     : "<modules>${moduleService.getListModulesAsText(h.modules)}</modules>")+
                 ("</household>")
     }
@@ -2208,6 +2225,8 @@ class SyncFilesService {
                 ((m.gpsAltitude == null)                              ? "<gpsAltitude />" : "<gpsAltitude>${m.gpsAltitude}</gpsAltitude>") +
                 ((m.gpsLatitude == null)                              ? "<gpsLatitude />" : "<gpsLatitude>${m.gpsLatitude}</gpsLatitude>") +
                 ((m.gpsLongitude == null)                             ? "<gpsLongitude />" : "<gpsLongitude>${m.gpsLongitude}</gpsLongitude>") +
+
+                ((m.collectedId == null) ? "<collectedId />" : "<collectedId>${m.collectedId}</collectedId>") +
 
                 ((m.modules.empty)        ?  "<modules />"     : "<modules>${moduleService.getListModulesAsText(m.modules)}</modules>")+
 
