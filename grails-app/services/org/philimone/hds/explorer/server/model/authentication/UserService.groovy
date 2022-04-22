@@ -5,7 +5,6 @@ import grails.gorm.transactions.Transactional
 import grails.web.mapping.LinkGenerator
 import net.betainteractive.utilities.StringUtil
 import org.philimone.hds.explorer.server.model.main.Module
-import org.philimone.hds.explorer.server.model.main.UserModule
 import org.philimone.hds.explorer.services.GeneralUtilitiesService
 
 @Transactional

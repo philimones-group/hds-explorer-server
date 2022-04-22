@@ -376,10 +376,10 @@ class PregnancyOutcomeService {
 
         //3. Check blank (code,name,gender,relation to head)
         if (isBlankChildCode && isLivebirth){
-            errors << errorMessageService.getRawMessage(RawEntity.PREGNANCY_CHILD, "validation.field.blank", ["childGender"], ["childGender"])
+            errors << errorMessageService.getRawMessage(RawEntity.PREGNANCY_CHILD, "validation.field.blank", ["childCode"], ["childCode"])
         }
         if (isBlankChildName && isLivebirth){
-            errors << errorMessageService.getRawMessage(RawEntity.PREGNANCY_CHILD, "validation.field.blank", ["childGender"], ["childGender"])
+            errors << errorMessageService.getRawMessage(RawEntity.PREGNANCY_CHILD, "validation.field.blank", ["childName"], ["childName"])
         }
         if (isBlankChildGender && isLivebirth){
             errors << errorMessageService.getRawMessage(RawEntity.PREGNANCY_CHILD, "validation.field.blank", ["childGender"], ["childGender"])
