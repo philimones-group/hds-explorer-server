@@ -76,7 +76,7 @@ class RawMemberEnu {
     static mapping = {
         table '_raw_member_enu'
 
-        id column: "id", generator: 'uuid'
+        id column: "id", generator: 'assigned'
 
         version false
 

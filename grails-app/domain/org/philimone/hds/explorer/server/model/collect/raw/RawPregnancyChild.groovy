@@ -32,7 +32,7 @@ class RawPregnancyChild {
     static mapping = {
         table '_raw_pregnancy_child'
 
-        id column: "id", generator: 'uuid'
+        id column: "id", generator: 'assigned'
 
         outcome column: "pregnancy_outcome_id"
         outcomeType column: "outcomde_type"

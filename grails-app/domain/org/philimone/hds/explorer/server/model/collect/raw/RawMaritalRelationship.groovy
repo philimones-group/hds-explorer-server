@@ -38,7 +38,7 @@ class RawMaritalRelationship {
     static mapping = {
         table '_raw_marital_relationship'
 
-        id column: "id", generator: 'uuid'
+        id column: "id", generator: 'assigned'
 
         memberA column: "member_a_code"
         memberB column: "member_b_code"

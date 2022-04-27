@@ -45,7 +45,7 @@ class RawRegion {
     static mapping = {
         table '_raw_region'
 
-        id column: "id", generator: 'uuid'
+        id column: "id", generator: 'assigned'
 
         version false
 

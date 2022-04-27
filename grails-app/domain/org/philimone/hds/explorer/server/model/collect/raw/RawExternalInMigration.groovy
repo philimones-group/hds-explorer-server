@@ -73,7 +73,7 @@ class RawExternalInMigration {
     static mapping = {
         table '_raw_ext_inmigration'
 
-        id column: "id", generator: 'uuid'
+        id column: "id", generator: 'assigned'
 
         version false
 

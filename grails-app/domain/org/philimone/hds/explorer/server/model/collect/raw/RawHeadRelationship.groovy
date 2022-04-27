@@ -38,7 +38,7 @@ class RawHeadRelationship {
     static mapping = {
         table '_raw_head_relationship'
 
-        id column: "id", generator: 'uuid'
+        id column: "id", generator: 'assigned'
 
         householdCode column: "household_code"
         memberCode column: "member_code"

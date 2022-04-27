@@ -49,7 +49,7 @@ class RawOutMigration {
     static mapping = {
         table '_raw_outmigration'
 
-        id column: "id", generator: 'uuid'
+        id column: "id", generator: 'assigned'
 
         version false
 

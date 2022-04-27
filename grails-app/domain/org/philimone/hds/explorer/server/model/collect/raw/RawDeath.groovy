@@ -44,7 +44,7 @@ class RawDeath {
     static mapping = {
         table '_raw_death'
 
-        id column: "id", generator: 'uuid'
+        id column: "id", generator: 'assigned'
 
         version false
 

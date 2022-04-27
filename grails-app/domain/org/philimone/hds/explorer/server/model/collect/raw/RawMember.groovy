@@ -59,7 +59,7 @@ class RawMember {
     static mapping = {
         table '_raw_member'
 
-        id column: "id", generator: 'uuid'
+        id column: "id", generator: 'assigned'
 
         version false
 

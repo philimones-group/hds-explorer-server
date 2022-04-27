@@ -45,7 +45,7 @@ class RawChangeHead {
     static mapping = {
         table '_raw_change_head'
 
-        id column: "id", generator: 'uuid'
+        id column: "id", generator: 'assigned'
 
         visitCode column: "visit_code"
         householdCode column: "household_code"

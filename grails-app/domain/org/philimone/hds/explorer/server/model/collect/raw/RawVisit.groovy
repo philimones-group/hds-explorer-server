@@ -62,7 +62,7 @@ class RawVisit {
     static mapping = {
         table '_raw_visit'
 
-        id column: "id", generator: 'uuid'
+        id column: "id", generator: 'assigned'
 
         version false
 
