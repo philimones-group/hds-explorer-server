@@ -81,6 +81,8 @@ class UrlMappings {
         "/api/import/pregnancyregistrations"(controller: "RawImportApi", action: "pregnancyregistrations")
         "/api/import/pregnancyoutcomes"(controller: "RawImportApi", action: "pregnancyoutcomes")
         "/api/import/deaths"(controller: "RawImportApi", action: "deaths")
+        "/api/import/changeheads"(controller: "RawImportApi", action: "changeheads")
+        "/api/import/incompletevisits"(controller: "RawImportApi", action: "inconmpletevisits")
 
     }
 }

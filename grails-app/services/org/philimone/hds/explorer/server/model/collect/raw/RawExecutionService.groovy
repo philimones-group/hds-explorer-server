@@ -6,6 +6,7 @@ import org.philimone.hds.explorer.server.model.main.Death
 import org.philimone.hds.explorer.server.model.main.HeadRelationship
 import org.philimone.hds.explorer.server.model.main.Household
 import org.philimone.hds.explorer.server.model.main.InMigration
+import org.philimone.hds.explorer.server.model.main.IncompleteVisit
 import org.philimone.hds.explorer.server.model.main.MaritalRelationship
 import org.philimone.hds.explorer.server.model.main.Member
 import org.philimone.hds.explorer.server.model.main.OutMigration
@@ -32,6 +33,7 @@ class RawExecutionService {
     def outMigrationService
     def deathService
     def visitService
+    def incompleteVisitService
     def changeHeadService
 
     //Receive a RawModel, execute it and flag errors
@@ -260,6 +262,27 @@ class RawExecutionService {
             def errorLog = new RawErrorLog(uuid: rawDomainInstance.id, entity: result.entity, code: rawDomainInstance.newHeadCode)
             errorLog.setMessages(result.errorMessages)
             errorLog.save()
+        }
+
+        rawDomainInstance.refresh()
+        rawDomainInstance.processedStatus = getProcessedStatus(result.status)
+        rawDomainInstance.save()
+
+        return result
+
+    }
+
+    RawExecutionResult<IncompleteVisit> createIncompleteVisit(RawIncompleteVisit rawDomainInstance){
+
+        def result = incompleteVisitService.createIncompleteVisit(rawDomainInstance)
+
+        if (result.status == RawExecutionResult.Status.ERROR){
+            //create errorLog
+            def errorLog = new RawErrorLog(uuid: rawDomainInstance.id, entity: result.entity, code: rawDomainInstance.visitCode)
+            errorLog.setMessages(result.errorMessages)
+            errorLog.save()
+
+            println "incvisit: ${errorLog.errors}"
         }
 
         rawDomainInstance.refresh()

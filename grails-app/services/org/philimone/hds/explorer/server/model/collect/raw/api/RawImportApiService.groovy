@@ -780,4 +780,41 @@ class RawImportApiService {
         return new RawParseResult<RawChangeHead>(rawInstance, errors)
 
     }
+
+    RawParseResult<RawIncompleteVisit> parseIncompleteVisit(NodeChild xmlNode) {
+
+        def errors = new ArrayList<RawMessage>()
+        def params = xmlNode.childNodes().collectEntries{[it.name(), it.text()]}
+        def rootnode = xmlNode?.name()
+
+        if (!rootnode.equalsIgnoreCase("RawIncompleteVisit")) {
+            errors << errorMessageService.getRawMessage("validation.field.raw.parsing.rootnode.invalid.error", [rootnode])
+            return new RawParseResult<RawIncompleteVisit>(null, errors)
+        }
+
+        /* converting non-primitive types must be parsed manually */
+
+
+        if (xmlNode.collectedDate.size() > 0) {
+            params.collectedDate = StringUtil.toLocalDateTimePrecise(xmlNode.collectedDate.text())
+
+            if (params.collectedDate==null) {
+                errors << errorMessageService.getRawMessage("validation.field.raw.parsing.localdatetime.error", [xmlNode?.collectedDate.text(), "collectedDate"])
+            }
+        }
+
+        if (xmlNode.uploadedDate.size() > 0) {
+            params.uploadedDate = StringUtil.toLocalDateTimePrecise(xmlNode.uploadedDate.text())
+
+            if (params.uploadedDate==null) {
+                errors << errorMessageService.getRawMessage("validation.field.raw.parsing.localdatetime.error", [xmlNode?.uploadedDate.text(), "uploadedDate"])
+            }
+        }
+
+        def rawIncompleteVisit = new RawIncompleteVisit(params)
+        rawIncompleteVisit.id = params.id
+
+        return new RawParseResult<RawIncompleteVisit>(rawIncompleteVisit, errors)
+
+    }
 }

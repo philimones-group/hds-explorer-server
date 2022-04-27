@@ -14,7 +14,8 @@ enum RawEventType {
     EVENT_PREGNANCY_REGISTRATION       (9),
     EVENT_PREGNANCY_OUTCOME            (91),
     EVENT_MARITAL_RELATIONSHIP         (92),
-    EVENT_CHANGE_HEAD_OF_HOUSEHOLD     (93)
+    EVENT_CHANGE_HEAD_OF_HOUSEHOLD     (93),
+    EVENT_INCOMPLETE_VISIT             (94)
 
     Integer code
 

@@ -10,6 +10,7 @@ import org.philimone.hds.explorer.server.model.main.Death
 import org.philimone.hds.explorer.server.model.main.HeadRelationship
 import org.philimone.hds.explorer.server.model.main.Household
 import org.philimone.hds.explorer.server.model.main.InMigration
+import org.philimone.hds.explorer.server.model.main.IncompleteVisit
 import org.philimone.hds.explorer.server.model.main.MaritalRelationship
 import org.philimone.hds.explorer.server.model.main.Member
 import org.philimone.hds.explorer.server.model.main.OutMigration
@@ -98,6 +99,7 @@ class RawBatchExecutionService {
             case RawEventType.EVENT_PREGNANCY_OUTCOME:            return executePregnancyOutcome(event)
             case RawEventType.EVENT_MARITAL_RELATIONSHIP:         return executeMaritalRelationship(event)
             case RawEventType.EVENT_CHANGE_HEAD_OF_HOUSEHOLD:     return executeChangeHead(event)
+            case RawEventType.EVENT_INCOMPLETE_VISIT:             return executeIncompleteVisit(event)
             default: return null
         }
     }
@@ -570,6 +572,41 @@ class RawBatchExecutionService {
         return null
     }
 
+    RawExecutionResult<IncompleteVisit> executeIncompleteVisit(RawEvent rawEvent) {
+
+        if (rawEvent == null || rawEvent?.isProcessed()) return null
+
+        def rawObj = RawIncompleteVisit.findById(rawEvent.eventId)
+
+        if (rawObj != null) {
+
+            def dependencyResolved = true
+
+            //check visit dependencies existence (household, member/respondent)
+            def visitCode = rawObj.visitCode
+            def householdCode = rawObj.householdCode
+            def memberCode = rawObj.memberCode
+
+            //try to solve visit dependency
+            dependencyResolved = solveVisitDependency(visitCode)
+
+            //try to solve member dependency (memberCode)
+            dependencyResolved = dependencyResolved && solveMemberDependency(memberCode)
+
+            if (dependencyResolved) {
+
+                def result = rawExecutionService.createIncompleteVisit(rawObj)
+                //set event has processed
+                rawEvent.processed = getProcessedStatus(result?.status)
+                rawEvent.save()
+
+                return result
+            }
+        }
+
+        return null
+    }
+
     boolean solveHouseholdDependency(String householdCode) {
 
         def dependencyResolved = true
@@ -644,6 +681,7 @@ class RawBatchExecutionService {
         collectRegions()
         collectHouseholds()
         collectVisit()
+        collectIncompleteVisit();
         collectMemberEnu()
         collectDeath()
         collectOutMigration()
@@ -683,6 +721,17 @@ class RawBatchExecutionService {
 
         list.each {
             new RawEvent(keyDate: it.visitDate.atStartOfDay(), eventType: RawEventType.EVENT_VISIT, eventId: it.id, entityCode: it.code).save()
+        }
+
+        list.clear()
+        cleanUpGorm()
+    }
+
+    def collectIncompleteVisit() {
+        def list = RawIncompleteVisit.findAllByProcessedStatus(ProcessedStatus.NOT_PROCESSED, [sort: "collectedDate", order: "asc"])
+
+        list.each {
+            new RawEvent(keyDate: it.collectedDate.atStartOfDay(), eventType: RawEventType.EVENT_INCOMPLETE_VISIT, eventId: it.id, entityCode: it.visitCode).save()
         }
 
         list.clear()
@@ -780,6 +829,7 @@ class RawBatchExecutionService {
         list.clear()
         cleanUpGorm()
     }
+
     def collectMaritalRelationshipEnd() {
         def list = RawMaritalRelationship.findAllByProcessedStatusAndEndDateIsNotNull(ProcessedStatus.NOT_PROCESSED, [sort: "endDate", order: "asc"])
 
@@ -790,6 +840,7 @@ class RawBatchExecutionService {
         list.clear()
         cleanUpGorm()
     }
+
     def collectChangeHoh() {
         def list = RawChangeHead.findAllByProcessedStatus(ProcessedStatus.NOT_PROCESSED, [sort: "eventDate", order: "asc"])
 

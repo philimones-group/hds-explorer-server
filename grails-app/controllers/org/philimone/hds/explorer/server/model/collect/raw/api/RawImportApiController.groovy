@@ -23,7 +23,8 @@ class RawImportApiController {
                              pregnancyregistrations: "POST",
                              pregnancyoutcomes: "POST",
                              deaths: "POST",
-                             changeheads: "POST"]
+                             changeheads: "POST",
+                             incompletevisits: "POST"]
 
     def rawImportApiService
     def rawExecutionService
@@ -664,6 +665,49 @@ class RawImportApiController {
 
         if (resultSave.postExecution){ //execute creation
             def result = rawExecutionService.createChangeHead(resultSave)
+
+            if (result.status== RawExecutionResult.Status.ERROR){
+                render text: errorMessageService.getRawMessagesText(result.errorMessages), status: HttpStatus.BAD_REQUEST
+                return
+            }
+        }
+
+        render text: "OK", status: HttpStatus.OK
+    }
+
+    def incompletevisits = {
+
+        if (request.format != "xml") {
+            def message = message(code: 'validation.field.raw.xml.invalid.error')
+            render text: message, status:  HttpStatus.BAD_REQUEST // Only XML expected
+            return
+        }
+
+        RawParseResult<RawIncompleteVisit> parseResult = null
+
+        try {
+            def node = request.getXML() as NodeChild
+            parseResult = rawImportApiService.parseIncompleteVisit(node)
+        } catch(Exception ex) {
+            def msg = errorMessageService.getRawMessagesText(ex)
+            render text: msg, status: HttpStatus.BAD_REQUEST
+            return
+        }
+        if (parseResult.hasErrors()) {
+            render text: parseResult.getErrorsText(), status: HttpStatus.BAD_REQUEST
+            return
+        }
+
+        def rawInstance = parseResult.domainInstance
+        def resultSave = rawInstance.save(flush: true)
+
+        if (rawInstance.hasErrors()){
+            render text: errorMessageService.getRawMessagesText(rawInstance), status: HttpStatus.BAD_REQUEST
+            return
+        }
+
+        if (resultSave.postExecution){ //execute creation
+            def result = rawExecutionService.createIncompleteVisit(resultSave)
 
             if (result.status== RawExecutionResult.Status.ERROR){
                 render text: errorMessageService.getRawMessagesText(result.errorMessages), status: HttpStatus.BAD_REQUEST
