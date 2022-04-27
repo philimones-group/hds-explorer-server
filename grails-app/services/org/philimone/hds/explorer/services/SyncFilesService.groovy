@@ -10,6 +10,7 @@ import org.philimone.hds.explorer.server.model.enums.settings.LogReportCode
 import org.philimone.hds.explorer.server.model.logs.LogReport
 import org.philimone.hds.explorer.server.model.logs.LogReportFile
 import org.philimone.hds.explorer.server.model.enums.LogStatus
+import org.philimone.hds.explorer.server.model.main.CoreFormExtension
 import org.philimone.hds.explorer.server.model.main.Dataset
 import org.philimone.hds.explorer.server.model.main.Death
 import org.philimone.hds.explorer.server.model.main.Form
@@ -60,6 +61,7 @@ class SyncFilesService {
         generateAppParametersXML(logReportId)
         generateModulesXML(logReportId)
         generateFormsXML(logReportId)
+        generateCoreFormsXML(logReportId)
         generateUsersXML(logReportId)
     }
 
@@ -595,6 +597,99 @@ class SyncFilesService {
 
             //Save number of records
             syncFilesReportService.update(SyncEntity.FORMS, count)
+
+        } catch (Exception ex) {
+            ex.printStackTrace()
+            processed = 0
+            errors = 1
+            output.println(ex.toString())
+
+            logStatusValue = LogStatus.ERROR
+        }
+
+        LogReport.withTransaction {
+            LogReport logReport = LogReport.findByReportId(logReportId)
+            LogReportFile reportFile = new LogReportFile(creationDate: LocalDateTime.now(), fileName: log.logFileName, logReport: logReport)
+            reportFile.keyTimestamp = logReport.keyTimestamp
+            reportFile.start = start
+            reportFile.end = LocalDateTime.now()
+            reportFile.creationDate = LocalDateTime.now()
+            reportFile.processedCount = processed
+            reportFile.errorsCount = errors
+
+            logReport.end = LocalDateTime.now()
+            logReport.status = logStatusValue
+            logReport.addToLogFiles(reportFile)
+            logReport.save()
+
+            //println("errors: ${logReport.errors}")
+        }
+
+        output.close();
+
+    }
+
+    def generateCoreFormsXML(LogReportCode logReportId) { //read forms
+
+        LogOutput log = generalUtilitiesService.getOutput(SystemPath.getLogsPath(), "generate-exp-cforms-xml");
+        PrintStream output = log.output
+        if (output == null) return;
+
+        def start = LocalDateTime.now();
+        int processed = 0
+        int errors = 0
+        def logStatusValue = LogStatus.FINISHED
+
+        try {
+            //read forms
+            def resultForms = []
+
+            CoreFormExtension.withTransaction {
+                resultForms = CoreFormExtension.findAllByEnabled(true) //get only the enabled forms
+            }
+
+            DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+
+            // root elements
+            Document doc = docBuilder.newDocument();
+
+            Element rootElement = doc.createElement("coreformsexts");
+            doc.appendChild(rootElement);
+
+            int count = 0;
+            resultForms.each { CoreFormExtension form ->
+                count++;
+
+
+                Element element = createCoreFormExt(doc, form);
+                rootElement.appendChild(element);
+            }
+
+            // write the content into xml file
+            TransformerFactory transformerFactory = TransformerFactory.newInstance();
+            Transformer transformer = transformerFactory.newTransformer();
+            DOMSource source = new DOMSource(doc);
+            StreamResult result = new StreamResult(new File(SystemPath.getGeneratedFilesPath() + "/${SyncEntity.CORE_FORMS_EXT.xmlFilename}"));
+
+            // Output to console for testing
+            // StreamResult result = new StreamResult(System.out);
+            transformer.transform(source, result);
+
+            System.out.println("File saved! - ${SyncEntity.CORE_FORMS_EXT}.xml");
+            output.println("File saved! - ${SyncEntity.CORE_FORMS_EXT}.xml");
+
+            //zip file
+            ZipMaker zipMaker = new ZipMaker(SystemPath.getGeneratedFilesPath() + "/${SyncEntity.CORE_FORMS_EXT.zipFilename}")
+            zipMaker.addFile(SystemPath.getGeneratedFilesPath() + "/${SyncEntity.CORE_FORMS_EXT.xmlFilename}")
+            def b = zipMaker.makeZip()
+
+            println "creating zip - ${SyncEntity.CORE_FORMS_EXT.zipFilename} - success=" + b
+
+            processed = 1
+
+            //Save number of records
+            syncFilesReportService.update(SyncEntity.CORE_FORMS_EXT, count)
 
         } catch (Exception ex) {
             ex.printStackTrace()
@@ -1906,6 +2001,21 @@ class SyncFilesService {
         element.appendChild(createAttributeNonNull(doc, "formMap", formMap));
         element.appendChild(createAttributeNonNull(doc, "redcapApi", redcapApiStr));
         element.appendChild(createAttributeNonNull(doc, "redcapMap", redcapMap));
+
+
+        return element;
+    }
+
+    private Element createCoreFormExt(Document doc, CoreFormExtension form) {
+        Element element = doc.createElement("coreformext");
+
+        //group is disabled
+        element.appendChild(createAttributeNonNull(doc, "formName", form.formName));
+        element.appendChild(createAttributeNonNull(doc, "formId", form.formId));
+        element.appendChild(createAttributeNonNull(doc, "extFormId", form.extFormId));
+        element.appendChild(createAttributeNonNull(doc, "required", form.required+""));
+        element.appendChild(createAttributeNonNull(doc, "enabled", "" + form.enabled+""));
+        element.appendChild(createAttributeNonNull(doc, "columnsMapping", form.columnsMapping));
 
 
         return element;

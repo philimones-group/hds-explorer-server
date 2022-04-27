@@ -6,6 +6,8 @@ import org.philimone.hds.explorer.server.model.authentication.Role
 import org.philimone.hds.explorer.server.model.authentication.SecurityMap
 import org.philimone.hds.explorer.server.model.authentication.User
 import org.philimone.hds.explorer.io.SystemPath
+import org.philimone.hds.explorer.server.model.enums.CoreForm
+
 import org.philimone.hds.explorer.server.model.enums.Gender
 import org.philimone.hds.explorer.server.model.enums.MaritalStatus
 import org.philimone.hds.explorer.server.model.enums.RegionLevel
@@ -14,11 +16,11 @@ import org.philimone.hds.explorer.server.model.enums.settings.LogReportCode
 import org.philimone.hds.explorer.server.model.logs.LogGroup
 import org.philimone.hds.explorer.server.model.logs.LogReport
 import org.philimone.hds.explorer.server.model.enums.LogStatus
+import org.philimone.hds.explorer.server.model.main.CoreFormExtension
 import org.philimone.hds.explorer.server.model.main.MappingFormatType
 import org.philimone.hds.explorer.server.model.main.Member
 import org.philimone.hds.explorer.server.model.main.Module
 import org.philimone.hds.explorer.server.model.enums.SyncEntity
-import org.philimone.hds.explorer.server.model.main.Region
 import org.philimone.hds.explorer.server.model.settings.Codes
 import org.philimone.hds.explorer.server.model.settings.SyncFilesReport
 
@@ -28,6 +30,7 @@ class BootStrap {
     def userService
     def applicationParamService
     def codeGeneratorService
+    def coreFormExtensionService
 
     def init = { servletContext ->
 
@@ -114,6 +117,7 @@ class BootStrap {
             new SecurityMap(url: "/syncFiles/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
             new SecurityMap(url: "/syncFilesReport/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
             new SecurityMap(url: "/generalUtilities/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
+            new SecurityMap(url: "/coreFormExtension/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
             new SecurityMap(url: "/importOpenHDS/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
             new SecurityMap(url: "/dssSynchronization/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
             new SecurityMap(url: "/module/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
@@ -136,6 +140,7 @@ class BootStrap {
             new SecurityMap(url: "/api/export/settings/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
             new SecurityMap(url: "/api/export/modules/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
             new SecurityMap(url: "/api/export/forms/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
+            new SecurityMap(url: "/api/export/coreforms/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
             new SecurityMap(url: "/api/export/users/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
             new SecurityMap(url: "/api/export/trackinglists/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
             new SecurityMap(url: "/api/export/residencies/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
@@ -384,6 +389,35 @@ class BootStrap {
         //Insert Unknown Member for reference Unknown Individual
         //code: UNK, Unknown Member,
         new Member(id: "Unknown Member", code: Codes.MEMBER_UNKNOWN_CODE, name: "member.unknown.label", gender: Gender.MALE, dob: GeneralUtil.getDate(1900,1,1), maritalStatus: MaritalStatus.SINGLE).save(flush: true)
+
+
+        insertCoreFormsExtensions()
+    }
+
+    def insertCoreFormsExtensions(){
+        def svc = coreFormExtensionService
+
+
+        def core1 = new CoreFormExtension(formName: CoreForm.HOUSEHOLD_FORM.name, formId: CoreForm.HOUSEHOLD_FORM.code, extFormId: "household_ext", required: true, enabled: false, columnsMapping: svc.getColumnMapping(CoreForm.HOUSEHOLD_FORM))
+        def core2 = new CoreFormExtension(formName: CoreForm.VISIT_FORM.name, formId: CoreForm.VISIT_FORM.code, extFormId: "visit_ext", required: true, enabled: false, columnsMapping: svc.getColumnMapping(CoreForm.VISIT_FORM))
+        def core3 = new CoreFormExtension(formName: CoreForm.MEMBER_ENU_FORM.name, formId: CoreForm.MEMBER_ENU_FORM.code, extFormId: "member_ext", required: true, enabled: false, columnsMapping: svc.getColumnMapping(CoreForm.MEMBER_ENU_FORM))
+        def core4 = new CoreFormExtension(formName: CoreForm.MARITAL_RELATIONSHIP_FORM.name, formId: CoreForm.MARITAL_RELATIONSHIP_FORM.code, extFormId: "marital_relationship_ext", required: true, enabled: false, columnsMapping: svc.getColumnMapping(CoreForm.MARITAL_RELATIONSHIP_FORM))
+        def core5 = new CoreFormExtension(formName: CoreForm.INMIGRATION_FORM.name, formId: CoreForm.INMIGRATION_FORM.code, extFormId: "inmigration_ext", required: true, enabled: false, columnsMapping: svc.getColumnMapping(CoreForm.INMIGRATION_FORM))
+        def core6 = new CoreFormExtension(formName: CoreForm.OUTMIGRATION_FORM.name, formId: CoreForm.OUTMIGRATION_FORM.code, extFormId: "outmigration_ext", required: true, enabled: false, columnsMapping: svc.getColumnMapping(CoreForm.OUTMIGRATION_FORM))
+        def core7 = new CoreFormExtension(formName: CoreForm.PREGNANCY_REGISTRATION_FORM.name, formId: CoreForm.PREGNANCY_REGISTRATION_FORM.code, extFormId: "pregnancy_registration_ext", required: true, enabled: false, columnsMapping: svc.getColumnMapping(CoreForm.PREGNANCY_REGISTRATION_FORM))
+        def core8 = new CoreFormExtension(formName: CoreForm.PREGNANCY_OUTCOME_FORM.name, formId: CoreForm.PREGNANCY_OUTCOME_FORM.code, extFormId: "pregnancy_outcome_ext", required: true, enabled: false, columnsMapping: svc.getColumnMapping(CoreForm.PREGNANCY_OUTCOME_FORM))
+        def core9 = new CoreFormExtension(formName: CoreForm.DEATH_FORM.name, formId: CoreForm.DEATH_FORM.code, extFormId: "death_ext", required: true, enabled: false, columnsMapping: svc.getColumnMapping(CoreForm.DEATH_FORM))
+        def core10 = new CoreFormExtension(formName: CoreForm.CHANGE_HEAD_FORM.name, formId: CoreForm.CHANGE_HEAD_FORM.code, extFormId: "change_head_ext", required: true, enabled: false, columnsMapping: svc.getColumnMapping(CoreForm.CHANGE_HEAD_FORM))
+        def core11 = new CoreFormExtension(formName: CoreForm.INCOMPLETE_VISIT_FORM.name, formId: CoreForm.INCOMPLETE_VISIT_FORM.code, extFormId: "incomplete_visit_ext", required: true, enabled: false, columnsMapping: svc.getColumnMapping(CoreForm.INCOMPLETE_VISIT_FORM))
+
+        def cores = [core1, core2, core3, core4, core5, core6, core6, core7, core8, core9, core10, core11] as List<CoreFormExtension>
+
+        for (CoreFormExtension core : cores){
+            if (CoreFormExtension.countByFormId(core.formId)==0){
+                core.save(flush:true)
+            }
+        }
+
     }
 
     def retrieveAndPopulateStaticConstants(){
