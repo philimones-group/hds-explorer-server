@@ -119,7 +119,7 @@ class BootStrap {
             new SecurityMap(url: "/generalUtilities/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
             new SecurityMap(url: "/coreFormExtension/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
             new SecurityMap(url: "/importOpenHDS/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
-            new SecurityMap(url: "/dssSynchronization/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
+            new SecurityMap(url: "/eventSync/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
             new SecurityMap(url: "/module/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
             new SecurityMap(url: "/form/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
             new SecurityMap(url: "/formMapping/*/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
@@ -288,12 +288,26 @@ class BootStrap {
                 description: 'logreport.upload.trackinglists.with_extradata.label'
         ).save(flush: true)
 
-        /* Group Sync DSS Data from Client (odk, etc) */
+        /* Group Sync DSS Data */
         new LogReport(
-                reportId: LogReportCode.REPORT_DSS_ODK_CENSUS_SYNC,
+                reportId: LogReportCode.REPORT_DSS_EVENTS_SYNC,
                 group: LogGroup.findByGroupId(LogGroupCode.GROUP_SYNC_DSS_DATA_FROM_CLIENT),
                 status: LogStatus.NOT_STARTED,
-                description: 'logreport.sync.syncdss.odk.census.label'
+                description: 'logreport.sync.syncdss.events.label'
+        ).save(flush: true)
+
+        new LogReport(
+                reportId: LogReportCode.REPORT_DSS_EVENTS_COMPILE_SYNC,
+                group: LogGroup.findByGroupId(LogGroupCode.GROUP_SYNC_DSS_DATA_FROM_CLIENT),
+                status: LogStatus.NOT_STARTED,
+                description: 'logreport.sync.syncdss.compile.label'
+        ).save(flush: true)
+
+        new LogReport(
+                reportId: LogReportCode.REPORT_DSS_EVENTS_EXECUTE_SYNC,
+                group: LogGroup.findByGroupId(LogGroupCode.GROUP_SYNC_DSS_DATA_FROM_CLIENT),
+                status: LogStatus.NOT_STARTED,
+                description: 'logreport.sync.syncdss.executecompiled.label'
         ).save(flush: true)
 
         /* Group Generate Files */

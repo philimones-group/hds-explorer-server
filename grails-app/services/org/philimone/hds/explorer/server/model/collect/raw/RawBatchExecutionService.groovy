@@ -23,15 +23,12 @@ import org.philimone.hds.explorer.server.model.main.collect.raw.RawExecutionResu
 @Transactional
 class RawBatchExecutionService {
 
-    static datasource = ['internal']
-    
     def sessionFactory
     def rawExecutionService
     def regionService
     def visitService
     def householdService
     def memberService
-
 
 
     def cleanUpGorm() {
@@ -43,7 +40,7 @@ class RawBatchExecutionService {
     /*
      * Organize data by processed = 0 and date of processing
      */
-    def organizeEventsForExecution() {
+    def compileAndExecuteEvents() {
         //keyDate   (date of event/capture) will be yyyy-MM-dd or yyyy-MM-dd HH:mm:ss
         //event_type (the HDS Event to be executED, [sort: "collectedDate", order: "asc"]) as INTEGER
         //  1. Household Enumeration
@@ -63,11 +60,34 @@ class RawBatchExecutionService {
         //event_processed (yes / no)
 
 
-
-
         //Read raw domain models that are not processed and save at raw_event table, raw data will be read ordered by dateOfEvent
         compileEvents()
 
+        executeEvents()
+    }
+
+    def compileEvents(){
+
+        //clear raw event
+        RawEvent.executeUpdate("delete from RawEvent")
+
+        collectRegions()
+        collectHouseholds()
+        collectVisit()
+        collectIncompleteVisit();
+        collectMemberEnu()
+        collectDeath()
+        collectOutMigration()
+        collectInMigration()
+        collectExternalInMigration()
+        collectPregnancyRegistration()
+        collectPregnancyOutcome()
+        collectMaritalRelationshipStart()
+        collectMaritalRelationshipEnd()
+        collectChangeHoh()
+    }
+
+    def executeEvents() {
         //read raw_events ordered by keyDate asc and eventtype asc
         int offset = 0
         int max = 50
@@ -80,7 +100,7 @@ class RawBatchExecutionService {
             events.each { rawEvent ->
                 executeEvent(rawEvent)
             }
-            //execute event
+
         }
     }
 
@@ -671,27 +691,6 @@ class RawBatchExecutionService {
         def devent = !devents.empty ? devents.first() : null
 
         return devent
-    }
-
-    def compileEvents(){
-
-        //clear raw event
-        RawEvent.executeUpdate("delete from RawEvent")
-
-        collectRegions()
-        collectHouseholds()
-        collectVisit()
-        collectIncompleteVisit();
-        collectMemberEnu()
-        collectDeath()
-        collectOutMigration()
-        collectInMigration()
-        collectExternalInMigration()
-        collectPregnancyRegistration()
-        collectPregnancyOutcome()
-        collectMaritalRelationshipStart()
-        collectMaritalRelationshipEnd()
-        collectChangeHoh()
     }
 
     def collectRegions() {

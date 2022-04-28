@@ -53,8 +53,9 @@ class RawBatchExecutionServiceSpec extends Specification {
         setupRounds()
         setupRegions()
         setupHouseholds()
-        setupMembers()
         setupVisits()
+        setupMembers()
+
         setupOutmigrations()
         setupExternalInMigrations()
         setupChangeHead()
@@ -76,15 +77,24 @@ class RawBatchExecutionServiceSpec extends Specification {
     def setupRegions(){
         def user = User.findByUsername("dragon")
 
-        def rg1 = new RawRegion(regionCode: codeGeneratorService.generateRegionCode("Maputo"), regionName: "Maputo", parentCode: "", collectedBy: user.username, collectedDate: LocalDateTime.now(), uploadedDate: LocalDateTime.now())
-        def rg11 = new RawRegion(regionCode: codeGeneratorService.generateRegionCode("Matola"), regionName: "Matola", parentCode: "MAP", collectedBy: user.username, collectedDate: LocalDateTime.now(), uploadedDate: LocalDateTime.now())
-        def rg111 = new RawRegion(regionCode: codeGeneratorService.generateRegionCode("Txumene"), regionName: "Txumene", parentCode: "MAT", collectedBy: user.username, collectedDate: LocalDateTime.now(), uploadedDate: LocalDateTime.now())
-        def rg112 = new RawRegion(regionCode: codeGeneratorService.generateRegionCode("Fomento"), regionName: "Fomento", parentCode: "MAT", collectedBy: user.username, collectedDate: LocalDateTime.now(), uploadedDate: LocalDateTime.now())
-        def rg2 = new RawRegion(regionCode: codeGeneratorService.generateRegionCode("Gaza"), regionName: "Gaza", parentCode: "", collectedBy: user.username, collectedDate: LocalDateTime.now(), uploadedDate: LocalDateTime.now())
-        def rg21 = new RawRegion(regionCode: codeGeneratorService.generateRegionCode("Xai-Xai"), regionName: "Xai-Xai", parentCode: "GAZ", collectedBy: user.username, collectedDate: LocalDateTime.now(), uploadedDate: LocalDateTime.now())
-        def rg211 = new RawRegion(regionCode: codeGeneratorService.generateRegionCode("Zongoene"), regionName: "Zongoene", parentCode: "XAI", collectedBy: user.username, collectedDate: LocalDateTime.now(), uploadedDate: LocalDateTime.now())
-        def rg212 = new RawRegion(regionCode: codeGeneratorService.generateRegionCode("Limpopo"), regionName: "Limpopo", parentCode: "XAI", collectedBy: user.username, collectedDate: LocalDateTime.now(), uploadedDate: LocalDateTime.now())
+        def rg1 = new RawRegion(id: "u100", regionCode: codeGeneratorService.generateRegionCode("Maputo"), regionName: "Maputo", parentCode: "", collectedBy: user.username, collectedDate: LocalDateTime.now(), uploadedDate: LocalDateTime.now())
+        def rg11 = new RawRegion(id: "u101",regionCode: codeGeneratorService.generateRegionCode("Matola"), regionName: "Matola", parentCode: "MAP", collectedBy: user.username, collectedDate: LocalDateTime.now(), uploadedDate: LocalDateTime.now())
+        def rg111 = new RawRegion(id: "u102",regionCode: codeGeneratorService.generateRegionCode("Txumene"), regionName: "Txumene", parentCode: "MAT", collectedBy: user.username, collectedDate: LocalDateTime.now(), uploadedDate: LocalDateTime.now())
+        def rg112 = new RawRegion(id: "u103",regionCode: codeGeneratorService.generateRegionCode("Fomento"), regionName: "Fomento", parentCode: "MAT", collectedBy: user.username, collectedDate: LocalDateTime.now(), uploadedDate: LocalDateTime.now())
+        def rg2 = new RawRegion(id: "u104",regionCode: codeGeneratorService.generateRegionCode("Gaza"), regionName: "Gaza", parentCode: "", collectedBy: user.username, collectedDate: LocalDateTime.now(), uploadedDate: LocalDateTime.now())
+        def rg21 = new RawRegion(id: "u105",regionCode: codeGeneratorService.generateRegionCode("Xai-Xai"), regionName: "Xai-Xai", parentCode: "GAZ", collectedBy: user.username, collectedDate: LocalDateTime.now(), uploadedDate: LocalDateTime.now())
+        def rg211 = new RawRegion(id: "u106",regionCode: codeGeneratorService.generateRegionCode("Zongoene"), regionName: "Zongoene", parentCode: "XAI", collectedBy: user.username, collectedDate: LocalDateTime.now(), uploadedDate: LocalDateTime.now())
+        def rg212 = new RawRegion(id: "u107",regionCode: codeGeneratorService.generateRegionCode("Limpopo"), regionName: "Limpopo", parentCode: "XAI", collectedBy: user.username, collectedDate: LocalDateTime.now(), uploadedDate: LocalDateTime.now())
 
+        rg1.id = "u101"
+        rg11.id = "u102"
+        rg111.id = "u103"
+        rg112.id = "u104"
+        rg2.id = "u106"
+        rg21.id = "u107"
+        rg211.id = "u108"
+        rg212.id = "u109"
+        
         rg1.save(flush: true)
         rg11.save(flush: true)
         rg111.save(flush: true)
@@ -264,6 +274,16 @@ class RawBatchExecutionServiceSpec extends Specification {
         )
 
 
+
+        rawMemberEnu1.id = GeneralUtil.generateUUID()
+        rawMemberEnu2.id = GeneralUtil.generateUUID()
+        rawMemberXen1.id = GeneralUtil.generateUUID()
+        rawMemberXen2.id = GeneralUtil.generateUUID()
+        rawPregReg1.id = GeneralUtil.generateUUID()
+        rawPregOut1.id = GeneralUtil.generateUUID()
+        rawPregChild.id = GeneralUtil.generateUUID()
+        rawPregOut1.id = GeneralUtil.generateUUID()
+        
         rawMemberEnu1.save(flush: true)
         rawMemberEnu2.save(flush: true)
         rawMemberXen1.save(flush: true)
@@ -314,6 +334,12 @@ class RawBatchExecutionServiceSpec extends Specification {
                 respondentCode: member21, hasInterpreter: false, collectedBy: "dragon", collectedDate: GeneralUtil.getDate(2019, 2, 4, 0, 0, 0)
         )
 
+        rv1.id = GeneralUtil.generateUUID()
+        rv2.id = GeneralUtil.generateUUID()
+        rv3.id = GeneralUtil.generateUUID()
+        rv4.id = GeneralUtil.generateUUID()
+        rv5.id = GeneralUtil.generateUUID()
+
         rv1.save()
         rv2.save()
         rv3.save()
@@ -351,6 +377,7 @@ class RawBatchExecutionServiceSpec extends Specification {
                 uploadedDate: GeneralUtil.getDate(2015, 2, 14, 0, 0, 0)
         )
 
+        rawOut1.id = GeneralUtil.generateUUID()
         rawOut1.save(flush:true)
 
     }
@@ -387,6 +414,7 @@ class RawBatchExecutionServiceSpec extends Specification {
                 uploadedDate: GeneralUtil.getDate(2019, 2, 4, 0, 0, 0)
         )
 
+        rawXen1.id = GeneralUtil.generateUUID()
         rawXen1.save(flush: true)
     }
 
@@ -418,6 +446,7 @@ class RawBatchExecutionServiceSpec extends Specification {
                 uploadedDate: GeneralUtil.getDate(2019, 02, 14, 0, 0, 0)
         )
 
+        rawChgHead1.id = GeneralUtil.generateUUID()
         rawChgHead1.save(flush: true)
         rawChgHead1.addToRelationships(new RawChangeHeadRelationship(changeHead: rawChgHead1, newMemberCode: member21, newRelationshipType: HeadRelationshipType.PARENT.code))
         rawChgHead1.addToRelationships(new RawChangeHeadRelationship(changeHead: rawChgHead1, newMemberCode: member22, newRelationshipType: HeadRelationshipType.PARENT.code))
@@ -474,9 +503,9 @@ class RawBatchExecutionServiceSpec extends Specification {
 
         setupAll()
 
-        rawBatchExecutionService.organizeEventsForExecution()
+        rawBatchExecutionService.compileAndExecuteEvents()
 
         expect:
-        RawEvent.count()==24
+        RawEvent.count()==10
     }
 }

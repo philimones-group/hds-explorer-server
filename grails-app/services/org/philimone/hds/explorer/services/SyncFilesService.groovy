@@ -78,11 +78,12 @@ class SyncFilesService {
         generateHeadRelationshipsXML(logReportId)
         generateMaritalRelationshipsXML(logReportId)
         generatePregnancyRegistrationsXML(logReportId)
+        generateDeathsXML(logReportId)
         //These events are not needed in the mobile app
         //generateInMigrationsXML(logReportId)
         //generateOutMigrationsXML(logReportId)
         //generatePregnancyOutcomesXML(logReportId)
-        //generateDeathsXML(logReportId)
+
     }
 
     def generateDatasetsXML(LogReportCode logReportId) {

@@ -19,8 +19,10 @@ enum LogReportCode {
     REPORT_UPLOAD_TRACKING_LISTS_BASIC (30, "logreport"),
     REPORT_UPLOAD_TRACKING_LISTS_W_EXTRA_DATA (31, "logreport"),
 
-    /*LogReportCode for events that export data to OpenHDS or HDS Explorer from ODK*/
-    REPORT_DSS_ODK_CENSUS_SYNC (40, "logreport"),
+    /*LogReportCode for events that sync data from clients to HDS Explorer */
+    REPORT_DSS_EVENTS_SYNC(40, "logreport"),
+    REPORT_DSS_EVENTS_COMPILE_SYNC(41, "logreport"),
+    REPORT_DSS_EVENTS_EXECUTE_SYNC(42, "logreport"),
 
     /*LogReportCode for events of Generating ZIP XML Files */
     REPORT_GENERATE_SETTINGS_ZIP_XML_FILES (51, "logreport"),
