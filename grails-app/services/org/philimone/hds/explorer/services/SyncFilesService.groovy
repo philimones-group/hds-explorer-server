@@ -646,7 +646,7 @@ class SyncFilesService {
             def resultForms = []
 
             CoreFormExtension.withTransaction {
-                resultForms = CoreFormExtension.findAllByEnabled(true) //get only the enabled forms
+                resultForms = CoreFormExtension.list() //get only the enabled forms
             }
 
             DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
@@ -655,7 +655,7 @@ class SyncFilesService {
             // root elements
             Document doc = docBuilder.newDocument();
 
-            Element rootElement = doc.createElement("coreformsexts");
+            Element rootElement = doc.createElement("coreformexts");
             doc.appendChild(rootElement);
 
             int count = 0;
@@ -677,8 +677,8 @@ class SyncFilesService {
             // StreamResult result = new StreamResult(System.out);
             transformer.transform(source, result);
 
-            System.out.println("File saved! - ${SyncEntity.CORE_FORMS_EXT}.xml");
-            output.println("File saved! - ${SyncEntity.CORE_FORMS_EXT}.xml");
+            System.out.println("File saved! - ${SyncEntity.CORE_FORMS_EXT.xmlFilename}");
+            output.println("File saved! - ${SyncEntity.CORE_FORMS_EXT.xmlFilename}");
 
             //zip file
             ZipMaker zipMaker = new ZipMaker(SystemPath.getGeneratedFilesPath() + "/${SyncEntity.CORE_FORMS_EXT.zipFilename}")
@@ -2011,12 +2011,12 @@ class SyncFilesService {
         Element element = doc.createElement("coreformext");
 
         //group is disabled
-        element.appendChild(createAttributeNonNull(doc, "formName", form.formName));
-        element.appendChild(createAttributeNonNull(doc, "formId", form.formId));
-        element.appendChild(createAttributeNonNull(doc, "extFormId", form.extFormId));
-        element.appendChild(createAttributeNonNull(doc, "required", form.required+""));
-        element.appendChild(createAttributeNonNull(doc, "enabled", "" + form.enabled+""));
-        element.appendChild(createAttributeNonNull(doc, "columnsMapping", form.columnsMapping));
+        element.appendChild(createAttributeNonNull(doc, "formName", form.formName))
+        element.appendChild(createAttributeNonNull(doc, "formId", form.formId))
+        element.appendChild(createAttributeNonNull(doc, "extFormId", form.extFormId))
+        element.appendChild(createAttributeNonNull(doc, "required", "${form.required}"))
+        element.appendChild(createAttributeNonNull(doc, "enabled", "" + form.enabled+""))
+        element.appendChild(createAttributeNonNull(doc, "columnsMapping", form.columnsMapping))
 
 
         return element;
