@@ -1,12 +1,5 @@
 package org.philimone.hds.explorer.server.model.enums;
 
-import androidx.annotation.StringRes;
-
-import org.philimone.hds.explorer.R;
-
-import java.util.HashMap;
-import java.util.Map;
-
 public enum IncompleteVisitReason {
     /*
     12. Onde é que a visita esta sendo realizada?

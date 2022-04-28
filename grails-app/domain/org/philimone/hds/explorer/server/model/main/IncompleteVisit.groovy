@@ -5,6 +5,8 @@ import org.philimone.hds.explorer.server.model.enums.IncompleteVisitReason
 
 class IncompleteVisit extends CollectableEntity {
 
+    String id
+
     Visit visit
     String visitCode
     Member member
@@ -13,6 +15,8 @@ class IncompleteVisit extends CollectableEntity {
     String reasonOther
 
     static constraints = {
+        id maxSize: 32
+
         visit nullable: false
         visitCode nullable: false, blank: false
         member nullable: false
@@ -23,6 +27,8 @@ class IncompleteVisit extends CollectableEntity {
 
     static mapping = {
         table "incomplete_visit"
+
+        id column: "id", generator: 'uuid'
 
         visit column: "visit_id"
         visitCode column: "visit_code"

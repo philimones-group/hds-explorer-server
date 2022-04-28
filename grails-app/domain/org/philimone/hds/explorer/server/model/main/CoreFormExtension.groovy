@@ -3,6 +3,7 @@ package org.philimone.hds.explorer.server.model.main
 
 class CoreFormExtension {
 
+    String id
     String formName
     String formId
     String extFormId
@@ -21,6 +22,7 @@ class CoreFormExtension {
 
 
     static constraints = {
+        id maxSize: 32
         formName nullable: false, blank: false
         formId unique: true
         extFormId nullable: false, blank: false
@@ -32,6 +34,8 @@ class CoreFormExtension {
 
     static mapping = {
         table "core_form_extension"
+
+        id column: "id", generator: 'uuid'
 
         formName column: "form_name"
         formId column: "form_id"

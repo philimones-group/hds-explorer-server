@@ -11,6 +11,8 @@ abstract class AuditableEntity {
     //User collectedBy
     //Date collectedDate
 
+    abstract String getId()
+
     User createdBy
     LocalDateTime createdDate
     User updatedBy
