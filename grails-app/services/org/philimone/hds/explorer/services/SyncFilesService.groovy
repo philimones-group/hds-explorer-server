@@ -1896,7 +1896,7 @@ class SyncFilesService {
             processed = 1
 
             //Save number of records
-            syncFilesReportService.update(SyncEntity.ROUNDS, count)
+            syncFilesReportService.update(SyncEntity.DEATHS, count)
 
         } catch (Exception ex) {
             ex.printStackTrace()

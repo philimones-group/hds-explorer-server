@@ -374,4 +374,66 @@ class SyncFilesController {
         redirect action:'index'
     }
 
+    def exportAll = {
+
+        createLogStartup(LogReportCode.REPORT_GENERATE_SETTINGS_ZIP_XML_FILES)
+        new Thread(new Runnable() {
+            @Override
+            void run() {
+                println "executing export files to settings xmls/zips"
+                syncFilesService.generateSettingsXML(LogReportCode.REPORT_GENERATE_SETTINGS_ZIP_XML_FILES)
+            }
+        }).start()
+
+        createLogStartup(LogReportCode.REPORT_GENERATE_EXTERNAL_DATASETS_ZIP_XML_FILES)
+        new Thread(new Runnable() {
+            @Override
+            void run() {
+                println "executing export files to external datasets xml/zip"
+                syncFilesService.generateDatasetsXML(LogReportCode.REPORT_GENERATE_EXTERNAL_DATASETS_ZIP_XML_FILES)
+            }
+        }).start()
+
+        createLogStartup(LogReportCode.REPORT_GENERATE_TRACKING_LISTS_ZIP_XML_FILES)
+        new Thread(new Runnable() {
+            @Override
+            void run() {
+                println "executing export files to tracking lists xml/zip"
+                syncFilesService.generateTrackingListsXML(LogReportCode.REPORT_GENERATE_TRACKING_LISTS_ZIP_XML_FILES)
+            }
+        }).start()
+
+        createLogStartup(LogReportCode.REPORT_GENERATE_HOUSEHOLDS_DATASETS_ZIP_XML_FILES)
+        new Thread(new Runnable() {
+            @Override
+            void run() {
+                println "executing export files to households datasets xmls/zips"
+                syncFilesService.generateHouseholdDatasets(LogReportCode.REPORT_GENERATE_HOUSEHOLDS_DATASETS_ZIP_XML_FILES)
+            }
+        }).start()
+
+        createLogStartup(LogReportCode.REPORT_GENERATE_DSS_EVENTS_ZIP_XML_FILES)
+        new Thread(new Runnable() {
+            @Override
+            void run() {
+                println "executing export files to dss events xmls/zips"
+                syncFilesService.generateDemographicEvents(LogReportCode.REPORT_GENERATE_DSS_EVENTS_ZIP_XML_FILES)
+            }
+        }).start()
+
+
+        redirect action: "index"
+    }
+
+    void createLogStartup(LogReportCode logReportCode) {
+        LogReport logReport = null
+
+        LogReport.withTransaction {
+            logReport = LogReport.findByReportId(logReportCode)
+            logReport.keyTimestamp = System.currentTimeMillis() //CREATE timestamp code
+            logReport.status = LogStatus.STARTED
+            logReport.start = LocalDateTime.now();
+            logReport.save(flush: true)
+        }
+    }
 }
