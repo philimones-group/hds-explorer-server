@@ -51,13 +51,14 @@
                 <bi:dropmenu label="${g.message(code: 'default.menu.updates.label')} ">
                     <bi:menu label="${g.message(code: 'default.menu.updates.modules.label')}" link="${createLink(controller: 'module', action: 'index')}" />
                     <bi:menu label="${g.message(code: 'default.menu.updates.forms.label')}" link="${createLink(controller: 'form', action: 'index')}" />
+                    <bi:menu label="${g.message(code: 'default.menu.updates.coreformsext.label')}" link="${createLink(controller: 'coreFormExtension', action: 'index')}" />
                     <bi:menuseparator />
                     <bi:menu label="${g.message(code: 'default.menu.updates.households.label')}" />
                     <bi:menu label="${g.message(code: 'default.menu.updates.members.label')}" />
-                    <bi:menu label="${g.message(code: 'default.menu.updates.datasets.label')}" link="${createLink(controller: 'dataset', action: 'add')}" />
                 </bi:dropmenu>
                 <bi:dropmenu label="${g.message(code: 'default.menu.lists.label')}">
                     <bi:menu label="${g.message(code: 'default.menu.lists.trackinglists.label')}" link="${createLink(controller: 'trackingList', action: 'add')}" />
+                    <bi:menu label="${g.message(code: 'default.menu.updates.datasets.label')}" link="${createLink(controller: 'dataset', action: 'add')}" />
                 </bi:dropmenu>
                 <bi:dropmenu label="${g.message(code: 'default.menu.sync.label')}">
                     <bi:menu label="${g.message(code: 'default.menu.sync.syncdss.label')}" link="${createLink(controller: 'eventSync', action: 'index')}" />

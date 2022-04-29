@@ -1,5 +1,7 @@
 package org.philimone.hds.explorer.server.model.main
 
+import org.philimone.hds.explorer.server.model.enums.CoreForm
+
 
 class CoreFormExtension {
 
@@ -10,6 +12,8 @@ class CoreFormExtension {
     boolean required = false /*Collection REQUIRED OR OPTIONAL*/
     boolean enabled = false
     String columnsMapping
+
+    CoreForm coreForm
 
     transient def addMapping(Map<String, String> colsMap){
         String str = ""

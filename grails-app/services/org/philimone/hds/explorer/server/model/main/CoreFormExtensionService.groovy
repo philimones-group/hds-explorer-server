@@ -27,6 +27,19 @@ class CoreFormExtensionService {
         coreFormExtension.save(flush:true)
     }
 
+    File getFormXLS(CoreFormExtension coreFormExtension){
+        try {
+            def url = getClass().classLoader.getResource("samples/extension-forms/xls/${coreFormExtension.extFormId}.xlsx")
+
+            return new File(url.toURI())
+        }catch (Exception ex){
+            //ex.printStackTrace()
+
+            return null
+        }
+
+    }
+
     String getColumnMapping(CoreForm form) {
         if (form == CoreForm.HOUSEHOLD_FORM) return getHouseholdMapping();
         if (form == CoreForm.VISIT_FORM) return getVisitMapping();
@@ -49,7 +62,7 @@ class CoreFormExtensionService {
         columnsMap.put("core_form_id", CoreForm.HOUSEHOLD_FORM.code)
         columnsMap.put("core_form_uuid", "#collectedId")
         columnsMap.put("household_code", "#householdCode")
-        columnsMap.put("household_code", "#householdName")
+        columnsMap.put("household_name", "#householdName")
         columnsMap.put("visit_code", "#visitCode")
         columnsMap.put("head_code", "#headCode")
         columnsMap.put("head_name", "#headName")
@@ -201,7 +214,8 @@ class CoreFormExtensionService {
         columnsMap.put("core_form_uuid", "#collectedId")
         columnsMap.put("household_code", "#householdCode")
         columnsMap.put("visit_code", "#visitCode")
-        columnsMap.put("member_code", "#code")
+        columnsMap.put("member_code", "#memberCode")
+        columnsMap.put("member_name", "#memberName")
 
 
         return mapToString(columnsMap)

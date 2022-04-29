@@ -1,0 +1,409 @@
+<?xml version="1.0"?>
+<h:html xmlns="http://www.w3.org/2002/xforms" xmlns:ev="http://www.w3.org/2001/xml-events" xmlns:h="http://www.w3.org/1999/xhtml" xmlns:jr="http://openrosa.org/javarosa" xmlns:orx="http://openrosa.org/xforms" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <h:head>
+    <h:title>HDS Pregnancy Outcome Extension</h:title>
+    <model>
+      <itext>
+        <translation default="true()" lang="default">
+          <text id="/pregnancy_outcome_ext/childs/child_code:label">
+            <value>-</value>
+          </text>
+          <text id="/pregnancy_outcome_ext/pregnancy_code:label">
+            <value>-</value>
+          </text>
+          <text id="/pregnancy_outcome_ext/childs/child_name:label">
+            <value>-</value>
+          </text>
+          <text id="/pregnancy_outcome_ext/custom_quest1:label">
+            <value>-</value>
+          </text>
+          <text id="/pregnancy_outcome_ext/core_form_uuid:label">
+            <value>-</value>
+          </text>
+          <text id="/pregnancy_outcome_ext/childs/child_gender:label">
+            <value>-</value>
+          </text>
+          <text id="/pregnancy_outcome_ext/visit_code:label">
+            <value>-</value>
+          </text>
+          <text id="/pregnancy_outcome_ext/childs/child_outcome_type/SBR:label">
+            <value>Stillbirth</value>
+          </text>
+          <text id="/pregnancy_outcome_ext/end:label">
+            <value>-</value>
+          </text>
+          <text id="/pregnancy_outcome_ext/childs/child_outcome_type/MIS:label">
+            <value>Miscarriage</value>
+          </text>
+          <text id="/pregnancy_outcome_ext/mother_name:label">
+            <value>-</value>
+          </text>
+          <text id="/pregnancy_outcome_ext/childs:label">
+            <value>-</value>
+          </text>
+          <text id="/pregnancy_outcome_ext/deviceid:label">
+            <value>-</value>
+          </text>
+          <text id="/pregnancy_outcome_ext/custom_quest2:label">
+            <value>-</value>
+          </text>
+          <text id="/pregnancy_outcome_ext/father_name:label">
+            <value>-</value>
+          </text>
+          <text id="/pregnancy_outcome_ext/childs/child_outcome_type/ABT:label">
+            <value>Abortion</value>
+          </text>
+          <text id="/pregnancy_outcome_ext/childs/child_outcome_type:label">
+            <value>-</value>
+          </text>
+          <text id="/pregnancy_outcome_ext/start:label">
+            <value>-</value>
+          </text>
+          <text id="/pregnancy_outcome_ext/childs/child_gender/F:label">
+            <value>Female</value>
+          </text>
+          <text id="/pregnancy_outcome_ext/childs/child_gender/M:label">
+            <value>Male</value>
+          </text>
+          <text id="/pregnancy_outcome_ext/mother_code:label">
+            <value>-</value>
+          </text>
+          <text id="/pregnancy_outcome_ext/childs/child_outcome_type/LBR:label">
+            <value>Livebirth</value>
+          </text>
+          <text id="/pregnancy_outcome_ext/father_code:label">
+            <value>-</value>
+          </text>
+        </translation>
+        <translation lang="Portuguese">
+          <text id="/pregnancy_outcome_ext/childs/child_code:label">
+            <value>Código da criança</value>
+          </text>
+          <text id="/pregnancy_outcome_ext/pregnancy_code:label">
+            <value>Código do Registro de Gravidez</value>
+          </text>
+          <text id="/pregnancy_outcome_ext/childs/child_name:label">
+            <value>Nome da criança</value>
+          </text>
+          <text id="/pregnancy_outcome_ext/custom_quest1:label">
+            <value>Custom Question 1</value>
+          </text>
+          <text id="/pregnancy_outcome_ext/core_form_uuid:label">
+            <value>Id do Formulário Mãe</value>
+          </text>
+          <text id="/pregnancy_outcome_ext/childs/child_gender:label">
+            <value>Sexo da criança</value>
+          </text>
+          <text id="/pregnancy_outcome_ext/visit_code:label">
+            <value>Código da Visita</value>
+          </text>
+          <text id="/pregnancy_outcome_ext/childs/child_outcome_type/SBR:label">
+            <value>-</value>
+          </text>
+          <text id="/pregnancy_outcome_ext/end:label">
+            <value>-</value>
+          </text>
+          <text id="/pregnancy_outcome_ext/childs/child_outcome_type/MIS:label">
+            <value>-</value>
+          </text>
+          <text id="/pregnancy_outcome_ext/mother_name:label">
+            <value>Nome da Mãe</value>
+          </text>
+          <text id="/pregnancy_outcome_ext/childs:label">
+            <value>Crianças Nascidas</value>
+          </text>
+          <text id="/pregnancy_outcome_ext/deviceid:label">
+            <value>-</value>
+          </text>
+          <text id="/pregnancy_outcome_ext/custom_quest2:label">
+            <value>Custom Question 2</value>
+          </text>
+          <text id="/pregnancy_outcome_ext/childs/child_gender/M:label">
+            <value>-</value>
+          </text>
+          <text id="/pregnancy_outcome_ext/childs/child_outcome_type/ABT:label">
+            <value>-</value>
+          </text>
+          <text id="/pregnancy_outcome_ext/childs/child_outcome_type:label">
+            <value>Tipo de resultado da gravidez</value>
+          </text>
+          <text id="/pregnancy_outcome_ext/start:label">
+            <value>-</value>
+          </text>
+          <text id="/pregnancy_outcome_ext/childs/child_gender/F:label">
+            <value>-</value>
+          </text>
+          <text id="/pregnancy_outcome_ext/father_name:label">
+            <value>Nome do Pai</value>
+          </text>
+          <text id="/pregnancy_outcome_ext/mother_code:label">
+            <value>Código da Mãe</value>
+          </text>
+          <text id="/pregnancy_outcome_ext/childs/child_outcome_type/LBR:label">
+            <value>-</value>
+          </text>
+          <text id="/pregnancy_outcome_ext/father_code:label">
+            <value>Código do Pai</value>
+          </text>
+        </translation>
+        <translation lang="pt">
+          <text id="/pregnancy_outcome_ext/childs/child_code:label">
+            <value>-</value>
+          </text>
+          <text id="/pregnancy_outcome_ext/pregnancy_code:label">
+            <value>-</value>
+          </text>
+          <text id="/pregnancy_outcome_ext/childs/child_name:label">
+            <value>-</value>
+          </text>
+          <text id="/pregnancy_outcome_ext/custom_quest1:label">
+            <value>-</value>
+          </text>
+          <text id="/pregnancy_outcome_ext/core_form_uuid:label">
+            <value>-</value>
+          </text>
+          <text id="/pregnancy_outcome_ext/childs/child_gender:label">
+            <value>-</value>
+          </text>
+          <text id="/pregnancy_outcome_ext/visit_code:label">
+            <value>-</value>
+          </text>
+          <text id="/pregnancy_outcome_ext/childs/child_outcome_type/SBR:label">
+            <value>Nado morto</value>
+          </text>
+          <text id="/pregnancy_outcome_ext/end:label">
+            <value>-</value>
+          </text>
+          <text id="/pregnancy_outcome_ext/childs/child_outcome_type/MIS:label">
+            <value>Aborto Espontâneo</value>
+          </text>
+          <text id="/pregnancy_outcome_ext/mother_name:label">
+            <value>-</value>
+          </text>
+          <text id="/pregnancy_outcome_ext/childs:label">
+            <value>-</value>
+          </text>
+          <text id="/pregnancy_outcome_ext/deviceid:label">
+            <value>-</value>
+          </text>
+          <text id="/pregnancy_outcome_ext/custom_quest2:label">
+            <value>-</value>
+          </text>
+          <text id="/pregnancy_outcome_ext/father_name:label">
+            <value>-</value>
+          </text>
+          <text id="/pregnancy_outcome_ext/childs/child_outcome_type/ABT:label">
+            <value>Aborto induzido</value>
+          </text>
+          <text id="/pregnancy_outcome_ext/childs/child_outcome_type:label">
+            <value>-</value>
+          </text>
+          <text id="/pregnancy_outcome_ext/start:label">
+            <value>-</value>
+          </text>
+          <text id="/pregnancy_outcome_ext/childs/child_gender/F:label">
+            <value>Feminino</value>
+          </text>
+          <text id="/pregnancy_outcome_ext/childs/child_gender/M:label">
+            <value>Masculino</value>
+          </text>
+          <text id="/pregnancy_outcome_ext/mother_code:label">
+            <value>-</value>
+          </text>
+          <text id="/pregnancy_outcome_ext/childs/child_outcome_type/LBR:label">
+            <value>Nascido Vivo</value>
+          </text>
+          <text id="/pregnancy_outcome_ext/father_code:label">
+            <value>-</value>
+          </text>
+        </translation>
+        <translation lang="English">
+          <text id="/pregnancy_outcome_ext/childs/child_code:label">
+            <value>Child's Code</value>
+          </text>
+          <text id="/pregnancy_outcome_ext/pregnancy_code:label">
+            <value>Pregnancy Registration Code</value>
+          </text>
+          <text id="/pregnancy_outcome_ext/childs/child_name:label">
+            <value>Child's Name</value>
+          </text>
+          <text id="/pregnancy_outcome_ext/custom_quest1:label">
+            <value>Custom Question 1</value>
+          </text>
+          <text id="/pregnancy_outcome_ext/core_form_uuid:label">
+            <value>Core Form Id</value>
+          </text>
+          <text id="/pregnancy_outcome_ext/childs/child_gender:label">
+            <value>Child's Gender</value>
+          </text>
+          <text id="/pregnancy_outcome_ext/visit_code:label">
+            <value>Visit Code</value>
+          </text>
+          <text id="/pregnancy_outcome_ext/childs/child_outcome_type/SBR:label">
+            <value>-</value>
+          </text>
+          <text id="/pregnancy_outcome_ext/end:label">
+            <value>-</value>
+          </text>
+          <text id="/pregnancy_outcome_ext/childs/child_outcome_type/MIS:label">
+            <value>-</value>
+          </text>
+          <text id="/pregnancy_outcome_ext/mother_name:label">
+            <value>Mother's Name</value>
+          </text>
+          <text id="/pregnancy_outcome_ext/childs:label">
+            <value>Childs</value>
+          </text>
+          <text id="/pregnancy_outcome_ext/deviceid:label">
+            <value>-</value>
+          </text>
+          <text id="/pregnancy_outcome_ext/custom_quest2:label">
+            <value>Custom Question 2</value>
+          </text>
+          <text id="/pregnancy_outcome_ext/childs/child_gender/M:label">
+            <value>-</value>
+          </text>
+          <text id="/pregnancy_outcome_ext/childs/child_outcome_type/ABT:label">
+            <value>-</value>
+          </text>
+          <text id="/pregnancy_outcome_ext/childs/child_outcome_type:label">
+            <value>Outcome Type</value>
+          </text>
+          <text id="/pregnancy_outcome_ext/start:label">
+            <value>-</value>
+          </text>
+          <text id="/pregnancy_outcome_ext/childs/child_gender/F:label">
+            <value>-</value>
+          </text>
+          <text id="/pregnancy_outcome_ext/father_name:label">
+            <value>Father's Name</value>
+          </text>
+          <text id="/pregnancy_outcome_ext/mother_code:label">
+            <value>Mother's Code</value>
+          </text>
+          <text id="/pregnancy_outcome_ext/childs/child_outcome_type/LBR:label">
+            <value>-</value>
+          </text>
+          <text id="/pregnancy_outcome_ext/father_code:label">
+            <value>Father's Code</value>
+          </text>
+        </translation>
+      </itext>
+      <instance>
+        <pregnancy_outcome_ext id="pregnancy_outcome_ext" version="1">
+          <start/>
+          <end/>
+          <deviceid/>
+          <core_form_uuid/>
+          <visit_code/>
+          <pregnancy_code/>
+          <mother_code/>
+          <mother_name/>
+          <father_code/>
+          <father_name/>
+          <childs jr:template="">
+            <child_outcome_type/>
+            <child_code/>
+            <child_name/>
+            <child_gender/>
+          </childs>
+          <custom_quest1/>
+          <custom_quest2/>
+          <meta>
+            <instanceID/>
+            <instanceName/>
+          </meta>
+        </pregnancy_outcome_ext>
+      </instance>
+      <bind jr:preload="timestamp" jr:preloadParams="start" nodeset="/pregnancy_outcome_ext/start" required="true()" type="dateTime"/>
+      <bind jr:preload="timestamp" jr:preloadParams="end" nodeset="/pregnancy_outcome_ext/end" required="true()" type="dateTime"/>
+      <bind jr:preload="property" jr:preloadParams="deviceid" nodeset="/pregnancy_outcome_ext/deviceid" required="true()" type="string"/>
+      <bind nodeset="/pregnancy_outcome_ext/core_form_uuid" readonly="true()" required="true()" type="string"/>
+      <bind nodeset="/pregnancy_outcome_ext/visit_code" readonly="true()" required="true()" type="string"/>
+      <bind nodeset="/pregnancy_outcome_ext/pregnancy_code" readonly="true()" required="true()" type="string"/>
+      <bind nodeset="/pregnancy_outcome_ext/mother_code" readonly="true()" required="true()" type="string"/>
+      <bind nodeset="/pregnancy_outcome_ext/mother_name" readonly="true()" required="true()" type="string"/>
+      <bind nodeset="/pregnancy_outcome_ext/father_code" readonly="true()" required="true()" type="string"/>
+      <bind nodeset="/pregnancy_outcome_ext/father_name" readonly="true()" required="true()" type="string"/>
+      <bind nodeset="/pregnancy_outcome_ext/childs" required="true()"/>
+      <bind nodeset="/pregnancy_outcome_ext/childs/child_outcome_type" readonly="true()" required="true()" type="select1"/>
+      <bind nodeset="/pregnancy_outcome_ext/childs/child_code" readonly="true()" required="true()" type="string"/>
+      <bind nodeset="/pregnancy_outcome_ext/childs/child_name" readonly="true()" required="true()" type="string"/>
+      <bind nodeset="/pregnancy_outcome_ext/childs/child_gender" readonly="true()" required="true()" type="select1"/>
+      <bind nodeset="/pregnancy_outcome_ext/custom_quest1" type="string"/>
+      <bind nodeset="/pregnancy_outcome_ext/custom_quest2" type="string"/>
+      <bind calculate="concat('uuid:', uuid())" nodeset="/pregnancy_outcome_ext/meta/instanceID" readonly="true()" type="string"/>
+      <bind calculate="concat(&quot;HDS_&quot;, /pregnancy_outcome_ext/mother_code ,&quot;_&quot;,&quot;PregOutcome_Extension&quot;)" nodeset="/pregnancy_outcome_ext/meta/instanceName" type="string"/>
+    </model>
+  </h:head>
+  <h:body>
+    <input ref="/pregnancy_outcome_ext/core_form_uuid">
+      <label ref="jr:itext('/pregnancy_outcome_ext/core_form_uuid:label')"/>
+    </input>
+    <input ref="/pregnancy_outcome_ext/visit_code">
+      <label ref="jr:itext('/pregnancy_outcome_ext/visit_code:label')"/>
+    </input>
+    <input ref="/pregnancy_outcome_ext/pregnancy_code">
+      <label ref="jr:itext('/pregnancy_outcome_ext/pregnancy_code:label')"/>
+    </input>
+    <input ref="/pregnancy_outcome_ext/mother_code">
+      <label ref="jr:itext('/pregnancy_outcome_ext/mother_code:label')"/>
+    </input>
+    <input ref="/pregnancy_outcome_ext/mother_name">
+      <label ref="jr:itext('/pregnancy_outcome_ext/mother_name:label')"/>
+    </input>
+    <input ref="/pregnancy_outcome_ext/father_code">
+      <label ref="jr:itext('/pregnancy_outcome_ext/father_code:label')"/>
+    </input>
+    <input ref="/pregnancy_outcome_ext/father_name">
+      <label ref="jr:itext('/pregnancy_outcome_ext/father_name:label')"/>
+    </input>
+    <group ref="/pregnancy_outcome_ext/childs">
+      <label ref="jr:itext('/pregnancy_outcome_ext/childs:label')"/>
+      <repeat nodeset="/pregnancy_outcome_ext/childs">
+        <select1 ref="/pregnancy_outcome_ext/childs/child_outcome_type">
+          <label ref="jr:itext('/pregnancy_outcome_ext/childs/child_outcome_type:label')"/>
+          <item>
+            <label ref="jr:itext('/pregnancy_outcome_ext/childs/child_outcome_type/LBR:label')"/>
+            <value>LBR</value>
+          </item>
+          <item>
+            <label ref="jr:itext('/pregnancy_outcome_ext/childs/child_outcome_type/SBR:label')"/>
+            <value>SBR</value>
+          </item>
+          <item>
+            <label ref="jr:itext('/pregnancy_outcome_ext/childs/child_outcome_type/MIS:label')"/>
+            <value>MIS</value>
+          </item>
+          <item>
+            <label ref="jr:itext('/pregnancy_outcome_ext/childs/child_outcome_type/ABT:label')"/>
+            <value>ABT</value>
+          </item>
+        </select1>
+        <input ref="/pregnancy_outcome_ext/childs/child_code">
+          <label ref="jr:itext('/pregnancy_outcome_ext/childs/child_code:label')"/>
+        </input>
+        <input ref="/pregnancy_outcome_ext/childs/child_name">
+          <label ref="jr:itext('/pregnancy_outcome_ext/childs/child_name:label')"/>
+        </input>
+        <select1 ref="/pregnancy_outcome_ext/childs/child_gender">
+          <label ref="jr:itext('/pregnancy_outcome_ext/childs/child_gender:label')"/>
+          <item>
+            <label ref="jr:itext('/pregnancy_outcome_ext/childs/child_gender/M:label')"/>
+            <value>M</value>
+          </item>
+          <item>
+            <label ref="jr:itext('/pregnancy_outcome_ext/childs/child_gender/F:label')"/>
+            <value>F</value>
+          </item>
+        </select1>
+      </repeat>
+    </group>
+    <input ref="/pregnancy_outcome_ext/custom_quest1">
+      <label ref="jr:itext('/pregnancy_outcome_ext/custom_quest1:label')"/>
+    </input>
+    <input ref="/pregnancy_outcome_ext/custom_quest2">
+      <label ref="jr:itext('/pregnancy_outcome_ext/custom_quest2:label')"/>
+    </input>
+  </h:body>
+</h:html>

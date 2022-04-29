@@ -1,0 +1,256 @@
+<?xml version="1.0"?>
+<h:html xmlns="http://www.w3.org/2002/xforms" xmlns:ev="http://www.w3.org/2001/xml-events" xmlns:h="http://www.w3.org/1999/xhtml" xmlns:jr="http://openrosa.org/javarosa" xmlns:orx="http://openrosa.org/xforms" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <h:head>
+    <h:title>HDS Pregnancy Registration Extension</h:title>
+    <model>
+      <itext>
+        <translation default="true()" lang="default">
+          <text id="/pregnancy_registration_ext/custom_quest1:label">
+            <value>-</value>
+          </text>
+          <text id="/pregnancy_registration_ext/start:label">
+            <value>-</value>
+          </text>
+          <text id="/pregnancy_registration_ext/pregnancy_status/LOST_TRACK:label">
+            <value>Lost Track of Status</value>
+          </text>
+          <text id="/pregnancy_registration_ext/pregnancy_status/PREGNANT:label">
+            <value>Currently Pregnant</value>
+          </text>
+          <text id="/pregnancy_registration_ext/deviceid:label">
+            <value>-</value>
+          </text>
+          <text id="/pregnancy_registration_ext/pregnancy_status:label">
+            <value>-</value>
+          </text>
+          <text id="/pregnancy_registration_ext/pregnancy_status/DELIVERED:label">
+            <value>Already Delivered</value>
+          </text>
+          <text id="/pregnancy_registration_ext/mother_name:label">
+            <value>-</value>
+          </text>
+          <text id="/pregnancy_registration_ext/core_form_uuid:label">
+            <value>-</value>
+          </text>
+          <text id="/pregnancy_registration_ext/pregnancy_code:label">
+            <value>-</value>
+          </text>
+          <text id="/pregnancy_registration_ext/visit_code:label">
+            <value>-</value>
+          </text>
+          <text id="/pregnancy_registration_ext/custom_quest2:label">
+            <value>-</value>
+          </text>
+          <text id="/pregnancy_registration_ext/end:label">
+            <value>-</value>
+          </text>
+          <text id="/pregnancy_registration_ext/mother_code:label">
+            <value>-</value>
+          </text>
+        </translation>
+        <translation lang="Portuguese">
+          <text id="/pregnancy_registration_ext/custom_quest1:label">
+            <value>Custom Question 1</value>
+          </text>
+          <text id="/pregnancy_registration_ext/start:label">
+            <value>-</value>
+          </text>
+          <text id="/pregnancy_registration_ext/pregnancy_status:label">
+            <value>Estado da gravidez</value>
+          </text>
+          <text id="/pregnancy_registration_ext/visit_code:label">
+            <value>Código da Visita</value>
+          </text>
+          <text id="/pregnancy_registration_ext/deviceid:label">
+            <value>-</value>
+          </text>
+          <text id="/pregnancy_registration_ext/mother_code:label">
+            <value>Código da Mãe</value>
+          </text>
+          <text id="/pregnancy_registration_ext/pregnancy_code:label">
+            <value>Código do Registro de Gravidez</value>
+          </text>
+          <text id="/pregnancy_registration_ext/mother_name:label">
+            <value>Nome da Mãe</value>
+          </text>
+          <text id="/pregnancy_registration_ext/core_form_uuid:label">
+            <value>Id do Formulário Mãe</value>
+          </text>
+          <text id="/pregnancy_registration_ext/pregnancy_status/PREGNANT:label">
+            <value>-</value>
+          </text>
+          <text id="/pregnancy_registration_ext/pregnancy_status/LOST_TRACK:label">
+            <value>-</value>
+          </text>
+          <text id="/pregnancy_registration_ext/pregnancy_status/DELIVERED:label">
+            <value>-</value>
+          </text>
+          <text id="/pregnancy_registration_ext/custom_quest2:label">
+            <value>Custom Question 2</value>
+          </text>
+          <text id="/pregnancy_registration_ext/end:label">
+            <value>-</value>
+          </text>
+        </translation>
+        <translation lang="pt">
+          <text id="/pregnancy_registration_ext/custom_quest1:label">
+            <value>-</value>
+          </text>
+          <text id="/pregnancy_registration_ext/start:label">
+            <value>-</value>
+          </text>
+          <text id="/pregnancy_registration_ext/pregnancy_status/LOST_TRACK:label">
+            <value>Estado desconhecido/perdido</value>
+          </text>
+          <text id="/pregnancy_registration_ext/pregnancy_status/PREGNANT:label">
+            <value>Gravida</value>
+          </text>
+          <text id="/pregnancy_registration_ext/deviceid:label">
+            <value>-</value>
+          </text>
+          <text id="/pregnancy_registration_ext/pregnancy_status:label">
+            <value>-</value>
+          </text>
+          <text id="/pregnancy_registration_ext/pregnancy_status/DELIVERED:label">
+            <value>Ja deu parto</value>
+          </text>
+          <text id="/pregnancy_registration_ext/mother_name:label">
+            <value>-</value>
+          </text>
+          <text id="/pregnancy_registration_ext/core_form_uuid:label">
+            <value>-</value>
+          </text>
+          <text id="/pregnancy_registration_ext/pregnancy_code:label">
+            <value>-</value>
+          </text>
+          <text id="/pregnancy_registration_ext/visit_code:label">
+            <value>-</value>
+          </text>
+          <text id="/pregnancy_registration_ext/custom_quest2:label">
+            <value>-</value>
+          </text>
+          <text id="/pregnancy_registration_ext/end:label">
+            <value>-</value>
+          </text>
+          <text id="/pregnancy_registration_ext/mother_code:label">
+            <value>-</value>
+          </text>
+        </translation>
+        <translation lang="English">
+          <text id="/pregnancy_registration_ext/custom_quest1:label">
+            <value>Custom Question 1</value>
+          </text>
+          <text id="/pregnancy_registration_ext/start:label">
+            <value>-</value>
+          </text>
+          <text id="/pregnancy_registration_ext/pregnancy_status:label">
+            <value>Pregnancy Status</value>
+          </text>
+          <text id="/pregnancy_registration_ext/visit_code:label">
+            <value>Visit Code</value>
+          </text>
+          <text id="/pregnancy_registration_ext/deviceid:label">
+            <value>-</value>
+          </text>
+          <text id="/pregnancy_registration_ext/mother_code:label">
+            <value>Mother's Code</value>
+          </text>
+          <text id="/pregnancy_registration_ext/pregnancy_code:label">
+            <value>Pregnancy Registration Code</value>
+          </text>
+          <text id="/pregnancy_registration_ext/mother_name:label">
+            <value>Mother's Name</value>
+          </text>
+          <text id="/pregnancy_registration_ext/core_form_uuid:label">
+            <value>Core Form Id</value>
+          </text>
+          <text id="/pregnancy_registration_ext/pregnancy_status/PREGNANT:label">
+            <value>-</value>
+          </text>
+          <text id="/pregnancy_registration_ext/pregnancy_status/LOST_TRACK:label">
+            <value>-</value>
+          </text>
+          <text id="/pregnancy_registration_ext/pregnancy_status/DELIVERED:label">
+            <value>-</value>
+          </text>
+          <text id="/pregnancy_registration_ext/custom_quest2:label">
+            <value>Custom Question 2</value>
+          </text>
+          <text id="/pregnancy_registration_ext/end:label">
+            <value>-</value>
+          </text>
+        </translation>
+      </itext>
+      <instance>
+        <pregnancy_registration_ext id="pregnancy_registration_ext" version="1">
+          <start/>
+          <end/>
+          <deviceid/>
+          <core_form_uuid/>
+          <visit_code/>
+          <pregnancy_code/>
+          <mother_code/>
+          <mother_name/>
+          <pregnancy_status/>
+          <custom_quest1/>
+          <custom_quest2/>
+          <meta>
+            <instanceID/>
+            <instanceName/>
+          </meta>
+        </pregnancy_registration_ext>
+      </instance>
+      <bind jr:preload="timestamp" jr:preloadParams="start" nodeset="/pregnancy_registration_ext/start" required="true()" type="dateTime"/>
+      <bind jr:preload="timestamp" jr:preloadParams="end" nodeset="/pregnancy_registration_ext/end" required="true()" type="dateTime"/>
+      <bind jr:preload="property" jr:preloadParams="deviceid" nodeset="/pregnancy_registration_ext/deviceid" required="true()" type="string"/>
+      <bind nodeset="/pregnancy_registration_ext/core_form_uuid" readonly="true()" required="true()" type="string"/>
+      <bind nodeset="/pregnancy_registration_ext/visit_code" readonly="true()" required="true()" type="string"/>
+      <bind nodeset="/pregnancy_registration_ext/pregnancy_code" readonly="true()" required="true()" type="string"/>
+      <bind nodeset="/pregnancy_registration_ext/mother_code" readonly="true()" required="true()" type="string"/>
+      <bind nodeset="/pregnancy_registration_ext/mother_name" readonly="true()" required="true()" type="string"/>
+      <bind nodeset="/pregnancy_registration_ext/pregnancy_status" readonly="true()" required="true()" type="select1"/>
+      <bind nodeset="/pregnancy_registration_ext/custom_quest1" type="string"/>
+      <bind nodeset="/pregnancy_registration_ext/custom_quest2" type="string"/>
+      <bind calculate="concat('uuid:', uuid())" nodeset="/pregnancy_registration_ext/meta/instanceID" readonly="true()" type="string"/>
+      <bind calculate="concat(&quot;HDS_&quot;, /pregnancy_registration_ext/mother_code ,&quot;_&quot;,&quot;PregRegistration_Extension&quot;)" nodeset="/pregnancy_registration_ext/meta/instanceName" type="string"/>
+    </model>
+  </h:head>
+  <h:body>
+    <input ref="/pregnancy_registration_ext/core_form_uuid">
+      <label ref="jr:itext('/pregnancy_registration_ext/core_form_uuid:label')"/>
+    </input>
+    <input ref="/pregnancy_registration_ext/visit_code">
+      <label ref="jr:itext('/pregnancy_registration_ext/visit_code:label')"/>
+    </input>
+    <input ref="/pregnancy_registration_ext/pregnancy_code">
+      <label ref="jr:itext('/pregnancy_registration_ext/pregnancy_code:label')"/>
+    </input>
+    <input ref="/pregnancy_registration_ext/mother_code">
+      <label ref="jr:itext('/pregnancy_registration_ext/mother_code:label')"/>
+    </input>
+    <input ref="/pregnancy_registration_ext/mother_name">
+      <label ref="jr:itext('/pregnancy_registration_ext/mother_name:label')"/>
+    </input>
+    <select1 ref="/pregnancy_registration_ext/pregnancy_status">
+      <label ref="jr:itext('/pregnancy_registration_ext/pregnancy_status:label')"/>
+      <item>
+        <label ref="jr:itext('/pregnancy_registration_ext/pregnancy_status/PREGNANT:label')"/>
+        <value>PREGNANT</value>
+      </item>
+      <item>
+        <label ref="jr:itext('/pregnancy_registration_ext/pregnancy_status/DELIVERED:label')"/>
+        <value>DELIVERED</value>
+      </item>
+      <item>
+        <label ref="jr:itext('/pregnancy_registration_ext/pregnancy_status/LOST_TRACK:label')"/>
+        <value>LOST_TRACK</value>
+      </item>
+    </select1>
+    <input ref="/pregnancy_registration_ext/custom_quest1">
+      <label ref="jr:itext('/pregnancy_registration_ext/custom_quest1:label')"/>
+    </input>
+    <input ref="/pregnancy_registration_ext/custom_quest2">
+      <label ref="jr:itext('/pregnancy_registration_ext/custom_quest2:label')"/>
+    </input>
+  </h:body>
+</h:html>

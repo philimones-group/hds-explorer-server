@@ -1,0 +1,116 @@
+<?xml version="1.0"?>
+<h:html xmlns="http://www.w3.org/2002/xforms" xmlns:ev="http://www.w3.org/2001/xml-events" xmlns:h="http://www.w3.org/1999/xhtml" xmlns:jr="http://openrosa.org/javarosa" xmlns:orx="http://openrosa.org/xforms" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <h:head>
+    <h:title>HDS Visit Registration Extension</h:title>
+    <model>
+      <itext>
+        <translation lang="Portuguese">
+          <text id="/visit_ext/household_code:label">
+            <value>Código do Agregado</value>
+          </text>
+          <text id="/visit_ext/custom_quest1:label">
+            <value>Custom Question 1</value>
+          </text>
+          <text id="/visit_ext/start:label">
+            <value>-</value>
+          </text>
+          <text id="/visit_ext/end:label">
+            <value>-</value>
+          </text>
+          <text id="/visit_ext/round_number:label">
+            <value>Número da Ronda</value>
+          </text>
+          <text id="/visit_ext/deviceid:label">
+            <value>-</value>
+          </text>
+          <text id="/visit_ext/visit_code:label">
+            <value>Código da Visita</value>
+          </text>
+          <text id="/visit_ext/core_form_uuid:label">
+            <value>Id do Formulário Mãe</value>
+          </text>
+          <text id="/visit_ext/custom_quest2:label">
+            <value>Custom Question 2</value>
+          </text>
+        </translation>
+        <translation lang="English">
+          <text id="/visit_ext/household_code:label">
+            <value>Household Code</value>
+          </text>
+          <text id="/visit_ext/custom_quest1:label">
+            <value>Custom Question 1</value>
+          </text>
+          <text id="/visit_ext/start:label">
+            <value>-</value>
+          </text>
+          <text id="/visit_ext/end:label">
+            <value>-</value>
+          </text>
+          <text id="/visit_ext/round_number:label">
+            <value>Round Number</value>
+          </text>
+          <text id="/visit_ext/deviceid:label">
+            <value>-</value>
+          </text>
+          <text id="/visit_ext/visit_code:label">
+            <value>Visit Code</value>
+          </text>
+          <text id="/visit_ext/core_form_uuid:label">
+            <value>Core Form Id</value>
+          </text>
+          <text id="/visit_ext/custom_quest2:label">
+            <value>Custom Question 2</value>
+          </text>
+        </translation>
+      </itext>
+      <instance>
+        <visit_ext id="visit_ext" version="1">
+          <start/>
+          <end/>
+          <deviceid/>
+          <core_form_uuid/>
+          <visit_code/>
+          <household_code/>
+          <round_number/>
+          <custom_quest1/>
+          <custom_quest2/>
+          <meta>
+            <instanceID/>
+            <instanceName/>
+          </meta>
+        </visit_ext>
+      </instance>
+      <bind jr:preload="timestamp" jr:preloadParams="start" nodeset="/visit_ext/start" required="true()" type="dateTime"/>
+      <bind jr:preload="timestamp" jr:preloadParams="end" nodeset="/visit_ext/end" required="true()" type="dateTime"/>
+      <bind jr:preload="property" jr:preloadParams="deviceid" nodeset="/visit_ext/deviceid" required="true()" type="string"/>
+      <bind nodeset="/visit_ext/core_form_uuid" readonly="true()" required="true()" type="string"/>
+      <bind nodeset="/visit_ext/visit_code" readonly="true()" required="true()" type="string"/>
+      <bind nodeset="/visit_ext/household_code" readonly="true()" required="true()" type="string"/>
+      <bind nodeset="/visit_ext/round_number" readonly="true()" required="true()" type="int"/>
+      <bind nodeset="/visit_ext/custom_quest1" type="string"/>
+      <bind nodeset="/visit_ext/custom_quest2" type="string"/>
+      <bind calculate="concat('uuid:', uuid())" nodeset="/visit_ext/meta/instanceID" readonly="true()" type="string"/>
+      <bind calculate="concat(&quot;HDS_&quot;, /visit_ext/visit_code ,&quot;_&quot;,&quot;Visit_Extension&quot;)" nodeset="/visit_ext/meta/instanceName" type="string"/>
+    </model>
+  </h:head>
+  <h:body>
+    <input ref="/visit_ext/core_form_uuid">
+      <label ref="jr:itext('/visit_ext/core_form_uuid:label')"/>
+    </input>
+    <input ref="/visit_ext/visit_code">
+      <label ref="jr:itext('/visit_ext/visit_code:label')"/>
+    </input>
+    <input ref="/visit_ext/household_code">
+      <label ref="jr:itext('/visit_ext/household_code:label')"/>
+    </input>
+    <input ref="/visit_ext/round_number">
+      <label ref="jr:itext('/visit_ext/round_number:label')"/>
+    </input>
+    <input ref="/visit_ext/custom_quest1">
+      <label ref="jr:itext('/visit_ext/custom_quest1:label')"/>
+    </input>
+    <input ref="/visit_ext/custom_quest2">
+      <label ref="jr:itext('/visit_ext/custom_quest2:label')"/>
+    </input>
+  </h:body>
+</h:html>

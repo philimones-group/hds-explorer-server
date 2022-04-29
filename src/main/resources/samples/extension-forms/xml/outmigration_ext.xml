@@ -1,0 +1,223 @@
+<?xml version="1.0"?>
+<h:html xmlns="http://www.w3.org/2002/xforms" xmlns:ev="http://www.w3.org/2001/xml-events" xmlns:h="http://www.w3.org/1999/xhtml" xmlns:jr="http://openrosa.org/javarosa" xmlns:orx="http://openrosa.org/xforms" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <h:head>
+    <h:title>HDS Outmigration Registration Extension</h:title>
+    <model>
+      <itext>
+        <translation default="true()" lang="default">
+          <text id="/outmigration_ext/custom_quest1:label">
+            <value>-</value>
+          </text>
+          <text id="/outmigration_ext/member_name:label">
+            <value>-</value>
+          </text>
+          <text id="/outmigration_ext/deviceid:label">
+            <value>-</value>
+          </text>
+          <text id="/outmigration_ext/migration_type:label">
+            <value>-</value>
+          </text>
+          <text id="/outmigration_ext/custom_quest2:label">
+            <value>-</value>
+          </text>
+          <text id="/outmigration_ext/visit_code:label">
+            <value>-</value>
+          </text>
+          <text id="/outmigration_ext/migration_type/CHG:label">
+            <value>Internal OutMigration</value>
+          </text>
+          <text id="/outmigration_ext/core_form_uuid:label">
+            <value>-</value>
+          </text>
+          <text id="/outmigration_ext/end:label">
+            <value>-</value>
+          </text>
+          <text id="/outmigration_ext/start:label">
+            <value>-</value>
+          </text>
+          <text id="/outmigration_ext/migration_type/EXT:label">
+            <value>External Outmigration</value>
+          </text>
+          <text id="/outmigration_ext/member_code:label">
+            <value>-</value>
+          </text>
+        </translation>
+        <translation lang="Portuguese">
+          <text id="/outmigration_ext/custom_quest1:label">
+            <value>Custom Question 1</value>
+          </text>
+          <text id="/outmigration_ext/member_name:label">
+            <value>Nome do Membro</value>
+          </text>
+          <text id="/outmigration_ext/migration_type/EXT:label">
+            <value>-</value>
+          </text>
+          <text id="/outmigration_ext/custom_quest2:label">
+            <value>Custom Question 2</value>
+          </text>
+          <text id="/outmigration_ext/migration_type:label">
+            <value>Tipo de Imigração</value>
+          </text>
+          <text id="/outmigration_ext/visit_code:label">
+            <value>Código da Visita</value>
+          </text>
+          <text id="/outmigration_ext/migration_type/CHG:label">
+            <value>-</value>
+          </text>
+          <text id="/outmigration_ext/core_form_uuid:label">
+            <value>Id do Formulário Mãe</value>
+          </text>
+          <text id="/outmigration_ext/end:label">
+            <value>-</value>
+          </text>
+          <text id="/outmigration_ext/start:label">
+            <value>-</value>
+          </text>
+          <text id="/outmigration_ext/deviceid:label">
+            <value>-</value>
+          </text>
+          <text id="/outmigration_ext/member_code:label">
+            <value>Código do Membro</value>
+          </text>
+        </translation>
+        <translation lang="pt">
+          <text id="/outmigration_ext/custom_quest1:label">
+            <value>-</value>
+          </text>
+          <text id="/outmigration_ext/member_name:label">
+            <value>-</value>
+          </text>
+          <text id="/outmigration_ext/deviceid:label">
+            <value>-</value>
+          </text>
+          <text id="/outmigration_ext/migration_type:label">
+            <value>-</value>
+          </text>
+          <text id="/outmigration_ext/custom_quest2:label">
+            <value>-</value>
+          </text>
+          <text id="/outmigration_ext/visit_code:label">
+            <value>-</value>
+          </text>
+          <text id="/outmigration_ext/migration_type/CHG:label">
+            <value>Emigração Interna</value>
+          </text>
+          <text id="/outmigration_ext/core_form_uuid:label">
+            <value>-</value>
+          </text>
+          <text id="/outmigration_ext/end:label">
+            <value>-</value>
+          </text>
+          <text id="/outmigration_ext/start:label">
+            <value>-</value>
+          </text>
+          <text id="/outmigration_ext/migration_type/EXT:label">
+            <value>Emigração Externa</value>
+          </text>
+          <text id="/outmigration_ext/member_code:label">
+            <value>-</value>
+          </text>
+        </translation>
+        <translation lang="English">
+          <text id="/outmigration_ext/custom_quest1:label">
+            <value>Custom Question 1</value>
+          </text>
+          <text id="/outmigration_ext/member_name:label">
+            <value>Member Name</value>
+          </text>
+          <text id="/outmigration_ext/migration_type/EXT:label">
+            <value>-</value>
+          </text>
+          <text id="/outmigration_ext/custom_quest2:label">
+            <value>Custom Question 2</value>
+          </text>
+          <text id="/outmigration_ext/migration_type:label">
+            <value>Migration Type</value>
+          </text>
+          <text id="/outmigration_ext/visit_code:label">
+            <value>Visit Code</value>
+          </text>
+          <text id="/outmigration_ext/migration_type/CHG:label">
+            <value>-</value>
+          </text>
+          <text id="/outmigration_ext/core_form_uuid:label">
+            <value>Core Form Id</value>
+          </text>
+          <text id="/outmigration_ext/end:label">
+            <value>-</value>
+          </text>
+          <text id="/outmigration_ext/start:label">
+            <value>-</value>
+          </text>
+          <text id="/outmigration_ext/deviceid:label">
+            <value>-</value>
+          </text>
+          <text id="/outmigration_ext/member_code:label">
+            <value>Member Code</value>
+          </text>
+        </translation>
+      </itext>
+      <instance>
+        <outmigration_ext id="outmigration_ext" version="1">
+          <start/>
+          <end/>
+          <deviceid/>
+          <core_form_uuid/>
+          <visit_code/>
+          <member_code/>
+          <member_name/>
+          <migration_type/>
+          <custom_quest1/>
+          <custom_quest2/>
+          <meta>
+            <instanceID/>
+            <instanceName/>
+          </meta>
+        </outmigration_ext>
+      </instance>
+      <bind jr:preload="timestamp" jr:preloadParams="start" nodeset="/outmigration_ext/start" required="true()" type="dateTime"/>
+      <bind jr:preload="timestamp" jr:preloadParams="end" nodeset="/outmigration_ext/end" required="true()" type="dateTime"/>
+      <bind jr:preload="property" jr:preloadParams="deviceid" nodeset="/outmigration_ext/deviceid" required="true()" type="string"/>
+      <bind nodeset="/outmigration_ext/core_form_uuid" readonly="true()" required="true()" type="string"/>
+      <bind nodeset="/outmigration_ext/visit_code" readonly="true()" required="true()" type="string"/>
+      <bind nodeset="/outmigration_ext/member_code" readonly="true()" required="true()" type="string"/>
+      <bind nodeset="/outmigration_ext/member_name" readonly="true()" required="true()" type="string"/>
+      <bind nodeset="/outmigration_ext/migration_type" readonly="true()" required="true()" type="select1"/>
+      <bind nodeset="/outmigration_ext/custom_quest1" type="string"/>
+      <bind nodeset="/outmigration_ext/custom_quest2" type="string"/>
+      <bind calculate="concat('uuid:', uuid())" nodeset="/outmigration_ext/meta/instanceID" readonly="true()" type="string"/>
+      <bind calculate="concat(&quot;HDS_&quot;, /outmigration_ext/member_code ,&quot;_&quot;,&quot;Outmigration_Extension&quot;)" nodeset="/outmigration_ext/meta/instanceName" type="string"/>
+    </model>
+  </h:head>
+  <h:body>
+    <input ref="/outmigration_ext/core_form_uuid">
+      <label ref="jr:itext('/outmigration_ext/core_form_uuid:label')"/>
+    </input>
+    <input ref="/outmigration_ext/visit_code">
+      <label ref="jr:itext('/outmigration_ext/visit_code:label')"/>
+    </input>
+    <input ref="/outmigration_ext/member_code">
+      <label ref="jr:itext('/outmigration_ext/member_code:label')"/>
+    </input>
+    <input ref="/outmigration_ext/member_name">
+      <label ref="jr:itext('/outmigration_ext/member_name:label')"/>
+    </input>
+    <select1 ref="/outmigration_ext/migration_type">
+      <label ref="jr:itext('/outmigration_ext/migration_type:label')"/>
+      <item>
+        <label ref="jr:itext('/outmigration_ext/migration_type/EXT:label')"/>
+        <value>EXT</value>
+      </item>
+      <item>
+        <label ref="jr:itext('/outmigration_ext/migration_type/CHG:label')"/>
+        <value>CHG</value>
+      </item>
+    </select1>
+    <input ref="/outmigration_ext/custom_quest1">
+      <label ref="jr:itext('/outmigration_ext/custom_quest1:label')"/>
+    </input>
+    <input ref="/outmigration_ext/custom_quest2">
+      <label ref="jr:itext('/outmigration_ext/custom_quest2:label')"/>
+    </input>
+  </h:body>
+</h:html>
