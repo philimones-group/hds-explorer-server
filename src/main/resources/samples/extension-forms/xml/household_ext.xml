@@ -23,14 +23,11 @@
           <text id="/household_ext/deviceid:label">
             <value>-</value>
           </text>
-          <text id="/household_ext/household_name:label">
-            <value>Nome do Agregado</value>
-          </text>
-          <text id="/household_ext/visit_code:label">
-            <value>Código da Visita</value>
-          </text>
           <text id="/household_ext/custom_quest2:label">
             <value>Custom Question 2</value>
+          </text>
+          <text id="/household_ext/household_name:label">
+            <value>Nome do Agregado</value>
           </text>
           <text id="/household_ext/start:label">
             <value>-</value>
@@ -58,14 +55,11 @@
           <text id="/household_ext/deviceid:label">
             <value>-</value>
           </text>
-          <text id="/household_ext/household_name:label">
-            <value>Household Name</value>
-          </text>
-          <text id="/household_ext/visit_code:label">
-            <value>Visit Code</value>
-          </text>
           <text id="/household_ext/custom_quest2:label">
             <value>Custom Question 2</value>
+          </text>
+          <text id="/household_ext/household_name:label">
+            <value>Household Name</value>
           </text>
           <text id="/household_ext/start:label">
             <value>-</value>
@@ -81,7 +75,6 @@
           <end/>
           <deviceid/>
           <core_form_uuid/>
-          <visit_code/>
           <household_code/>
           <household_name/>
           <head_code/>
@@ -98,11 +91,10 @@
       <bind jr:preload="timestamp" jr:preloadParams="end" nodeset="/household_ext/end" required="true()" type="dateTime"/>
       <bind jr:preload="property" jr:preloadParams="deviceid" nodeset="/household_ext/deviceid" required="true()" type="string"/>
       <bind nodeset="/household_ext/core_form_uuid" readonly="true()" required="true()" type="string"/>
-      <bind nodeset="/household_ext/visit_code" readonly="true()" required="true()" type="string"/>
       <bind nodeset="/household_ext/household_code" readonly="true()" required="true()" type="string"/>
       <bind nodeset="/household_ext/household_name" readonly="true()" required="true()" type="string"/>
-      <bind nodeset="/household_ext/head_code" readonly="true()" required="true()" type="string"/>
-      <bind nodeset="/household_ext/head_name" readonly="true()" required="true()" type="string"/>
+      <bind nodeset="/household_ext/head_code" readonly="true()" type="string"/>
+      <bind nodeset="/household_ext/head_name" readonly="true()" type="string"/>
       <bind nodeset="/household_ext/custom_quest1" type="string"/>
       <bind nodeset="/household_ext/custom_quest2" type="string"/>
       <bind calculate="concat('uuid:', uuid())" nodeset="/household_ext/meta/instanceID" readonly="true()" type="string"/>
@@ -112,9 +104,6 @@
   <h:body>
     <input ref="/household_ext/core_form_uuid">
       <label ref="jr:itext('/household_ext/core_form_uuid:label')"/>
-    </input>
-    <input ref="/household_ext/visit_code">
-      <label ref="jr:itext('/household_ext/visit_code:label')"/>
     </input>
     <input ref="/household_ext/household_code">
       <label ref="jr:itext('/household_ext/household_code:label')"/>

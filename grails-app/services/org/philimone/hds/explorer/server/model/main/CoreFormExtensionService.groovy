@@ -60,7 +60,7 @@ class CoreFormExtensionService {
         def columnsMap = [:]
 
         columnsMap.put("core_form_id", CoreForm.HOUSEHOLD_FORM.code)
-        columnsMap.put("core_form_uuid", "#collectedId")
+        columnsMap.put("core_form_uuid", "#id")
         columnsMap.put("household_code", "#householdCode")
         columnsMap.put("household_name", "#householdName")
         columnsMap.put("visit_code", "#visitCode")
@@ -75,7 +75,7 @@ class CoreFormExtensionService {
         def columnsMap = [:]
 
         columnsMap.put("core_form_id", CoreForm.VISIT_FORM.code)
-        columnsMap.put("core_form_uuid", "#collectedId")
+        columnsMap.put("core_form_uuid", "#id")
         columnsMap.put("household_code", "#householdCode")
         columnsMap.put("visit_code", "#code")
         columnsMap.put("round_number", "#roundNumber")
@@ -88,7 +88,7 @@ class CoreFormExtensionService {
         def columnsMap = [:]
 
         columnsMap.put("core_form_id", CoreForm.MEMBER_ENU_FORM.code)
-        columnsMap.put("core_form_uuid", "#collectedId")
+        columnsMap.put("core_form_uuid", "#id")
         columnsMap.put("household_code", "#householdCode")
         columnsMap.put("visit_code", "#visitCode")
         columnsMap.put("member_code", "#code")
@@ -102,7 +102,7 @@ class CoreFormExtensionService {
         def columnsMap = [:]
 
         columnsMap.put("core_form_id", CoreForm.MARITAL_RELATIONSHIP_FORM.code)
-        columnsMap.put("core_form_uuid", "#collectedId")
+        columnsMap.put("core_form_uuid", "#id")
         columnsMap.put("visit_code", "#visitCode")
         columnsMap.put("member_a", "#memberA")
         columnsMap.put("member_b", "#memberB")
@@ -116,7 +116,7 @@ class CoreFormExtensionService {
         def columnsMap = [:]
 
         columnsMap.put("core_form_id", CoreForm.INMIGRATION_FORM.code)
-        columnsMap.put("core_form_uuid", "#collectedId")
+        columnsMap.put("core_form_uuid", "#id")
         columnsMap.put("visit_code", "#visitCode")
         columnsMap.put("member_code", "#memberCode")
         columnsMap.put("member_name", "#memberName")
@@ -131,7 +131,7 @@ class CoreFormExtensionService {
         def columnsMap = [:]
 
         columnsMap.put("core_form_id", CoreForm.OUTMIGRATION_FORM.code)
-        columnsMap.put("core_form_uuid", "#collectedId")
+        columnsMap.put("core_form_uuid", "#id")
         columnsMap.put("visit_code", "#visitCode")
         columnsMap.put("member_code", "#memberCode")
         columnsMap.put("member_name", "#memberName")
@@ -145,7 +145,7 @@ class CoreFormExtensionService {
         def columnsMap = [:]
 
         columnsMap.put("core_form_id", CoreForm.PREGNANCY_REGISTRATION_FORM.code)
-        columnsMap.put("core_form_uuid", "#collectedId")
+        columnsMap.put("core_form_uuid", "#id")
         columnsMap.put("visit_code", "#visitCode")
         columnsMap.put("mother_code", "#motherCode")
         columnsMap.put("mother_name", "#motherName")
@@ -160,7 +160,7 @@ class CoreFormExtensionService {
         def columnsMap = [:]
 
         columnsMap.put("core_form_id", CoreForm.PREGNANCY_OUTCOME_FORM.code)
-        columnsMap.put("core_form_uuid", "#collectedId")
+        columnsMap.put("core_form_uuid", "#id")
         columnsMap.put("visit_code", "#visitCode")
         columnsMap.put("mother_code", "#motherCode")
         columnsMap.put("mother_name", "#motherName")
@@ -181,7 +181,7 @@ class CoreFormExtensionService {
         def columnsMap = [:]
 
         columnsMap.put("core_form_id", CoreForm.DEATH_FORM.code)
-        columnsMap.put("core_form_uuid", "#collectedId")
+        columnsMap.put("core_form_uuid", "#id")
         columnsMap.put("visit_code", "#visitCode")
         columnsMap.put("member_code", "#memberCode")
         columnsMap.put("member_name", "#memberName")
@@ -194,7 +194,7 @@ class CoreFormExtensionService {
         def columnsMap = [:]
 
         columnsMap.put("core_form_id", CoreForm.CHANGE_HEAD_FORM.code)
-        columnsMap.put("core_form_uuid", "#collectedId")
+        columnsMap.put("core_form_uuid", "#id")
         columnsMap.put("household_code", "#householdCode")
         columnsMap.put("visit_code", "#visitCode")
         columnsMap.put("old_head_code", "#oldHeadCode")
@@ -211,7 +211,7 @@ class CoreFormExtensionService {
         def columnsMap = [:]
 
         columnsMap.put("core_form_id", CoreForm.INCOMPLETE_VISIT_FORM.code)
-        columnsMap.put("core_form_uuid", "#collectedId")
+        columnsMap.put("core_form_uuid", "#id")
         columnsMap.put("household_code", "#householdCode")
         columnsMap.put("visit_code", "#visitCode")
         columnsMap.put("member_code", "#memberCode")
