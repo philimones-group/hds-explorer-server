@@ -2,6 +2,7 @@ package org.philimone.hds.explorer.server.model.main
 
 import grails.gorm.transactions.Transactional
 import net.betainteractive.utilities.StringUtil
+import org.philimone.hds.explorer.server.model.enums.ModularDomainEntity
 
 @Transactional
 class ModuleService {
@@ -84,6 +85,84 @@ class ModuleService {
         }
 
         return getListModulesAsText(list)
+    }
+
+    ArrayList<String[]> getGroupModulesMappings() {
+        def groupModulesMappings = new ArrayList<String[]>()
+
+        def region = new String[4];
+        region[0] = ModularDomainEntity.REGION.name
+        region[1] = Region.count() + ""
+        region[2] = Region.countByModulesIsNotNull() + ""
+        region[3] = (Region.count() - Region.countByModulesIsNotNull()) + ""
+
+        def household = new String[4];
+        household[0] = ModularDomainEntity.HOUSEHOLD.name
+        household[1] = Household.count() + ""
+        household[2] = Household.countByModulesIsNotNull() + ""
+        household[3] = (Household.count() - Household.countByModulesIsNotNull()) + ""
+
+        def member = new String[4];
+        member[0] = ModularDomainEntity.MEMBER.name
+        member[1] = Member.count()-1 + ""
+        member[2] = Member.countByModulesIsNotNull() + ""
+        member[3] = (Member.count()-1 - Member.countByModulesIsNotNull()) + ""
+
+
+        groupModulesMappings.add(region)
+        groupModulesMappings.add(household)
+        groupModulesMappings.add(member)
+        //TOTAL records, records w modules, records wo modules
+
+        return groupModulesMappings
+    }
+
+    int[] getEntitiesCodesCounting(String filename) {
+        def counts = new int[3]
+
+        def list = getEntitiesCodesList(filename)
+
+        counts[0] = list.get(0).size()
+        counts[1] = list.get(1).size()
+        counts[2] = list.get(2).size()
+
+        return counts
+    }
+
+    List<List<String>> getEntitiesCodesList(String filename) {
+        def list = new ArrayList<List<String>>()
+
+        list.add(new ArrayList<String>()) //regions
+        list.add(new ArrayList<String>()) //households
+        list.add(new ArrayList<String>()) //members
+
+
+        File file = new File(filename)
+
+        if (file.exists() && file.isFile()){
+            file.eachLine { line ->
+                if (line != null && !line.trim().isEmpty()){
+                    def s = line.trim() //check if ID exits
+
+                    if (s.length()==3) { //region code = TXU
+                        list.get(0).add(s)
+                    }
+
+                    if (s.length()==9) { //household code = TXUPF1001
+                        list.get(1).add(s)
+                    }
+
+                    if (s.length()==12) { //member code = TXUPF1001001
+                        list.get(2).add(s)
+                    }
+
+
+
+                }
+            }
+        }
+
+        return list
     }
 
 

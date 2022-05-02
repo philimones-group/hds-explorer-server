@@ -1,6 +1,8 @@
 package org.philimone.hds.explorer.server.model.main
 
 import grails.validation.ValidationException
+import org.philimone.hds.explorer.io.SystemPath
+import org.philimone.hds.explorer.server.model.enums.ModularDomainEntity
 import org.philimone.hds.explorer.server.model.settings.generator.CodeGeneratorService
 
 import static org.springframework.http.HttpStatus.*
@@ -99,5 +101,91 @@ class ModuleController {
             }
             '*'{ render status: NOT_FOUND }
         }
+    }
+
+    def add = {
+        def max = 9
+
+        def entities = ModularDomainEntity.values()
+
+        [groupModulesMappings:  moduleService.getGroupModulesMappings(), entities: entities]
+    }
+
+    def uploadCodesFile = {
+
+        def file = request.getFile('fileUpload')
+        def fileName = file.originalFilename
+        def newFile = SystemPath.externalDocsPath + File.separator + fileName
+
+        println "test2 ${file}"
+        println "test3 ${file.originalFilename}"
+
+        file.transferTo(new File(newFile))
+
+        //read csv file and get the list of columns
+        def ccounts = moduleService.getEntitiesCodesCounting(newFile)
+        def selectedEntity = params.selectedEntity
+        def entities = ModularDomainEntity.values()
+        def selectedModules = params.selectedModules
+
+        render view: "add", model: [groupModulesMappings:  moduleService.getGroupModulesMappings(), modulesShortFilename: fileName, modulesFilename: newFile , selectedEntity: selectedEntity, entities: entities,
+                                    totalRegions: ccounts[0], totalHouseholds: ccounts[1], totalMembers: ccounts[2], selectedModules: selectedModules]
+    }
+
+    def saveModuleMappings = {
+        def filename = params["filename"]
+        def modules = Module.getAll(params.list("modules"))
+
+        println "file ${filename}, modules: ${modules}, ${params}"
+
+
+        def list = moduleService.getEntitiesCodesList(filename)
+        int countr = 0;
+        int counth = 0;
+        int countm = 0;
+
+        //regions
+        list.get(0).each { code ->
+            def entity = Region.findByCode(code)
+            if (entity != null) {
+                modules.each { module ->
+                    if (entity != null) entity.addToModules(module.code)
+                }
+
+                entity.save(flush: true)
+                countr += !entity.hasErrors() ? 1 : 0
+            }
+        }
+
+        //households
+        list.get(1).each { code ->
+
+            def entity = Household.findByCode(code)
+            if (entity != null) {
+                modules.each { module ->
+                    if (entity != null) entity.addToModules(module.code)
+                }
+
+                entity.save(flush: true)
+                counth += !entity.hasErrors() ? 1 : 0
+            }
+        }
+
+        //members
+        list.get(2).each { code ->
+            def entity = Member.findByCode(code)
+            if (entity != null) {
+                modules.each { module ->
+                    if (entity != null) entity.addToModules(module.code)
+                }
+
+                entity.save(flush: true)
+                countm += !entity.hasErrors() ? 1 : 0
+            }
+        }
+
+        flash.message = "Entity Modules Update: ${countr} regions, ${counth} households, ${countm} members updated!!"
+
+        redirect action: "add"
     }
 }
