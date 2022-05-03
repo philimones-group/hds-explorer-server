@@ -168,10 +168,10 @@ class CoreFormExtensionService {
         columnsMap.put("father_name", "#fatherName")
         columnsMap.put("pregnancy_code", "#code")
         //columnsMap.put("childs", "\$load:childs")
-        columnsMap.put("childs.child_outcome_type", "\$load:childs.outcomeType")
-        columnsMap.put("childs.child_code", "\$load:childs.childCode")
-        columnsMap.put("childs.child_name", "\$load:childs.childName")
-        columnsMap.put("childs.child_gender", "\$load:childs.childGender")
+        columnsMap.put("childs.child_outcome_type", "\$childs.outcomeType")
+        columnsMap.put("childs.child_code", "\$childs.childCode")
+        columnsMap.put("childs.child_name", "\$childs.childName")
+        columnsMap.put("childs.child_gender", "\$childs.childGender")
 
 
         return mapToString(columnsMap)
