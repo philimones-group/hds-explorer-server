@@ -4,53 +4,6 @@
     <h:title>HDS Inmigration Registration Extension</h:title>
     <model>
       <itext>
-        <translation default="true()" lang="default">
-          <text id="/inmigration_ext/visit_code:label">
-            <value>-</value>
-          </text>
-          <text id="/inmigration_ext/migration_type:label">
-            <value>-</value>
-          </text>
-          <text id="/inmigration_ext/core_form_uuid:label">
-            <value>-</value>
-          </text>
-          <text id="/inmigration_ext/member_name:label">
-            <value>-</value>
-          </text>
-          <text id="/inmigration_ext/start:label">
-            <value>-</value>
-          </text>
-          <text id="/inmigration_ext/migration_type/ENT:label">
-            <value>Internal InMigration</value>
-          </text>
-          <text id="/inmigration_ext/end:label">
-            <value>-</value>
-          </text>
-          <text id="/inmigration_ext/deviceid:label">
-            <value>-</value>
-          </text>
-          <text id="/inmigration_ext/ext_migration_type/REENTRY:label">
-            <value>Return to DSS</value>
-          </text>
-          <text id="/inmigration_ext/custom_quest1:label">
-            <value>-</value>
-          </text>
-          <text id="/inmigration_ext/migration_type/XEN:label">
-            <value>External InMigration</value>
-          </text>
-          <text id="/inmigration_ext/ext_migration_type/ENTRY:label">
-            <value>First Entry into the DSS</value>
-          </text>
-          <text id="/inmigration_ext/custom_quest2:label">
-            <value>-</value>
-          </text>
-          <text id="/inmigration_ext/ext_migration_type:label">
-            <value>-</value>
-          </text>
-          <text id="/inmigration_ext/member_code:label">
-            <value>-</value>
-          </text>
-        </translation>
         <translation lang="Portuguese">
           <text id="/inmigration_ext/migration_type:label">
             <value>Tipo de Imigração</value>
@@ -145,7 +98,7 @@
             <value>-</value>
           </text>
         </translation>
-        <translation lang="English">
+        <translation default="true()" lang="English">
           <text id="/inmigration_ext/migration_type:label">
             <value>Migration Type</value>
           </text>
@@ -153,16 +106,16 @@
             <value>Core Form Id</value>
           </text>
           <text id="/inmigration_ext/ext_migration_type/REENTRY:label">
-            <value>-</value>
+            <value>Return to DSS</value>
           </text>
           <text id="/inmigration_ext/member_name:label">
             <value>Member Name</value>
           </text>
           <text id="/inmigration_ext/migration_type/XEN:label">
-            <value>-</value>
+            <value>External InMigration</value>
           </text>
           <text id="/inmigration_ext/migration_type/ENT:label">
-            <value>-</value>
+            <value>Internal InMigration</value>
           </text>
           <text id="/inmigration_ext/end:label">
             <value>-</value>
@@ -180,7 +133,7 @@
             <value>-</value>
           </text>
           <text id="/inmigration_ext/ext_migration_type/ENTRY:label">
-            <value>-</value>
+            <value>First Entry into the DSS</value>
           </text>
           <text id="/inmigration_ext/custom_quest2:label">
             <value>Custom Question 2</value>

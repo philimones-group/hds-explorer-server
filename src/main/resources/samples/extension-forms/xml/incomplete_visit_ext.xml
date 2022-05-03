@@ -36,7 +36,7 @@
             <value>Código do Membro</value>
           </text>
         </translation>
-        <translation lang="English">
+        <translation default="true()" lang="English">
           <text id="/incomplete_visit_ext/visit_code:label">
             <value>Visit Code</value>
           </text>

@@ -42,7 +42,7 @@
             <value>Código do Agregado</value>
           </text>
         </translation>
-        <translation lang="English">
+        <translation default="true()" lang="English">
           <text id="/change_head_ext/custom_quest2:label">
             <value>Custom Question 2</value>
           </text>

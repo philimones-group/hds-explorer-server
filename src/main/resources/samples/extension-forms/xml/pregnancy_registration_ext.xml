@@ -4,50 +4,6 @@
     <h:title>HDS Pregnancy Registration Extension</h:title>
     <model>
       <itext>
-        <translation default="true()" lang="default">
-          <text id="/pregnancy_registration_ext/custom_quest1:label">
-            <value>-</value>
-          </text>
-          <text id="/pregnancy_registration_ext/start:label">
-            <value>-</value>
-          </text>
-          <text id="/pregnancy_registration_ext/pregnancy_status/LOST_TRACK:label">
-            <value>Lost Track of Status</value>
-          </text>
-          <text id="/pregnancy_registration_ext/pregnancy_status/PREGNANT:label">
-            <value>Currently Pregnant</value>
-          </text>
-          <text id="/pregnancy_registration_ext/deviceid:label">
-            <value>-</value>
-          </text>
-          <text id="/pregnancy_registration_ext/pregnancy_status:label">
-            <value>-</value>
-          </text>
-          <text id="/pregnancy_registration_ext/pregnancy_status/DELIVERED:label">
-            <value>Already Delivered</value>
-          </text>
-          <text id="/pregnancy_registration_ext/mother_name:label">
-            <value>-</value>
-          </text>
-          <text id="/pregnancy_registration_ext/core_form_uuid:label">
-            <value>-</value>
-          </text>
-          <text id="/pregnancy_registration_ext/pregnancy_code:label">
-            <value>-</value>
-          </text>
-          <text id="/pregnancy_registration_ext/visit_code:label">
-            <value>-</value>
-          </text>
-          <text id="/pregnancy_registration_ext/custom_quest2:label">
-            <value>-</value>
-          </text>
-          <text id="/pregnancy_registration_ext/end:label">
-            <value>-</value>
-          </text>
-          <text id="/pregnancy_registration_ext/mother_code:label">
-            <value>-</value>
-          </text>
-        </translation>
         <translation lang="Portuguese">
           <text id="/pregnancy_registration_ext/custom_quest1:label">
             <value>Custom Question 1</value>
@@ -102,13 +58,16 @@
           <text id="/pregnancy_registration_ext/pregnancy_status/LOST_TRACK:label">
             <value>Estado desconhecido/perdido</value>
           </text>
-          <text id="/pregnancy_registration_ext/pregnancy_status/PREGNANT:label">
-            <value>Gravida</value>
-          </text>
           <text id="/pregnancy_registration_ext/deviceid:label">
             <value>-</value>
           </text>
-          <text id="/pregnancy_registration_ext/pregnancy_status:label">
+          <text id="/pregnancy_registration_ext/pregnancy_status/PREGNANT:label">
+            <value>Gravida</value>
+          </text>
+          <text id="/pregnancy_registration_ext/pregnancy_code:label">
+            <value>-</value>
+          </text>
+          <text id="/pregnancy_registration_ext/mother_code:label">
             <value>-</value>
           </text>
           <text id="/pregnancy_registration_ext/pregnancy_status/DELIVERED:label">
@@ -120,9 +79,6 @@
           <text id="/pregnancy_registration_ext/core_form_uuid:label">
             <value>-</value>
           </text>
-          <text id="/pregnancy_registration_ext/pregnancy_code:label">
-            <value>-</value>
-          </text>
           <text id="/pregnancy_registration_ext/visit_code:label">
             <value>-</value>
           </text>
@@ -132,11 +88,11 @@
           <text id="/pregnancy_registration_ext/end:label">
             <value>-</value>
           </text>
-          <text id="/pregnancy_registration_ext/mother_code:label">
+          <text id="/pregnancy_registration_ext/pregnancy_status:label">
             <value>-</value>
           </text>
         </translation>
-        <translation lang="English">
+        <translation default="true()" lang="English">
           <text id="/pregnancy_registration_ext/custom_quest1:label">
             <value>Custom Question 1</value>
           </text>
@@ -165,13 +121,13 @@
             <value>Core Form Id</value>
           </text>
           <text id="/pregnancy_registration_ext/pregnancy_status/PREGNANT:label">
-            <value>-</value>
+            <value>Currently Pregnant</value>
           </text>
           <text id="/pregnancy_registration_ext/pregnancy_status/LOST_TRACK:label">
-            <value>-</value>
+            <value>Lost Track of Status</value>
           </text>
           <text id="/pregnancy_registration_ext/pregnancy_status/DELIVERED:label">
-            <value>-</value>
+            <value>Already Delivered</value>
           </text>
           <text id="/pregnancy_registration_ext/custom_quest2:label">
             <value>Custom Question 2</value>

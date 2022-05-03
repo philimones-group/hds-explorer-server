@@ -33,7 +33,7 @@
             <value>Código da Visita</value>
           </text>
         </translation>
-        <translation lang="English">
+        <translation default="true()" lang="English">
           <text id="/death_ext/member_name:label">
             <value>Member Name</value>
           </text>

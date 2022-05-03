@@ -39,7 +39,7 @@
             <value>Custom Question 2</value>
           </text>
         </translation>
-        <translation lang="English">
+        <translation default="true()" lang="English">
           <text id="/marital_relationship_ext/end:label">
             <value>-</value>
           </text>

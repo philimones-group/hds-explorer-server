@@ -4,44 +4,6 @@
     <h:title>HDS Outmigration Registration Extension</h:title>
     <model>
       <itext>
-        <translation default="true()" lang="default">
-          <text id="/outmigration_ext/custom_quest1:label">
-            <value>-</value>
-          </text>
-          <text id="/outmigration_ext/member_name:label">
-            <value>-</value>
-          </text>
-          <text id="/outmigration_ext/deviceid:label">
-            <value>-</value>
-          </text>
-          <text id="/outmigration_ext/migration_type:label">
-            <value>-</value>
-          </text>
-          <text id="/outmigration_ext/custom_quest2:label">
-            <value>-</value>
-          </text>
-          <text id="/outmigration_ext/visit_code:label">
-            <value>-</value>
-          </text>
-          <text id="/outmigration_ext/migration_type/CHG:label">
-            <value>Internal OutMigration</value>
-          </text>
-          <text id="/outmigration_ext/core_form_uuid:label">
-            <value>-</value>
-          </text>
-          <text id="/outmigration_ext/end:label">
-            <value>-</value>
-          </text>
-          <text id="/outmigration_ext/start:label">
-            <value>-</value>
-          </text>
-          <text id="/outmigration_ext/migration_type/EXT:label">
-            <value>External Outmigration</value>
-          </text>
-          <text id="/outmigration_ext/member_code:label">
-            <value>-</value>
-          </text>
-        </translation>
         <translation lang="Portuguese">
           <text id="/outmigration_ext/custom_quest1:label">
             <value>Custom Question 1</value>
@@ -90,10 +52,10 @@
           <text id="/outmigration_ext/deviceid:label">
             <value>-</value>
           </text>
-          <text id="/outmigration_ext/migration_type:label">
+          <text id="/outmigration_ext/custom_quest2:label">
             <value>-</value>
           </text>
-          <text id="/outmigration_ext/custom_quest2:label">
+          <text id="/outmigration_ext/migration_type:label">
             <value>-</value>
           </text>
           <text id="/outmigration_ext/visit_code:label">
@@ -118,7 +80,7 @@
             <value>-</value>
           </text>
         </translation>
-        <translation lang="English">
+        <translation default="true()" lang="English">
           <text id="/outmigration_ext/custom_quest1:label">
             <value>Custom Question 1</value>
           </text>
@@ -126,7 +88,7 @@
             <value>Member Name</value>
           </text>
           <text id="/outmigration_ext/migration_type/EXT:label">
-            <value>-</value>
+            <value>External Outmigration</value>
           </text>
           <text id="/outmigration_ext/custom_quest2:label">
             <value>Custom Question 2</value>
@@ -138,7 +100,7 @@
             <value>Visit Code</value>
           </text>
           <text id="/outmigration_ext/migration_type/CHG:label">
-            <value>-</value>
+            <value>Internal OutMigration</value>
           </text>
           <text id="/outmigration_ext/core_form_uuid:label">
             <value>Core Form Id</value>

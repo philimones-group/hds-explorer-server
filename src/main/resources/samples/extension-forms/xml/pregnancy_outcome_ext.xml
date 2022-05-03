@@ -4,77 +4,6 @@
     <h:title>HDS Pregnancy Outcome Extension</h:title>
     <model>
       <itext>
-        <translation default="true()" lang="default">
-          <text id="/pregnancy_outcome_ext/childs/child_code:label">
-            <value>-</value>
-          </text>
-          <text id="/pregnancy_outcome_ext/pregnancy_code:label">
-            <value>-</value>
-          </text>
-          <text id="/pregnancy_outcome_ext/childs/child_name:label">
-            <value>-</value>
-          </text>
-          <text id="/pregnancy_outcome_ext/custom_quest1:label">
-            <value>-</value>
-          </text>
-          <text id="/pregnancy_outcome_ext/core_form_uuid:label">
-            <value>-</value>
-          </text>
-          <text id="/pregnancy_outcome_ext/childs/child_gender:label">
-            <value>-</value>
-          </text>
-          <text id="/pregnancy_outcome_ext/visit_code:label">
-            <value>-</value>
-          </text>
-          <text id="/pregnancy_outcome_ext/childs/child_outcome_type/SBR:label">
-            <value>Stillbirth</value>
-          </text>
-          <text id="/pregnancy_outcome_ext/end:label">
-            <value>-</value>
-          </text>
-          <text id="/pregnancy_outcome_ext/childs/child_outcome_type/MIS:label">
-            <value>Miscarriage</value>
-          </text>
-          <text id="/pregnancy_outcome_ext/mother_name:label">
-            <value>-</value>
-          </text>
-          <text id="/pregnancy_outcome_ext/childs:label">
-            <value>-</value>
-          </text>
-          <text id="/pregnancy_outcome_ext/deviceid:label">
-            <value>-</value>
-          </text>
-          <text id="/pregnancy_outcome_ext/custom_quest2:label">
-            <value>-</value>
-          </text>
-          <text id="/pregnancy_outcome_ext/father_name:label">
-            <value>-</value>
-          </text>
-          <text id="/pregnancy_outcome_ext/childs/child_outcome_type/ABT:label">
-            <value>Abortion</value>
-          </text>
-          <text id="/pregnancy_outcome_ext/childs/child_outcome_type:label">
-            <value>-</value>
-          </text>
-          <text id="/pregnancy_outcome_ext/start:label">
-            <value>-</value>
-          </text>
-          <text id="/pregnancy_outcome_ext/childs/child_gender/F:label">
-            <value>Female</value>
-          </text>
-          <text id="/pregnancy_outcome_ext/childs/child_gender/M:label">
-            <value>Male</value>
-          </text>
-          <text id="/pregnancy_outcome_ext/mother_code:label">
-            <value>-</value>
-          </text>
-          <text id="/pregnancy_outcome_ext/childs/child_outcome_type/LBR:label">
-            <value>Livebirth</value>
-          </text>
-          <text id="/pregnancy_outcome_ext/father_code:label">
-            <value>-</value>
-          </text>
-        </translation>
         <translation lang="Portuguese">
           <text id="/pregnancy_outcome_ext/childs/child_code:label">
             <value>Código da criança</value>
@@ -217,7 +146,7 @@
             <value>-</value>
           </text>
         </translation>
-        <translation lang="English">
+        <translation default="true()" lang="English">
           <text id="/pregnancy_outcome_ext/childs/child_code:label">
             <value>Child's Code</value>
           </text>
@@ -240,13 +169,13 @@
             <value>Visit Code</value>
           </text>
           <text id="/pregnancy_outcome_ext/childs/child_outcome_type/SBR:label">
-            <value>-</value>
+            <value>Stillbirth</value>
           </text>
           <text id="/pregnancy_outcome_ext/end:label">
             <value>-</value>
           </text>
           <text id="/pregnancy_outcome_ext/childs/child_outcome_type/MIS:label">
-            <value>-</value>
+            <value>Miscarriage</value>
           </text>
           <text id="/pregnancy_outcome_ext/mother_name:label">
             <value>Mother's Name</value>
@@ -261,10 +190,10 @@
             <value>Custom Question 2</value>
           </text>
           <text id="/pregnancy_outcome_ext/childs/child_gender/M:label">
-            <value>-</value>
+            <value>Male</value>
           </text>
           <text id="/pregnancy_outcome_ext/childs/child_outcome_type/ABT:label">
-            <value>-</value>
+            <value>Abortion</value>
           </text>
           <text id="/pregnancy_outcome_ext/childs/child_outcome_type:label">
             <value>Outcome Type</value>
@@ -273,7 +202,7 @@
             <value>-</value>
           </text>
           <text id="/pregnancy_outcome_ext/childs/child_gender/F:label">
-            <value>-</value>
+            <value>Female</value>
           </text>
           <text id="/pregnancy_outcome_ext/father_name:label">
             <value>Father's Name</value>
@@ -282,7 +211,7 @@
             <value>Mother's Code</value>
           </text>
           <text id="/pregnancy_outcome_ext/childs/child_outcome_type/LBR:label">
-            <value>-</value>
+            <value>Livebirth</value>
           </text>
           <text id="/pregnancy_outcome_ext/father_code:label">
             <value>Father's Code</value>

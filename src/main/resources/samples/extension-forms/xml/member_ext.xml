@@ -36,7 +36,7 @@
             <value>Id do Formulário Mãe</value>
           </text>
         </translation>
-        <translation lang="English">
+        <translation default="true()" lang="English">
           <text id="/member_ext/member_name:label">
             <value>Member Name</value>
           </text>

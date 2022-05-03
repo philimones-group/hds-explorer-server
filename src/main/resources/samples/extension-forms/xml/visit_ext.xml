@@ -33,7 +33,7 @@
             <value>Custom Question 2</value>
           </text>
         </translation>
-        <translation lang="English">
+        <translation default="true()" lang="English">
           <text id="/visit_ext/household_code:label">
             <value>Household Code</value>
           </text>
