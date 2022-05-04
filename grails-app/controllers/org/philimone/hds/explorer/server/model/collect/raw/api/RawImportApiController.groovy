@@ -546,49 +546,6 @@ class RawImportApiController {
         render text: "OK", status: HttpStatus.OK
     }
 
-    def pregnancychilds = {
-
-        if (request.format != "xml") {
-            def message = message(code: 'validation.field.raw.xml.invalid.error')
-            render text: message, status:  HttpStatus.BAD_REQUEST // Only XML expected
-            return
-        }
-
-        RawParseResult<RawPregnancyChild> parseResult = null
-
-        try {
-            def node = request.getXML() as NodeChild
-            parseResult = rawImportApiService.parsePregnancyChild(node)
-        } catch(Exception ex) {
-            def msg = errorMessageService.getRawMessagesText(ex)
-            render text: msg, status: HttpStatus.BAD_REQUEST
-            return
-        }
-        if (parseResult.hasErrors()) {
-            render text: parseResult.getErrorsText(), status: HttpStatus.BAD_REQUEST
-            return
-        }
-
-        def rawInstance = parseResult.domainInstance
-        def resultSave = rawInstance.save(flush: true)
-
-        if (rawInstance.hasErrors()){
-            render text: errorMessageService.getRawMessagesText(rawInstance), status: HttpStatus.BAD_REQUEST
-            return
-        }
-
-        if (resultSave.postExecution){ //execute creation
-            def result = rawExecutionService.createPregnancyChild(resultSave)
-
-            if (result.status== RawExecutionResult.Status.ERROR){
-                render text: errorMessageService.getRawMessagesText(result.errorMessages), status: HttpStatus.BAD_REQUEST
-                return
-            }
-        }
-
-        render text: "OK", status: HttpStatus.OK
-    }
-
     def deaths = {
 
         if (request.format != "xml") {

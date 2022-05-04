@@ -10,6 +10,8 @@ import org.philimone.hds.explorer.server.model.enums.MaritalStartStatus
 import org.philimone.hds.explorer.server.model.main.collect.raw.RawMessage
 import org.philimone.hds.explorer.server.model.main.collect.raw.RawParseResult
 
+import java.time.LocalDateTime
+
 @Transactional
 class RawImportApiService {
 
@@ -41,6 +43,8 @@ class RawImportApiService {
             if (params.uploadedDate==null) {
                 errors << errorMessageService.getRawMessage("validation.field.raw.parsing.localdatetime.error", [xmlNode?.uploadedDate.text(), "uploadedDate"])
             }
+        } else {
+            params.uploadedDate = LocalDateTime.now()
         }
 
         return new RawParseResult<RawRegion>(new RawRegion(params), errors)
@@ -75,6 +79,8 @@ class RawImportApiService {
             if (params.uploadedDate==null) {
                 errors << errorMessageService.getRawMessage("validation.field.raw.parsing.localdatetime.error", [xmlNode?.uploadedDate.text(), "uploadedDate"])
             }
+        } else {
+            params.uploadedDate = LocalDateTime.now()
         }
 
         println("new-id = "+params.id)
@@ -122,6 +128,8 @@ class RawImportApiService {
             if (params.uploadedDate==null) {
                 errors << errorMessageService.getRawMessage("validation.field.raw.parsing.localdatetime.error", [xmlNode?.uploadedDate.text(), "uploadedDate"])
             }
+        } else {
+            params.uploadedDate = LocalDateTime.now()
         }
 
         def rawMember = new RawMember(params)
@@ -166,6 +174,8 @@ class RawImportApiService {
             if (params.uploadedDate==null) {
                 errors << errorMessageService.getRawMessage("validation.field.raw.parsing.localdatetime.error", [xmlNode?.uploadedDate.text(), "uploadedDate"])
             }
+        } else {
+            params.uploadedDate = LocalDateTime.now()
         }
 
         def rawVisit = new RawVisit(params)
@@ -218,6 +228,8 @@ class RawImportApiService {
             if (params.uploadedDate==null) {
                 errors << errorMessageService.getRawMessage("validation.field.raw.parsing.localdatetime.error", [xmlNode?.uploadedDate.text(), "uploadedDate"])
             }
+        } else {
+            params.uploadedDate = LocalDateTime.now()
         }
 
         def rawMemberEnu = new RawMemberEnu(params)
@@ -270,6 +282,8 @@ class RawImportApiService {
             if (params.uploadedDate==null) {
                 errors << errorMessageService.getRawMessage("validation.field.raw.parsing.localdatetime.error", [xmlNode?.uploadedDate.text(), "uploadedDate"])
             }
+        } else {
+            params.uploadedDate = LocalDateTime.now()
         }
 
         def rawExternalInMigration = new RawExternalInMigration(params)
@@ -314,6 +328,8 @@ class RawImportApiService {
             if (params.uploadedDate==null) {
                 errors << errorMessageService.getRawMessage("validation.field.raw.parsing.localdatetime.error", [xmlNode?.uploadedDate.text(), "uploadedDate"])
             }
+        } else {
+            params.uploadedDate = LocalDateTime.now()
         }
 
         def rawInMigration = new RawInMigration(params)
@@ -358,6 +374,8 @@ class RawImportApiService {
             if (params.uploadedDate==null) {
                 errors << errorMessageService.getRawMessage("validation.field.raw.parsing.localdatetime.error", [xmlNode?.uploadedDate.text(), "uploadedDate"])
             }
+        } else {
+            params.uploadedDate = LocalDateTime.now()
         }
 
         def rawOutMigration = new RawOutMigration(params)
@@ -384,7 +402,8 @@ class RawImportApiService {
             params.startDate = StringUtil.toLocalDate(xmlNode.startDate.text())
 
             if (params.startDate==null) {
-                errors << errorMessageService.getRawMessage("validation.field.raw.parsing.localdate.error", [xmlNode?.startDate.text(), "startDate"])
+                //its not always required, sometimes are null
+                //errors << errorMessageService.getRawMessage("validation.field.raw.parsing.localdate.error", [xmlNode?.startDate.text(), "startDate"])
             }
         }
 
@@ -392,7 +411,8 @@ class RawImportApiService {
             params.endDate = StringUtil.toLocalDate(xmlNode.endDate.text())
 
             if (params.endDate==null) {
-                errors << errorMessageService.getRawMessage("validation.field.raw.parsing.localdate.error", [xmlNode?.endDate.text(), "endDate"])
+                //its not always required, sometimes are null
+                //errors << errorMessageService.getRawMessage("validation.field.raw.parsing.localdate.error", [xmlNode?.endDate.text(), "endDate"])
             }
         }
 
@@ -458,6 +478,24 @@ class RawImportApiService {
             }
         }
 
+        if (xmlNode.collectedDate.size() > 0) {
+            params.collectedDate = StringUtil.toLocalDateTimePrecise(xmlNode.collectedDate.text())
+
+            if (params.collectedDate==null) {
+                errors << errorMessageService.getRawMessage("validation.field.raw.parsing.localdatetime.error", [xmlNode?.collectedDate.text(), "collectedDate"])
+            }
+        }
+
+        if (xmlNode.uploadedDate.size() > 0) {
+            params.uploadedDate = StringUtil.toLocalDateTimePrecise(xmlNode.uploadedDate.text())
+
+            if (params.uploadedDate==null) {
+                errors << errorMessageService.getRawMessage("validation.field.raw.parsing.localdatetime.error", [xmlNode?.uploadedDate.text(), "uploadedDate"])
+            }
+        } else {
+            params.uploadedDate = LocalDateTime.now()
+        }
+
         def rawMaritalRelationship = new RawMaritalRelationship(params)
         rawMaritalRelationship.id = params.id
 
@@ -482,7 +520,7 @@ class RawImportApiService {
             params.recordedDate = StringUtil.toLocalDate(xmlNode.recordedDate.text())
 
             if (params.recordedDate==null) {
-                errors << errorMessageService.getRawMessage("validation.field.raw.parsing.localdate.error", [xmlNode?.recordedDate.text(), "recordedDate"])
+                //errors << errorMessageService.getRawMessage("validation.field.raw.parsing.localdate.error", [xmlNode?.recordedDate.text(), "recordedDate"])
             }
         }
 
@@ -490,7 +528,8 @@ class RawImportApiService {
             params.eddDate = StringUtil.toLocalDate(xmlNode.eddDate.text())
 
             if (params.eddDate==null) {
-                errors << errorMessageService.getRawMessage("validation.field.raw.parsing.localdate.error", [xmlNode?.eddDate.text(), "eddDate"])
+                //its not always required, sometimes are null
+                //errors << errorMessageService.getRawMessage("validation.field.raw.parsing.localdate.error", [xmlNode?.eddDate.text(), "eddDate"])
             }
         }
 
@@ -498,7 +537,8 @@ class RawImportApiService {
             params.lmpDate = StringUtil.toLocalDate(xmlNode.lmpDate.text())
 
             if (params.lmpDate==null) {
-                errors << errorMessageService.getRawMessage("validation.field.raw.parsing.localdate.error", [xmlNode?.lmpDate.text(), "lmpDate"])
+                //its not always required, sometimes are null
+                //errors << errorMessageService.getRawMessage("validation.field.raw.parsing.localdate.error", [xmlNode?.lmpDate.text(), "lmpDate"])
             }
         }
 
@@ -506,7 +546,8 @@ class RawImportApiService {
             params.expectedDeliveryDate = StringUtil.toLocalDate(xmlNode.expectedDeliveryDate.text())
 
             if (params.expectedDeliveryDate==null) {
-                errors << errorMessageService.getRawMessage("validation.field.raw.parsing.localdate.error", [xmlNode?.expectedDeliveryDate.text(), "expectedDeliveryDate"])
+                //its not always required, sometimes are null
+                //errors << errorMessageService.getRawMessage("validation.field.raw.parsing.localdate.error", [xmlNode?.expectedDeliveryDate.text(), "expectedDeliveryDate"])
             }
         }
 
@@ -524,6 +565,8 @@ class RawImportApiService {
             if (params.uploadedDate==null) {
                 errors << errorMessageService.getRawMessage("validation.field.raw.parsing.localdatetime.error", [xmlNode?.uploadedDate.text(), "uploadedDate"])
             }
+        } else {
+            params.uploadedDate = LocalDateTime.now()
         }
 
         def rawPregnancyRegistration = new RawPregnancyRegistration(params)
@@ -593,6 +636,8 @@ class RawImportApiService {
             if (params.uploadedDate==null) {
                 errors << errorMessageService.getRawMessage("validation.field.raw.parsing.localdatetime.error", [xmlNode?.uploadedDate.text(), "uploadedDate"])
             }
+        } else {
+            params.uploadedDate = LocalDateTime.now()
         }
 
         def rawInstance = new RawPregnancyOutcome(params)
@@ -609,23 +654,6 @@ class RawImportApiService {
 
 
         return new RawParseResult<RawPregnancyOutcome>(rawInstance, errors)
-
-    }
-
-    RawParseResult<RawPregnancyChild> parsePregnancyChild(NodeChild xmlNode) {
-
-        def errors = new ArrayList<RawMessage>()
-        def params = xmlNode.childNodes().collectEntries{[it.name(), it.text()]}
-        def rootnode = xmlNode?.name()
-
-        if (!rootnode.equalsIgnoreCase("RawPregnancyChild")) {
-            errors << errorMessageService.getRawMessage("validation.field.raw.parsing.rootnode.invalid.error", [rootnode])
-            return new RawParseResult<RawPregnancyChild>(null, errors)
-        }
-
-        /* converting non-primitive types must be parsed manually */
-
-        return new RawParseResult<RawPregnancyChild>(new RawPregnancyChild(params), errors)
 
     }
 
@@ -687,6 +715,8 @@ class RawImportApiService {
             if (params.uploadedDate==null) {
                 errors << errorMessageService.getRawMessage("validation.field.raw.parsing.localdatetime.error", [xmlNode?.uploadedDate.text(), "uploadedDate"])
             }
+        } else {
+            params.uploadedDate = LocalDateTime.now()
         }
 
         def rawDeath = new RawDeath(params)
@@ -764,6 +794,8 @@ class RawImportApiService {
             if (params.uploadedDate==null) {
                 errors << errorMessageService.getRawMessage("validation.field.raw.parsing.localdatetime.error", [xmlNode?.uploadedDate.text(), "uploadedDate"])
             }
+        } else {
+            params.uploadedDate = LocalDateTime.now()
         }
 
         def rawInstance = new RawChangeHead(params)
@@ -809,6 +841,8 @@ class RawImportApiService {
             if (params.uploadedDate==null) {
                 errors << errorMessageService.getRawMessage("validation.field.raw.parsing.localdatetime.error", [xmlNode?.uploadedDate.text(), "uploadedDate"])
             }
+        } else {
+            params.uploadedDate = LocalDateTime.now()
         }
 
         def rawIncompleteVisit = new RawIncompleteVisit(params)

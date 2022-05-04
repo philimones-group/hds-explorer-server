@@ -55,7 +55,7 @@ class Visit extends CollectableEntity {
         hasInterpreter nullable: true
         interpreterName blank: true, nullable: true
 
-        nonVisitedMembers blank: true, nullable: true l
+        nonVisitedMembers blank: true, nullable: true
 
         gpsAccuracy nullable: true
         gpsAltitude nullable: true

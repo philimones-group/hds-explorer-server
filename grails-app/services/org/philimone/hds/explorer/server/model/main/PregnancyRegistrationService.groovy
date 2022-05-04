@@ -108,6 +108,9 @@ class PregnancyRegistrationService {
 
         def isBlankCollectedBy = StringUtil.isBlank(pregnancyRegistration.collectedBy)
 
+        def status = PregnancyStatus.getFrom(pregnancyRegistration.status)
+
+        def isPregnant = status!=null && status==PregnancyStatus.PREGNANT;
 
         def mother = memberService.getMember(pregnancyRegistration.motherCode)
         def visit = visitService.getVisit(pregnancyRegistration.visitCode)
@@ -123,62 +126,61 @@ class PregnancyRegistrationService {
         def ignoreBlankLmpKnown = true
         def ignoreBlankLmpDate = true
 
+        //C1. Check Nullable Fields (visitCode)
+        if (isBlankVisitCode){
+            errors << errorMessageService.getRawMessage(RawEntity.PREGNANCY_REGISTRATION, "validation.field.blank", ["visitCode"], ["visitCode"])
+        }
         //C1. Check Blank Fields (code)
         if (isBlankCode){
             errors << errorMessageService.getRawMessage(RawEntity.PREGNANCY_REGISTRATION, "validation.field.blank", ["code"], ["code"])
+        }
+        //C1.1 Check Code Regex Pattern
+        if (!isBlankCode && !codeGeneratorService.isPregnancyCodeValid(pregnancyRegistration.code)) {
+            errors << errorMessageService.getRawMessage(RawEntity.PREGNANCY_REGISTRATION, "validation.field.pattern.no.matches", ["code", "TXUPF1001001-01"], ["code"])
         }
         //C1. Check Blank Fields (motherCode)
         if (isBlankMotherCode){
             errors << errorMessageService.getRawMessage(RawEntity.PREGNANCY_REGISTRATION, "validation.field.blank", ["motherCode"], ["motherCode"])
         }
-        //C1. Check Blank Fields (recordedDate)
-        if (isBlankRecordedDate){
-            errors << errorMessageService.getRawMessage(RawEntity.PREGNANCY_REGISTRATION, "validation.field.blank", ["recordedDate"], ["recordedDate"])
-        }
-        //C1. Check Blank Fields (pregMonths)
-        if (isBlankPregMonths){
-            errors << errorMessageService.getRawMessage(RawEntity.PREGNANCY_REGISTRATION, "validation.field.blank", ["pregMonths"], ["pregMonths"])
-        }
-        //C1. Check Blank Fields (eddKnown)
-        if (isBlankEddKnown && !ignoreBlankEddKnown){
-            errors << errorMessageService.getRawMessage(RawEntity.PREGNANCY_REGISTRATION, "validation.field.blank", ["eddKnown"], ["eddKnown"])
-        }
-        //C1. Check Blank Fields (hasPrenatalRecord)
-        if (isBlankHasPrenatalRecord && !ignoreBlankHasPrenatalRecord){
-            errors << errorMessageService.getRawMessage(RawEntity.PREGNANCY_REGISTRATION, "validation.field.blank", ["hasPrenatalRecord"], ["hasPrenatalRecord"])
-        }
-        //C1. Check Blank Fields (eddDate)
-        if (isBlankEddDate && !ignoreBlankEddDate){
-            errors << errorMessageService.getRawMessage(RawEntity.PREGNANCY_REGISTRATION, "validation.field.blank", ["eddDate"], ["eddDate"])
-        }
-        //C1. Check Blank Fields (eddType)
-        if (isBlankEddType && !ignoreBlankEddType){
-            errors << errorMessageService.getRawMessage(RawEntity.PREGNANCY_REGISTRATION, "validation.field.blank", ["eddType"], ["eddType"])
-        }
-        //C1. Check Nullable Fields (lmpKnown)
-        if (isBlankLmpKnown && !ignoreBlankLmpKnown){
-            errors << errorMessageService.getRawMessage(RawEntity.PREGNANCY_REGISTRATION, "validation.field.blank", ["lmpKnown"], ["lmpKnown"])
-        }
-        //C1. Check Nullable Fields (lmpDate)
-        if (isBlankLmpDate && !ignoreBlankLmpDate){
-            errors << errorMessageService.getRawMessage(RawEntity.PREGNANCY_REGISTRATION, "validation.field.blank", ["lmpDate"], ["lmpDate"])
-        }
-        //C1. Check Nullable Fields (expectedDeliveryDate)
-        if (isBlankExpectedDeliveryDate){
-            errors << errorMessageService.getRawMessage(RawEntity.PREGNANCY_REGISTRATION, "validation.field.blank", ["expectedDeliveryDate"], ["expectedDeliveryDate"])
-        }
         //C1. Check Nullable Fields (status)
         if (isBlankStatus){
             errors << errorMessageService.getRawMessage(RawEntity.PREGNANCY_REGISTRATION, "validation.field.blank", ["status"], ["status"])
         }
-        //C1. Check Nullable Fields (visitCode)
-        if (isBlankVisitCode){
-            errors << errorMessageService.getRawMessage(RawEntity.PREGNANCY_REGISTRATION, "validation.field.blank", ["visitCode"], ["visitCode"])
+        //C1. Check Blank Fields (recordedDate)
+        if (isBlankRecordedDate){
+            errors << errorMessageService.getRawMessage(RawEntity.PREGNANCY_REGISTRATION, "validation.field.blank", ["recordedDate"], ["recordedDate"])
         }
-
-        //C1.1 Check Code Regex Pattern
-        if (!isBlankCode && !codeGeneratorService.isPregnancyCodeValid(pregnancyRegistration.code)) {
-            errors << errorMessageService.getRawMessage(RawEntity.PREGNANCY_REGISTRATION, "validation.field.pattern.no.matches", ["code", "TXUPF1001001-01"], ["code"])
+        //C1. Check Blank Fields (eddKnown)
+        if (isPregnant && isBlankEddKnown && !ignoreBlankEddKnown){
+            errors << errorMessageService.getRawMessage(RawEntity.PREGNANCY_REGISTRATION, "validation.field.blank", ["eddKnown"], ["eddKnown"])
+        }
+        //C1. Check Blank Fields (hasPrenatalRecord)
+        if (isPregnant && isBlankHasPrenatalRecord && !ignoreBlankHasPrenatalRecord){
+            errors << errorMessageService.getRawMessage(RawEntity.PREGNANCY_REGISTRATION, "validation.field.blank", ["hasPrenatalRecord"], ["hasPrenatalRecord"])
+        }
+        //C1. Check Blank Fields (eddDate)
+        if (isPregnant && isBlankEddDate && !ignoreBlankEddDate){
+            errors << errorMessageService.getRawMessage(RawEntity.PREGNANCY_REGISTRATION, "validation.field.blank", ["eddDate"], ["eddDate"])
+        }
+        //C1. Check Blank Fields (eddType)
+        if (isPregnant && isBlankEddType && !ignoreBlankEddType){
+            errors << errorMessageService.getRawMessage(RawEntity.PREGNANCY_REGISTRATION, "validation.field.blank", ["eddType"], ["eddType"])
+        }
+        //C1. Check Blank Fields (pregMonths)
+        if (isPregnant && isBlankPregMonths){
+            errors << errorMessageService.getRawMessage(RawEntity.PREGNANCY_REGISTRATION, "validation.field.blank", ["pregMonths"], ["pregMonths"])
+        }
+        //C1. Check Nullable Fields (lmpKnown)
+        if (isPregnant && isBlankLmpKnown && !ignoreBlankLmpKnown){
+            errors << errorMessageService.getRawMessage(RawEntity.PREGNANCY_REGISTRATION, "validation.field.blank", ["lmpKnown"], ["lmpKnown"])
+        }
+        //C1. Check Nullable Fields (lmpDate)
+        if (isPregnant && isBlankLmpDate && !ignoreBlankLmpDate){
+            errors << errorMessageService.getRawMessage(RawEntity.PREGNANCY_REGISTRATION, "validation.field.blank", ["lmpDate"], ["lmpDate"])
+        }
+        //C1. Check Nullable Fields (expectedDeliveryDate)
+        if (isPregnant && isBlankExpectedDeliveryDate){
+            errors << errorMessageService.getRawMessage(RawEntity.PREGNANCY_REGISTRATION, "validation.field.blank", ["expectedDeliveryDate"], ["expectedDeliveryDate"])
         }
 
         //C2. Check Mother reference existence
@@ -196,7 +198,7 @@ class PregnancyRegistrationService {
             errors << errorMessageService.getRawMessage(RawEntity.PREGNANCY_REGISTRATION, "validation.field.date.not.greater.today", ["recordedDate", StringUtil.format(pregnancyRegistration.recordedDate)], ["recordedDate"])
         }
         //C3. Check Date is greater than today (lmpDate)
-        if (!isBlankLmpDate && !ignoreBlankLmpDate && pregnancyRegistration.lmpDate > LocalDate.now()){
+        if (isPregnant && !isBlankLmpDate && !ignoreBlankLmpDate && pregnancyRegistration.lmpDate > LocalDate.now()){
             errors << errorMessageService.getRawMessage(RawEntity.PREGNANCY_REGISTRATION, "validation.field.date.not.greater.today", ["lmpDate", StringUtil.format(pregnancyRegistration.lmpDate)], ["lmpDate"])
         }
 
@@ -205,16 +207,16 @@ class PregnancyRegistrationService {
             errors << errorMessageService.getRawMessage(RawEntity.PREGNANCY_REGISTRATION, "validation.field.dob.not.greater.date", ["recordedDate", StringUtil.format(mother.dob)], ["dob"])
         }
         //C4. Check Dates is older than Member Date of Birth (eddDate)
-        if (!isBlankEddDate && !ignoreBlankEddDate && motherExists && pregnancyRegistration.eddDate < mother.dob){
+        if (isPregnant && !isBlankEddDate && !ignoreBlankEddDate && motherExists && pregnancyRegistration.eddDate < mother.dob){
             errors << errorMessageService.getRawMessage(RawEntity.PREGNANCY_REGISTRATION, "validation.field.dob.not.greater.date", ["eddDate", StringUtil.format(mother.dob)], ["dob"])
         }
         //C4. Check Dates is older than Member Date of Birth (lmpDate)
-        if (!isBlankLmpDate && !ignoreBlankLmpDate && motherExists && pregnancyRegistration.lmpDate < mother.dob){
+        if (isPregnant && !isBlankLmpDate && !ignoreBlankLmpDate && motherExists && pregnancyRegistration.lmpDate < mother.dob){
             errors << errorMessageService.getRawMessage(RawEntity.PREGNANCY_REGISTRATION, "validation.field.dob.not.greater.date", ["lmpDate", StringUtil.format(mother.dob)], ["dob"])
         }
 
         //C5. Validate Enum Options (edd_type)
-        if (!isBlankEddType && !ignoreBlankEddType && EstimatedDateOfDeliveryType.getFrom(pregnancyRegistration.eddType)==null){
+        if (isPregnant && !isBlankEddType && !ignoreBlankEddType && EstimatedDateOfDeliveryType.getFrom(pregnancyRegistration.eddType)==null){
             errors << errorMessageService.getRawMessage(RawEntity.PREGNANCY_REGISTRATION, "validation.field.enum.choices.error", [pregnancyRegistration.eddType, "eddType"], ["eddType"])
         }
         //C5. Validate Enum Options (pregnancyStatus)
