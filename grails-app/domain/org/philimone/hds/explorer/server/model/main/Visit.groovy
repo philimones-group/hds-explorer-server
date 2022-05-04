@@ -27,6 +27,8 @@ class Visit extends CollectableEntity {
     Boolean hasInterpreter
     String interpreterName
 
+    String nonVisitedMembers
+
     Double gpsAccuracy
     Double gpsAltitude
     Double gpsLatitude
@@ -52,6 +54,8 @@ class Visit extends CollectableEntity {
 
         hasInterpreter nullable: true
         interpreterName blank: true, nullable: true
+
+        nonVisitedMembers blank: true, nullable: true l
 
         gpsAccuracy nullable: true
         gpsAltitude nullable: true
@@ -82,6 +86,8 @@ class Visit extends CollectableEntity {
 
         hasInterpreter column: "has_interpreter"
         interpreterName column: "interpreter_name"
+
+        nonVisitedMembers column: "non_visited_members"
 
         gpsAccuracy column: "gps_accuracy"
         gpsAltitude column: "gps_altitude"

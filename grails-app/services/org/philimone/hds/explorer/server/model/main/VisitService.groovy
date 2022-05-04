@@ -215,6 +215,8 @@ class VisitService {
         visit.hasInterpreter = rv.hasInterpreter
         visit.interpreterName = rv.interpreterName
 
+        visit.nonVisitedMembers = rv.nonVisitedMembers
+
         visit.gpsAccuracy = StringUtil.getDouble(rv.gpsAcc)
         visit.gpsAltitude = StringUtil.getDouble(rv.gpsAlt)
         visit.gpsLatitude = StringUtil.getDouble(rv.gpsLat)

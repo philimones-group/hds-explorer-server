@@ -19,6 +19,9 @@ class RawVisit {
     String respondentCode
     Boolean hasInterpreter
     String interpreterName
+
+    String nonVisitedMembers
+
     String gpsLat;
     String gpsLon;
     String gpsAlt;
@@ -47,6 +50,9 @@ class RawVisit {
         respondentCode blank: true, nullable: true
         hasInterpreter nullable: true
         interpreterName blank: true, nullable: true
+
+        nonVisitedMembers blank: true, nullable: true
+
         gpsAcc nullable: true
         gpsAlt nullable: true
         gpsLat nullable: true
@@ -77,6 +83,9 @@ class RawVisit {
         respondentCode column: "respondent_code"
         hasInterpreter column: "has_interpreter"
         interpreterName column: "interpreter_name"
+
+        nonVisitedMembers column: "non_visited_members"
+
         gpsAcc column: "gps_accuracy"
         gpsAlt column: "gps_altitude"
         gpsLat column: "gps_latitude"
