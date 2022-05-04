@@ -445,6 +445,7 @@ class RawImportApiService {
         //Converting relationshipType to startStatus/endStatus
         if (xmlNode.relationshipType.size()>0){
             def type = xmlNode.relationshipType.text()
+
             startStatus = MaritalStartStatus.getFrom(type)
             endStatus = MaritalEndStatus.getFrom(type)
 
