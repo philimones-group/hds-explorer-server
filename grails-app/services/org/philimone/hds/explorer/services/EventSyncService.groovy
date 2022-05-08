@@ -31,9 +31,30 @@ class EventSyncService {
         int errors = 0
         def logStatusValue = LogStatus.FINISHED
 
+        //create log report file
+        String reportFileId = null;
+
+        LogReport.withTransaction {
+            LogReport logReport = LogReport.findByReportId(logReportId)
+            LogReportFile reportFile = new LogReportFile(creationDate: LocalDateTime.now(), fileName: log.logFileName, logReport: logReport)
+
+            reportFile.keyTimestamp = logReport.keyTimestamp
+            reportFile.start = start
+            reportFile.creationDate = LocalDateTime.now()
+
+            logReport.addToLogFiles(reportFile)
+            logReport = logReport.save(flush:true)
+
+            reportFile = LogReportFile.findByKeyTimestamp(logReport.keyTimestamp)
+            reportFileId = reportFile.id
+
+            println(reportFileId)
+
+        }
+
         try {
 
-            rawBatchExecutionService.compileAndExecuteEvents()
+            rawBatchExecutionService.compileAndExecuteEvents(reportFileId)
 
         }catch (Exception ex){
             ex.printStackTrace()
@@ -46,18 +67,17 @@ class EventSyncService {
 
         LogReport.withTransaction {
             LogReport logReport = LogReport.findByReportId(logReportId)
-            LogReportFile reportFile = new LogReportFile(creationDate: LocalDateTime.now(), fileName: log.logFileName, logReport: logReport)
-            reportFile.keyTimestamp = logReport.keyTimestamp
-            reportFile.start = start
+            LogReportFile reportFile = LogReportFile.findById(reportFileId)
+
             reportFile.end = LocalDateTime.now()
-            reportFile.creationDate = LocalDateTime.now()
             reportFile.processedCount = processed
             reportFile.errorsCount = errors
+            reportFile.save(flush:true)
 
             logReport.end = LocalDateTime.now()
             logReport.status = logStatusValue
-            logReport.addToLogFiles(reportFile)
-            logReport.save()
+            logReport.save(flush:true)
+
             //println("errors: ${logReport.errors}")
         }
 
@@ -118,9 +138,27 @@ class EventSyncService {
         int errors = 0
         def logStatusValue = LogStatus.FINISHED
 
+        //create log report file
+        String reportFileId = null;
+
+        LogReport.withTransaction {
+            LogReport logReport = LogReport.findByReportId(logReportId)
+            LogReportFile reportFile = new LogReportFile(creationDate: LocalDateTime.now(), fileName: log.logFileName, logReport: logReport)
+
+            reportFile.keyTimestamp = logReport.keyTimestamp
+            reportFile.start = start
+            reportFile.creationDate = LocalDateTime.now()
+
+            logReport.addToLogFiles(reportFile)
+            logReport.save(flush:true)
+
+            reportFile = LogReportFile.findByKeyTimestamp(logReport.keyTimestamp)
+            reportFileId = reportFile.id
+        }
+
         try {
 
-            rawBatchExecutionService.executeEvents()
+            rawBatchExecutionService.executeEvents(reportFileId)
 
         }catch (Exception ex){
             ex.printStackTrace()
@@ -133,18 +171,17 @@ class EventSyncService {
 
         LogReport.withTransaction {
             LogReport logReport = LogReport.findByReportId(logReportId)
-            LogReportFile reportFile = new LogReportFile(creationDate: LocalDateTime.now(), fileName: log.logFileName, logReport: logReport)
-            reportFile.keyTimestamp = logReport.keyTimestamp
-            reportFile.start = start
+            LogReportFile reportFile = LogReportFile.findById(reportFileId)
+
             reportFile.end = LocalDateTime.now()
-            reportFile.creationDate = LocalDateTime.now()
             reportFile.processedCount = processed
             reportFile.errorsCount = errors
+            reportFile.save(flush:true)
 
             logReport.end = LocalDateTime.now()
             logReport.status = logStatusValue
-            logReport.addToLogFiles(reportFile)
-            logReport.save()
+            logReport.save(flush:true)
+
             //println("errors: ${logReport.errors}")
         }
 

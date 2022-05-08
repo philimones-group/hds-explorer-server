@@ -47,11 +47,14 @@ class MemberEnumerationService {
     }
 
     List<RawMessage> deleteResidency(Residency residency) {
-
+println "member code=${residency.memberCode}, r.id=${residency.id}"
         def errors = new ArrayList<RawMessage>()
 
         try {
-            Residency.executeUpdate("delete r from Residency r where r.id=?", [residency.id])
+            residency.member = null;
+            residency.household = null;
+            residency.save()
+            Residency.executeUpdate("delete from Residency r where r.id=?", [residency.id])
         } catch(Exception ex) {
             errors << errorMessageService.getRawMessage(RawEntity.RESIDENCY, "validation.general.database.residency.error", [ ex.getMessage() ], [])
             ex.printStackTrace()

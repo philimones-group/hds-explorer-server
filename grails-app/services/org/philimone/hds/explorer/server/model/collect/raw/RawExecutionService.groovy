@@ -2,6 +2,7 @@ package org.philimone.hds.explorer.server.model.collect.raw
 
 import grails.gorm.transactions.Transactional
 import org.philimone.hds.explorer.server.model.enums.ProcessedStatus
+import org.philimone.hds.explorer.server.model.logs.LogReportFile
 import org.philimone.hds.explorer.server.model.main.Death
 import org.philimone.hds.explorer.server.model.main.HeadRelationship
 import org.philimone.hds.explorer.server.model.main.Household
@@ -38,13 +39,15 @@ class RawExecutionService {
 
     //Receive a RawModel, execute it and flag errors
 
-    RawExecutionResult<Region> createRegion(RawRegion rawDomainInstance){
+    RawExecutionResult<Region> createRegion(RawRegion rawDomainInstance, String logReportFileId){
 
         def result = regionService.createRegion(rawDomainInstance)
 
         if (result.status == RawExecutionResult.Status.ERROR){
             //create errorLog
-            def errorLog = new RawErrorLog(uuid: rawDomainInstance.id, entity: result.entity, code: rawDomainInstance.regionCode)
+            def errorLog = new RawErrorLog(uuid: rawDomainInstance.id, entity: result.entity, columnName: "regionCode", code: rawDomainInstance.regionCode)
+            errorLog.uuid = rawDomainInstance.id
+            errorLog.logReportFile = LogReportFile.findById(logReportFileId)
             errorLog.setMessages(result.errorMessages)
             errorLog.save()
         }
@@ -57,13 +60,15 @@ class RawExecutionService {
 
     }
     
-    RawExecutionResult<Household> createHousehold(RawHousehold rawDomainInstance){
+    RawExecutionResult<Household> createHousehold(RawHousehold rawDomainInstance, String logReportFileId){
 
         def result = householdService.createHousehold(rawDomainInstance)
 
         if (result.status == RawExecutionResult.Status.ERROR){
             //create errorLog
-            def errorLog = new RawErrorLog(uuid: rawDomainInstance.id, entity: result.entity, code: rawDomainInstance.householdCode)
+            def errorLog = new RawErrorLog(uuid: rawDomainInstance.id, entity: result.entity, columnName: "householdCode", code: rawDomainInstance.householdCode)
+            errorLog.uuid = rawDomainInstance.id
+            errorLog.logReportFile = LogReportFile.findById(logReportFileId)
             errorLog.setMessages(result.errorMessages)
             errorLog.save()
         }
@@ -76,13 +81,15 @@ class RawExecutionService {
 
     }
 
-    RawExecutionResult<Member> createMemberEnu(RawMemberEnu rawDomainInstance){
+    RawExecutionResult<Member> createMemberEnu(RawMemberEnu rawDomainInstance, String logReportFileId){
 
         def result = memberEnumerationService.createMemberEnumeration(rawDomainInstance)
 
         if (result.status == RawExecutionResult.Status.ERROR){
             //create errorLog
-            def errorLog = new RawErrorLog(uuid: rawDomainInstance.id, entity: result.entity, code: rawDomainInstance.code)
+            def errorLog = new RawErrorLog(uuid: rawDomainInstance.id, entity: result.entity, columnName: "code", code: rawDomainInstance.code)
+            errorLog.uuid = rawDomainInstance.id
+            errorLog.logReportFile = LogReportFile.findById(logReportFileId)
             errorLog.setMessages(result.errorMessages)
             errorLog.save()
         }
@@ -95,13 +102,15 @@ class RawExecutionService {
 
     }
 
-    RawExecutionResult<InMigration> createExternalInMigration(RawExternalInMigration rawDomainInstance){
+    RawExecutionResult<InMigration> createExternalInMigration(RawExternalInMigration rawDomainInstance, String logReportFileId){
 
         def result = externalInMigrationService.createExternalInMigration(rawDomainInstance)
 
         if (result.status == RawExecutionResult.Status.ERROR){
             //create errorLog
-            def errorLog = new RawErrorLog(uuid: rawDomainInstance.id, entity: result.entity, code: rawDomainInstance.memberCode)
+            def errorLog = new RawErrorLog(uuid: rawDomainInstance.id, entity: result.entity, columnName: "memberCode", code: rawDomainInstance.memberCode)
+            errorLog.uuid = rawDomainInstance.id
+            errorLog.logReportFile = LogReportFile.findById(logReportFileId)
             errorLog.setMessages(result.errorMessages)
             errorLog.save()
         }
@@ -114,13 +123,15 @@ class RawExecutionService {
 
     }
 
-    RawExecutionResult<PregnancyRegistration> createPregnancyRegistration(RawPregnancyRegistration rawDomainInstance){
+    RawExecutionResult<PregnancyRegistration> createPregnancyRegistration(RawPregnancyRegistration rawDomainInstance, String logReportFileId){
 
         def result = pregnancyRegistrationService.createPregnancyRegistration(rawDomainInstance)
 
         if (result.status == RawExecutionResult.Status.ERROR){
             //create errorLog
-            def errorLog = new RawErrorLog(uuid: rawDomainInstance.id, entity: result.entity, code: rawDomainInstance.code)
+            def errorLog = new RawErrorLog(uuid: rawDomainInstance.id, entity: result.entity, columnName: "code", code: rawDomainInstance.code)
+            errorLog.uuid = rawDomainInstance.id
+            errorLog.logReportFile = LogReportFile.findById(logReportFileId)
             errorLog.setMessages(result.errorMessages)
             errorLog.save()
         }
@@ -133,7 +144,7 @@ class RawExecutionService {
 
     }
 
-    RawExecutionResult<PregnancyOutcome> createPregnancyOutcome(RawPregnancyOutcome rawDomainInstance){
+    RawExecutionResult<PregnancyOutcome> createPregnancyOutcome(RawPregnancyOutcome rawDomainInstance, String logReportFileId){
 
         def pregnancyChilds = RawPregnancyChild.findAllByOutcome(rawDomainInstance) //get all childs
 
@@ -141,7 +152,9 @@ class RawExecutionService {
 
         if (result.status == RawExecutionResult.Status.ERROR){
             //create errorLog
-            def errorLog = new RawErrorLog(uuid: rawDomainInstance.id, entity: result.entity, code: rawDomainInstance.code)
+            def errorLog = new RawErrorLog(uuid: rawDomainInstance.id, entity: result.entity, columnName: "code", code: rawDomainInstance.code)
+            errorLog.uuid = rawDomainInstance.id
+            errorLog.logReportFile = LogReportFile.findById(logReportFileId)
             errorLog.setMessages(result.errorMessages)
             errorLog.save()
         }
@@ -154,13 +167,15 @@ class RawExecutionService {
 
     }
 
-    RawExecutionResult<MaritalRelationship> createMaritalRelationship(RawMaritalRelationship rawDomainInstance){
+    RawExecutionResult<MaritalRelationship> createMaritalRelationship(RawMaritalRelationship rawDomainInstance, String logReportFileId){
 
         def result = maritalRelationshipService.createMaritalRelationship(rawDomainInstance)
 
         if (result.status == RawExecutionResult.Status.ERROR){
             //create errorLog
-            def errorLog = new RawErrorLog(uuid: rawDomainInstance.id, entity: result.entity, code: "")
+            def errorLog = new RawErrorLog(uuid: rawDomainInstance.id, entity: result.entity, columnName: "memberA", code: rawDomainInstance.memberA)
+            errorLog.uuid = rawDomainInstance.id
+            errorLog.logReportFile = LogReportFile.findById(logReportFileId)
             errorLog.setMessages(result.errorMessages)
             errorLog.save()
         }
@@ -173,13 +188,15 @@ class RawExecutionService {
 
     }
 
-    RawExecutionResult<InMigration> createInMigration(RawInMigration rawDomainInstance){
+    RawExecutionResult<InMigration> createInMigration(RawInMigration rawDomainInstance, String logReportFileId){
 
         def result = inMigrationService.createInMigration(rawDomainInstance)
 
         if (result.status == RawExecutionResult.Status.ERROR){
             //create errorLog
-            def errorLog = new RawErrorLog(uuid: rawDomainInstance.id, entity: result.entity, code: rawDomainInstance.memberCode)
+            def errorLog = new RawErrorLog(uuid: rawDomainInstance.id, entity: result.entity, columnName: "memberCode", code: rawDomainInstance.memberCode)
+            errorLog.uuid = rawDomainInstance.id
+            errorLog.logReportFile = LogReportFile.findById(logReportFileId)
             errorLog.setMessages(result.errorMessages)
             errorLog.save()
         }
@@ -192,13 +209,15 @@ class RawExecutionService {
 
     }
 
-    RawExecutionResult<OutMigration> createOutMigration(RawOutMigration rawDomainInstance){
+    RawExecutionResult<OutMigration> createOutMigration(RawOutMigration rawDomainInstance, String logReportFileId){
 
         def result = outMigrationService.createOutMigration(rawDomainInstance)
 
         if (result.status == RawExecutionResult.Status.ERROR){
             //create errorLog
-            def errorLog = new RawErrorLog(uuid: rawDomainInstance.id, entity: result.entity, code: rawDomainInstance.memberCode)
+            def errorLog = new RawErrorLog(uuid: rawDomainInstance.id, entity: result.entity, columnName: "memberCode", code: rawDomainInstance.memberCode)
+            errorLog.uuid = rawDomainInstance.id
+            errorLog.logReportFile = LogReportFile.findById(logReportFileId)
             errorLog.setMessages(result.errorMessages)
             errorLog.save()
         }
@@ -211,13 +230,15 @@ class RawExecutionService {
 
     }
 
-    RawExecutionResult<Death> createDeath(RawDeath rawDomainInstance){
+    RawExecutionResult<Death> createDeath(RawDeath rawDomainInstance, String logReportFileId){
 
         def result = deathService.createDeath(rawDomainInstance)
 
         if (result.status == RawExecutionResult.Status.ERROR){
             //create errorLog
-            def errorLog = new RawErrorLog(uuid: rawDomainInstance.id, entity: result.entity, code: rawDomainInstance.memberCode)
+            def errorLog = new RawErrorLog(uuid: rawDomainInstance.id, entity: result.entity, columnName: "memberCode", code: rawDomainInstance.memberCode)
+            errorLog.uuid = rawDomainInstance.id
+            errorLog.logReportFile = LogReportFile.findById(logReportFileId)
             errorLog.setMessages(result.errorMessages)
             errorLog.save()
         }
@@ -230,13 +251,15 @@ class RawExecutionService {
 
     }
 
-    RawExecutionResult<Visit> createVisit(RawVisit rawDomainInstance){
+    RawExecutionResult<Visit> createVisit(RawVisit rawDomainInstance, String logReportFileId){
 
         def result = visitService.createVisit(rawDomainInstance)
 
         if (result.status == RawExecutionResult.Status.ERROR){
             //create errorLog
-            def errorLog = new RawErrorLog(uuid: rawDomainInstance.id, entity: result.entity, code: rawDomainInstance.code)
+            def errorLog = new RawErrorLog(uuid: rawDomainInstance.id, entity: result.entity, columnName: "code", code: rawDomainInstance.code)
+            errorLog.uuid = rawDomainInstance.id
+            errorLog.logReportFile = LogReportFile.findById(logReportFileId)
             errorLog.setMessages(result.errorMessages)
             errorLog.save()
 
@@ -251,7 +274,7 @@ class RawExecutionService {
 
     }
 
-    RawExecutionResult<HeadRelationship> createChangeHead(RawChangeHead rawDomainInstance){
+    RawExecutionResult<HeadRelationship> createChangeHead(RawChangeHead rawDomainInstance, String logReportFileId){
 
         def relationships = RawChangeHeadRelationship.findAllByChangeHead(rawDomainInstance)
 
@@ -259,7 +282,9 @@ class RawExecutionService {
 
         if (result.status == RawExecutionResult.Status.ERROR){
             //create errorLog
-            def errorLog = new RawErrorLog(uuid: rawDomainInstance.id, entity: result.entity, code: rawDomainInstance.newHeadCode)
+            def errorLog = new RawErrorLog(uuid: rawDomainInstance.id, entity: result.entity, columnName: "newHeadCode", code: rawDomainInstance.newHeadCode)
+            errorLog.uuid = rawDomainInstance.id
+            errorLog.logReportFile = LogReportFile.findById(logReportFileId)
             errorLog.setMessages(result.errorMessages)
             errorLog.save()
         }
@@ -272,13 +297,15 @@ class RawExecutionService {
 
     }
 
-    RawExecutionResult<IncompleteVisit> createIncompleteVisit(RawIncompleteVisit rawDomainInstance){
+    RawExecutionResult<IncompleteVisit> createIncompleteVisit(RawIncompleteVisit rawDomainInstance, String logReportFileId){
 
         def result = incompleteVisitService.createIncompleteVisit(rawDomainInstance)
 
         if (result.status == RawExecutionResult.Status.ERROR){
             //create errorLog
-            def errorLog = new RawErrorLog(uuid: rawDomainInstance.id, entity: result.entity, code: rawDomainInstance.visitCode)
+            def errorLog = new RawErrorLog(uuid: rawDomainInstance.id, entity: result.entity, columnName: "visitCode", code: rawDomainInstance.visitCode)
+            errorLog.uuid = rawDomainInstance.id
+            errorLog.logReportFile = LogReportFile.findById(logReportFileId)
             errorLog.setMessages(result.errorMessages)
             errorLog.save()
 

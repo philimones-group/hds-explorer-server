@@ -2,6 +2,7 @@ package org.philimone.hds.explorer.server.model.collect.raw
 
 import com.google.gson.Gson
 import org.philimone.hds.explorer.server.model.enums.RawEntity
+import org.philimone.hds.explorer.server.model.logs.LogReportFile
 import org.philimone.hds.explorer.server.model.main.collect.raw.RawMessage
 
 import java.time.LocalDateTime
@@ -12,10 +13,17 @@ class RawErrorLog {
      * UUID or Id of a Raw Data Collected using Mobile/Web
      */
     String uuid
+
+
+    LogReportFile logReportFile
+
     /*
      * The entity that is being executed
      */
     RawEntity entity
+
+
+    String columnName
     /*
      * Code(human readable code) of the specific entity if exists
      */
@@ -43,9 +51,32 @@ class RawErrorLog {
         return gson.fromJson(this.message, new ArrayList<RawMessage>().getClass())
     }
 
+    String getMessageText(){
+        def list = getMessages()
+        def text = ""
+
+        list.each { rmsg ->
+            text += (text.isEmpty() ? "" : "\n" )+rmsg.text
+        }
+
+        return text
+
+    }
+
+    String getCollapsedMessage(){
+        def msg = messageText
+        if (msg.length()>=80){
+            return msg.substring(0, 80)
+        }
+
+        return msg
+    }
+
     static constraints = {
         uuid unique: true, nullable: false, maxSize: 32
+        logReportFile nullable: false
         entity nullable: false
+        columnName blank: true, nullable: true
         code blank: true, nullable: true
         message blank: false, maxSize: 1000
     }
@@ -53,9 +84,12 @@ class RawErrorLog {
     static mapping = {
         table "_raw_error_log"
 
-        id name: "uuid", generator: "uuid"
+        id name: "uuid", generator: "assigned"
+
+        logReportFile column: "log_report_file_uuid"
 
         entity column: "entity", indexColumn: [name: "idx_entity", type: Integer]
+        columnName column: "code_column"
         code column: "code", indexColumn: [name: "idx_code", type: Integer]
         message column: "message"
         createdDate column: "created_date"

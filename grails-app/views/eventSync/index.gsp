@@ -35,7 +35,7 @@
 				<g:each in="${logReports}" status="i" var="logReport">
 					<tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
 
-						<td><g:link controller="logReport" action="show" id="${logReport.id}">${fieldValue(bean: logReport, field: "reportId")}</g:link></td>
+						<td><g:link controller="eventSync" action="showSyncReport" id="${logReport.id}">${fieldValue(bean: logReport, field: "reportId")}</g:link></td>
 
 						<td><g:message code="${logReport.description}" default="${logReport.description}" /></td>
 

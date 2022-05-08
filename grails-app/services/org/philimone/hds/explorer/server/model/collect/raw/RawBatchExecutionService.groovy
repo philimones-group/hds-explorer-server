@@ -40,7 +40,7 @@ class RawBatchExecutionService {
     /*
      * Organize data by processed = 0 and date of processing
      */
-    def compileAndExecuteEvents() {
+    def compileAndExecuteEvents(String logReportFileId) {
         //keyDate   (date of event/capture) will be yyyy-MM-dd or yyyy-MM-dd HH:mm:ss
         //event_type (the HDS Event to be executED, [sort: "collectedDate", order: "asc"]) as INTEGER
         //  1. Household Enumeration
@@ -63,7 +63,7 @@ class RawBatchExecutionService {
         //Read raw domain models that are not processed and save at raw_event table, raw data will be read ordered by dateOfEvent
         compileEvents()
 
-        executeEvents()
+        executeEvents(logReportFileId)
     }
 
     def compileEvents(){
@@ -87,7 +87,7 @@ class RawBatchExecutionService {
         collectChangeHoh()
     }
 
-    def executeEvents() {
+    def executeEvents(String logReportFileId) {
         //read raw_events ordered by keyDate asc and eventtype asc
         int offset = 0
         int max = 50
@@ -98,33 +98,33 @@ class RawBatchExecutionService {
             offset += events.size()
 
             events.each { rawEvent ->
-                executeEvent(rawEvent)
+                executeEvent(rawEvent, logReportFileId)
             }
 
         }
     }
 
-    RawExecutionResult executeEvent(RawEvent event) {
+    RawExecutionResult executeEvent(RawEvent event, String logReportFileId) {
         switch (event?.eventType) {
-            case RawEventType.EVENT_REGION:                       return executeRegion(event)
-            case RawEventType.EVENT_HOUSEHOLD:                    return executeHousehold(event)
-            case RawEventType.EVENT_VISIT:                        return executeVisit(event)
-            case RawEventType.EVENT_MEMBER_ENU:                   return executeMemberEnu(event)
-            case RawEventType.EVENT_DEATH:                        return executeDeath(event)
-            case RawEventType.EVENT_OUTMIGRATION:                 return executeOutmigration(event)
-            case RawEventType.EVENT_INTERNAL_INMIGRATION:         return executeInmigration(event)
-            case RawEventType.EVENT_EXTERNAL_INMIGRATION_ENTRY:   return executeExtInmigration(event)
-            case RawEventType.EVENT_EXTERNAL_INMIGRATION_REENTRY: return executeExtInmigration(event)
-            case RawEventType.EVENT_PREGNANCY_REGISTRATION:       return executePregnancyReg(event)
-            case RawEventType.EVENT_PREGNANCY_OUTCOME:            return executePregnancyOutcome(event)
-            case RawEventType.EVENT_MARITAL_RELATIONSHIP:         return executeMaritalRelationship(event)
-            case RawEventType.EVENT_CHANGE_HEAD_OF_HOUSEHOLD:     return executeChangeHead(event)
-            case RawEventType.EVENT_INCOMPLETE_VISIT:             return executeIncompleteVisit(event)
+            case RawEventType.EVENT_REGION:                       return executeRegion(event, logReportFileId)
+            case RawEventType.EVENT_HOUSEHOLD:                    return executeHousehold(event, logReportFileId)
+            case RawEventType.EVENT_VISIT:                        return executeVisit(event, logReportFileId)
+            case RawEventType.EVENT_MEMBER_ENU:                   return executeMemberEnu(event, logReportFileId)
+            case RawEventType.EVENT_DEATH:                        return executeDeath(event, logReportFileId)
+            case RawEventType.EVENT_OUTMIGRATION:                 return executeOutmigration(event, logReportFileId)
+            case RawEventType.EVENT_INTERNAL_INMIGRATION:         return executeInmigration(event, logReportFileId)
+            case RawEventType.EVENT_EXTERNAL_INMIGRATION_ENTRY:   return executeExtInmigration(event, logReportFileId)
+            case RawEventType.EVENT_EXTERNAL_INMIGRATION_REENTRY: return executeExtInmigration(event, logReportFileId)
+            case RawEventType.EVENT_PREGNANCY_REGISTRATION:       return executePregnancyReg(event, logReportFileId)
+            case RawEventType.EVENT_PREGNANCY_OUTCOME:            return executePregnancyOutcome(event, logReportFileId)
+            case RawEventType.EVENT_MARITAL_RELATIONSHIP:         return executeMaritalRelationship(event, logReportFileId)
+            case RawEventType.EVENT_CHANGE_HEAD_OF_HOUSEHOLD:     return executeChangeHead(event, logReportFileId)
+            case RawEventType.EVENT_INCOMPLETE_VISIT:             return executeIncompleteVisit(event, logReportFileId)
             default: return null
         }
     }
 
-    RawExecutionResult<Region> executeRegion(RawEvent rawEvent) {
+    RawExecutionResult<Region> executeRegion(RawEvent rawEvent, String logReportFileId) {
 
         if (rawEvent == null || rawEvent?.isProcessed()) return null
 
@@ -139,7 +139,7 @@ class RawBatchExecutionService {
                 //find dependency event and execute
                 def devent = RawEvent.findByEventTypeAndEntityCode(RawEventType.EVENT_REGION, rawObj.parentCode)
 
-                def result = executeRegion(devent)
+                def result = executeRegion(devent, logReportFileId)
                 //set event has processed
                 devent.processed = getProcessedStatus(result?.status)
                 devent.save()
@@ -148,7 +148,7 @@ class RawBatchExecutionService {
             }
 
             if (dependencyResolved) {
-                def result = rawExecutionService.createRegion(rawObj)
+                def result = rawExecutionService.createRegion(rawObj, logReportFileId)
 
                 //set event has processed
                 rawEvent.processed = getProcessedStatus(result?.status)
@@ -161,7 +161,7 @@ class RawBatchExecutionService {
         return null
     }
 
-    RawExecutionResult<Household> executeHousehold(RawEvent rawEvent) {
+    RawExecutionResult<Household> executeHousehold(RawEvent rawEvent, String logReportFileId) {
 
         if (rawEvent == null || rawEvent?.isProcessed()) return null
 
@@ -185,7 +185,7 @@ class RawBatchExecutionService {
             }
 
             if (dependencyResolved) {
-                def result = rawExecutionService.createHousehold(rawObj)
+                def result = rawExecutionService.createHousehold(rawObj, logReportFileId)
 
                 //set event has processed
                 rawEvent.processed = getProcessedStatus(result?.status)
@@ -199,7 +199,7 @@ class RawBatchExecutionService {
         return null
     }
 
-    RawExecutionResult<Visit> executeVisit(RawEvent rawEvent) {
+    RawExecutionResult<Visit> executeVisit(RawEvent rawEvent, String logReportFileId) {
 
         if (rawEvent == null || rawEvent?.isProcessed()) return null
 
@@ -214,14 +214,14 @@ class RawBatchExecutionService {
             def respondentCode = rawObj.respondentCode
 
             //try to solve household dependency
-            dependencyResolved = solveHouseholdDependency(householdCode)
+            dependencyResolved = solveHouseholdDependency(householdCode, logReportFileId)
 
             //try to solve member dependency (respondent)
-            dependencyResolved = dependencyResolved && solveMemberDependency(respondentCode)
+            dependencyResolved = dependencyResolved && solveMemberDependency(respondentCode, logReportFileId)
 
             if (dependencyResolved) {
 
-                def result = rawExecutionService.createVisit(rawObj)
+                def result = rawExecutionService.createVisit(rawObj, logReportFileId)
                 //set event has processed
                 rawEvent.processed = getProcessedStatus(result?.status)
                 rawEvent.save()
@@ -233,7 +233,7 @@ class RawBatchExecutionService {
         return null
     }
 
-    RawExecutionResult<Member> executeMemberEnu(RawEvent rawEvent) {
+    RawExecutionResult<Member> executeMemberEnu(RawEvent rawEvent, String logReportFileId) {
 
         if (rawEvent == null || rawEvent?.isProcessed()) return null
 
@@ -249,19 +249,19 @@ class RawBatchExecutionService {
             def motherCode = rawObj.motherCode
 
             //try to solve household dependency
-            dependencyResolved = solveHouseholdDependency(householdCode)
+            dependencyResolved = solveHouseholdDependency(householdCode, logReportFileId)
 
             //try to solve visit dependency
-            //dependencyResolved = dependencyResolved && solveVisitDependency(visitCode)
+            //dependencyResolved = dependencyResolved && solveVisitDependency(visitCode, logReportFileId)
 
             //try to solve member dependency (father)
-            dependencyResolved = dependencyResolved && solveMemberDependency(fatherCode)
+            dependencyResolved = dependencyResolved && solveMemberDependency(fatherCode, logReportFileId)
 
             //try to solve member dependency (mother)
-            dependencyResolved = dependencyResolved && solveMemberDependency(motherCode)
+            dependencyResolved = dependencyResolved && solveMemberDependency(motherCode, logReportFileId)
 
             if (dependencyResolved) {
-                def result = rawExecutionService.createMemberEnu(rawObj)
+                def result = rawExecutionService.createMemberEnu(rawObj, logReportFileId)
 
                 //set event has processed
                 rawEvent.processed = getProcessedStatus(result?.status)
@@ -276,7 +276,7 @@ class RawBatchExecutionService {
         return null
     }
 
-    RawExecutionResult<Death> executeDeath(RawEvent rawEvent) {
+    RawExecutionResult<Death> executeDeath(RawEvent rawEvent, String logReportFileId) {
         if (rawEvent == null || rawEvent?.isProcessed()) return null
 
         def rawObj = RawDeath.findById(rawEvent.eventId)
@@ -290,13 +290,13 @@ class RawBatchExecutionService {
             def memberCode = rawObj.memberCode
 
             //try to solve visit dependency
-            dependencyResolved = dependencyResolved && solveVisitDependency(visitCode)
+            dependencyResolved = dependencyResolved && solveVisitDependency(visitCode, logReportFileId)
 
             //try to solve member dependency
-            dependencyResolved = dependencyResolved && solveMemberDependency(memberCode)
+            dependencyResolved = dependencyResolved && solveMemberDependency(memberCode, logReportFileId)
 
             if (dependencyResolved) {
-                def result = rawExecutionService.createDeath(rawObj)
+                def result = rawExecutionService.createDeath(rawObj, logReportFileId)
 
                 //set event has processed
                 rawEvent.processed = getProcessedStatus(result?.status)
@@ -311,7 +311,7 @@ class RawBatchExecutionService {
         return null
     }
 
-    RawExecutionResult<OutMigration> executeOutmigration(RawEvent rawEvent) {
+    RawExecutionResult<OutMigration> executeOutmigration(RawEvent rawEvent, String logReportFileId) {
         if (rawEvent == null || rawEvent?.isProcessed()) return null
 
         def rawObj = RawOutMigration.findById(rawEvent.eventId)
@@ -326,16 +326,16 @@ class RawBatchExecutionService {
             def memberCode = rawObj.memberCode
 
             //try to solve household dependency
-            dependencyResolved = dependencyResolved && solveHouseholdDependency(originCode)
+            dependencyResolved = dependencyResolved && solveHouseholdDependency(originCode, logReportFileId)
 
             //try to solve visit dependency
-            dependencyResolved = dependencyResolved && solveVisitDependency(visitCode)
+            dependencyResolved = dependencyResolved && solveVisitDependency(visitCode, logReportFileId)
 
             //try to solve member dependency
-            dependencyResolved = dependencyResolved && solveMemberDependency(memberCode)
+            dependencyResolved = dependencyResolved && solveMemberDependency(memberCode, logReportFileId)
 
             if (dependencyResolved) {
-                def result = rawExecutionService.createOutMigration(rawObj)
+                def result = rawExecutionService.createOutMigration(rawObj, logReportFileId)
 
                 //set event has processed
                 rawEvent.processed = getProcessedStatus(result?.status)
@@ -350,7 +350,7 @@ class RawBatchExecutionService {
         return null
     }
 
-    RawExecutionResult<InMigration> executeInmigration(RawEvent rawEvent) {
+    RawExecutionResult<InMigration> executeInmigration(RawEvent rawEvent, String logReportFileId) {
         if (rawEvent == null || rawEvent?.isProcessed()) return null
 
         def rawObj = RawInMigration.findById(rawEvent.eventId)
@@ -365,16 +365,16 @@ class RawBatchExecutionService {
             def memberCode = rawObj.memberCode
 
             //try to solve household dependency
-            dependencyResolved = dependencyResolved && solveHouseholdDependency(destinationCode)
+            dependencyResolved = dependencyResolved && solveHouseholdDependency(destinationCode, logReportFileId)
 
             //try to solve visit dependency
-            dependencyResolved = dependencyResolved && solveVisitDependency(visitCode)
+            dependencyResolved = dependencyResolved && solveVisitDependency(visitCode, logReportFileId)
 
             //try to solve member dependency
-            dependencyResolved = dependencyResolved && solveMemberDependency(memberCode)
+            dependencyResolved = dependencyResolved && solveMemberDependency(memberCode, logReportFileId)
 
             if (dependencyResolved) {
-                def result = rawExecutionService.createInMigration(rawObj)
+                def result = rawExecutionService.createInMigration(rawObj, logReportFileId)
 
                 //set event has processed
                 rawEvent.processed = getProcessedStatus(result?.status)
@@ -389,7 +389,7 @@ class RawBatchExecutionService {
         return null
     }
 
-    RawExecutionResult<InMigration> executeExtInmigration(RawEvent rawEvent) {
+    RawExecutionResult<InMigration> executeExtInmigration(RawEvent rawEvent, String logReportFileId) {
         if (rawEvent == null || rawEvent?.isProcessed()) return null
 
         def rawObj = RawExternalInMigration.findById(rawEvent.eventId)
@@ -406,25 +406,25 @@ class RawBatchExecutionService {
             def motherCode = rawObj.memberMotherCode
 
             //try to solve household dependency
-            dependencyResolved = solveHouseholdDependency(destinationCode)
+            dependencyResolved = solveHouseholdDependency(destinationCode, logReportFileId)
 
             //try to solve visit dependency
-            dependencyResolved = dependencyResolved && solveVisitDependency(visitCode)
+            dependencyResolved = dependencyResolved && solveVisitDependency(visitCode, logReportFileId)
 
             //try to solve member dependency - if it is reentry
             if (rawObj.extMigrationType == ExternalInMigrationType.REENTRY.name()) { //couldnt find dependency
-                dependencyResolved = dependencyResolved && solveMemberDependency(memberCode)
+                dependencyResolved = dependencyResolved && solveMemberDependency(memberCode, logReportFileId)
             }
 
             //try to solve member dependency (father)
-            dependencyResolved = dependencyResolved && solveMemberDependency(fatherCode)
+            dependencyResolved = dependencyResolved && solveMemberDependency(fatherCode, logReportFileId)
 
             //try to solve member dependency (mother)
-            dependencyResolved = dependencyResolved && solveMemberDependency(motherCode)
+            dependencyResolved = dependencyResolved && solveMemberDependency(motherCode, logReportFileId)
 
 
             if (dependencyResolved) {
-                def result = rawExecutionService.createExternalInMigration(rawObj)
+                def result = rawExecutionService.createExternalInMigration(rawObj, logReportFileId)
 
                 //set event has processed
                 rawEvent.processed = getProcessedStatus(result?.status)
@@ -439,7 +439,7 @@ class RawBatchExecutionService {
         return null
     }
 
-    RawExecutionResult<PregnancyRegistration> executePregnancyReg(RawEvent rawEvent) {
+    RawExecutionResult<PregnancyRegistration> executePregnancyReg(RawEvent rawEvent, String logReportFileId) {
         if (rawEvent == null || rawEvent?.isProcessed()) return null
 
         def rawObj = RawPregnancyRegistration.findById(rawEvent.eventId)
@@ -453,13 +453,13 @@ class RawBatchExecutionService {
             def motherCode = rawObj.motherCode
 
             //try to solve visit dependency
-            dependencyResolved = dependencyResolved && solveVisitDependency(visitCode)
+            dependencyResolved = dependencyResolved && solveVisitDependency(visitCode, logReportFileId)
 
             //try to solve member dependency
-            dependencyResolved = dependencyResolved && solveMemberDependency(motherCode)
+            dependencyResolved = dependencyResolved && solveMemberDependency(motherCode, logReportFileId)
 
             if (dependencyResolved) {
-                def result = rawExecutionService.createPregnancyRegistration(rawObj)
+                def result = rawExecutionService.createPregnancyRegistration(rawObj, logReportFileId)
 
                 //set event has processed
                 rawEvent.processed = getProcessedStatus(result?.status)
@@ -474,7 +474,7 @@ class RawBatchExecutionService {
         return null
     }
 
-    RawExecutionResult<PregnancyOutcome> executePregnancyOutcome(RawEvent rawEvent) {
+    RawExecutionResult<PregnancyOutcome> executePregnancyOutcome(RawEvent rawEvent, String logReportFileId) {
         if (rawEvent == null || rawEvent?.isProcessed()) return null
 
         def rawObj = RawPregnancyOutcome.findById(rawEvent.eventId)
@@ -489,16 +489,16 @@ class RawBatchExecutionService {
             def fatherCode = rawObj.fatherCode
 
             //try to solve visit dependency
-            dependencyResolved = dependencyResolved && solveVisitDependency(visitCode)
+            dependencyResolved = dependencyResolved && solveVisitDependency(visitCode, logReportFileId)
 
             //try to solve member dependency (father)
-            dependencyResolved = dependencyResolved && solveMemberDependency(fatherCode)
+            dependencyResolved = dependencyResolved && solveMemberDependency(fatherCode, logReportFileId)
 
             //try to solve member dependency (mother)
-            dependencyResolved = dependencyResolved && solveMemberDependency(motherCode)
+            dependencyResolved = dependencyResolved && solveMemberDependency(motherCode, logReportFileId)
 
             if (dependencyResolved) {
-                def result = rawExecutionService.createPregnancyOutcome(rawObj)
+                def result = rawExecutionService.createPregnancyOutcome(rawObj, logReportFileId)
 
                 //set event has processed
                 rawEvent.processed = getProcessedStatus(result?.status)
@@ -513,7 +513,7 @@ class RawBatchExecutionService {
         return null
     }
 
-    RawExecutionResult<MaritalRelationship> executeMaritalRelationship(RawEvent rawEvent) {
+    RawExecutionResult<MaritalRelationship> executeMaritalRelationship(RawEvent rawEvent, String logReportFileId) {
         if (rawEvent == null || rawEvent?.isProcessed()) return null
 
         def rawObj = RawMaritalRelationship.findById(rawEvent.eventId)
@@ -527,13 +527,13 @@ class RawBatchExecutionService {
             def memberB = rawObj.memberB
 
             //try to solve memberA dependency
-            dependencyResolved = dependencyResolved && solveMemberDependency(memberA)
+            dependencyResolved = dependencyResolved && solveMemberDependency(memberA, logReportFileId)
 
             //try to solve memberB dependency
-            dependencyResolved = dependencyResolved && solveMemberDependency(memberB)
+            dependencyResolved = dependencyResolved && solveMemberDependency(memberB, logReportFileId)
 
             if (dependencyResolved) {
-                def result = rawExecutionService.createMaritalRelationship(rawObj)
+                def result = rawExecutionService.createMaritalRelationship(rawObj, logReportFileId)
 
                 //set event has processed
                 rawEvent.processed = getProcessedStatus(result?.status)
@@ -548,7 +548,7 @@ class RawBatchExecutionService {
         return null
     }
 
-    RawExecutionResult<HeadRelationship> executeChangeHead(RawEvent rawEvent) {
+    RawExecutionResult<HeadRelationship> executeChangeHead(RawEvent rawEvent, String logReportFileId) {
         if (rawEvent == null || rawEvent?.isProcessed()) return null
 
         def rawObj = RawChangeHead.findById(rawEvent.eventId)
@@ -564,20 +564,20 @@ class RawBatchExecutionService {
             def newHeadCode = rawObj.newHeadCode
 
             //try to solve household dependency
-            dependencyResolved = dependencyResolved && solveHouseholdDependency(householdCode)
+            dependencyResolved = dependencyResolved && solveHouseholdDependency(householdCode, logReportFileId)
 
             //try to solve visit dependency
-            dependencyResolved = dependencyResolved && solveVisitDependency(visitCode)
+            dependencyResolved = dependencyResolved && solveVisitDependency(visitCode, logReportFileId)
 
             //try to solve member dependency (oldHead)
-            dependencyResolved = dependencyResolved && solveMemberDependency(oldHeadCode)
+            dependencyResolved = dependencyResolved && solveMemberDependency(oldHeadCode, logReportFileId)
 
             //try to solve member dependency (newHead)
-            dependencyResolved = dependencyResolved && solveMemberDependency(newHeadCode)
+            dependencyResolved = dependencyResolved && solveMemberDependency(newHeadCode, logReportFileId)
 
 
             if (dependencyResolved) {
-                def result = rawExecutionService.createChangeHead(rawObj)
+                def result = rawExecutionService.createChangeHead(rawObj, logReportFileId)
 
                 //set event has processed
                 rawEvent.processed = getProcessedStatus(result?.status)
@@ -592,7 +592,7 @@ class RawBatchExecutionService {
         return null
     }
 
-    RawExecutionResult<IncompleteVisit> executeIncompleteVisit(RawEvent rawEvent) {
+    RawExecutionResult<IncompleteVisit> executeIncompleteVisit(RawEvent rawEvent, String logReportFileId) {
 
         if (rawEvent == null || rawEvent?.isProcessed()) return null
 
@@ -608,14 +608,14 @@ class RawBatchExecutionService {
             def memberCode = rawObj.memberCode
 
             //try to solve visit dependency
-            dependencyResolved = solveVisitDependency(visitCode)
+            dependencyResolved = solveVisitDependency(visitCode, logReportFileId)
 
             //try to solve member dependency (memberCode)
-            dependencyResolved = dependencyResolved && solveMemberDependency(memberCode)
+            dependencyResolved = dependencyResolved && solveMemberDependency(memberCode, logReportFileId)
 
             if (dependencyResolved) {
 
-                def result = rawExecutionService.createIncompleteVisit(rawObj)
+                def result = rawExecutionService.createIncompleteVisit(rawObj, logReportFileId)
                 //set event has processed
                 rawEvent.processed = getProcessedStatus(result?.status)
                 rawEvent.save()
@@ -627,7 +627,7 @@ class RawBatchExecutionService {
         return null
     }
 
-    boolean solveHouseholdDependency(String householdCode) {
+    boolean solveHouseholdDependency(String householdCode, String logReportFileId) {
 
         def dependencyResolved = true
 
@@ -635,18 +635,24 @@ class RawBatchExecutionService {
             //find dependency event and execute
             def devent = RawEvent.findByEventTypeAndEntityCode(RawEventType.EVENT_HOUSEHOLD, householdCode)
 
-            def result = executeHousehold(devent)
-            //set event has processed
-            devent.processed = getProcessedStatus(result?.status)
-            devent.save()
+            def result = executeHousehold(devent, logReportFileId)
 
-            dependencyResolved = (result?.status==RawExecutionResult.Status.SUCCESS)
+            if (result != null && devent != null){
+                //set event has processed
+                devent.processed = getProcessedStatus(result?.status)
+                devent.save()
+
+                dependencyResolved = (result?.status==RawExecutionResult.Status.SUCCESS)
+            } else {
+                return false
+            }
+
         }
 
         return dependencyResolved
     }
 
-    boolean solveMemberDependency(String memberCode) {
+    boolean solveMemberDependency(String memberCode, String logReportFileId) {
 
         def dependencyResolved = true
 
@@ -654,30 +660,42 @@ class RawBatchExecutionService {
             //find dependency event and execute
             def devent = getMemberEntryEvent(memberCode)
 
-            def result = executeEvent(devent)
-            //set event has processed
-            devent.processed = getProcessedStatus(result?.status)
-            devent.save()
+            def result = executeEvent(devent, logReportFileId)
 
-            dependencyResolved = result?.status==RawExecutionResult.Status.SUCCESS
+            if (result != null && devent != null){
+                //set event has processed
+                devent.processed = getProcessedStatus(result?.status)
+                devent.save()
+
+                dependencyResolved = result?.status==RawExecutionResult.Status.SUCCESS
+            } else {
+                return false
+            }
+
         }
 
         return dependencyResolved
     }
 
-    boolean solveVisitDependency(String visitCode) {
+    boolean solveVisitDependency(String visitCode, String logReportFileId) {
         def dependencyResolved = true
 
         if (!visitService.exists(visitCode)) { //couldnt find dependency
             //find dependency event and execute
             def devent = RawEvent.findByEventTypeAndEntityCode(RawEventType.EVENT_VISIT, visitCode)
 
-            def result = executeEvent(devent)
-            //set event has processed
-            devent.processed = getProcessedStatus(result?.status)
-            devent.save()
+            def result = executeEvent(devent, logReportFileId)
 
-            dependencyResolved = dependencyResolved && (result?.status==RawExecutionResult.Status.SUCCESS)
+            if (result != null && devent != null){
+                //set event has processed
+                devent.processed = getProcessedStatus(result?.status)
+                devent.save()
+
+                dependencyResolved = dependencyResolved && (result?.status==RawExecutionResult.Status.SUCCESS)
+            } else {
+                return false
+            }
+
         }
 
         return dependencyResolved
@@ -697,7 +715,7 @@ class RawBatchExecutionService {
         def list = RawRegion.findAllByProcessedStatus(ProcessedStatus.NOT_PROCESSED, [sort: "collectedDate", order: "asc"])
 
         list.each {
-            new RawEvent(keyDate: it.collectedDate, eventType: RawEventType.EVENT_REGION, eventId: it.id, entityCode: it.regionCode).save()
+            new RawEvent(keyDate: it.collectedDate, eventType: RawEventType.EVENT_REGION, eventId: it.id, entityCode: it.regionCode).save(flush:true)
         }
 
         list.clear()
@@ -708,7 +726,10 @@ class RawBatchExecutionService {
         def list = RawHousehold.findAllByProcessedStatus(ProcessedStatus.NOT_PROCESSED, [sort: "collectedDate", order: "asc"])
 
         list.each {
-            new RawEvent(keyDate: it.collectedDate, eventType: RawEventType.EVENT_HOUSEHOLD, eventId: it.id, entityCode: it.householdCode).save()
+            def event = new RawEvent(keyDate: it.collectedDate, eventType: RawEventType.EVENT_HOUSEHOLD, eventId: it.id, entityCode: it.householdCode)
+            event.save(flush:true)
+
+            println "compile house: ${event.errors}"
         }
 
         list.clear()
@@ -719,7 +740,7 @@ class RawBatchExecutionService {
         def list = RawVisit.findAllByProcessedStatus(ProcessedStatus.NOT_PROCESSED, [sort: "visitDate", order: "asc"])
 
         list.each {
-            new RawEvent(keyDate: it.visitDate.atStartOfDay(), eventType: RawEventType.EVENT_VISIT, eventId: it.id, entityCode: it.code).save()
+            new RawEvent(keyDate: it.visitDate.atStartOfDay(), eventType: RawEventType.EVENT_VISIT, eventId: it.id, entityCode: it.code).save(flush:true)
         }
 
         list.clear()
@@ -730,7 +751,7 @@ class RawBatchExecutionService {
         def list = RawIncompleteVisit.findAllByProcessedStatus(ProcessedStatus.NOT_PROCESSED, [sort: "collectedDate", order: "asc"])
 
         list.each {
-            new RawEvent(keyDate: it.collectedDate.atStartOfDay(), eventType: RawEventType.EVENT_INCOMPLETE_VISIT, eventId: it.id, entityCode: it.visitCode).save()
+            new RawEvent(keyDate: it.collectedDate.atStartOfDay(), eventType: RawEventType.EVENT_INCOMPLETE_VISIT, eventId: it.id, entityCode: it.visitCode).save(flush:true)
         }
 
         list.clear()
@@ -741,7 +762,7 @@ class RawBatchExecutionService {
         def list = RawMemberEnu.findAllByProcessedStatus(ProcessedStatus.NOT_PROCESSED, [sort: "residencyStartDate", order: "asc"])
 
         list.each {
-            new RawEvent(keyDate: it.residencyStartDate.atStartOfDay(), eventType: RawEventType.EVENT_MEMBER_ENU, eventId: it.id, entityCode: it.code).save()
+            new RawEvent(keyDate: it.residencyStartDate.atStartOfDay(), eventType: RawEventType.EVENT_MEMBER_ENU, eventId: it.id, entityCode: it.code).save(flush:true)
         }
 
         list.clear()
@@ -752,7 +773,7 @@ class RawBatchExecutionService {
         def list = RawDeath.findAllByProcessedStatus(ProcessedStatus.NOT_PROCESSED, [sort: "deathDate", order: "asc"])
 
         list.each {
-            new RawEvent(keyDate: it.deathDate.atStartOfDay(), eventType: RawEventType.EVENT_DEATH, eventId: it.id, entityCode: it.memberCode).save()
+            new RawEvent(keyDate: it.deathDate.atStartOfDay(), eventType: RawEventType.EVENT_DEATH, eventId: it.id, entityCode: it.memberCode).save(flush:true)
         }
 
         list.clear()
@@ -763,7 +784,7 @@ class RawBatchExecutionService {
         def list = RawOutMigration.findAllByProcessedStatus(ProcessedStatus.NOT_PROCESSED, [sort: "migrationDate", order: "asc"])
 
         list.each {
-            new RawEvent(keyDate: it.migrationDate.atStartOfDay(), eventType: RawEventType.EVENT_OUTMIGRATION, eventId: it.id, entityCode: it.memberCode).save()
+            new RawEvent(keyDate: it.migrationDate.atStartOfDay(), eventType: RawEventType.EVENT_OUTMIGRATION, eventId: it.id, entityCode: it.memberCode).save(flush:true)
         }
 
         list.clear()
@@ -774,7 +795,7 @@ class RawBatchExecutionService {
         def list = RawInMigration.findAllByProcessedStatus(ProcessedStatus.NOT_PROCESSED, [sort: "migrationDate", order: "asc"])
 
         list.each {
-            new RawEvent(keyDate: it.migrationDate.atStartOfDay(), eventType: RawEventType.EVENT_INTERNAL_INMIGRATION, eventId: it.id, entityCode: it.memberCode).save()
+            new RawEvent(keyDate: it.migrationDate.atStartOfDay(), eventType: RawEventType.EVENT_INTERNAL_INMIGRATION, eventId: it.id, entityCode: it.memberCode).save(flush:true)
         }
 
         list.clear()
@@ -786,7 +807,7 @@ class RawBatchExecutionService {
 
         list.each {
             boolean firstEntry = it.extMigrationType==ExternalInMigrationType.ENTRY.name()
-            new RawEvent(keyDate: it.migrationDate.atStartOfDay(), eventType: firstEntry ? RawEventType.EVENT_EXTERNAL_INMIGRATION_ENTRY : RawEventType.EVENT_EXTERNAL_INMIGRATION_REENTRY, eventId: it.id, entityCode: it.memberCode).save()
+            new RawEvent(keyDate: it.migrationDate.atStartOfDay(), eventType: firstEntry ? RawEventType.EVENT_EXTERNAL_INMIGRATION_ENTRY : RawEventType.EVENT_EXTERNAL_INMIGRATION_REENTRY, eventId: it.id, entityCode: it.memberCode).save(flush:true)
         }
 
         list.clear()
@@ -797,7 +818,7 @@ class RawBatchExecutionService {
         def list = RawPregnancyRegistration.findAllByProcessedStatus(ProcessedStatus.NOT_PROCESSED, [sort: "recordedDate", order: "asc"])
 
         list.each {
-            new RawEvent(keyDate: it.recordedDate.atStartOfDay(), eventType: RawEventType.EVENT_PREGNANCY_REGISTRATION, eventId: it.id, entityCode: it.code).save()
+            new RawEvent(keyDate: it.recordedDate.atStartOfDay(), eventType: RawEventType.EVENT_PREGNANCY_REGISTRATION, eventId: it.id, entityCode: it.code).save(flush:true)
         }
 
         list.clear()
@@ -811,7 +832,7 @@ class RawBatchExecutionService {
             def codes = RawPregnancyChild.executeQuery("select p.childCode from RawPregnancyChild p where p.outcome=?", [it])
             def event = new RawEvent(keyDate: it.outcomeDate.atStartOfDay(), eventType: RawEventType.EVENT_PREGNANCY_OUTCOME, eventId: it.id, entityCode: it.code)
             event.setChildCodesFrom(codes)
-            event.save()
+            event.save(flush:true)
         }
 
         list.clear()
@@ -822,7 +843,7 @@ class RawBatchExecutionService {
         def list = RawMaritalRelationship.findAllByProcessedStatusAndStartDateIsNotNull(ProcessedStatus.NOT_PROCESSED, [sort: "startDate", order: "asc"])
 
         list.each {
-            new RawEvent(keyDate: it.startDate.atStartOfDay(), eventType: RawEventType.EVENT_MARITAL_RELATIONSHIP, eventId: it.id, entityCode: it.memberA).save()
+            new RawEvent(keyDate: it.startDate.atStartOfDay(), eventType: RawEventType.EVENT_MARITAL_RELATIONSHIP, eventId: it.id, entityCode: it.memberA).save(flush:true)
         }
 
         list.clear()
@@ -833,7 +854,7 @@ class RawBatchExecutionService {
         def list = RawMaritalRelationship.findAllByProcessedStatusAndEndDateIsNotNull(ProcessedStatus.NOT_PROCESSED, [sort: "endDate", order: "asc"])
 
         list.each {
-            new RawEvent(keyDate: it.endDate.atStartOfDay(), eventType: RawEventType.EVENT_MARITAL_RELATIONSHIP, eventId: it.id, entityCode: it.memberA).save()
+            new RawEvent(keyDate: it.endDate.atStartOfDay(), eventType: RawEventType.EVENT_MARITAL_RELATIONSHIP, eventId: it.id, entityCode: it.memberA).save(flush:true)
         }
 
         list.clear()
@@ -844,7 +865,7 @@ class RawBatchExecutionService {
         def list = RawChangeHead.findAllByProcessedStatus(ProcessedStatus.NOT_PROCESSED, [sort: "eventDate", order: "asc"])
 
         list.each {
-            new RawEvent(keyDate: it.eventDate.atStartOfDay(), eventType: RawEventType.EVENT_CHANGE_HEAD_OF_HOUSEHOLD, eventId: it.id, entityCode: it.newHeadCode).save()
+            new RawEvent(keyDate: it.eventDate.atStartOfDay(), eventType: RawEventType.EVENT_CHANGE_HEAD_OF_HOUSEHOLD, eventId: it.id, entityCode: it.newHeadCode).save(flush:true)
         }
 
         list.clear()
