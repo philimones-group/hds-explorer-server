@@ -73,5 +73,13 @@ class RawPregnancyRegistration {
         status column: "status"
 
         visitCode column: "visit_code"
+
+        collectedBy column: "collected_by"
+        collectedDate column: "collected_date"
+        uploadedDate column: "uploaded_date"
+
+        postExecution column: "post_execution"
+
+        processedStatus column: "processed", enumType: "identity"
     }
 }

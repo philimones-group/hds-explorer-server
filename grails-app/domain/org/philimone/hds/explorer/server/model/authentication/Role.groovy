@@ -42,6 +42,9 @@ class Role implements Serializable {
 
 		id column: "id", generator: 'uuid'
 
+		name column: "name"
+		authority column: "authority"
+
 		cache true
 		autowire true
 	}

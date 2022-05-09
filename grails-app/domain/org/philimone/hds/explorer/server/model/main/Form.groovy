@@ -32,7 +32,7 @@ class Form extends AuditableEntity {
 
     static hasMany = [
             modules:String, /* Modules that have access to the Form - this data will be converted to comma separated names */
-            dependencies:Form,   /* The list of forms that must be collected first before this Form */
+            dependencies:String,   /* The list of forms that must be collected first before this Form */
             mappings:FormMapping,  /* The list of all variables that will be filled automatically on a Form in Mobile App */
             redcapMappings:RedcapMapping  /* The list of all variables that will be uploaded to a REDCap Form */
     ]
@@ -44,7 +44,7 @@ class Form extends AuditableEntity {
     String getDependenciesAsText() {
         String deps = ""
         dependencies.each {
-            deps += (deps.empty ? "":",") + it.formId
+            deps += (deps.empty ? "":",") + it
         }
         return deps
     }
@@ -78,14 +78,16 @@ class Form extends AuditableEntity {
         id column: "id", generator: 'uuid'
 
         //group column: 'form_group_id'
-        redcapApi column: 'redcap_api'
+
         formId column: 'form_id'
         formName column: 'form_name'
         formDescription column: 'form_description'
+        regionLevel column: "region_level"
         gender column: 'gender'
         minAge column: 'min_age'
         maxAge column: 'max_age'
 
+        isRegionForm column: "is_region"
         isHouseholdForm column: 'is_household'
         isMemberForm column: 'is_member'
         isHouseholdHeadForm column: 'is_household_head'
@@ -93,8 +95,12 @@ class Form extends AuditableEntity {
 
         multiCollPerSession column: "multi_coll_per_session"
 
+        redcapApi column: 'redcap_api'
+
         enabled column: 'enabled'
 
         modules column: "modules", type: StringCollectionType
+
+        dependencies column: "dependencies", type: StringCollectionType
     }
 }

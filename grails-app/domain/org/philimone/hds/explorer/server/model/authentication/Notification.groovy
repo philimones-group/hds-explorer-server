@@ -40,6 +40,12 @@ class Notification {
         table '_notification'
 
         id column: "id", generator: 'uuid'
+
+        user column: "user_id"
+        subject column: "subject"
+        message column: "message"
+        date column: "date"
+        readed column: "readed"
     }
 
 }

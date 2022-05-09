@@ -95,6 +95,8 @@ class RawVisit {
         collectedDate column: "collected_date"
         uploadedDate column: "uploaded_date"
 
+        postExecution column: "post_execution"
+
         processedStatus column: "processed", enumType: "identity"
     }
 }

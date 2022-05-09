@@ -35,6 +35,7 @@ class SyncFilesReport {
         code column: "code"
         name column: "name", enumType: "string"
         records column: "records", defaultValue: "'0'"
+        syncDate column: "sync_date"
     }
 
 

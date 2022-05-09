@@ -23,6 +23,8 @@ class Round extends AuditableEntity {
     }
 
     static mapping = {
+        table 'round'
+
         id column: "id", generator: 'uuid'
 
         roundNumber column: "round_number"

@@ -56,7 +56,9 @@ class RawInMigration {
 
         version false
 
+        visitCode column: "visit_code"
         memberCode column: "member_code"
+        headRelationshipType column: "head_relationship_type"
         migrationType       column: "migration_type"
         extMigrationType column: "ext_migration_type"
         originCode  column: "origin_code"
@@ -64,11 +66,12 @@ class RawInMigration {
         destinationCode      column: "destination_code"
         migrationDate   column: "migration_date"
         migrationReason column: "migration_reason"
-        visitCode column: "visit_code"
 
         collectedBy column: "collected_by"
         collectedDate column: "collected_date"
         uploadedDate column: "uploaded_date"
+
+        postExecution column: "post_execution"
 
         processedStatus column: "processed", enumType: "identity"
     }

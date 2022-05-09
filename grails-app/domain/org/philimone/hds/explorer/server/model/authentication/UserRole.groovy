@@ -101,5 +101,8 @@ class UserRole implements Serializable {
 		id column: 'uuid', generator: 'uuid'
 
 		version false
+
+		user column: "user_id"
+		role column: "role_id"
 	}
 }

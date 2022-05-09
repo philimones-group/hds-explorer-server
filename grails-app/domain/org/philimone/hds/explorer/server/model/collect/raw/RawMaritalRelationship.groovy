@@ -47,6 +47,12 @@ class RawMaritalRelationship {
         endStatus column: "end_status"
         endDate column: "end_date"
 
+        collectedBy column: "collected_by"
+        collectedDate column: "collected_date"
+        uploadedDate column: "uploaded_date"
+
+        postExecution column: "post_execution"
+
         processedStatus column: "processed", enumType: "identity"
     }
 }

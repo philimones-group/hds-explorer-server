@@ -107,6 +107,8 @@ class RawMemberEnu {
         //processedHeadRelationship column: 'processed_head_relationship', enumType: "identity"
         //processedMaritalRelationship column: 'processed_marital_relationship', enumType: "identity"
 
+        postExecution column: "post_execution"
+
         processedStatus column: "processed", enumType: "identity"
     }
 }

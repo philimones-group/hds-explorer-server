@@ -48,45 +48,18 @@ class RawDeath {
 
         version false
 
+        visitCode column: "visit_code"
         memberCode column: "member_code"
         deathDate column: "death_date"
         deathCause column: "death_cause"
         deathPlace column: "death_place"
-        visitCode column: "visit_code"
 
         collectedBy column: "collected_by"
         collectedDate column: "collected_date"
         uploadedDate column: "uploaded_date"
 
+        postExecution column: "post_execution"
+
         processedStatus column: "processed", enumType: "identity"
-    }
-}
-
-class RawDeathRelationship {
-
-    String id
-
-    RawDeath death
-    String newMemberCode
-    String newRelationshipType
-
-    static belongsTo = [death:RawDeath]
-
-    static constraints = {
-        id maxSize: 32
-
-        death nullable: false
-        newMemberCode nullable: false
-        newRelationshipType nullable: false
-    }
-
-    static mapping = {
-        table '_raw_death_relationships'
-
-        id column: "id", generator: 'uuid'
-
-        death column: "death_id"
-        newMemberCode column: "new_member_code"
-        newRelationshipType column: "new_relationship_type"
     }
 }

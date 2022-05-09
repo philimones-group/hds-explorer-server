@@ -37,6 +37,8 @@ class RawPregnancyChild {
         outcome column: "pregnancy_outcome_id"
         outcomeType column: "outcomde_type"
         childCode column: "child_code"
+        childName column: "child_name"
+        childGender column: "child_gender"
         childOrdinalPosition column: "child_ordinal_pos"
         headRelationshipType column: "head_relationship_type"
     }

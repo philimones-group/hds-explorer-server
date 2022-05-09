@@ -63,9 +63,15 @@ class RawPregnancyOutcome {
         outcomeDate column: "outcome_date"
         birthPlace column: "birthplace"
         birthPlaceOther column: "birthplace_other"
-
         visitCode column: "visit_code"
-
         modules column: "modules"
+
+        collectedBy column: "collected_by"
+        collectedDate column: "collected_date"
+        uploadedDate column: "uploaded_date"
+
+        postExecution column: "post_execution"
+
+        processedStatus column: "processed", enumType: "identity"
     }
 }

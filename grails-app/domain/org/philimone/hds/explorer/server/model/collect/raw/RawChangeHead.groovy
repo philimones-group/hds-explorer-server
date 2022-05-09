@@ -52,40 +52,14 @@ class RawChangeHead {
         oldHeadCode column: "old_head_code"
         newHeadCode column: "new_head_code"
         eventDate column: "event_date"
+        reason column: "reason"
 
         collectedBy column: "collected_by"
         collectedDate column: "collected_date"
         uploadedDate column: "uploaded_date"
 
+        postExecution column: "post_execution"
+
         processedStatus column: "processed", enumType: "identity"
-    }
-}
-
-class RawChangeHeadRelationship {
-
-    String id
-
-    RawChangeHead changeHead
-    String newMemberCode
-    String newRelationshipType
-
-    static belongsTo = [changeHead:RawChangeHead]
-
-    static constraints = {
-        id maxSize: 32
-
-        changeHead nullable: false
-        newMemberCode nullable: false
-        newRelationshipType nullable: false
-    }
-
-    static mapping = {
-        table '_raw_change_head_relationship'
-
-        id column: "id", generator: 'uuid'
-
-        changeHead column: "change_head_id"
-        newMemberCode column: "new_member_code"
-        newRelationshipType column: "new_relationship_type"
     }
 }

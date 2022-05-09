@@ -51,6 +51,8 @@ class RawEvent {
         //datasource 'internal'
         table '__raw_event'
 
+        id column: "id"
+
         version false
 
         keyDate    column: "key_date",   indexColumn: [name: "idx_kydate", type: Integer]

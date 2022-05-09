@@ -33,6 +33,10 @@ class SecurityMap implements Serializable {
 
 		id column: "id", generator: 'uuid'
 
+		configAttribute column: "config_attribute"
+		httpMethod column: "http_method"
+		url column: "url"
+
 		cache true
 	}
 }

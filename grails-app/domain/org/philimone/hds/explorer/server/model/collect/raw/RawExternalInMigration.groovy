@@ -67,6 +67,8 @@ class RawExternalInMigration {
         collectedDate nullable: true
         uploadedDate nullable: true
 
+        postExecution column: "post_execution"
+
         processedStatus nullable: false
     }
 
@@ -77,12 +79,16 @@ class RawExternalInMigration {
 
         version false
 
+        visitCode column: "visit_code"
+
         memberCode column: "member_code"
         memberName column: "member_name"
         memberGender column: "member_gender"
         memberDob column: "member_dob"
         memberMotherCode column: "member_mother_code"
         memberFatherCode column: "member_father_code"
+
+        headRelationshipType column: "head_relationship_type"
 
         migrationType       column: "migration_type"
         extMigrationType column: "ext_migration_type"
@@ -92,13 +98,15 @@ class RawExternalInMigration {
         destinationCode      column: "destination_code"
         migrationDate   column: "migration_date"
         migrationReason column: "migration_reason"
-        visitCode column: "visit_code"
+
 
         modules column: "modules"
 
         collectedBy column: "collected_by"
         collectedDate column: "collected_date"
         uploadedDate column: "uploaded_date"
+
+        postExecution column: "post_execution"
 
         processedStatus column: "processed", enumType: "identity"
     }

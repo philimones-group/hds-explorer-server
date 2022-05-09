@@ -84,12 +84,12 @@ class RawErrorLog {
     static mapping = {
         table "_raw_error_log"
 
-        id name: "uuid", generator: "assigned"
+        id column: "uuid", name: "uuid", generator: "assigned"
 
         logReportFile column: "log_report_file_uuid"
 
         entity column: "entity", indexColumn: [name: "idx_entity", type: Integer]
-        columnName column: "code_column"
+        columnName column: "column_name"
         code column: "code", indexColumn: [name: "idx_code", type: Integer]
         message column: "message"
         createdDate column: "created_date"

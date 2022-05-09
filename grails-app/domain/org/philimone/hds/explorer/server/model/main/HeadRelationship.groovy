@@ -43,6 +43,7 @@ class HeadRelationship extends AuditableEntity {
 
         household column: "household_id"
         member column: "member_id"
+        head column: "head_id"
         householdCode column: "household_code"
         memberCode column: "member_code"
         headCode column: "head_code"

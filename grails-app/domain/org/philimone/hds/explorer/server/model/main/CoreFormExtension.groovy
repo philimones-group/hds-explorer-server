@@ -47,7 +47,9 @@ class CoreFormExtension {
         required column: "collection_required"
         enabled column: "enabled"
 
-        columnsMapping column: "columns_mapping", enumType: 'identity'
+        columnsMapping column: "columns_mapping"
+
+        coreForm column: "core_form", enumType: 'identity'
 
     }
 }

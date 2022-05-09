@@ -49,6 +49,8 @@ class RawHeadRelationship {
         endType column: "end_type"
         endDate column: "end_date"
 
+        postExecution column: "post_execution"
+
         processedStatus column: "processed", enumType: "identity"
     }
 }
