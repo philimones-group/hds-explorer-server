@@ -49,10 +49,8 @@
                 <bi:menu label="${g.message(code: 'default.menu.users.label')}" link="${createLink(controller: 'user', action: 'index')}" />
 
                 <bi:dropmenu label="${g.message(code: 'default.menu.updates.label')} ">
-                    <bi:menu label="${g.message(code: 'default.menu.updates.modules.label')}" link="${createLink(controller: 'module', action: 'index')}" />
                     <bi:menu label="${g.message(code: 'default.menu.updates.forms.label')}" link="${createLink(controller: 'form', action: 'index')}" />
-                    <bi:menu label="${g.message(code: 'default.menu.updates.coreformsext.label')}" link="${createLink(controller: 'coreFormExtension', action: 'index')}" />
-                    <bi:menuseparator />
+                    <bi:menu label="${g.message(code: 'default.menu.updates.regions.label')}" link="${createLink(controller: 'region', action: 'index')}" />
                     <bi:menu label="${g.message(code: 'default.menu.updates.households.label')}" />
                     <bi:menu label="${g.message(code: 'default.menu.updates.members.label')}" />
                 </bi:dropmenu>
@@ -64,6 +62,11 @@
                     <bi:menu label="${g.message(code: 'default.menu.sync.syncdss.label')}" link="${createLink(controller: 'eventSync', action: 'index')}" />
                     <bi:menu label="${g.message(code: 'default.menu.sync.import_xls')}" link="#" />
                     <bi:menu label="${g.message(code: 'default.menu.sync.export.label')}"  link="${createLink(controller: 'syncFiles', action: 'index')}" />
+                </bi:dropmenu>
+                <bi:dropmenu label="${g.message(code: "default.menu.settings.label")}">
+                    <bi:menu label="${g.message(code: 'default.menu.settings.modules.label')}" link="${createLink(controller: 'module', action: 'index')}" />
+                    <bi:menu label="${g.message(code: 'default.menu.settings.coreformsext.label')}" link="${createLink(controller: 'coreFormExtension', action: 'index')}" />
+                    <bi:menu label="${g.message(code: 'default.menu.settings.hierarchylevels.label')}" link="${createLink(controller: 'applicationParam', action: 'hierarchyLevels')}" />
                 </bi:dropmenu>
                 <bi:dropmenu label="${g.message(code: 'default.language.select')}">
                     <language:selectMenu />

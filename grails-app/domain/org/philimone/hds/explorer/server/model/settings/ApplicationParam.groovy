@@ -13,6 +13,21 @@ class ApplicationParam extends AuditableEntity {
     ApplicationParamType type = ApplicationParamType.STRING //default is string
     String value
 
+    String getI18nName(){
+        if (name.equalsIgnoreCase("hierarchy1")) return "applicationParams.hierachylevel.level1.label"
+        if (name.equalsIgnoreCase("hierarchy2")) return "applicationParams.hierachylevel.level2.label"
+        if (name.equalsIgnoreCase("hierarchy3")) return "applicationParams.hierachylevel.level3.label"
+        if (name.equalsIgnoreCase("hierarchy4")) return "applicationParams.hierachylevel.level4.label"
+        if (name.equalsIgnoreCase("hierarchy5")) return "applicationParams.hierachylevel.level5.label"
+        if (name.equalsIgnoreCase("hierarchy6")) return "applicationParams.hierachylevel.level6.label"
+        if (name.equalsIgnoreCase("hierarchy7")) return "applicationParams.hierachylevel.level7.label"
+        if (name.equalsIgnoreCase("hierarchy8")) return "applicationParams.hierachylevel.level8.label"
+        if (name.equalsIgnoreCase("hierarchy9")) return "applicationParams.hierachylevel.level9.label"
+        if (name.equalsIgnoreCase("hierarchy10")) return "applicationParams.hierachylevel.level10.label"
+
+        return "Hierarchy Level"
+    }
+
     static constraints = {
         id maxSize: 32
         name blank:false, unique: true

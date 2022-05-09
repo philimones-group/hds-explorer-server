@@ -41,6 +41,11 @@ class ApplicationParamService {
         addApplicationParam(param)
     }
 
+    def ApplicationParam addParamNullable(String name, String value) {
+        def param = new ApplicationParam(name: name, type: ApplicationParamType.STRING, value: value)
+        addApplicationParam(param)
+    }
+
     def ApplicationParam addParam(String name, Boolean value) {
         def param = new ApplicationParam(name: name, type: ApplicationParamType.BOOLEAN, value: value)
         addApplicationParam(param)

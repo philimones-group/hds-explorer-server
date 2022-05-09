@@ -126,6 +126,8 @@ class BootStrap {
             new SecurityMap(url: "/dataset/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
             new SecurityMap(url: "/trackingList/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
 
+            new SecurityMap(url: "/applicationParam/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
+
             //new SecurityMap(url: "/household/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
             //new SecurityMap(url: "/member/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
 
@@ -365,16 +367,16 @@ class BootStrap {
         aps.addParam(Codes.PARAMS_MIN_AGE_OF_SPOUSE, StringUtil.getInteger(smaxAge))
         aps.addParam(Codes.PARAMS_GENDER_CHECKING, StringUtil.getBoolean(gndChck))
 
-        aps.addParam(RegionLevel.HIERARCHY_1.code, "")
-        aps.addParam(RegionLevel.HIERARCHY_2.code, "")
-        aps.addParam(RegionLevel.HIERARCHY_3.code, "")
-        aps.addParam(RegionLevel.HIERARCHY_4.code, "")
-        aps.addParam(RegionLevel.HIERARCHY_5.code, "")
-        aps.addParam(RegionLevel.HIERARCHY_6.code, "")
-        aps.addParam(RegionLevel.HIERARCHY_7.code, "")
-        aps.addParam(RegionLevel.HIERARCHY_8.code, "")
-        aps.addParam(RegionLevel.HIERARCHY_9.code, "")
-        aps.addParam(RegionLevel.HIERARCHY_10.code, "")
+        aps.addParamNullable(RegionLevel.HIERARCHY_1.code, null)
+        aps.addParamNullable(RegionLevel.HIERARCHY_2.code, null)
+        aps.addParamNullable(RegionLevel.HIERARCHY_3.code, null)
+        aps.addParamNullable(RegionLevel.HIERARCHY_4.code, null)
+        aps.addParamNullable(RegionLevel.HIERARCHY_5.code, null)
+        aps.addParamNullable(RegionLevel.HIERARCHY_6.code, null)
+        aps.addParamNullable(RegionLevel.HIERARCHY_7.code, null)
+        aps.addParamNullable(RegionLevel.HIERARCHY_8.code, null)
+        aps.addParamNullable(RegionLevel.HIERARCHY_9.code, null)
+        aps.addParamNullable(RegionLevel.HIERARCHY_10.code, null)
 
         //Inserting Default Mapping Formats
         new MappingFormatType(description: "Boolean [yes, no]", type: "Boolean", format:"yes,no").save(flush: true)
