@@ -73,3 +73,7 @@ grails.plugin.springsecurity.logout.postOnly = false
 // grails.plugin.springsecurity.sch.strategyName = org.springframework.security.core.context.SecurityContextHolder.MODE_INHERITABLETHREADLOCAL
 
 grails.plugin.springsecurity.rejectIfNoRule = true
+
+//database migration
+grails.plugin.databasemigration.updateOnStart = true
+grails.plugin.databasemigration.updateOnStartFileName = "changelog.groovy"

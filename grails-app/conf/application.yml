@@ -107,7 +107,7 @@ hibernate:
     queries: false
     use_second_level_cache: false
     use_query_cache: false
-  allow_update_outside_transaction: true
+    allow_update_outside_transaction: true
 
 grails:
   mail:
@@ -120,7 +120,6 @@ grails:
       mail.smtp.socketFactory.port: "465"
       mail.smtp.socketFactory.class: "javax.net.ssl.SSLSocketFactory"
       mail.smtp.socketFactory.fallback: "false"
-
 
 dataSource:
   #MySQL Config
@@ -145,11 +144,11 @@ dataSource:
 environments:
   development:
     dataSource:
-      dbCreate: update
+      dbCreate: none
       url: jdbc:mysql://localhost/hds_explorer_db?createDatabaseIfNotExist=true&autoReconnect=true&zeroDateTimeBehavior=convertToNull&useSSL=false
   test:
     dataSource:
-      dbCreate: update
+      dbCreate: none
       pooled: true
       driverClassName: com.mysql.jdbc.Driver
       dialect: org.hibernate.dialect.MySQL5InnoDBDialect
@@ -167,7 +166,7 @@ environments:
       logSql: false
   production:
     dataSource:
-      dbCreate: update
+      dbCreate: none
       polled: true
       properties:
         jmxEnabled: true
