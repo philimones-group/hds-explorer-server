@@ -40,7 +40,7 @@ class GeneralTagLib {
 
     def dropmenu = {attrs, body ->
         out << '<li class="dropdown">'
-        out << "    <a href=\"#\" class=\"dropdown-toggle\" data-toggle=\"dropdown\" role=\"button\" aria-haspopup=\"true\" aria-expanded=\"false\">${attrs.label} <span class=\"caret\"></span></a>"
+        out << "    <a href=\"#\" class=\"dropdown-toggle\" data-toggle=\"dropdown\" role=\"button\" aria-haspopup=\"true\" aria-expanded=\"true\">${attrs.label} <span class=\"caret\"></span></a>"
         out << "    <ul class=\"dropdown-menu\">"
         out << "        " + body()
         out << '    </ul>'

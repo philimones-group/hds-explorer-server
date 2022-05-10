@@ -5,8 +5,10 @@ import net.betainteractive.utilities.StringUtil
 import org.philimone.hds.explorer.server.model.collect.raw.RawRegion
 import org.philimone.hds.explorer.server.model.enums.RawEntity
 import org.philimone.hds.explorer.server.model.enums.RegionLevel
+import org.philimone.hds.explorer.server.model.json.JRegionLevel
 import org.philimone.hds.explorer.server.model.main.collect.raw.RawExecutionResult
 import org.philimone.hds.explorer.server.model.main.collect.raw.RawMessage
+import org.philimone.hds.explorer.server.model.settings.ApplicationParam
 
 @Transactional
 class RegionService {
@@ -190,6 +192,77 @@ class RegionService {
 
     }
     //</editor-fold>
+
+    //*Controller utilities *//
+    Region get(Serializable id){
+        Region.get(id)
+    }
+
+    List<Region> list(Map args){
+        Region.list(args)
+    }
+
+    Long count(){
+        Region.count()
+    }
+
+    void delete(Serializable id){
+        get(id).delete()
+    }
+
+    Region save(Region module){
+        module.save(flush:true)
+    }
+    
+    List<JRegionLevel> getRegionLevels(){
+        def list = []
+        ApplicationParam.executeQuery("select p from ApplicationParam p where p.name like '%hierarchy%' and p.value is not null order by p.name asc" ).each {
+            list << new JRegionLevel(level: it.name, name: it.value, regionLevel: RegionLevel.getFrom(it.name))
+        }
+        return list
+    }
+
+    List<JRegionLevel> getRegionLevelsByExistentRegions(){
+        def list = new ArrayList<JRegionLevel>()
+        def listRemove = new ArrayList<JRegionLevel>()
+
+        ApplicationParam.executeQuery("select p from ApplicationParam p where p.name like '%hierarchy%' and p.value is not null order by p.name asc" ).each {
+            list << new JRegionLevel(level: it.name, name: it.value, regionLevel: RegionLevel.getFrom(it.name))
+        }
+
+        def levels = Region.executeQuery("select distinct(r.hierarchyLevel) from Region r")
+        def max = 1;
+
+        if (levels.size()>0){
+            levels.each {
+                int v = Integer.parseInt(it.code.replace("hierarchy", ""))
+                max = Math.max(max, v+1)
+            }
+        }
+
+        println "max level = ${max}"
+
+        list.each { jr ->
+            int v = Integer.parseInt(jr.level.replace("hierarchy", ""))
+            if (v > max) listRemove.add(jr)
+        }
+
+        list.removeAll(listRemove)
+
+        return list
+    }
+
+    String getRegionLevelName(String level){
+        ApplicationParam.findByName(level)?.value
+    }
+
+    Map<String, String> getRegionLevelNames(){
+        def map = [:]
+        ApplicationParam.executeQuery("select p from ApplicationParam p where p.name like '%hierarchy%' and p.value is not null order by p.name asc" ).each {
+            map.put(it.name, it.value)
+        }
+        return map
+    }
 
     class HierarchyRegion {
         Region region
