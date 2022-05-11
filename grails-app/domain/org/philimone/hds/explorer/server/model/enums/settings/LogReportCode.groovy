@@ -21,8 +21,9 @@ enum LogReportCode {
 
     /*LogReportCode for events that sync data from clients to HDS Explorer */
     REPORT_DSS_EVENTS_SYNC(40, "logreport"),
-    REPORT_DSS_EVENTS_COMPILE_SYNC(41, "logreport"),
-    REPORT_DSS_EVENTS_EXECUTE_SYNC(42, "logreport"),
+    REPORT_DSS_EVENTS_EXECUTE_SYNC(41, "logreport"),
+    REPORT_DSS_EVENTS_RESET_ERRORS(42, "logreport"),
+
 
     /*LogReportCode for events of Generating ZIP XML Files */
     REPORT_GENERATE_SETTINGS_ZIP_XML_FILES (51, "logreport"),

@@ -301,10 +301,10 @@ class BootStrap {
         ).save(flush: true)
 
         new LogReport(
-                reportId: LogReportCode.REPORT_DSS_EVENTS_COMPILE_SYNC,
+                reportId: LogReportCode.REPORT_DSS_EVENTS_RESET_ERRORS,
                 group: LogGroup.findByGroupId(LogGroupCode.GROUP_SYNC_DSS_DATA_FROM_CLIENT),
                 status: LogStatus.NOT_STARTED,
-                description: 'logreport.sync.syncdss.compile.label'
+                description: 'logreport.sync.syncdss.reset.errors.label'
         ).save(flush: true)
 
         new LogReport(

@@ -188,6 +188,70 @@ class EventSyncService {
         output.close();
     }
 
+    def executeResetErrors(LogReportCode logReportId) {
+
+        LogOutput log = generalUtilitiesService.getOutput(SystemPath.getLogsPath(), "rawbatch-reset-errors-processed");
+        PrintStream output = log.output
+        if (output == null) return;
+
+        def start = LocalDateTime.now();
+        int processed = 0
+        int errors = 0
+        def logStatusValue = LogStatus.FINISHED
+
+        //create log report file
+        String reportFileId = null;
+
+        LogReport.withTransaction {
+            LogReport logReport = LogReport.findByReportId(logReportId)
+            LogReportFile reportFile = new LogReportFile(creationDate: LocalDateTime.now(), fileName: log.logFileName, logReport: logReport)
+
+            reportFile.keyTimestamp = logReport.keyTimestamp
+            reportFile.start = start
+            reportFile.creationDate = LocalDateTime.now()
+
+            logReport.addToLogFiles(reportFile)
+            logReport = logReport.save(flush:true)
+
+            reportFile = LogReportFile.findByKeyTimestamp(logReport.keyTimestamp)
+            reportFileId = reportFile.id
+
+            println(reportFileId)
+
+        }
+
+        try {
+
+            rawBatchExecutionService.resetEventsToNotProcessed(reportFileId)
+
+        }catch (Exception ex){
+            ex.printStackTrace()
+
+            logStatusValue = LogStatus.ERROR
+            processed = 0
+            errors = 1
+            output.println(ex.toString())
+        }
+
+        LogReport.withTransaction {
+            LogReport logReport = LogReport.findByReportId(logReportId)
+            LogReportFile reportFile = LogReportFile.findById(reportFileId)
+
+            reportFile.end = LocalDateTime.now()
+            reportFile.processedCount = processed
+            reportFile.errorsCount = errors
+            reportFile.save(flush:true)
+
+            logReport.end = LocalDateTime.now()
+            logReport.status = logStatusValue
+            logReport.save(flush:true)
+
+            //println("errors: ${logReport.errors}")
+        }
+
+        output.close();
+
+    }
 
     List<SyncProcessedStatus> mainProcessedStatus() {
 
@@ -230,7 +294,7 @@ class EventSyncService {
 
         //total records
         status.name = 'syncdss.sync.members.label'
-        status.totalRecords = Member.count()
+        status.totalRecords = Member.count()-1 //minus Unknown Individual
         status.processed = -1          //.countByProcessedStatus(ProcessedStatus.SUCCESS)
         status.processedWithError = -1 //.countByProcessedStatus(ProcessedStatus.ERROR)
         status.notProcessed = -1       //.countByProcessedStatus(ProcessedStatus.NOT_PROCESSED)

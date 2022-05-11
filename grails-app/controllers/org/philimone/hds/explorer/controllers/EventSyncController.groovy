@@ -44,22 +44,22 @@ class EventSyncController {
             }).start();
         }
 
-        if (logReport.reportId== LogReportCode.REPORT_DSS_EVENTS_COMPILE_SYNC){
-            new Thread(new Runnable() {
-                @Override
-                void run() {
-                    println "executing transfer from raw data to HDS - compile events"
-                    eventSyncService.executeCompileEvents(id)
-                }
-            }).start();
-        }
-
         if (logReport.reportId== LogReportCode.REPORT_DSS_EVENTS_EXECUTE_SYNC){
             new Thread(new Runnable() {
                 @Override
                 void run() {
                     println "executing transfer from raw data to HDS - execute events"
                     eventSyncService.executeEvents(id)
+                }
+            }).start();
+        }
+
+        if (logReport.reportId== LogReportCode.REPORT_DSS_EVENTS_RESET_ERRORS){
+            new Thread(new Runnable() {
+                @Override
+                void run() {
+                    println "executing reset errors to not processed - errors events"
+                    eventSyncService.executeResetErrors(id)
                 }
             }).start();
         }
@@ -79,9 +79,6 @@ class EventSyncController {
         def logReportFile = LogReportFile.get(params.id)
 
         //get error logs
-
-
-
         def errorLogs = RawErrorLog.findAllByLogReportFile(logReportFile, [sort: "createdDate", order: "asc"])
 
         println "${logReportFile}, ${errorLogs.size()}"
@@ -90,7 +87,8 @@ class EventSyncController {
     }
 
     def editRawDomain = {
-        def errorLog = RawErrorLog.get(params.id)
+        //def errorLog = RawErrorLog.get(params.id)
+        redirect controller:"rawDomain", action: "editRawDomain", model: [id:params.id]
     }
 
     def downloadLogFile = {
