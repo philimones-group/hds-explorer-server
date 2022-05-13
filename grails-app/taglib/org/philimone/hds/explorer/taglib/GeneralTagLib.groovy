@@ -121,7 +121,7 @@ class GeneralTagLib {
 
 
 
-            out << f.field(bean: beanInstance, property: propertyName)
+            out << f.field(bean: beanInstance, property: propertyName, value: beanInstance?."${propertyName}")
         }
     }
 

@@ -75,11 +75,21 @@ class RoundController {
             return
         }
 
-        round.startDate = StringUtil.toLocalDate(params.startDate)
-        round.endDate = StringUtil.toLocalDate(params.endDate)
+        println "params: ${params}, ${round.description}"
+
+        params.startDate = StringUtil.toLocalDate(params.startDate)
+        params.endDate = StringUtil.toLocalDate(params.endDate)
+        round.startDate = params.startDate
+        round.endDate = params.endDate
 
         try {
-            roundService.save(round)
+
+            bindData(round, params)
+
+            round.save(flush:true)
+
+            println "errors: ${round.errors}"
+
         } catch (ValidationException e) {
             respond round.errors, view:'edit'
             return
@@ -87,7 +97,7 @@ class RoundController {
 
         request.withFormat {
             form multipartForm {
-                flash.message = message(code: 'default.updated.message', args: [message(code: 'round.label', default: 'Round'), round.id])
+                flash.message = message(code: 'default.updated.message', args: [message(code: 'round.label', default: 'Round'), round.roundNumber])
                 redirect round
             }
             '*'{ respond round, [status: OK] }
