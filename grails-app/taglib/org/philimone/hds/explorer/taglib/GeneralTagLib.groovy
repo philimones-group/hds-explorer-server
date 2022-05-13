@@ -78,6 +78,85 @@ class GeneralTagLib {
         out << generalUtilitiesService.userFullName();
     }
 
+    String getObjectValue(def propertyValue){
+        if (propertyValue instanceof LocalDate || propertyValue instanceof LocalDateTime) {
+            LocalDate localDate = (propertyValue instanceof LocalDate) ? (LocalDate) propertyValue : null
+            LocalDateTime localDateTime = (propertyValue instanceof LocalDateTime) ? (LocalDateTime) propertyValue : null
+
+            if (localDate != null){
+                return "${StringUtil.format(localDate, "yyyy-MM-dd")}"
+            } else if (localDateTime != null){
+                return "${StringUtil.format(localDateTime, "yyyy-MM-dd HH:mm:ss")}"
+            }
+
+        } else {
+            return "${propertyValue}"
+        }
+    }
+
+    def field = {attrs, body ->
+
+        def beanInstance = attrs.get("bean")
+        def propertyName = attrs.property
+        def label = attrs.label
+        def mode = attrs.mode //edit|display
+
+        if ("show".equalsIgnoreCase("${mode}")){
+            //output display, getmessages for label
+
+            def propertyValue = beanInstance."${propertyName}"
+            def propertyDefaultLabel = StringUtil.removePascalCase(propertyName)
+            def labelText = g.message(code: label, default: propertyDefaultLabel)
+            def objValue = getObjectValue(propertyValue)
+
+            out << "            <div class=\"fieldcontain required\">\n"
+            out << "                <label for=\"${propertyName}\">\n"
+            out << "                    ${labelText}\n"
+            out << "                </label>\n"
+            out << "                ${propertyValue==null ? '' : objValue} \n"
+            out << "            </div>\n"
+
+        } else {
+            //edit mode
+
+
+
+            out << f.field(bean: beanInstance, property: propertyName)
+        }
+    }
+
+    def dateField = { attrs, body ->
+        def beanInstance = attrs.get("bean")
+        def propertyName = attrs.property
+        def label = attrs.label
+
+        def propertyDefaultLabel = StringUtil.removePascalCase(propertyName)
+        def labelText = g.message(code: label, default: propertyDefaultLabel)
+        def propertyValue = beanInstance?."${propertyName}"
+        def toDate = StringUtil.toDate(StringUtil.formatLocalDate(propertyValue))
+
+        out << "            <div class=\"fieldcontain required\">\n"
+        out << "                <label for=\"${propertyName}\">\n"
+        out << "                    ${labelText}\n"
+        out << "                </label>\n"
+        out << "                ${g.datePicker(name: propertyName, precision: 'day', value: toDate)} \n"
+        out << "            </div>\n"
+
+    }
+
+    String getFieldFromMessageCode(String messageCode) {
+        messageCode = messageCode.replaceAll(".label", "")
+        def str = messageCode.contains(".") ? messageCode.split("\\.")[1] : messageCode //rawDomain.fieldName
+        return str
+    }
+
+    String getDefaultDomainPropertyLabel(String messageCode){
+        def fieldName = getFieldFromMessageCode(messageCode)
+        def str = StringUtil.removePascalCase(fieldName)
+
+        return str
+    }
+
     def messageStatus = {attrs, body ->
         out << generalUtilitiesService.UserMessageStatus();
     }

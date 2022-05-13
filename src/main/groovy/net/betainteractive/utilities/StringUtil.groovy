@@ -89,7 +89,7 @@ public class StringUtil {
     }
 
     public static String removeQuotes(String text) {
-        return text.replaceAll("^\"|\"$", "");
+        return text.replaceAll('^\"|\"$', "");
     }
 
     public static String getStringValueOrZero(String text){
@@ -456,6 +456,17 @@ public class StringUtil {
         }
     }
 
+    public static LocalDate toLocalDate(Date date) {
+        try {
+            def dateString = format(date,"yyyy-MM-dd")
+
+            return LocalDate.parse(dateString, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        } catch (Exception ex){
+            //ex.printStackTrace();
+            return null;
+        }
+    }
+
     public static LocalDateTime toLocalDateTime(String dateString) {
         try {
             return LocalDateTime.parse(dateString, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
@@ -494,6 +505,15 @@ public class StringUtil {
 
     public static Date toDate(String date, String format){
         java.text.DateFormat formatter = new java.text.SimpleDateFormat(format);
+        try {
+            return formatter.parse(date);
+        } catch (ParseException e) {
+            return null;
+        }
+    }
+
+    public static Date toDate(String date){
+        java.text.DateFormat formatter = new java.text.SimpleDateFormat("yyyy-MM-dd");
         try {
             return formatter.parse(date);
         } catch (ParseException e) {
@@ -580,6 +600,52 @@ public class StringUtil {
         }
 
         return str;
+    }
+
+    public static String removePascalCase(String text){
+        def str = toSnakeCase(text)
+        def spt = str.split("_")
+        str = ""
+
+        for (def s : spt){
+            str += (str.empty ? "" : " ") + capitalize(s)
+        }
+
+        return str
+    }
+
+    public static String toSnakeCase(String s){
+        String ss = "";
+        String last = "";
+        int repeatNr = 0;
+        boolean lastIsUpper = false
+
+        for (int i=0; i < s.length(); i++) {
+
+            char ch = s.charAt(i)
+            String it = ""+ch+"";
+
+            if (i==0 || lastIsUpper){
+                it = it.toLowerCase() //first character will be always lowercase
+                ch = ch.toLowerCase()
+            }
+
+            repeatNr = it.matches("[0-9]+") ? ++repeatNr : 0;
+            //println "rp "+repeatNr
+
+            if (Character.isUpperCase(ch)){
+
+                if (repeatNr<2) {ss += "_" + it;} else {ss += it;}
+
+            }else{
+                ss += it;
+            }
+            last = it;
+
+            lastIsUpper = Character.isUpperCase(s.charAt(i)) //last/current char is uppercase
+        }
+
+        return ss;
     }
 
     public static String removePackageNames(String text){

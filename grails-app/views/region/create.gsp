@@ -375,7 +375,7 @@
             <g:if test="${errorMessages}">
                 <ul class="errors" role="alert">
                     <g:each in="${errorMessages}" status="i" var="error">
-                        <li data-field-id="${error.field}">${error.text}</li>
+                        <li data-field-id="${error.text}">${error.text}</li>
                     </g:each>
                 </ul>
             </g:if>

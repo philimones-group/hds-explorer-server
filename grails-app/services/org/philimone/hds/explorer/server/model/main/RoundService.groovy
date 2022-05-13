@@ -17,6 +17,30 @@ class RoundService {
     def codeGeneratorService
     def errorMessageService
 
+    //<editor-fold desc="Round scaffold generated">
+    Round get(Serializable id){
+        Round.get(id)
+    }
+
+    List<Round> list(Map args){
+        Round.list(args)
+    }
+
+    Long count(){
+        Round.count()
+    }
+
+    void delete(Serializable id){
+        //do not delete anything
+        //Round.get(id).delete(flush: true)
+    }
+
+    Round save(Round round){
+        round.save(flush:true)
+    }
+    //</editor-fold>
+
+
     //<editor-fold desc="Round Utilities Methods">
     boolean exists(int roundNumber) {
         Round.countByRoundNumber(roundNumber) > 0
@@ -60,6 +84,37 @@ class RoundService {
 
             errors = errorMessageService.getRawMessages(RawEntity.ROUND, round)
 
+            RawExecutionResult<Round> obj = RawExecutionResult.newErrorResult(RawEntity.ROUND, errors)
+            return obj
+        } else {
+            round = result
+        }
+
+        RawExecutionResult<Round> obj = RawExecutionResult.newSuccessResult(RawEntity.ROUND, round)
+        return obj
+    }
+
+    RawExecutionResult<Round> createRound(Round round) {
+
+        /* Run Checks and Validations */
+
+        def errors = validate(round)
+
+        if (!errors.isEmpty()){
+            //create result and close
+            RawExecutionResult<Round> obj = RawExecutionResult.newErrorResult(RawEntity.ROUND, errors)
+            return obj
+        }
+
+        //save round
+        def result = round.save(flush:true)
+
+        //Validate using Gorm Validations
+        if (round.hasErrors()){
+
+            errors = errorMessageService.getRawMessages(RawEntity.ROUND, round)
+println "domain errors: ${errors}"
+            println "round ${round.startDate}"
             RawExecutionResult<Round> obj = RawExecutionResult.newErrorResult(RawEntity.ROUND, errors)
             return obj
         } else {
