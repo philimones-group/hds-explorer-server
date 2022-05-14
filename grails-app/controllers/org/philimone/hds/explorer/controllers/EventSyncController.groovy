@@ -88,7 +88,7 @@ class EventSyncController {
 
     def editRawDomain = {
         //def errorLog = RawErrorLog.get(params.id)
-        redirect controller:"rawDomain", action: "editRawDomain", model: [id:params.id]
+        redirect controller:"rawDomain", action: "editDomain", model: [id:params.id]
     }
 
     def downloadLogFile = {

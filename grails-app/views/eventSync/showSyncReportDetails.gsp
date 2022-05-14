@@ -122,7 +122,7 @@
 
 							<tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
 
-								<td><g:link action="editRawRecord" id="${errorLogInstance.id}"><g:message code="${errorLogInstance.entity.name}" /> </g:link></td>
+								<td><g:link controller="rawDomain" action="editDomain" id="${errorLogInstance.uuid}"><g:message code="${errorLogInstance.entity.name}" /> </g:link></td>
 
 								<td>${errorLogInstance.uuid}</td>
 
