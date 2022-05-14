@@ -174,8 +174,8 @@ class VisitService {
             errors << errorMessageService.getRawMessage(RawEntity.VISIT, "validation.field.reference.error", ["Household", "householdCode", rawVisit.householdCode], ["householdCode"])
         }
         //C4. Check Respondent reference existence
-        if (!respondentExists){
-            errors << errorMessageService.getRawMessage(RawEntity.VISIT, "validation.field.reference.error", ["Member", "code", rawVisit.respondentCode], ["respondentCode"])
+        if (visitReason != VisitReason.NEW_HOUSEHOLD && !respondentExists){
+            errors << errorMessageService.getRawMessage(RawEntity.VISIT, "validation.field.reference.error", ["Member", "respondentCode", rawVisit.respondentCode], ["respondentCode"])
         }
 
         //C5. Check CollectedBy User existence

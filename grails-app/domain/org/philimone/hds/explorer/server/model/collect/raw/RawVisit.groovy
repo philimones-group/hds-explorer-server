@@ -22,10 +22,10 @@ class RawVisit {
 
     String nonVisitedMembers
 
-    String gpsLat;
-    String gpsLon;
-    String gpsAlt;
-    String gpsAcc;
+    String gpsLat
+    String gpsLon
+    String gpsAlt
+    String gpsAcc
 
     String collectedBy //fieldWorkerId
     LocalDateTime collectedDate //visitDate / creationDate

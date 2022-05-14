@@ -456,7 +456,7 @@ public class StringUtil {
         }
     }
 
-    public static LocalDate toLocalDate(Date date) {
+    public static LocalDate toLocalDateFromDate(Date date) {
         try {
             def dateString = format(date,"yyyy-MM-dd")
 

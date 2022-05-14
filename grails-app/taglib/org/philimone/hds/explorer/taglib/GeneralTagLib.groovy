@@ -118,9 +118,6 @@ class GeneralTagLib {
 
         } else {
             //edit mode
-
-
-
             out << f.field(bean: beanInstance, property: propertyName, value: beanInstance?."${propertyName}")
         }
     }
@@ -129,19 +126,45 @@ class GeneralTagLib {
         def beanInstance = attrs.get("bean")
         def propertyName = attrs.property
         def label = attrs.label
+        def mode = attrs.mode
 
         def propertyDefaultLabel = StringUtil.removePascalCase(propertyName)
         def labelText = g.message(code: label, default: propertyDefaultLabel)
         def propertyValue = beanInstance?."${propertyName}"
-        def toDate = StringUtil.toDate(StringUtil.formatLocalDate(propertyValue))
 
-        out << "            <div class=\"fieldcontain required\">\n"
-        out << "                <label for=\"${propertyName}\">\n"
-        out << "                    ${labelText}\n"
-        out << "                </label>\n"
-        out << "                ${g.datePicker(name: propertyName, precision: 'day', value: toDate)} \n"
-        out << "            </div>\n"
 
+        if ("show".equalsIgnoreCase("${mode}")){
+            def objValue = getObjectValue(propertyValue)
+
+            out << "            <div class=\"fieldcontain required\">\n"
+            out << "                <label for=\"${propertyName}\">\n"
+            out << "                    ${labelText}\n"
+            out << "                </label>\n"
+            out << "                ${propertyValue==null ? '' : objValue} \n"
+            out << "            </div>\n"
+        } else {
+            def toDate = getDateValue(propertyValue)
+
+            out << "            <div class=\"fieldcontain required\">\n"
+            out << "                <label for=\"${propertyName}\">\n"
+            out << "                    ${labelText}\n"
+            out << "                </label>\n"
+            out << "                ${g.datePicker(name: propertyName, precision: 'day', value: toDate)} \n"
+            out << "            </div>\n"
+        }
+
+    }
+
+    Date getDateValue(def propertyValue){
+        if (propertyValue == null) return null;
+
+        if (propertyValue instanceof LocalDate) {
+            return StringUtil.toDate(StringUtil.formatLocalDate(propertyValue))
+        } else if (propertyValue instanceof LocalDateTime) {
+            return StringUtil.toDate(StringUtil.format(propertyValue), "yyyy-MM-dd HH:mm:ss")
+        }
+
+        return null
     }
 
     String getFieldFromMessageCode(String messageCode) {
