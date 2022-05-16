@@ -205,20 +205,20 @@ class Member extends CollectableEntity {
         maritalStatus column: 'marital_status', enumType: 'identity'
 
         spouse column: 'spouse_id'
-        spouseCode column: 'spouse_code'
+        spouseCode column: 'spouse_code', index: "idx_spouse_code"
         spouseName column: 'spouse_name'
         //spouseType column: 'spouse_type'
 
         mother column: 'mother_id'
-        motherCode column: 'mother_code'
+        motherCode column: 'mother_code', index: "idx_mother_code"
         motherName column: 'mother_name'
 
         father column: 'father_id'
-        fatherCode column: 'father_code'
+        fatherCode column: 'father_code', index: "idx_father_code"
         fatherName column: 'father_name'
 
         household column: 'household_id'
-        householdCode column: 'household_code'
+        householdCode column: 'household_code', index: "idx_household_code"
         householdName column: 'household_name'
 
         entryHousehold column: 'entry_household'
@@ -245,7 +245,7 @@ class Member extends CollectableEntity {
         cosLongitude column: 'cos_longitude'
         sinLongitude column: 'sin_longitude'
 
-        modules column: "modules", type: StringCollectionType
+        modules column: "modules", type: StringCollectionType, index: "idx_modules"
     }
 
     def static ALL_COLUMNS = ['code', 'name', 'gender', 'dob', 'age', 'ageAtDeath', 'motherCode', 'motherName', 'fatherCode', 'fatherName', 'maritalStatus', 'spouseCode', 'spouseName', 'spouseType',

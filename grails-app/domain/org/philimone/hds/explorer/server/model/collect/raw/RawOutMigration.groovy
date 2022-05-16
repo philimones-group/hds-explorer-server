@@ -53,16 +53,16 @@ class RawOutMigration {
 
         version false
 
-        memberCode column: "member_code"
+        memberCode column: "member_code", index: "idx_member_code"
         migrationType column: "migration_type"
-        originCode      column: "origin_code"
-        destinationCode  column: "destination_code"
+        originCode      column: "origin_code", index: "idx_origin_code"
+        destinationCode  column: "destination_code", index: "idx_destination_code"
         destinationOther column: "destination_other"
         migrationDate   column: "migration_date"
         migrationReason column: "migration_reason"
-        visitCode column: "visit_code"
+        visitCode column: "visit_code", index: "idx_visit_code"
 
-        collectedBy column: "collected_by"
+        collectedBy column: "collected_by", index: "idx_collected_by"
         collectedDate column: "collected_date"
         uploadedDate column: "uploaded_date"
 

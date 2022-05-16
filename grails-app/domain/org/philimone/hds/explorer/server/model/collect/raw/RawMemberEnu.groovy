@@ -12,6 +12,8 @@ class RawMemberEnu {
 
     String id
 
+    String visitCode
+
     String code
     String name
     String gender
@@ -80,25 +82,27 @@ class RawMemberEnu {
 
         version false
 
-        code column: 'code'
+        visitCode column: "visit_code", index: "idx_visit_code"
+
+        code column: 'code', index: "idx_code"
         name column: 'name'
         gender column: 'gender'
         dob column: 'dob'
 
-        motherCode column: 'mother_code'
+        motherCode column: 'mother_code', index: "idx_mother_code"
         motherName column: 'mother_name'
 
-        fatherCode column: 'father_code'
+        fatherCode column: 'father_code', index: "idx_father_code"
         fatherName column: 'father_name'
 
-        householdCode column: 'household_code'
+        householdCode column: 'household_code', index: "idx_household_code"
         householdName column: 'household_name'
         headRelationshipType column: 'head_relationship_type'
         residencyStartDate column: 'residency_start_date'
 
         modules column: "modules"
 
-        collectedBy column: 'collected_by'
+        collectedBy column: 'collected_by', index: "idx_collected_by"
         collectedDate column: 'collected_date'
         uploadedDate column: 'uploaded_date'
 

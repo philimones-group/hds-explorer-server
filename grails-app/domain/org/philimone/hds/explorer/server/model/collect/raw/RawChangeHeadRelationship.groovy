@@ -24,7 +24,7 @@ class RawChangeHeadRelationship {
         id column: "id", generator: 'uuid'
 
         changeHead column: "change_head_id"
-        newMemberCode column: "new_member_code"
+        newMemberCode column: "new_member_code", index: "idx_new_membercode"
         newRelationshipType column: "new_relationship_type"
     }
 

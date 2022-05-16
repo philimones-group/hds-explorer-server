@@ -56,18 +56,18 @@ class RawInMigration {
 
         version false
 
-        visitCode column: "visit_code"
-        memberCode column: "member_code"
+        visitCode column: "visit_code", index: "idx_visit_code"
+        memberCode column: "member_code", index: "idx_member_code"
         headRelationshipType column: "head_relationship_type"
         migrationType       column: "migration_type"
         extMigrationType column: "ext_migration_type"
-        originCode  column: "origin_code"
+        originCode  column: "origin_code", index: "idx_origin_code"
         originOther column: "origin_other"
-        destinationCode      column: "destination_code"
+        destinationCode      column: "destination_code", index: "idx_destination_code"
         migrationDate   column: "migration_date"
         migrationReason column: "migration_reason"
 
-        collectedBy column: "collected_by"
+        collectedBy column: "collected_by", index: "idx_collected_by"
         collectedDate column: "collected_date"
         uploadedDate column: "uploaded_date"
 

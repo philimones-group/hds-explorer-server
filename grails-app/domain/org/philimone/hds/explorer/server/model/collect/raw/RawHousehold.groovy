@@ -63,11 +63,11 @@ class RawHousehold {
 
         version false
 
-        regionCode column: "region_code"
+        regionCode column: "region_code", index: "idx_region_code"
         regionName column: "region_name"
-        householdCode column: "household_code"
+        householdCode column: "household_code", index: "idx_household_code"
         householdName column: "household_name"
-        headCode column: "head_code"
+        headCode column: "head_code", index: "idx_head_code"
         headName column: "head_name"
         gpsLon column: "gps_longitude"
         gpsAlt column: "gps_altitude"
@@ -76,7 +76,7 @@ class RawHousehold {
 
         modules column: "modules"
 
-        collectedBy column: "collected_by"
+        collectedBy column: "collected_by", index: "idx_collected_by"
         collectedDate column: "collected_date"
         uploadedDate column: "uploaded_date"
 

@@ -72,22 +72,22 @@ class Visit extends CollectableEntity {
         code column: 'code'
 
         household column: "household_id"
-        householdCode column: "household_code"
+        householdCode column: "household_code", index: "idx_household_code"
 
         visitDate column: "visit_date"
         visitLocation column: "visit_location"
         visitLocationOther column: "visit_location_other"
         visitReason column: "visit_reason"
 
-        roundNumber column: "round_number"
+        roundNumber column: "round_number", index: "idx_round_number"
 
         respondent column: "respondent_id"
-        respondentCode column: "respondent_code"
+        respondentCode column: "respondent_code", index: "idx_respondent_code"
 
         hasInterpreter column: "has_interpreter"
         interpreterName column: "interpreter_name"
 
-        nonVisitedMembers column: "non_visited_members"
+        nonVisitedMembers column: "non_visited_members", index: "idx_nonv"
 
         gpsAccuracy column: "gps_accuracy"
         gpsAltitude column: "gps_altitude"

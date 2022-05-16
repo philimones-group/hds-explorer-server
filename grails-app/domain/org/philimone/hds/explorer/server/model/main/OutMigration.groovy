@@ -91,22 +91,22 @@ class OutMigration extends CollectableEntity {
         id column: "id", generator: 'uuid'
 
         member     column: "member_id"
-        memberCode column: "member_code"
+        memberCode column: "member_code", index: "idx_member_code"
 
         migrationType       column: "type"
 
         origin          column: "origin_id"
-        originCode      column: "origin_code"
+        originCode      column: "origin_code", index: "idx_origin_code"
         originResidency column: "origin_residency"
 
         destination      column: "destination_id"
-        destinationCode  column: "destination_code"
+        destinationCode  column: "destination_code", index: "idx_destination_code"
         destinationOther column: "destination_other"
 
         migrationDate   column: "migration_date"
         migrationReason column: "migration_reason"
 
         visit column: "visit_id"
-        visitCode column: "visit_code"
+        visitCode column: "visit_code", index: "idx_visit_code"
     }
 }

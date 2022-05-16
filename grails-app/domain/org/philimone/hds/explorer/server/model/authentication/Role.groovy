@@ -42,7 +42,7 @@ class Role implements Serializable {
 
 		id column: "id", generator: 'uuid'
 
-		name column: "name"
+		name column: "name", index: "idx_name"
 		authority column: "authority"
 
 		cache true

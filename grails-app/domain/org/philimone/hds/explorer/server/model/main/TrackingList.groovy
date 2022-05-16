@@ -50,6 +50,6 @@ class TrackingList extends AuditableEntity {
         filename column: 'filename'
         hasExtraData column: 'has_extra_data'
         enabled column: 'enabled'
-        modules column: 'modules', type: StringCollectionType
+        modules column: 'modules', type: StringCollectionType, index: "idx_modules"
     }
 }

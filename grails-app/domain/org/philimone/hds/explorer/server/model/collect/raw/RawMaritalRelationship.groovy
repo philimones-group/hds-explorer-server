@@ -40,14 +40,14 @@ class RawMaritalRelationship {
 
         id column: "id", generator: 'assigned'
 
-        memberA column: "member_a_code"
-        memberB column: "member_b_code"
+        memberA column: "member_a_code", index: "idx_member_a_code"
+        memberB column: "member_b_code", index: "idx_member_b_code"
         startStatus column: "start_status"
         startDate column: "start_date"
         endStatus column: "end_status"
         endDate column: "end_date"
 
-        collectedBy column: "collected_by"
+        collectedBy column: "collected_by", index: "idx_collected_by"
         collectedDate column: "collected_date"
         uploadedDate column: "uploaded_date"
 

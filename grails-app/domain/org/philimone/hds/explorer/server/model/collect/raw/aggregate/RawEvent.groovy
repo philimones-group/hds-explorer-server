@@ -55,12 +55,11 @@ class RawEvent {
 
         version false
 
-        keyDate    column: "key_date",   indexColumn: [name: "idx_kydate", type: Integer]
-        eventType  column: "event_type", indexColumn: [name: "idx_type", type: Integer], enumType: "identity"
-        eventId    column: "event_uuid", indexColumn: [name: "idx_id", type: Integer]
-        entityCode column: "event_code", indexColumn: [name: "idx_code", type: Integer]
-        childCodes column: "child_codes", indexColumn: [name: "idx_childs", type: Integer]
-
+        keyDate    column: "key_date",   index: "idx_kydate"
+        eventType  column: "event_type", index: "idx_type", enumType: "identity"
+        eventId    column: "event_uuid", index: "idx_id"
+        entityCode column: "event_code", index: "idx_code"
+        childCodes column: "child_codes", index: "idx_childs"
         processed column: "processed"
     }
 

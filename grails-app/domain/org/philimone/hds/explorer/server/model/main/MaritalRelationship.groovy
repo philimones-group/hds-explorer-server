@@ -37,8 +37,8 @@ class MaritalRelationship extends CollectableEntity {
 
         memberA column: "member_a_id"
         memberB column: "member_b_id"
-        memberA_code column: "member_a_code"
-        memberB_code column: "member_b_code"
+        memberA_code column: "member_a_code", index: "idx_member_a_code"
+        memberB_code column: "member_b_code", index: "idx_member_b_code"
         startStatus column: "start_status"
         startDate column: "start_date"
         endStatus column: "end_status"

@@ -72,26 +72,26 @@ class RawVisit {
 
         version false
 
-        code column: 'code'
+        code column: 'code', index: "idx_code"
 
-        householdCode column: "household_code"
+        householdCode column: "household_code", index: "idx_household_code"
         visitDate column: "visit_date"
         visitLocation column: "visit_location"
         visitLocationOther column: "visit_location_other"
         visitReason column: "visit_reason"
         roundNumber column: "round_number"
-        respondentCode column: "respondent_code"
+        respondentCode column: "respondent_code", index: "idx_respondent_code"
         hasInterpreter column: "has_interpreter"
         interpreterName column: "interpreter_name"
 
-        nonVisitedMembers column: "non_visited_members"
+        nonVisitedMembers column: "non_visited_members", index: "idx_nonv"
 
         gpsAcc column: "gps_accuracy"
         gpsAlt column: "gps_altitude"
         gpsLat column: "gps_latitude"
         gpsLon column: "gps_longitude"
 
-        collectedBy column: "collected_by"
+        collectedBy column: "collected_by", index: "idx_collected_by"
         collectedDate column: "collected_date"
         uploadedDate column: "uploaded_date"
 

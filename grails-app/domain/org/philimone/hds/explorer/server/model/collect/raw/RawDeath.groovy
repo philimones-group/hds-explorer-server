@@ -48,13 +48,13 @@ class RawDeath {
 
         version false
 
-        visitCode column: "visit_code"
-        memberCode column: "member_code"
+        visitCode column: "visit_code", index: "idx_visit_code"
+        memberCode column: "member_code", index: "idx_member_code"
         deathDate column: "death_date"
         deathCause column: "death_cause"
         deathPlace column: "death_place"
 
-        collectedBy column: "collected_by"
+        collectedBy column: "collected_by", index: "idx_collby"
         collectedDate column: "collected_date"
         uploadedDate column: "uploaded_date"
 

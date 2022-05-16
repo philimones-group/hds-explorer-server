@@ -31,9 +31,9 @@ class IncompleteVisit extends CollectableEntity {
         id column: "id", generator: 'uuid'
 
         visit column: "visit_id"
-        visitCode column: "visit_code"
+        visitCode column: "visit_code", index: "idx_visit_code"
         member column: "member_id"
-        memberCode column: "member_code"
+        memberCode column: "member_code", index: "idx_member_code"
         reason column: "visit_reason", enumType: "identity"
         reasonOther column: "other_visit_reason"
     }

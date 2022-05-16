@@ -40,7 +40,7 @@ class ApplicationParam extends AuditableEntity {
 
         id column: "id", generator: 'uuid'
 
-        name column: "name"
+        name column: "name", index: "idx_name"
         type column: "type", enumType: "string"
         value column: "value"
     }

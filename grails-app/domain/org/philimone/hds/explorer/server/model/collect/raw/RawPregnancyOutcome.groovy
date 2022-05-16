@@ -55,18 +55,18 @@ class RawPregnancyOutcome {
 
         id column: "id", generator: 'assigned'
 
-        code column: "code"
-        motherCode column: "mother_code"
-        fatherCode column: "father_code"
+        code column: "code", index: "idx_code"
+        motherCode column: "mother_code", index: "idx_mother_code"
+        fatherCode column: "father_code", index: "idx_father_code"
         numberOfOutcomes column: "number_of_outcomes"
         //numberOfLivebirths column: "number_of_livebirths"
         outcomeDate column: "outcome_date"
         birthPlace column: "birthplace"
         birthPlaceOther column: "birthplace_other"
-        visitCode column: "visit_code"
+        visitCode column: "visit_code", index: "idx_visit_code"
         modules column: "modules"
 
-        collectedBy column: "collected_by"
+        collectedBy column: "collected_by", index: "idx_collected_by"
         collectedDate column: "collected_date"
         uploadedDate column: "uploaded_date"
 

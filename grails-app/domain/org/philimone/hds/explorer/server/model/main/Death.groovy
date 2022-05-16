@@ -36,13 +36,13 @@ class Death extends CollectableEntity {
         id column: "id", generator: 'uuid'
 
         member column: "member_id"
-        memberCode column: "member_code"
+        memberCode column: "member_code", index: "idx_member_code"
         deathDate column: "death_date"
         ageAtDeath column: "age_at_death"
         deathCause column: "death_cause"
         deathPlace column: "death_place"
 
         visit column: "visit_id"
-        visitCode column: "visit_code"
+        visitCode column: "visit_code", index: "idx_visit_code"
     }
 }

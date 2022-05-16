@@ -48,9 +48,9 @@ class PregnancyOutcome extends CollectableEntity {
 
         code column: "code"
         mother column: "mother_id"
-        motherCode column: "mother_code"
+        motherCode column: "mother_code", index: "idx_mother_code"
         father column: "father_id"
-        fatherCode column: "father_code"
+        fatherCode column: "father_code", index: "idx_father_code"
         numberOfOutcomes column: "number_of_outcomes"
         numberOfLivebirths column: "number_of_livebirths"
         outcomeDate column: "outcome_date"
@@ -58,6 +58,6 @@ class PregnancyOutcome extends CollectableEntity {
         birthPlaceOther column: "birthplace_other"
 
         visit column: "visit_id"
-        visitCode column: "visit_code"
+        visitCode column: "visit_code", index: "idx_visit_code"
     }
 }

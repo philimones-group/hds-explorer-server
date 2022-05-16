@@ -27,7 +27,7 @@ class Round extends AuditableEntity {
 
         id column: "id", generator: 'uuid'
 
-        roundNumber column: "round_number"
+        roundNumber column: "round_number", index: "idx_round_number"
         startDate column: "start_date"
         endDate column: "end_date"
         description column: "description"

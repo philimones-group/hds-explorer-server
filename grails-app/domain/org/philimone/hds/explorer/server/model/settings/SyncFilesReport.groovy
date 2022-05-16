@@ -32,7 +32,7 @@ class SyncFilesReport {
 
         id column: "id", generator: 'uuid'
 
-        code column: "code"
+        code column: "code", index: "idx_code"
         name column: "name", enumType: "string"
         records column: "records", defaultValue: "'0'"
         syncDate column: "sync_date"

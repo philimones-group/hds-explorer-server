@@ -33,10 +33,10 @@ class PregnancyChild {
         id column: "id", generator: 'uuid'
 
         outcome column: "pregnancy_outcome_id"
-        outcomeCode column: "pregnancy_outcome_code"
+        outcomeCode column: "pregnancy_outcome_code", index: "idx_outcome_code"
         outcomeType column: "outcomde_type"
         child column: "child_id"
-        childCode column: "child_code"
+        childCode column: "child_code", index: "idx_child_code"
         childOrdinalPosition column: "child_ordinal_pos"
         childHeadRelationship column: "child_head_relationship_id"
     }

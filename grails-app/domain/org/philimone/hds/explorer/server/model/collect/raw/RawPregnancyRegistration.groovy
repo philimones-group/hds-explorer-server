@@ -58,8 +58,8 @@ class RawPregnancyRegistration {
 
         id column: "id", generator: 'assigned'
 
-        code column: "code"
-        motherCode column: "mother_code"
+        code column: "code", index: "idx_code"
+        motherCode column: "mother_code", index: "idx_mother_code"
         recordedDate column: "recorded_date"
 
         pregMonths column: "preg_months"
@@ -72,9 +72,9 @@ class RawPregnancyRegistration {
         expectedDeliveryDate column: "expected_delivery_date"
         status column: "status"
 
-        visitCode column: "visit_code"
+        visitCode column: "visit_code", index: "idx_visit_code"
 
-        collectedBy column: "collected_by"
+        collectedBy column: "collected_by", index: "idx_collected_by"
         collectedDate column: "collected_date"
         uploadedDate column: "uploaded_date"
 

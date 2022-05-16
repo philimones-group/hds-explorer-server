@@ -49,13 +49,13 @@ class RawRegion {
 
         version false
 
-        regionCode column: "region_code"
+        regionCode column: "region_code", index: "idx_region_code"
         regionName column: "region_name"
-        parentCode column: "parent_code"
+        parentCode column: "parent_code", index: "idx_parent_code"
 
         modules column: "modules"
 
-        collectedBy column: "collected_by"
+        collectedBy column: "collected_by", index: "idx_collected_by"
         collectedDate column: "collected_date"
         uploadedDate column: "uploaded_date"
 

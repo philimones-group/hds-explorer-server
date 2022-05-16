@@ -28,7 +28,7 @@ class LogGroup {
 
         id column: "id", generator: 'uuid'
 
-        groupId column: "group_id", enumType: 'identity'
+        groupId column: "group_id", enumType: 'identity', index: "idx_group_id"
         name column: "name"
         description column: "description"
     }

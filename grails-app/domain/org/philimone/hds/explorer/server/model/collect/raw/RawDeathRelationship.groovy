@@ -24,7 +24,7 @@ class RawDeathRelationship {
         id column: "id", generator: 'uuid'
 
         death column: "death_id"
-        newMemberCode column: "new_member_code"
+        newMemberCode column: "new_member_code", index: "idx_new_member_code"
         newRelationshipType column: "new_relationship_type"
     }
 }

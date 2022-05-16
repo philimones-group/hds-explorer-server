@@ -70,6 +70,8 @@ class Form extends AuditableEntity {
         multiCollPerSession()
 
         enabled nullable:false
+
+        dependencies nullable: true
     }
 
     static mapping = {
@@ -79,7 +81,7 @@ class Form extends AuditableEntity {
 
         //group column: 'form_group_id'
 
-        formId column: 'form_id'
+        formId column: 'form_id', index: "idx_form_id"
         formName column: 'form_name'
         formDescription column: 'form_description'
         regionLevel column: "region_level"
@@ -99,7 +101,7 @@ class Form extends AuditableEntity {
 
         enabled column: 'enabled'
 
-        modules column: "modules", type: StringCollectionType
+        modules column: "modules", type: StringCollectionType, index: "idx_modules"
 
         dependencies column: "dependencies", type: StringCollectionType
     }

@@ -36,8 +36,8 @@ class RawResidency {
 
         id column: "id", generator: 'assigned'
 
-        householdCode column: "household_code"
-        memberCode column: "member_code"
+        householdCode column: "household_code", index: "idx_household_code"
+        memberCode column: "member_code", index: "idx_member_code"
         startType column: "start_type"
         startDate column: "start_date"
         endType column: "end_type"

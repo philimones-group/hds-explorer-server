@@ -44,9 +44,9 @@ class Region extends CollectableEntity {
 
         code column: 'code'
         name column: 'name'
-        hierarchyLevel column: 'level', enumType: "identity"
+        hierarchyLevel column: 'level', enumType: "identity", index: "idx_level"
         parent column: 'parent_region_code'
-        modules column: "modules", type: StringCollectionType
+        modules column: "modules", type: StringCollectionType, index: "idx_modules"
 
     }
 

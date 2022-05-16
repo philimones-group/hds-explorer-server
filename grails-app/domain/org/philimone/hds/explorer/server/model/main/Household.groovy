@@ -48,7 +48,7 @@ class Household extends CollectableEntity {
         name blank: false
         headCode  blank: true, nullable: true, unique: 'code'
         headName blank: true, nullable: true
-        secHeadCode blank: true, nullable: true
+        secHeadCode blank: true, nullable: true, index: "idx_sec_head_code"
 
         parentRegion nullable: false
         headMember nullable: true
@@ -73,7 +73,7 @@ class Household extends CollectableEntity {
         cosLongitude nullable: true
         sinLongitude nullable: true
 
-        modules nullable: true
+        modules nullable: true, index: "idx_modules"
     }
 
     static mapping = {

@@ -47,14 +47,14 @@ class RawChangeHead {
 
         id column: "id", generator: 'assigned'
 
-        visitCode column: "visit_code"
-        householdCode column: "household_code"
-        oldHeadCode column: "old_head_code"
-        newHeadCode column: "new_head_code"
+        visitCode column: "visit_code", index: "idx_visit_code"
+        householdCode column: "household_code", index: "idx_household_code"
+        oldHeadCode column: "old_head_code", index: "idx_old_headcode"
+        newHeadCode column: "new_head_code", index: "idx_new_headcode"
         eventDate column: "event_date"
         reason column: "reason"
 
-        collectedBy column: "collected_by"
+        collectedBy column: "collected_by", index: "idx_coll_by"
         collectedDate column: "collected_date"
         uploadedDate column: "uploaded_date"
 

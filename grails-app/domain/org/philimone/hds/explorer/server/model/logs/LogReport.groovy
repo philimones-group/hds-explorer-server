@@ -42,11 +42,11 @@ class LogReport {
 
         id column: "id", generator: 'uuid'
 
-        reportId column: "report_id", enumType: "identity"
-        group column: "group_id"
+        reportId column: "report_id", enumType: "identity", index: "idx_report_id"
+        group column: "group_id", index: "idx_group_id"
         description column: "description"
         status column: "status_id", enumType: "string"
-        keyTimestamp column: "key_timestamp"
+        keyTimestamp column: "key_timestamp", index: "idx_key_timestamp"
         start column: "start_time"
         end column: "end_time"
 

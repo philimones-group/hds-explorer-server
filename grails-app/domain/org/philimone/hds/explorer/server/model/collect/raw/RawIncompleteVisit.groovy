@@ -45,13 +45,13 @@ class RawIncompleteVisit {
 
         id column: "id", generator: "assigned"
 
-        visitCode column: "visit_code"
-        householdCode column: "household_code"
-        memberCode column: "member_code"
+        visitCode column: "visit_code", index: "idx_visit_code"
+        householdCode column: "household_code", index: "idx_household_code"
+        memberCode column: "member_code", index: "idx_member_code"
         reason column: "visit_reason", enumType: "identity"
         reasonOther column: "other_visit_reason"
 
-        collectedBy column: "collected_by"
+        collectedBy column: "collected_by", index: "idx_collected_by"
         collectedDate column: "collected_date"
         uploadedDate column: "uploaded_date"
 

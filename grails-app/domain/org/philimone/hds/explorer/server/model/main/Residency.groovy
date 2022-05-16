@@ -41,8 +41,8 @@ class Residency extends AuditableEntity {
 
         household column: "household_id"
         member column: "member_id"
-        householdCode column: "household_code"
-        memberCode column: "member_code"
+        householdCode column: "household_code", index: "idx_household_code"
+        memberCode column: "member_code", index: "idx_member_code"
         startType column: "start_type", enumType: "identity"
         startDate column: "start_date"
         endType column: "end_type", enumType: "identity"

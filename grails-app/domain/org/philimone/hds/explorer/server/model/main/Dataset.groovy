@@ -54,9 +54,9 @@ class Dataset extends AuditableEntity {
 
         id column: "id", generator: 'uuid'
 
-        name column: 'name'
+        name column: 'name', index: "idx_name"
         label column: 'label'
-        keyColumn column: 'key_column'
+        keyColumn column: 'key_column', index: "idx_key_column"
         tableName column: 'table_name'
         tableColumn column: 'table_column'
         tableColumnLabels column: 'table_column_labels'

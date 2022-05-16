@@ -53,7 +53,7 @@ class PregnancyRegistration extends CollectableEntity {
 
         code column: "code"
         mother column: "mother_id"
-        motherCode column: "mother_code"
+        motherCode column: "mother_code", index: "idx_mother_code"
         recordedDate column: "recorded_date"
 
         pregMonths column: "preg_months"
@@ -67,6 +67,6 @@ class PregnancyRegistration extends CollectableEntity {
         status column: "status"
 
         visit column: "visit_id"
-        visitCode column: "visit_code"
+        visitCode column: "visit_code", index: "idx_visit_code"
     }
 }

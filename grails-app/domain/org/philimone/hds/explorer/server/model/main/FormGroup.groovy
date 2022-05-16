@@ -24,7 +24,7 @@ class FormGroup extends AuditableEntity {
 
         id column: "id", generator: 'uuid'
 
-        code column: 'code'
+        code column: 'code', index: "idx_code"
         name column: 'name'
         description column: 'description'
     }

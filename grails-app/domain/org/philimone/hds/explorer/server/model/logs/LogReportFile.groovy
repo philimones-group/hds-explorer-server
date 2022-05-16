@@ -49,7 +49,7 @@ class LogReportFile {
         id column: "id", generator: 'uuid'
 
         logReport column: "log_report_id"
-        keyTimestamp column: "key_timestamp"
+        keyTimestamp column: "key_timestamp", index: "idx_key_timestamp"
         start column: "start_time"
         end column: "end_time"
 

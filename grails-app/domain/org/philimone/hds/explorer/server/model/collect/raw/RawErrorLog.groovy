@@ -88,9 +88,9 @@ class RawErrorLog {
 
         logReportFile column: "log_report_file_uuid"
 
-        entity column: "entity", indexColumn: [name: "idx_entity", type: Integer]
+        entity column: "entity", index: "idx_entity"
         columnName column: "column_name"
-        code column: "code", indexColumn: [name: "idx_code", type: Integer]
+        code column: "code", index: "idx_code"
         message column: "message"
         createdDate column: "created_date"
     }
