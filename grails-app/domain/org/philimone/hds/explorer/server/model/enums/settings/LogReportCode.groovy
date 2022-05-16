@@ -51,16 +51,16 @@ enum LogReportCode {
     }
 
     /* Finding Enum by code */
-    private static final Map<String, LogReportCode> MAP = new HashMap<>();
+    private static final Map<String, LogReportCode> MAP = new HashMap<>()
 
     static {
         for (LogReportCode e: values()) {
-            MAP.put(e.code, e);
+            MAP.put(e.code, e)
         }
     }
 
     public static LogReportCode getFrom(String code) {
-        return code==null ? null : MAP.get(code);
+        return code==null ? null : MAP.get(code)
     }
 
 }

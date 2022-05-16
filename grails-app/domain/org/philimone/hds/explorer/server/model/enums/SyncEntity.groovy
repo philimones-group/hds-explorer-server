@@ -1,6 +1,6 @@
-package org.philimone.hds.explorer.server.model.enums;
+package org.philimone.hds.explorer.server.model.enums
 
-import groovy.transform.CompileStatic;
+import groovy.transform.CompileStatic
 
 @CompileStatic
 enum SyncEntity {
@@ -31,14 +31,14 @@ enum SyncEntity {
     DEATHS             (23, "syncEntity.deaths.label", "deaths"),
     INCOMPLETE_VISITS  (24, "syncEntity.incomplete_visits.label", "incompletevisits")
 
-    final int code;
-    final String name;
+    final int code
+    final String name
     final String filename
 
     SyncEntity(int code, String name, String filename){
-        this.code = code;
-        this.name = name;
-        this.filename = filename;
+        this.code = code
+        this.name = name
+        this.filename = filename
     }
 
     int getId(){
@@ -54,15 +54,15 @@ enum SyncEntity {
     }
 
     /* Finding Enum by code */
-    private static final Map<Integer, SyncEntity> MAP = new HashMap<>();
+    private static final Map<Integer, SyncEntity> MAP = new HashMap<>()
 
     static {
         for (SyncEntity e: values()) {
-            MAP.put(e.code, e);
+            MAP.put(e.code, e)
         }
     }
 
     public static SyncEntity getFrom(Integer code) {
-        return code==null ? null : MAP.get(code);
+        return code==null ? null : MAP.get(code)
     }
 }

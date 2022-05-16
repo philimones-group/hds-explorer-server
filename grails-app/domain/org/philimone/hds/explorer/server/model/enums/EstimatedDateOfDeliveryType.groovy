@@ -20,15 +20,15 @@ enum EstimatedDateOfDeliveryType {
     }
 
     /* Finding Enum by code */
-    private static final Map<String, EstimatedDateOfDeliveryType> MAP = new HashMap<>();
+    private static final Map<String, EstimatedDateOfDeliveryType> MAP = new HashMap<>()
 
     static {
         for (EstimatedDateOfDeliveryType e: values()) {
-            MAP.put(e.code, e);
+            MAP.put(e.code, e)
         }
     }
 
     static EstimatedDateOfDeliveryType getFrom(String code) {
-        return code==null ? null : MAP.get(code);
+        return code==null ? null : MAP.get(code)
     }
 }

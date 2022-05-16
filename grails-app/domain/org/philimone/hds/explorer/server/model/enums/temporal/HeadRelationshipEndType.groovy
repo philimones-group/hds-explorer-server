@@ -9,8 +9,8 @@ enum HeadRelationshipEndType {
     DEATH_OF_HEAD_OF_HOUSEHOLD ("DHH", "eventType.death_of_hoh"), //Event Related to the Head of Household
     CHANGE_OF_HEAD_OF_HOUSEHOLD("CHH", "eventType.change_of_hoh") //Event Related to the Head of Household
 
-    final String code;
-    final String name;
+    final String code
+    final String name
 
     HeadRelationshipEndType(String code, String name){
         this.code = code
@@ -22,15 +22,15 @@ enum HeadRelationshipEndType {
     }
 
     /* Finding Enum by code */
-    private static final Map<String, HeadRelationshipEndType> MAP = new HashMap<>();
+    private static final Map<String, HeadRelationshipEndType> MAP = new HashMap<>()
 
     static {
         for (HeadRelationshipEndType e: values()) {
-            MAP.put(e.code, e);
+            MAP.put(e.code, e)
         }
     }
 
     public static HeadRelationshipEndType getFrom(String code) {
-        return code==null ? null : MAP.get(code);
+        return code==null ? null : MAP.get(code)
     }
 }

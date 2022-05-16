@@ -11,7 +11,7 @@ class Household extends CollectableEntity {
     String id
     String code
     String region;      /* Last Location Hierarchy */
-    String name;
+    String name
     String headCode;    /* Head of Houeshold Code*/
     String headName     /* Head of Household Name*/
     String secHeadCode; /* Secondary Head of Household */
@@ -28,16 +28,16 @@ class Household extends CollectableEntity {
     String hierarchy7
     String hierarchy8
 
-    Boolean gpsNull = true;
-    Double gpsAccuracy;
-    Double gpsAltitude;
-    Double gpsLatitude;
-    Double gpsLongitude;
+    Boolean gpsNull = true
+    Double gpsAccuracy
+    Double gpsAltitude
+    Double gpsLatitude
+    Double gpsLongitude
 
-    Double cosLatitude;
-    Double sinLatitude;
-    Double cosLongitude;
-    Double sinLongitude;
+    Double cosLatitude
+    Double sinLatitude
+    Double cosLongitude
+    Double sinLongitude
 
     static hasMany = [modules:String]
 

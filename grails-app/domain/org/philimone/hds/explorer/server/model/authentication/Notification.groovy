@@ -17,12 +17,12 @@ class Notification {
     boolean readed
 
     String getShortMessage(){
-        int max = 20;
+        int max = 20
         int count = message.length()
 
         String str = (count >= max) ? message.substring(0,max) : message
 
-        return str+"...";
+        return str+"..."
     }
 
     static transients = ['shortMessage']

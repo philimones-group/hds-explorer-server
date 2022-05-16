@@ -19,15 +19,15 @@ enum PregnancyStatus {
     }
 
     /* Finding Enum by code */
-    private static final Map<String, PregnancyStatus> MAP = new HashMap<>();
+    private static final Map<String, PregnancyStatus> MAP = new HashMap<>()
 
     static {
         for (PregnancyStatus e: values()) {
-            MAP.put(e.code, e);
+            MAP.put(e.code, e)
         }
     }
 
     static PregnancyStatus getFrom(String code) {
-        return code==null ? null : MAP.get(code);
+        return code==null ? null : MAP.get(code)
     }
 }

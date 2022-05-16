@@ -1,4 +1,4 @@
-package org.philimone.hds.explorer.server.model.enums.settings;
+package org.philimone.hds.explorer.server.model.enums.settings
 
 enum LogGroupCode {
 
@@ -21,15 +21,15 @@ enum LogGroupCode {
     }
 
     /* Finding Enum by code */
-    private static final Map<String, LogGroupCode> MAP = new HashMap<>();
+    private static final Map<String, LogGroupCode> MAP = new HashMap<>()
 
     static {
         for (LogGroupCode e: values()) {
-            MAP.put(e.code, e);
+            MAP.put(e.code, e)
         }
     }
 
     public static LogGroupCode getFrom(String code) {
-        return code==null ? null : MAP.get(code);
+        return code==null ? null : MAP.get(code)
     }
 }

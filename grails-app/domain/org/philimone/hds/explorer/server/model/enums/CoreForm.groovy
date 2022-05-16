@@ -29,16 +29,16 @@ enum CoreForm {
     }
 
     /* Finding Enum by code */
-    private static final Map<String, CoreForm> MAP = new HashMap<>();
+    private static final Map<String, CoreForm> MAP = new HashMap<>()
 
     static {
         for (CoreForm e: values()) {
-            MAP.put(e.code, e);
+            MAP.put(e.code, e)
         }
     }
 
     public static CoreForm getFrom(String code) {
-        return code==null ? null : MAP.get(code);
+        return code==null ? null : MAP.get(code)
     }
 
 }

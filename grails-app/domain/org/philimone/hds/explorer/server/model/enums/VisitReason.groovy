@@ -25,15 +25,15 @@ enum VisitReason {
     }
 
     /* Finding Enum by code */
-    private static final Map<String, VisitReason> MAP = new HashMap<>();
+    private static final Map<String, VisitReason> MAP = new HashMap<>()
 
     static {
         for (VisitReason e: values()) {
-            MAP.put(e.code, e);
+            MAP.put(e.code, e)
         }
     }
 
     public static VisitReason getFrom(String code) {
-        return code==null ? null : MAP.get(code);
+        return code==null ? null : MAP.get(code)
     }
 }

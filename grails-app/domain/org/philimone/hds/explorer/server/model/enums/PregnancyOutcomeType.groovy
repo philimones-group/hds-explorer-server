@@ -20,16 +20,16 @@ enum PregnancyOutcomeType {
     }
 
     /* Finding Enum by code */
-    private static final Map<String, PregnancyOutcomeType> MAP = new HashMap<>();
+    private static final Map<String, PregnancyOutcomeType> MAP = new HashMap<>()
 
     static {
         for (PregnancyOutcomeType e: values()) {
-            MAP.put(e.code, e);
+            MAP.put(e.code, e)
         }
     }
 
     static PregnancyOutcomeType getFrom(String code) {
-        return code==null ? null : MAP.get(code);
+        return code==null ? null : MAP.get(code)
     }
 
 }

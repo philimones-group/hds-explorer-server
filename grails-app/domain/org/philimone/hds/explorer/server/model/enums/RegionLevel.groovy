@@ -26,15 +26,15 @@ enum RegionLevel {
     }
 
     /* Finding Enum by code */
-    private static final Map<String, RegionLevel> MAP = new HashMap<>();
+    private static final Map<String, RegionLevel> MAP = new HashMap<>()
 
     static {
         for (RegionLevel e: values()) {
-            MAP.put(e.code, e);
+            MAP.put(e.code, e)
         }
     }
 
     public static RegionLevel getFrom(String code) {
-        return code==null ? null : MAP.get(code);
+        return code==null ? null : MAP.get(code)
     }
 }

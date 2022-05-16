@@ -7,8 +7,8 @@ enum ResidencyStartType {
     INTERNAL_INMIGRATION  ("ENT", "eventType.internal_inmigration"),
     EXTERNAL_INMIGRATION  ("XEN", "eventType.external_inmigration")
 
-    final String code;
-    final String name;
+    final String code
+    final String name
 
     ResidencyStartType(String code, String name){
         this.code = code
@@ -20,15 +20,15 @@ enum ResidencyStartType {
     }
 
     /* Finding Enum by code */
-    private static final Map<String, ResidencyStartType> MAP = new HashMap<>();
+    private static final Map<String, ResidencyStartType> MAP = new HashMap<>()
 
     static {
         for (ResidencyStartType e: values()) {
-            MAP.put(e.code, e);
+            MAP.put(e.code, e)
         }
     }
 
     public static ResidencyStartType getFrom(String code) {
-        return code==null ? null : MAP.get(code);
+        return code==null ? null : MAP.get(code)
     }
 }

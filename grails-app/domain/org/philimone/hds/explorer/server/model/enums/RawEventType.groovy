@@ -28,15 +28,15 @@ enum RawEventType {
     }
 
     /* Finding Enum by code */
-    private static final Map<Integer, RawEventType> MAP = new HashMap<>();
+    private static final Map<Integer, RawEventType> MAP = new HashMap<>()
 
     static {
         for (RawEventType e: values()) {
-            MAP.put(e.code, e);
+            MAP.put(e.code, e)
         }
     }
 
     static RawEventType getFrom(Integer code) {
-        return code==null ? null : MAP.get(code);
+        return code==null ? null : MAP.get(code)
     }
 }

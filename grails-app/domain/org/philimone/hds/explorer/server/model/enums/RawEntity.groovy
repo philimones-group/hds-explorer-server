@@ -21,11 +21,11 @@ enum RawEntity {
     CHANGE_HEAD_OF_HOUSEHOLD ("syncdss.sync.changehead.label"),
     INCOMPLETE_VISIT ("syncdss.sync.incompletevisit.label")
 
-    final String name;
+    final String name
 
     RawEntity(String name){
 
-        this.name = name;
+        this.name = name
     }
 
     String getId(){
@@ -33,16 +33,16 @@ enum RawEntity {
     }
 
     /* Finding Enum by code */
-    private static final Map<String, RawEntity> MAP = new HashMap<>();
+    private static final Map<String, RawEntity> MAP = new HashMap<>()
 
     static {
         for (RawEntity e: values()) {
-            MAP.put(e.name(), e);
+            MAP.put(e.name(), e)
         }
     }
 
     public static RawEntity getFrom(String code) {
-        return code==null ? null : MAP.get(code);
+        return code==null ? null : MAP.get(code)
     }
 
 

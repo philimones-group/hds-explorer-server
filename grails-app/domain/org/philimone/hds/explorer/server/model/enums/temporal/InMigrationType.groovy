@@ -6,8 +6,8 @@ enum InMigrationType {
     EXTERNAL  ("XEN", "eventType.external_inmigration"),
     //RETURNING ( "XEN", "eventType.returning_inmigration") /* I dont think I will need this, entry_date and start_type suits enough to know that its a return to dss */
 
-    final String code;
-    final String name;
+    final String code
+    final String name
 
     InMigrationType(String code, String name){
         this.code = code
@@ -19,15 +19,15 @@ enum InMigrationType {
     }
 
     /* Finding Enum by code */
-    private static final Map<String, InMigrationType> MAP = new HashMap<>();
+    private static final Map<String, InMigrationType> MAP = new HashMap<>()
 
     static {
         for (InMigrationType e: values()) {
-            MAP.put(e.code, e);
+            MAP.put(e.code, e)
         }
     }
 
     public static InMigrationType getFrom(String code) {
-        return code==null ? null : MAP.get(code);
+        return code==null ? null : MAP.get(code)
     }
 }

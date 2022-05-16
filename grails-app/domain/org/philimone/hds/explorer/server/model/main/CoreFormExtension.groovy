@@ -21,7 +21,7 @@ class CoreFormExtension {
             str += (str.empty ? "":";") + "${k}:${v}"
         }
 
-        this.columnsMapping = str;
+        this.columnsMapping = str
     }
 
 

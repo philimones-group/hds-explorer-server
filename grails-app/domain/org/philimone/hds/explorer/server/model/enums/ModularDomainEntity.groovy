@@ -1,4 +1,4 @@
-package org.philimone.hds.explorer.server.model.enums;
+package org.philimone.hds.explorer.server.model.enums
 
 enum ModularDomainEntity {
     REGION (1, "Regions"),
@@ -22,15 +22,15 @@ enum ModularDomainEntity {
         return name
     }
 /* Finding Enum by code */
-    private static final Map<Integer, ModularDomainEntity> MAP = new HashMap<>();
+    private static final Map<Integer, ModularDomainEntity> MAP = new HashMap<>()
 
     static {
         for (ModularDomainEntity e: values()) {
-            MAP.put(e.code, e);
+            MAP.put(e.code, e)
         }
     }
 
     public static ModularDomainEntity getFrom(Integer code) {
-        return code==null ? null : MAP.get(code);
+        return code==null ? null : MAP.get(code)
     }
 }

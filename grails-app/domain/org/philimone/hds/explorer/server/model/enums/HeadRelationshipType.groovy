@@ -25,16 +25,16 @@ enum HeadRelationshipType {
     }
 
     /* Finding Enum by code */
-    private static final Map<String, HeadRelationshipType> MAP = new HashMap<>();
+    private static final Map<String, HeadRelationshipType> MAP = new HashMap<>()
 
     static {
         for (HeadRelationshipType e: values()) {
-            MAP.put(e.code, e);
+            MAP.put(e.code, e)
         }
     }
 
     public static HeadRelationshipType getFrom(String code) {
-        return code==null ? null : MAP.get(code);
+        return code==null ? null : MAP.get(code)
     }
 
 }

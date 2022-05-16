@@ -18,15 +18,15 @@ enum Gender {
     }
 
     /* Finding Enum by code */
-    private static final Map<String, Gender> MAP = new HashMap<>();
+    private static final Map<String, Gender> MAP = new HashMap<>()
 
     static {
         for (Gender e: values()) {
-            MAP.put(e.code, e);
+            MAP.put(e.code, e)
         }
     }
 
     public static Gender getFrom(String code) {
-        return code==null ? null : MAP.get(code);
+        return code==null ? null : MAP.get(code)
     }
 }

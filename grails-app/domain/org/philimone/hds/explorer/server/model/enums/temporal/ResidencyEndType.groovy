@@ -7,8 +7,8 @@ enum ResidencyEndType {
     EXTERNAL_OUTMIGRATION ("EXT", "eventType.external_outmigration"),
     DEATH                 ("DTH", "eventType.death")
 
-    final String code;
-    final String name;
+    final String code
+    final String name
 
     ResidencyEndType(String code, String name){
         this.code = code
@@ -20,15 +20,15 @@ enum ResidencyEndType {
     }
 
     /* Finding Enum by code */
-    private static final Map<String, ResidencyEndType> MAP = new HashMap<>();
+    private static final Map<String, ResidencyEndType> MAP = new HashMap<>()
 
     static {
         for (ResidencyEndType e: values()) {
-            MAP.put(e.code, e);
+            MAP.put(e.code, e)
         }
     }
 
     public static ResidencyEndType getFrom(String code) {
-        return code==null ? null : MAP.get(code);
+        return code==null ? null : MAP.get(code)
     }
 }

@@ -6,15 +6,15 @@ enum ExternalInMigrationType {
     REENTRY
 
     /* Finding Enum by code */
-    private static final Map<String, ExternalInMigrationType> MAP = new HashMap<>();
+    private static final Map<String, ExternalInMigrationType> MAP = new HashMap<>()
 
     static {
         for (ExternalInMigrationType e: values()) {
-            MAP.put(e.name(), e);
+            MAP.put(e.name(), e)
         }
     }
 
     public static ExternalInMigrationType getFrom(String code) {
-        return code==null ? null : MAP.get(code);
+        return code==null ? null : MAP.get(code)
     }
 }

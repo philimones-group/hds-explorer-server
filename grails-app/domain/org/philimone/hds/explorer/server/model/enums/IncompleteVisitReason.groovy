@@ -1,4 +1,4 @@
-package org.philimone.hds.explorer.server.model.enums;
+package org.philimone.hds.explorer.server.model.enums
 
 public enum IncompleteVisitReason {
     /*
@@ -15,8 +15,8 @@ public enum IncompleteVisitReason {
     OTHER             ("OTHER", "incompleteVisitReason.other"),
     INVALID_ENUM      ( "-1", "invalid_enum_value")
 
-    public String code;
-    public String name;
+    public String code
+    public String name
 
     IncompleteVisitReason(String code, String name){
         this.code = code
@@ -24,19 +24,19 @@ public enum IncompleteVisitReason {
     }
 
     public String getId(){
-        return code;
+        return code
     }
 
     /* Finding Enum by code */
-    private static final Map<String, IncompleteVisitReason> MAP = new HashMap<>();
+    private static final Map<String, IncompleteVisitReason> MAP = new HashMap<>()
 
     static {
         for (IncompleteVisitReason e: values()) {
-            MAP.put(e.code, e);
+            MAP.put(e.code, e)
         }
     }
 
     public static IncompleteVisitReason getFrom(String code) {
-        return code==null ? null : MAP.get(code);
+        return code==null ? null : MAP.get(code)
     }
 }

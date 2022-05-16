@@ -27,7 +27,7 @@ class Enumeration extends CollectableEntity {
         household nullable: false
         householdCode nullable: false, blank: false
         member unique: true, nullable: false
-        memberCode unique: true, nullable: false, blank: false
+        memberCode unique: true, nullable: false
         eventDate nullable: false
     }
 
@@ -41,7 +41,7 @@ class Enumeration extends CollectableEntity {
         household column: "household_id"
         householdCode column: "household_code"
         member column: "member_id"
-        memberCode column: "member_code"//, index: "idx_member_code"
+        memberCode column: "member_code"
         eventDate column: "visit_reason"
     }
 }

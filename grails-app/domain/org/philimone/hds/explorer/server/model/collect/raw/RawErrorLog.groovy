@@ -45,7 +45,7 @@ class RawErrorLog {
 
     ArrayList<RawMessage> getMessages(){
         def list = new ArrayList<RawMessage>()
-        if (message==null || message.isEmpty()) return list;
+        if (message==null || message.isEmpty()) return list
 
         Gson gson = new Gson()
         return gson.fromJson(this.message, new ArrayList<RawMessage>().getClass())
