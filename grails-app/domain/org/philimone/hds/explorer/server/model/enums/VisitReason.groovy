@@ -9,6 +9,7 @@ enum VisitReason {
     BASELINE      ("BASELINE","visitReason.baseline"),
     NEW_HOUSEHOLD ("NEW_HOUSE","visitReason.newhouse"),
     DATA_CLEANING ("CLEAN","visitReason.dataclean"),
+    MIGRATION     ("MIGRATION", "visitReason.migration"),
     OTHER         ("OTHER", "visitReason.other")
 
     String code

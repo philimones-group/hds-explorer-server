@@ -114,7 +114,7 @@ class VisitService {
             errors << errorMessageService.getRawMessage(RawEntity.VISIT, "validation.field.blank", ["roundNumber"], ["roundNumber"])
         }
         //C1. Check Blank Fields (visitLocation)
-        if (isBlankVisitLocation){
+        if (visitReason != VisitReason.MIGRATION && isBlankVisitLocation){
             errors << errorMessageService.getRawMessage(RawEntity.VISIT, "validation.field.blank", ["visitLocation"], ["visitLocation"])
         }
         //C1. Check Blank Fields (visitLocationOther) //Its Conditional
@@ -126,7 +126,7 @@ class VisitService {
             errors << errorMessageService.getRawMessage(RawEntity.VISIT, "validation.field.blank", ["visitReason"], ["visitReason"])
         }
         //C1. Check Blank Fields (respondentCode) conditional
-        if (visitReason != VisitReason.NEW_HOUSEHOLD && isBlankRespondentCode){
+        if (visitReason != VisitReason.MIGRATION && visitReason != VisitReason.NEW_HOUSEHOLD && isBlankRespondentCode){
             errors << errorMessageService.getRawMessage(RawEntity.VISIT, "validation.field.blank", ["respondentCode"], ["respondentCode"])
         }
         //C1. Check Blank Fields (hasInterpreter)
@@ -155,7 +155,7 @@ class VisitService {
         }
 
         //C5. Validate VisitLocation Enum Options
-        if (!isBlankVisitLocation && VisitLocationItem.getFrom(rawVisit.visitLocation)==null){
+        if (visitReason != VisitReason.MIGRATION && !isBlankVisitLocation && VisitLocationItem.getFrom(rawVisit.visitLocation)==null){
             errors << errorMessageService.getRawMessage(RawEntity.VISIT, "validation.field.enum.choices.error", [rawVisit.visitLocation, "visitLocation"], ["visitLocation"])
         }
 
@@ -174,7 +174,7 @@ class VisitService {
             errors << errorMessageService.getRawMessage(RawEntity.VISIT, "validation.field.reference.error", ["Household", "householdCode", rawVisit.householdCode], ["householdCode"])
         }
         //C4. Check Respondent reference existence
-        if (visitReason != VisitReason.NEW_HOUSEHOLD && !respondentExists){
+        if (visitReason != VisitReason.MIGRATION && visitReason != VisitReason.NEW_HOUSEHOLD && !respondentExists){
             errors << errorMessageService.getRawMessage(RawEntity.VISIT, "validation.field.reference.error", ["Member", "respondentCode", rawVisit.respondentCode], ["respondentCode"])
         }
 
