@@ -24,7 +24,7 @@ class DatasetLabel {
 
         id column: "id", generator: 'uuid'
 
-        list column: 'dataset_id'
+        dataSet column: 'dataset_id'
         name column: 'name'
         label column: 'label'
     }
