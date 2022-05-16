@@ -80,7 +80,7 @@ println "member code=${residency.memberCode}, r.id=${residency.id}"
     //</editor-fold>
 
     //<editor-fold desc="Member Factory/Manager Methods">
-    RawExecutionResult<Member> createMemberEnumeration(RawMemberEnu rawMemberEnu) {
+    RawExecutionResult<Enumeration> createMemberEnumeration(RawMemberEnu rawMemberEnu) {
 
         /* Run Checks and Validations */
 
@@ -101,6 +101,7 @@ println "member code=${residency.memberCode}, r.id=${residency.id}"
         def resultMember = memberService.createMember(newRawMember)
         def resultResidency = residencyService.createResidency(newRawResidency)
         def resultHeadRelationship = headRelationshipService.createHeadRelationship(newRawHeadRelationship)
+        def visit = visitService.getVisit(rawMemberEnu.visitCode)
 
         //Couldnt create Member
         if (resultMember.status == RawExecutionResult.Status.ERROR) {
@@ -145,9 +146,27 @@ println "member code=${residency.memberCode}, r.id=${residency.id}"
             return obj
         }
 
+        //if no errors - create enumeration
+        def enumeration = new Enumeration()
+        enumeration.visit = visit
+        enumeration.visitCode = visit.code
+        enumeration.household = householdService.getHousehold(visit.householdCode)
+        enumeration.householdCode = visit.householdCode
+        enumeration.member = resultMember.domainInstance
+        enumeration.memberCode = enumeration.member.code
+        enumeration.eventDate = rawMemberEnu.residencyStartDate
+        enumeration.save(flush:true)
+
+
+        if (enumeration.hasErrors()){
+            errors = errorMessageService.getRawMessages(RawEntity.MEMBER_ENUMERATION, enumeration)
+
+            RawExecutionResult<Enumeration> obj = RawExecutionResult.newErrorResult(RawEntity.MEMBER_ENUMERATION, errors)
+            return obj
+        }
 
         //SUCCESS
-        RawExecutionResult<Member> obj = RawExecutionResult.newSuccessResult(RawEntity.MEMBER_ENUMERATION, resultMember.domainInstance)
+        RawExecutionResult<Enumeration> obj = RawExecutionResult.newSuccessResult(RawEntity.MEMBER_ENUMERATION, enumeration)
         return obj
     }
 
@@ -155,7 +174,7 @@ println "member code=${residency.memberCode}, r.id=${residency.id}"
         def errors = new ArrayList<RawMessage>()
 
         //code, name, gender, dob, motherCode, fatherCode, headRelationshipType
-        //def isBlankVisitCode = StringUtil.isBlank(memberEnu.visitCode)
+        def isBlankVisitCode = StringUtil.isBlank(memberEnu.visitCode)
         def isBlankCode = StringUtil.isBlank(memberEnu.code)
         def isBlankName = StringUtil.isBlank(memberEnu.name)
         def isBlankGender = StringUtil.isBlank(memberEnu.gender)
@@ -187,9 +206,9 @@ println "member code=${residency.memberCode}, r.id=${residency.id}"
 
         
         //C1. Check Blank Fields (visitCode)
-        //if (isBlankVisitCode){
-        //    errors << errorMessageService.getRawMessage(RawEntity.MEMBER_ENUMERATION, "validation.field.blank", ["visitCode"], ["visitCode"])
-        //}
+        if (isBlankVisitCode){
+            errors << errorMessageService.getRawMessage(RawEntity.MEMBER_ENUMERATION, "validation.field.blank", ["visitCode"], ["visitCode"])
+        }
         //C1. Check Blank Fields (code)
         if (isBlankCode){
             errors << errorMessageService.getRawMessage(RawEntity.MEMBER_ENUMERATION, "validation.field.blank", ["code"], ["code"])
@@ -288,14 +307,14 @@ println "member code=${residency.memberCode}, r.id=${residency.id}"
         }
 
         //CX. Validate the visitCode with the householdCode(household being visited)
-        //if (!isBlankVisitCode && !isBlankHouseholdCode && !memberEnu.visitCode.startsWith(memberEnu.householdCode)){
-        //    errors << errorMessageService.getRawMessage(RawEntity.MEMBER_ENUMERATION, "validation.field.inmigration.visit.code.prefix.not.current.error", [memberEnu.visitCode, memberEnu.householdCode], ["visitCode","householdCode"])
-        //}
+        if (!isBlankVisitCode && !isBlankHouseholdCode && !memberEnu.visitCode.startsWith(memberEnu.householdCode)){
+            errors << errorMessageService.getRawMessage(RawEntity.MEMBER_ENUMERATION, "validation.field.inmigration.visit.code.prefix.not.current.error", [memberEnu.visitCode, memberEnu.householdCode], ["visitCode","householdCode"])
+        }
 
         //C2. Check Visit reference existence
-        //if (!visitExists){
-        //    errors << errorMessageService.getRawMessage(RawEntity.MEMBER_ENUMERATION, "validation.field.reference.error", ["Visit", "visitCode", memberEnu.visitCode], ["visitCode"])
-        //}
+        if (!visitExists){
+            errors << errorMessageService.getRawMessage(RawEntity.MEMBER_ENUMERATION, "validation.field.reference.error", ["Visit", "visitCode", memberEnu.visitCode], ["visitCode"])
+        }
         //C2. Check Household reference existence
         if (!householdExists){
             errors << errorMessageService.getRawMessage(RawEntity.MEMBER_ENUMERATION, "validation.field.reference.error", ["Member", "householdCode", memberEnu.householdCode], ["householdCode"])

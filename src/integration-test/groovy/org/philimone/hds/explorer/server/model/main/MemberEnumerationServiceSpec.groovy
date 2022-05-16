@@ -562,7 +562,7 @@ class MemberEnumerationServiceSpec extends Specification {
         println("first enu")
         def result1 = memberEnumerationService.createMemberEnumeration(rmenu1)
         printResults(result1)
-        printEnu(result1?.domainInstance)
+        printEnu(result1?.domainInstance?.member)
         println()
 
         /*

@@ -4,6 +4,7 @@ import grails.gorm.transactions.Transactional
 import org.philimone.hds.explorer.server.model.enums.ProcessedStatus
 import org.philimone.hds.explorer.server.model.logs.LogReportFile
 import org.philimone.hds.explorer.server.model.main.Death
+import org.philimone.hds.explorer.server.model.main.Enumeration
 import org.philimone.hds.explorer.server.model.main.HeadRelationship
 import org.philimone.hds.explorer.server.model.main.Household
 import org.philimone.hds.explorer.server.model.main.InMigration
@@ -81,7 +82,7 @@ class RawExecutionService {
 
     }
 
-    RawExecutionResult<Member> createMemberEnu(RawMemberEnu rawDomainInstance, String logReportFileId){
+    RawExecutionResult<Enumeration> createMemberEnu(RawMemberEnu rawDomainInstance, String logReportFileId){
 
         def result = memberEnumerationService.createMemberEnumeration(rawDomainInstance)
 
