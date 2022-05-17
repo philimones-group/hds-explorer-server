@@ -27,10 +27,18 @@ class RawMaritalRelationship {
 
     static constraints = {
         id maxSize: 32
+
+        memberA nullable: false
+        memberB nullable: false
+
         startStatus nullable: true, blank:false, enumType: "identity"
         startDate nullable: true
         endStatus nullable: true, blank:true, enumType: "identity"
         endDate nullable: true
+
+        collectedBy blank: true
+        collectedDate nullable: true
+        uploadedDate nullable: true
 
         processedStatus nullable: false
     }
