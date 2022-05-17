@@ -557,7 +557,7 @@ class RawBatchExecutionService {
             dependencyResolved = dependencyResolved && solveMemberDependency(memberB, logReportFileId)
 
             if (dependencyResolved) {
-                def result = rawExecutionService.createMaritalRelationship(rawObj, logReportFileId)
+                def result = rawExecutionService.executeMaritalRelationship(rawObj, logReportFileId)
 
                 //set event has processed
                 rawEvent.processed = getProcessedStatus(result?.status)

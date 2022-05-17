@@ -449,7 +449,7 @@ class RawImportApiController {
         }
 
         if (resultSave.postExecution){ //execute creation
-            def result = rawExecutionService.createMaritalRelationship(resultSave)
+            def result = rawExecutionService.executeMaritalRelationship(resultSave)
 
             if (result.status== RawExecutionResult.Status.ERROR){
                 render text: errorMessageService.getRawMessagesText(result.errorMessages), status: HttpStatus.BAD_REQUEST

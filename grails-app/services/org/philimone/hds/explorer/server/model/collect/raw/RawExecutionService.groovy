@@ -168,9 +168,9 @@ class RawExecutionService {
 
     }
 
-    RawExecutionResult<MaritalRelationship> createMaritalRelationship(RawMaritalRelationship rawDomainInstance, String logReportFileId){
+    RawExecutionResult<MaritalRelationship> executeMaritalRelationship(RawMaritalRelationship rawDomainInstance, String logReportFileId){
 
-        def result = maritalRelationshipService.createMaritalRelationship(rawDomainInstance)
+        def result = maritalRelationshipService.executeMaritalRelationship(rawDomainInstance)
 
         if (result.status == RawExecutionResult.Status.ERROR){
             //create errorLog

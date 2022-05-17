@@ -209,6 +209,19 @@ class MaritalRelationshipService {
     //</editor-fold>
 
     //<editor-fold desc="MaritalRelationship Factory/Manager Methods">
+    RawExecutionResult<MaritalRelationship> executeMaritalRelationship(RawMaritalRelationship rawMaritalRelationship) {
+        //identify if is a creation or "closation" kkkk of a marital relationship
+        if (rawMaritalRelationship.startStatus != null && rawMaritalRelationship.startDate != null){
+
+            return createMaritalRelationship(rawMaritalRelationship)
+
+        } else if (rawMaritalRelationship.endStatus != null && rawMaritalRelationship.endDate != null){
+
+            return closeMaritalRelationship(rawMaritalRelationship)
+
+        }
+    }
+
     RawExecutionResult<MaritalRelationship> createMaritalRelationship(RawMaritalRelationship rawMaritalRelationship) {
 
         /* Run Checks and Validations */
