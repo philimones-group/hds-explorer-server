@@ -175,6 +175,7 @@ class RegionService {
         region.name = rr.regionName
         region.hierarchyLevel = nextLevel
         region.parent = parent
+        region.parentRegionCode = parent?.code
 
         modules.each {
             region.addToModules(it)
@@ -240,7 +241,7 @@ class RegionService {
             }
         }
 
-        println "max level = ${max}"
+        //println "max level = ${max}"
 
         list.each { jr ->
             int v = Integer.parseInt(jr.level.replace("hierarchy", ""))

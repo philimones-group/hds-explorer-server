@@ -15,6 +15,7 @@ class Region extends CollectableEntity {
     String name
     RegionLevel hierarchyLevel
     Region parent
+    String parentRegionCode
 
     static hasMany = [modules:String]
 
@@ -33,6 +34,7 @@ class Region extends CollectableEntity {
         name blank: false
         hierarchyLevel nullable: false, blank: false
         parent nullable: true
+        parentRegionCode nullable: true, blank: true
         modules nullable: true
     }
 
@@ -45,7 +47,8 @@ class Region extends CollectableEntity {
         code column: 'code'
         name column: 'name'
         hierarchyLevel column: 'level', enumType: "identity", index: "idx_level"
-        parent column: 'parent_region_code'
+        parent column: 'parent_region_id'
+        parentCode column: "parent_region_code", index: "idx_parent_region_code"
         modules column: "modules", type: StringCollectionType, index: "idx_modules"
 
     }
