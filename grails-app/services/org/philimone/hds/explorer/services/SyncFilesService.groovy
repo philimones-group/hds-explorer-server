@@ -66,10 +66,15 @@ class SyncFilesService {
     }
 
     def generateHouseholdDatasets(LogReportCode logReportId) {
+        println("saving regions")
         generateRegionsXML(logReportId)
+        println("saving rounds")
         generateRoundsXML(logReportId)
+        println("saving households")
         generateHouseHoldsXML(logReportId)
+        println("saving members")
         generateMembersXML(logReportId)
+        println("saving residencies")
         generateResidenciesXML(logReportId)
     }
 
@@ -2058,8 +2063,8 @@ class SyncFilesService {
     private Element createDataSet(Document doc, Dataset dataset) {
         Element element = doc.createElement("dataset");
 
-        String createdDate = dataset.createdDate == null ? null : StringUtil.format(dataset.createdDate, "yyyy-MM-dd");
-        String updatedDate = dataset.updatedDate == null ? null : StringUtil.format(dataset.updatedDate, "yyyy-MM-dd");
+        String createdDate = dataset.createdDate == null ? "" : StringUtil.format(dataset.createdDate, "yyyy-MM-dd");
+        String updatedDate = dataset.updatedDate == null ? "" : StringUtil.format(dataset.updatedDate, "yyyy-MM-dd");
 
         //group is disabled
         element.appendChild(createAttributeNonNull(doc, "datasetId", dataset.getId() + ""));
@@ -2069,12 +2074,12 @@ class SyncFilesService {
         element.appendChild(createAttributeNonNull(doc, "keyColumn", dataset.keyColumn));
         element.appendChild(createAttributeNonNull(doc, "tableName", dataset.tableName));
         element.appendChild(createAttributeNonNull(doc, "tableColumn", dataset.tableColumn));
-        element.appendChild(createAttributeNonNull(doc, "tableColumnLabels", dataset.tableColumnLabels));
+        element.appendChild(createAttributeNonNull(doc, "tableColumnLabels", dataset.tableColumnLabels==null ? "" : dataset.tableColumnLabels));
         element.appendChild(createAttributeNonNull(doc, "modules", moduleService.getListModulesAsText(dataset.modules)));
-        element.appendChild(createAttributeNonNull(doc, "createdBy", dataset.createdBy?.toString()));
+        element.appendChild(createAttributeNonNull(doc, "createdBy", dataset.createdBy==null ? "" : dataset.createdBy?.toString()));
         element.appendChild(createAttributeNonNull(doc, "creationDate", createdDate));
         element.appendChild(createAttributeNonNull(doc, "updatedBy", dataset.updatedBy == null ? "" : dataset.updatedBy?.toString()));
-        element.appendChild(createAttributeNonNull(doc, "updatedDate", updatedDate == null ? "" : updatedDate));
+        element.appendChild(createAttributeNonNull(doc, "updatedDate", updatedDate));
 
 
 
