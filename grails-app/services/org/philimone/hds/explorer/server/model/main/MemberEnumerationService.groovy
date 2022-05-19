@@ -47,7 +47,7 @@ class MemberEnumerationService {
     }
 
     List<RawMessage> deleteResidency(Residency residency) {
-println "member code=${residency.memberCode}, r.id=${residency.id}"
+//println "member code=${residency.memberCode}, r.id=${residency.id}"
         def errors = new ArrayList<RawMessage>()
 
         try {
@@ -198,11 +198,11 @@ println "member code=${residency.memberCode}, r.id=${residency.id}"
         def motherUnknown = motherExists && mother?.code == Codes.MEMBER_UNKNOWN_CODE
         def fatherUnknown = fatherExists && father?.code == Codes.MEMBER_UNKNOWN_CODE
         def headRelationshipType = HeadRelationshipType.getFrom(memberEnu.headRelationshipType)
-        //def visit = visitService.getVisit(memberEnu.visitCode)
+        def visit = visitService.getVisit(memberEnu.visitCode)
         def household = householdService.getHousehold(memberEnu.householdCode)
 
         def householdExists = household != null
-        //def visitExists = visit != null
+        def visitExists = visit != null
 
         
         //C1. Check Blank Fields (visitCode)
@@ -354,7 +354,7 @@ println "member code=${residency.memberCode}, r.id=${residency.id}"
 
                 if (currentHead != null && currentHead.endType == HeadRelationshipEndType.NOT_APPLICABLE) {
                     //cant create inmigration-head-relationship, the household
-                    errors << errorMessageService.getRawMessage(RawEntity.MEMBER_ENUMERATION, "validation.field.member.enumeration.head.not.closed.error", [memberEnu.code, memberEnu.destinationCode], ["memberCode", "destinationCode"])
+                    errors << errorMessageService.getRawMessage(RawEntity.MEMBER_ENUMERATION, "validation.field.member.enumeration.head.not.closed.error", [memberEnu.code, currentHead.householdCode], ["memberCode", "householdCode"])
                 }
             }
 

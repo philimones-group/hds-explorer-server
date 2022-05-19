@@ -432,7 +432,7 @@ class InMigrationService {
                 memberCode: rawInMigration.memberCode,
                 householdCode: rawInMigration.destinationCode,
                 relationshipType: rawInMigration.headRelationshipType,
-                startType: HeadRelationshipStartType.getFrom(rawInMigration.migrationType),
+                startType: HeadRelationshipStartType.getFrom(rawInMigration.migrationType).code,
                 startDate: rawInMigration.migrationDate)
     }
 

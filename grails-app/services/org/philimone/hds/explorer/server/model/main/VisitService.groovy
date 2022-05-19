@@ -210,7 +210,7 @@ class VisitService {
         visit.roundNumber = rv.roundNumber
 
         visit.respondent = respondent
-        visit.respondentCode = respondent.code
+        visit.respondentCode = respondent?.code
 
         visit.hasInterpreter = rv.hasInterpreter
         visit.interpreterName = rv.interpreterName

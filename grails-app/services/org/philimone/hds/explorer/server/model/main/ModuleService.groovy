@@ -55,7 +55,7 @@ class ModuleService {
     List<String> addDefaultModuleTo(List<String> modules) {
         def module = getDefaultModule()
         if (module != null) {
-            println "${modules}, ${module.code}"
+            //println "${modules}, ${module.code}"
 
             modules.add(module.code)
         }
