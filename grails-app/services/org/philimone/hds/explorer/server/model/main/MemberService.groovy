@@ -24,7 +24,9 @@ class MemberService {
 
     //<editor-fold desc="Member Utilities Methods">
     boolean exists(String memberCode) {
-        Member.countByCode(memberCode) > 0
+        if (StringUtil.isBlank(memberCode)) return false
+
+        return Member.countByCode(memberCode) > 0
     }
 
     Member getMember(String memberCode){
