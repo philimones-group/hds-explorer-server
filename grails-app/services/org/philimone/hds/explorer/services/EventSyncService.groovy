@@ -6,6 +6,7 @@ import org.philimone.hds.explorer.io.SystemPath
 import org.philimone.hds.explorer.server.model.enums.LogStatus
 import org.philimone.hds.explorer.server.model.enums.ProcessedStatus
 import org.philimone.hds.explorer.server.model.enums.settings.LogReportCode
+import org.philimone.hds.explorer.server.model.enums.temporal.InMigrationType
 import org.philimone.hds.explorer.server.model.json.SyncProcessedStatus
 import org.philimone.hds.explorer.server.model.logs.LogReport
 import org.philimone.hds.explorer.server.model.logs.LogReportFile
@@ -14,7 +15,6 @@ import org.philimone.hds.explorer.server.model.collect.raw.*
 
 import java.time.LocalDateTime
 
-@Transactional
 class EventSyncService {
 
     def rawBatchExecutionService
@@ -48,7 +48,7 @@ class EventSyncService {
             reportFile = LogReportFile.findByKeyTimestamp(logReport.keyTimestamp)
             reportFileId = reportFile.id
 
-            println(reportFileId)
+            //println(reportFileId)
 
         }
 
@@ -216,13 +216,14 @@ class EventSyncService {
             reportFile = LogReportFile.findByKeyTimestamp(logReport.keyTimestamp)
             reportFileId = reportFile.id
 
-            println(reportFileId)
+            //println(reportFileId)
 
         }
 
         try {
 
             rawBatchExecutionService.resetEventsToNotProcessed(reportFileId)
+            //rawBatchExecutionService.resetEventsZero()
 
         }catch (Exception ex){
             ex.printStackTrace()
@@ -255,21 +256,27 @@ class EventSyncService {
 
     List<SyncProcessedStatus> mainProcessedStatus() {
 
-        def list = [
-                getHouseholdStatus(),
-                getMemberStatus(),
-                getHouseholdRegStatus(),
-                getVisitStatus(),
-                getMemberEnuStatus(),
-                getMaritalRelationshipStatus(),
-                getInMigrationStatus(),
-                getOutMigrationStatus(),
-                getPregnancyRegistrationStatus(),
-                getPregnancyOutcomeStatus(),
-                getDeathStatus(),
-                getChangeHeadStatus(),
-                getIncompleteVisitStatus()
-        ]
+        def list = [] as List<SyncProcessedStatus>
+
+        Household.withTransaction {
+            list = [
+                    getHouseholdStatus(),
+                    getMemberStatus(),
+                    getRegionRegStatus(),
+                    getHouseholdRegStatus(),
+                    getVisitStatus(),
+                    getMemberEnuStatus(),
+                    getMaritalRelationshipStatus(),
+                    getInMigrationStatus(),
+                    getExternalInMigrationStatus(),
+                    getOutMigrationStatus(),
+                    getPregnancyRegistrationStatus(),
+                    getPregnancyOutcomeStatus(),
+                    getDeathStatus(),
+                    getChangeHeadStatus(),
+                    getIncompleteVisitStatus()
+            ]
+        }
 
         return list
     }
@@ -304,6 +311,21 @@ class EventSyncService {
         return status
     }
 
+    SyncProcessedStatus getRegionRegStatus(){
+        SyncProcessedStatus status = new SyncProcessedStatus()
+
+        //total records
+        status.name = 'syncdss.sync.region.label'
+        status.totalRecords = Region.count()
+        status.processed = RawRegion.countByProcessedStatus(ProcessedStatus.SUCCESS)
+        status.processedWithError = RawRegion.countByProcessedStatus(ProcessedStatus.ERROR)
+        status.notProcessed = RawRegion.countByProcessedStatus(ProcessedStatus.NOT_PROCESSED)
+        status.invalidated = RawRegion.countByProcessedStatus(ProcessedStatus.INVALIDATED)
+        //status.otherCases = RawRegion.countByProcessedStatus(ProcessedStatus.)
+
+        return status
+    }
+    
     SyncProcessedStatus getHouseholdRegStatus(){
         SyncProcessedStatus status = new SyncProcessedStatus()
 
@@ -369,12 +391,27 @@ class EventSyncService {
 
         //total records
         status.name = 'syncdss.sync.inmigration.label'
-        status.totalRecords = InMigration.count()
+        status.totalRecords = InMigration.countByType(InMigrationType.INTERNAL)
         status.processed = RawInMigration.countByProcessedStatus(ProcessedStatus.SUCCESS)
         status.processedWithError = RawInMigration.countByProcessedStatus(ProcessedStatus.ERROR)
         status.notProcessed = RawInMigration.countByProcessedStatus(ProcessedStatus.NOT_PROCESSED)
         status.invalidated = RawInMigration.countByProcessedStatus(ProcessedStatus.INVALIDATED)
         //status.otherCases = RawInMigration.countByProcessedStatus(ProcessedStatus.)
+
+        return status
+    }
+
+    SyncProcessedStatus getExternalInMigrationStatus(){
+        SyncProcessedStatus status = new SyncProcessedStatus()
+
+        //total records
+        status.name = 'syncdss.sync.externalinmigration.label'
+        status.totalRecords = InMigration.countByType(InMigrationType.EXTERNAL)
+        status.processed = RawExternalInMigration.countByProcessedStatus(ProcessedStatus.SUCCESS)
+        status.processedWithError = RawExternalInMigration.countByProcessedStatus(ProcessedStatus.ERROR)
+        status.notProcessed = RawExternalInMigration.countByProcessedStatus(ProcessedStatus.NOT_PROCESSED)
+        status.invalidated = RawExternalInMigration.countByProcessedStatus(ProcessedStatus.INVALIDATED)
+        //status.otherCases = RawExternalInMigration.countByProcessedStatus(ProcessedStatus.)
 
         return status
     }
