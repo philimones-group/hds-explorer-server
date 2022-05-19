@@ -1,10 +1,8 @@
 package org.philimone.hds.explorer.server.model.collect.raw
 
-import grails.gorm.transactions.Transactional
+
 import net.betainteractive.utilities.StringUtil
-import org.hibernate.Session
 import org.hibernate.SessionFactory
-import org.hibernate.Transaction
 import org.philimone.hds.explorer.server.model.collect.raw.aggregate.RawEvent
 import org.philimone.hds.explorer.server.model.enums.HeadRelationshipType
 import org.philimone.hds.explorer.server.model.enums.ProcessedStatus
@@ -12,6 +10,7 @@ import org.philimone.hds.explorer.server.model.enums.RawEntity
 import org.philimone.hds.explorer.server.model.enums.RawEventType
 import org.philimone.hds.explorer.server.model.enums.RawMemberOrder
 import org.philimone.hds.explorer.server.model.enums.temporal.ExternalInMigrationType
+import org.philimone.hds.explorer.server.model.logs.LogReportFile
 import org.philimone.hds.explorer.server.model.main.Death
 import org.philimone.hds.explorer.server.model.main.HeadRelationship
 import org.philimone.hds.explorer.server.model.main.Household
@@ -210,7 +209,7 @@ class RawBatchExecutionService {
                     def rawEvent = RawEvent.get(rawEventId)
                     println "event ${rawEvent?.eventId}, date=${StringUtil.format(rawEvent?.keyDate)}, type=${rawEvent?.eventType}, order=${rawEvent?.eventOrder}, code: ${rawEvent?.entityCode}"
                     def result = executeEvent(rawEvent, logReportFileId)
-                    println "event result=${result}, ${result?.status}, ${result?.errorMessages}"
+                    //println "event result=${result}, ${result?.status}, ${result?.errorMessages}"
                 }
             }
         }
@@ -247,6 +246,30 @@ class RawBatchExecutionService {
         }
     }
 
+    RawExecutionResult createRawEventErrorLog(RawEntity entity, RawEvent rawEvent, String columnName, List<RawMessage> errors, String logReportFileId) {
+        //create errorLog
+        def errorLog = new RawErrorLog(uuid: rawEvent.eventId, entity: entity, columnName: columnName, code: rawEvent.entityCode)
+        errorLog.uuid = rawEvent.eventId
+        errorLog.logReportFile = LogReportFile.findById(logReportFileId)
+        errorLog.setMessages(errors)
+        errorLog.save(flush:true)
+        
+        //save raw event 
+        rawEvent.processed = ProcessedStatus.ERROR
+        rawEvent.save(flush:true)
+        
+        return RawExecutionResult.newErrorResult(entity, errors)
+    }
+
+    /*def createErrorLog(RawEntity entity, String rawDomainId, String rawDomainCode, String columnName, List<RawMessage> errors, String logReportFileId) {
+        //create errorLog
+        def errorLog = new RawErrorLog(uuid: rawDomainId, entity: entity, columnName: columnName, code: code)
+        errorLog.uuid = rawDomainId
+        errorLog.logReportFile = LogReportFile.findById(logReportFileId)
+        errorLog.setMessages(errors)
+        errorLog.save(flush:true)
+    }*/
+    
     RawExecutionResult<Region> executeRegion(RawEvent rawEvent, String logReportFileId) {
 
         if (rawEvent == null || rawEvent?.isProcessed()) return null
@@ -260,8 +283,8 @@ class RawBatchExecutionService {
             //check region dependency existence
             def parentCode = rawObj.parentCode
 
-            dependencyResolved = solveRegionDependency(parentCode, "parentCode", logReportFileId)
-            
+            def depStatus = solveRegionDependency(parentCode, "parentCode", logReportFileId)
+            dependencyResolved = depStatus.solved
 
             if (dependencyResolved) {
                 def result = rawExecutionService.createRegion(rawObj, logReportFileId)
@@ -271,9 +294,16 @@ class RawBatchExecutionService {
                 rawEvent.save(flush:true)
 
                 return result
+            } else {
+                def errors = new ArrayList<RawMessage>()
+                errors << depStatus.errorMessages
+
+                def result = createRawEventErrorLog(RawEntity.REGION, rawEvent, "regionCode", errors, logReportFileId)
+                return result
             }
         }
 
+        //Deal with these later
         return null
     }
 
@@ -290,8 +320,8 @@ class RawBatchExecutionService {
             //check region dependency existence
             def regionCode = rawObj.regionCode
 
-            dependencyResolved = solveRegionDependency(regionCode, "regionCode", logReportFileId)
-
+            def depStatus = solveRegionDependency(regionCode, "regionCode", logReportFileId)
+            dependencyResolved = depStatus.solved
 
             if (dependencyResolved) {
                 def result = rawExecutionService.createHousehold(rawObj, logReportFileId)
@@ -300,6 +330,12 @@ class RawBatchExecutionService {
                 rawEvent.processed = getProcessedStatus(result?.status)
                 rawEvent.save(flush:true)
 
+                return result
+            } else {
+                def errors = new ArrayList<RawMessage>()
+                errors << depStatus.errorMessages
+
+                def result = createRawEventErrorLog(RawEntity.HOUSEHOLD, rawEvent, "householdCode", errors, logReportFileId)
                 return result
             }
 
@@ -323,10 +359,12 @@ class RawBatchExecutionService {
             def respondentCode = rawObj.respondentCode
 
             //try to solve household dependency
-            dependencyResolved = solveHouseholdDependency(householdCode, logReportFileId)
+            def depStatus = solveHouseholdDependency(householdCode, "householdCode", logReportFileId)
+            dependencyResolved = depStatus.solved
 
             //try to solve member dependency (respondent)
-            dependencyResolved = dependencyResolved && solveMemberDependency(respondentCode, logReportFileId)
+            def depStatus2 = solveMemberDependency(respondentCode, "respondentCode", logReportFileId)
+            dependencyResolved = dependencyResolved && depStatus2.solved
 
             if (dependencyResolved) {
 
@@ -335,6 +373,13 @@ class RawBatchExecutionService {
                 rawEvent.processed = getProcessedStatus(result?.status)
                 rawEvent.save(flush:true)
 
+                return result
+            } else {
+                def errors = new ArrayList<RawMessage>()
+                errors << depStatus.errorMessages
+                errors << depStatus2.errorMessages
+
+                def result = createRawEventErrorLog(RawEntity.VISIT, rawEvent, "code", errors, logReportFileId)
                 return result
             }
         }
@@ -360,7 +405,8 @@ class RawBatchExecutionService {
             def motherCode = rawObj.motherCode
 
             //try to solve household dependency
-            dependencyResolved = solveHouseholdDependency(householdCode, logReportFileId)
+            def depStatus = solveHouseholdDependency(householdCode, "householdCode", logReportFileId)
+            dependencyResolved = depStatus.solved
 
             //try to solve head dependency, check if the household has a head yet
             /*if (!rawObj.headRelationshipType?.equals("HOH") && !headRelationshipService.hasHeadOfHousehold(householdCode)){
@@ -370,13 +416,16 @@ class RawBatchExecutionService {
 
 
             //try to solve visit dependency
-            dependencyResolved = dependencyResolved && solveVisitDependency(visitCode, logReportFileId)
+            def depStatus2 = solveVisitDependency(visitCode, "visitCode", logReportFileId)
+            dependencyResolved = dependencyResolved && depStatus2.solved
 
             //try to solve member dependency (father)
-            dependencyResolved = dependencyResolved && solveMemberDependency(fatherCode, logReportFileId)
+            def depStatus3 =  solveMemberDependency(fatherCode, "fatherCode", logReportFileId)
+            dependencyResolved = dependencyResolved && depStatus3.solved
 
             //try to solve member dependency (mother)
-            dependencyResolved = dependencyResolved && solveMemberDependency(motherCode, logReportFileId)
+            def depStatus4 =  solveMemberDependency(motherCode, "motherCode", logReportFileId)
+            dependencyResolved = dependencyResolved && depStatus4.solved
 
             if (dependencyResolved) {
                 def result = rawExecutionService.createMemberEnu(rawObj, logReportFileId)
@@ -386,9 +435,16 @@ class RawBatchExecutionService {
                 rawEvent.save(flush:true)
 
                 return result
-            }
+            } else {
+                def errors = new ArrayList<RawMessage>()
+                errors << depStatus.errorMessages
+                errors << depStatus2.errorMessages
+                errors << depStatus3.errorMessages
+                errors << depStatus4.errorMessages
 
-            println("dependency not solved")
+                def result = createRawEventErrorLog(RawEntity.MEMBER_ENUMERATION, rawEvent, "code", errors, logReportFileId)
+                return result
+            }
 
             return null
         }
@@ -410,10 +466,12 @@ class RawBatchExecutionService {
             def memberCode = rawObj.memberCode
 
             //try to solve visit dependency
-            dependencyResolved = dependencyResolved && solveVisitDependency(visitCode, logReportFileId)
+            def depStatus = solveVisitDependency(visitCode, "visitCode", logReportFileId)
+            dependencyResolved = dependencyResolved && depStatus.solved
 
             //try to solve member dependency
-            dependencyResolved = dependencyResolved && solveMemberDependency(memberCode, logReportFileId)
+            def depStatus2 = solveMemberDependency(memberCode, "memberCode", logReportFileId)
+            dependencyResolved = dependencyResolved && depStatus2.solved
 
             if (dependencyResolved) {
                 def result = rawExecutionService.createDeath(rawObj, logReportFileId)
@@ -422,6 +480,13 @@ class RawBatchExecutionService {
                 rawEvent.processed = getProcessedStatus(result?.status)
                 rawEvent.save(flush:true)
 
+                return result
+            } else {
+                def errors = new ArrayList<RawMessage>()
+                errors << depStatus.errorMessages
+                errors << depStatus2.errorMessages
+
+                def result = createRawEventErrorLog(RawEntity.DEATH, rawEvent, "memberCode", errors, logReportFileId)
                 return result
             }
 
@@ -446,13 +511,16 @@ class RawBatchExecutionService {
             def memberCode = rawObj.memberCode
 
             //try to solve household dependency
-            dependencyResolved = dependencyResolved && solveHouseholdDependency(originCode, logReportFileId)
+            def depStatus = solveHouseholdDependency(originCode, "originCode", logReportFileId)
+            dependencyResolved = dependencyResolved && depStatus.solved
 
             //try to solve visit dependency
-            dependencyResolved = dependencyResolved && solveVisitDependency(visitCode, logReportFileId)
+            def depStatus2 = solveVisitDependency(visitCode, "visitCode", logReportFileId)
+            dependencyResolved = dependencyResolved && depStatus2.solved
 
             //try to solve member dependency
-            dependencyResolved = dependencyResolved && solveMemberDependency(memberCode, logReportFileId)
+            def depStatus3 = solveMemberDependency(memberCode, "memberCode", logReportFileId)
+            dependencyResolved = dependencyResolved && depStatus3.solved
 
             if (dependencyResolved) {
                 def result = rawExecutionService.createOutMigration(rawObj, logReportFileId)
@@ -461,6 +529,14 @@ class RawBatchExecutionService {
                 rawEvent.processed = getProcessedStatus(result?.status)
                 rawEvent.save(flush:true)
 
+                return result
+            } else {
+                def errors = new ArrayList<RawMessage>()
+                errors << depStatus.errorMessages
+                errors << depStatus2.errorMessages
+                errors << depStatus3.errorMessages
+
+                def result = createRawEventErrorLog(RawEntity.OUT_MIGRATION, rawEvent, "memberCode", errors, logReportFileId)
                 return result
             }
 
@@ -485,13 +561,16 @@ class RawBatchExecutionService {
             def memberCode = rawObj.memberCode
 
             //try to solve household dependency
-            dependencyResolved = dependencyResolved && solveHouseholdDependency(destinationCode, logReportFileId)
+            def depStatus = solveHouseholdDependency(destinationCode, "destinationCode", logReportFileId)
+            dependencyResolved = dependencyResolved && depStatus.solved
 
             //try to solve visit dependency
-            dependencyResolved = dependencyResolved && solveVisitDependency(visitCode, logReportFileId)
+            def depStatus2 = solveVisitDependency(visitCode, "visitCode", logReportFileId)
+            dependencyResolved = dependencyResolved && depStatus2.solved
 
             //try to solve member dependency
-            dependencyResolved = dependencyResolved && solveMemberDependency(memberCode, logReportFileId)
+            def depStatus3 = solveMemberDependency(memberCode, "memberCode", logReportFileId)
+            dependencyResolved = dependencyResolved && depStatus3.solved
 
             if (dependencyResolved) {
                 def result = rawExecutionService.createInMigration(rawObj, logReportFileId)
@@ -500,6 +579,14 @@ class RawBatchExecutionService {
                 rawEvent.processed = getProcessedStatus(result?.status)
                 rawEvent.save(flush:true)
 
+                return result
+            } else {
+                def errors = new ArrayList<RawMessage>()
+                errors << depStatus.errorMessages
+                errors << depStatus2.errorMessages
+                errors << depStatus3.errorMessages
+
+                def result = createRawEventErrorLog(RawEntity.IN_MIGRATION, rawEvent, "memberCode", errors, logReportFileId)
                 return result
             }
 
@@ -526,21 +613,27 @@ class RawBatchExecutionService {
             def motherCode = rawObj.memberMotherCode
 
             //try to solve household dependency
-            dependencyResolved = solveHouseholdDependency(destinationCode, logReportFileId)
+            def depStatus = solveHouseholdDependency(destinationCode, "destinationCode", logReportFileId)
+            dependencyResolved = depStatus.solved
 
             //try to solve visit dependency
-            dependencyResolved = dependencyResolved && solveVisitDependency(visitCode, logReportFileId)
+            def depStatus2 = solveVisitDependency(visitCode, "visitCode", logReportFileId)
+            dependencyResolved = dependencyResolved && depStatus2.solved
 
             //try to solve member dependency - if it is reentry
+            def depStatus3 = RawDependencyStatus.dependencySolved(RawEntity.EXTERNAL_INMIGRATION)
             if (rawObj.extMigrationType == ExternalInMigrationType.REENTRY.name()) { //couldnt find dependency
-                dependencyResolved = dependencyResolved && solveMemberDependency(memberCode, logReportFileId)
+                depStatus3 = solveMemberDependency(memberCode, "memberCode", logReportFileId)
+                dependencyResolved = dependencyResolved && depStatus3.solved
             }
 
             //try to solve member dependency (father)
-            dependencyResolved = dependencyResolved && solveMemberDependency(fatherCode, logReportFileId)
+            def depStatus4 = solveMemberDependency(fatherCode, "fatherCode", logReportFileId)
+            dependencyResolved = dependencyResolved && depStatus4.solved
 
             //try to solve member dependency (mother)
-            dependencyResolved = dependencyResolved && solveMemberDependency(motherCode, logReportFileId)
+            def depStatus5 = solveMemberDependency(motherCode, "motherCode", logReportFileId)
+            dependencyResolved = dependencyResolved && depStatus5.solved
 
 
             if (dependencyResolved) {
@@ -550,6 +643,16 @@ class RawBatchExecutionService {
                 rawEvent.processed = getProcessedStatus(result?.status)
                 rawEvent.save(flush:true)
 
+                return result
+            } else {
+                def errors = new ArrayList<RawMessage>()
+                errors << depStatus.errorMessages
+                errors << depStatus2.errorMessages
+                errors << depStatus3.errorMessages
+                errors << depStatus4.errorMessages
+                errors << depStatus5.errorMessages
+
+                def result = createRawEventErrorLog(RawEntity.EXTERNAL_INMIGRATION, rawEvent, "memberCode", errors, logReportFileId)
                 return result
             }
 
@@ -573,10 +676,12 @@ class RawBatchExecutionService {
             def motherCode = rawObj.motherCode
 
             //try to solve visit dependency
-            dependencyResolved = dependencyResolved && solveVisitDependency(visitCode, logReportFileId)
+            def depStatus = solveVisitDependency(visitCode, "visitCode", logReportFileId)
+            dependencyResolved = dependencyResolved && depStatus.solved
 
             //try to solve member dependency
-            dependencyResolved = dependencyResolved && solveMemberDependency(motherCode, logReportFileId)
+            def depStatus2 = solveMemberDependency(motherCode, "motherCode", logReportFileId)
+            dependencyResolved = dependencyResolved && depStatus2.solved
 
             if (dependencyResolved) {
                 def result = rawExecutionService.createPregnancyRegistration(rawObj, logReportFileId)
@@ -585,6 +690,13 @@ class RawBatchExecutionService {
                 rawEvent.processed = getProcessedStatus(result?.status)
                 rawEvent.save(flush:true)
 
+                return result
+            } else {
+                def errors = new ArrayList<RawMessage>()
+                errors << depStatus.errorMessages
+                errors << depStatus2.errorMessages
+
+                def result = createRawEventErrorLog(RawEntity.PREGNANCY_REGISTRATION, rawEvent, "code", errors, logReportFileId)
                 return result
             }
 
@@ -609,13 +721,16 @@ class RawBatchExecutionService {
             def fatherCode = rawObj.fatherCode
 
             //try to solve visit dependency
-            dependencyResolved = dependencyResolved && solveVisitDependency(visitCode, logReportFileId)
+            def depStatus = solveVisitDependency(visitCode, "visitCode", logReportFileId)
+            dependencyResolved = dependencyResolved && depStatus.solved
 
             //try to solve member dependency (father)
-            dependencyResolved = dependencyResolved && solveMemberDependency(fatherCode, logReportFileId)
+            def depStatus2 = solveMemberDependency(fatherCode, "fatherCode", logReportFileId)
+            dependencyResolved = dependencyResolved && depStatus2.solved
 
             //try to solve member dependency (mother)
-            dependencyResolved = dependencyResolved && solveMemberDependency(motherCode, logReportFileId)
+            def depStatus3 = solveMemberDependency(motherCode, "motherCode", logReportFileId)
+            dependencyResolved = dependencyResolved && depStatus3.solved
 
             if (dependencyResolved) {
                 def result = rawExecutionService.createPregnancyOutcome(rawObj, logReportFileId)
@@ -624,6 +739,14 @@ class RawBatchExecutionService {
                 rawEvent.processed = getProcessedStatus(result?.status)
                 rawEvent.save(flush:true)
 
+                return result
+            } else {
+                def errors = new ArrayList<RawMessage>()
+                errors << depStatus.errorMessages
+                errors << depStatus2.errorMessages
+                errors << depStatus3.errorMessages
+
+                def result = createRawEventErrorLog(RawEntity.PREGNANCY_OUTCOME, rawEvent, "code", errors, logReportFileId)
                 return result
             }
 
@@ -647,10 +770,12 @@ class RawBatchExecutionService {
             def memberB = rawObj.memberB
 
             //try to solve memberA dependency
-            dependencyResolved = dependencyResolved && solveMemberDependency(memberA, logReportFileId)
+            def depStatus = solveMemberDependency(memberA, "memberA", logReportFileId)
+            dependencyResolved = dependencyResolved && depStatus.solved
 
             //try to solve memberB dependency
-            dependencyResolved = dependencyResolved && solveMemberDependency(memberB, logReportFileId)
+            def depStatus2 = solveMemberDependency(memberB, "memberB", logReportFileId)
+            dependencyResolved = dependencyResolved && depStatus2.solved
 
             if (dependencyResolved) {
                 def result = rawExecutionService.executeMaritalRelationship(rawObj, logReportFileId)
@@ -659,6 +784,13 @@ class RawBatchExecutionService {
                 rawEvent.processed = getProcessedStatus(result?.status)
                 rawEvent.save(flush:true)
 
+                return result
+            } else {
+                def errors = new ArrayList<RawMessage>()
+                errors << depStatus.errorMessages
+                errors << depStatus2.errorMessages
+
+                def result = createRawEventErrorLog(RawEntity.MARITAL_RELATIONSHIP, rawEvent, "memberA", errors, logReportFileId)
                 return result
             }
 
@@ -684,16 +816,20 @@ class RawBatchExecutionService {
             def newHeadCode = rawObj.newHeadCode
 
             //try to solve household dependency
-            dependencyResolved = dependencyResolved && solveHouseholdDependency(householdCode, logReportFileId)
+            def depStatus = solveHouseholdDependency(householdCode, "householdCode", logReportFileId)
+            dependencyResolved = depStatus.solved
 
             //try to solve visit dependency
-            dependencyResolved = dependencyResolved && solveVisitDependency(visitCode, logReportFileId)
+            def depStatus2 = solveVisitDependency(visitCode, "visitCode", logReportFileId)
+            dependencyResolved = dependencyResolved && depStatus2.solved
 
             //try to solve member dependency (oldHead)
-            dependencyResolved = dependencyResolved && solveMemberDependency(oldHeadCode, logReportFileId)
+            def depStatus3 = solveMemberDependency(oldHeadCode, "oldHeadCode", logReportFileId)
+            dependencyResolved = dependencyResolved && depStatus3.solved
 
             //try to solve member dependency (newHead)
-            dependencyResolved = dependencyResolved && solveMemberDependency(newHeadCode, logReportFileId)
+            def depStatus4 = solveMemberDependency(newHeadCode, "newHeadCode", logReportFileId)
+            dependencyResolved = dependencyResolved && depStatus4.solved
 
 
             if (dependencyResolved) {
@@ -703,6 +839,15 @@ class RawBatchExecutionService {
                 rawEvent.processed = getProcessedStatus(result?.status)
                 rawEvent.save(flush:true)
 
+                return result
+            } else {
+                def errors = new ArrayList<RawMessage>()
+                errors << depStatus.errorMessages
+                errors << depStatus2.errorMessages
+                errors << depStatus3.errorMessages
+                errors << depStatus4.errorMessages
+
+                def result = createRawEventErrorLog(RawEntity.CHANGE_HEAD_OF_HOUSEHOLD, rawEvent, "newHeadCode", errors, logReportFileId)
                 return result
             }
 
@@ -728,10 +873,12 @@ class RawBatchExecutionService {
             def memberCode = rawObj.memberCode
 
             //try to solve visit dependency
-            dependencyResolved = solveVisitDependency(visitCode, logReportFileId)
+            def depStatus = solveVisitDependency(visitCode, "visitCode", logReportFileId)
+            dependencyResolved = depStatus.solved
 
             //try to solve member dependency (memberCode)
-            dependencyResolved = dependencyResolved && solveMemberDependency(memberCode, logReportFileId)
+            def depStatus2 = solveMemberDependency(memberCode, "memberCode", logReportFileId)
+            dependencyResolved = dependencyResolved && depStatus2.solved
 
             if (dependencyResolved) {
 
@@ -740,6 +887,13 @@ class RawBatchExecutionService {
                 rawEvent.processed = getProcessedStatus(result?.status)
                 rawEvent.save(flush:true)
 
+                return result
+            } else {
+                def errors = new ArrayList<RawMessage>()
+                errors << depStatus.errorMessages
+                errors << depStatus2.errorMessages
+
+                def result = createRawEventErrorLog(RawEntity.INCOMPLETE_VISIT, rawEvent, "visitCode", errors, logReportFileId)
                 return result
             }
         }

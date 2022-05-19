@@ -10,7 +10,7 @@ class RawDependencyStatus {
     RawDependencyStatus(RawEntity entity, boolean dependencySolved, List<RawMessage> errorMessages) {
         this.entity = entity
         this.solved = dependencySolved
-        if (errorMessages != null) { this.errorMessages.addAll(errorMessages) }
+        if (!this.solved && errorMessages != null) { this.errorMessages.addAll(errorMessages) }
     }
 
     static RawDependencyStatus dependencySolved(RawEntity entity) {
