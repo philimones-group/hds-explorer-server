@@ -209,7 +209,7 @@ class RawBatchExecutionService {
                     def rawEvent = RawEvent.get(rawEventId)
                     println "event ${rawEvent?.eventId}, date=${StringUtil.format(rawEvent?.keyDate)}, type=${rawEvent?.eventType}, order=${rawEvent?.eventOrder}, code: ${rawEvent?.entityCode}"
                     def result = executeEvent(rawEvent, logReportFileId)
-                    //println "event result=${result}, ${result?.status}, ${result?.errorMessages}"
+                    //println "event result=${result}, ${result?.status}, ${result?.errorMessages)}"
                 }
             }
         }
@@ -296,7 +296,7 @@ class RawBatchExecutionService {
                 return result
             } else {
                 def errors = new ArrayList<RawMessage>()
-                errors << depStatus.errorMessages
+                if (!depStatus?.errorMessages?.isEmpty()) errors.addAll(depStatus.errorMessages)
 
                 def result = createRawEventErrorLog(RawEntity.REGION, rawEvent, "regionCode", errors, logReportFileId)
                 return result
@@ -333,7 +333,7 @@ class RawBatchExecutionService {
                 return result
             } else {
                 def errors = new ArrayList<RawMessage>()
-                errors << depStatus.errorMessages
+                if (!depStatus?.errorMessages?.isEmpty()) errors.addAll(depStatus.errorMessages)
 
                 def result = createRawEventErrorLog(RawEntity.HOUSEHOLD, rawEvent, "householdCode", errors, logReportFileId)
                 return result
@@ -376,8 +376,8 @@ class RawBatchExecutionService {
                 return result
             } else {
                 def errors = new ArrayList<RawMessage>()
-                errors << depStatus.errorMessages
-                errors << depStatus2.errorMessages
+                if (!depStatus?.errorMessages?.isEmpty()) errors.addAll(depStatus.errorMessages)
+                if (!depStatus2.errorMessages.isEmpty()) errors.addAll(depStatus2.errorMessages)
 
                 def result = createRawEventErrorLog(RawEntity.VISIT, rawEvent, "code", errors, logReportFileId)
                 return result
@@ -437,10 +437,10 @@ class RawBatchExecutionService {
                 return result
             } else {
                 def errors = new ArrayList<RawMessage>()
-                errors << depStatus.errorMessages
-                errors << depStatus2.errorMessages
-                errors << depStatus3.errorMessages
-                errors << depStatus4.errorMessages
+                if (!depStatus.errorMessages.isEmpty()) errors.addAll(depStatus.errorMessages)
+                if (!depStatus2.errorMessages.isEmpty()) errors.addAll(depStatus2.errorMessages)
+                if (!depStatus3.errorMessages.isEmpty()) errors.addAll(depStatus3.errorMessages)
+                if (!depStatus4.errorMessages.isEmpty()) errors.addAll(depStatus4.errorMessages)
 
                 def result = createRawEventErrorLog(RawEntity.MEMBER_ENUMERATION, rawEvent, "code", errors, logReportFileId)
                 return result
@@ -483,8 +483,8 @@ class RawBatchExecutionService {
                 return result
             } else {
                 def errors = new ArrayList<RawMessage>()
-                errors << depStatus.errorMessages
-                errors << depStatus2.errorMessages
+                if (!depStatus?.errorMessages?.isEmpty()) errors.addAll(depStatus.errorMessages)
+                if (!depStatus2.errorMessages.isEmpty()) errors.addAll(depStatus2.errorMessages)
 
                 def result = createRawEventErrorLog(RawEntity.DEATH, rawEvent, "memberCode", errors, logReportFileId)
                 return result
@@ -532,9 +532,9 @@ class RawBatchExecutionService {
                 return result
             } else {
                 def errors = new ArrayList<RawMessage>()
-                errors << depStatus.errorMessages
-                errors << depStatus2.errorMessages
-                errors << depStatus3.errorMessages
+                if (!depStatus?.errorMessages?.isEmpty()) errors.addAll(depStatus.errorMessages)
+                if (!depStatus2.errorMessages.isEmpty()) errors.addAll(depStatus2.errorMessages)
+                if (!depStatus3.errorMessages.isEmpty()) errors.addAll(depStatus3.errorMessages)
 
                 def result = createRawEventErrorLog(RawEntity.OUT_MIGRATION, rawEvent, "memberCode", errors, logReportFileId)
                 return result
@@ -582,9 +582,9 @@ class RawBatchExecutionService {
                 return result
             } else {
                 def errors = new ArrayList<RawMessage>()
-                errors << depStatus.errorMessages
-                errors << depStatus2.errorMessages
-                errors << depStatus3.errorMessages
+                if (!depStatus?.errorMessages?.isEmpty()) errors.addAll(depStatus.errorMessages)
+                if (!depStatus2.errorMessages.isEmpty()) errors.addAll(depStatus2.errorMessages)
+                if (!depStatus3.errorMessages.isEmpty()) errors.addAll(depStatus3.errorMessages)
 
                 def result = createRawEventErrorLog(RawEntity.IN_MIGRATION, rawEvent, "memberCode", errors, logReportFileId)
                 return result
@@ -646,11 +646,11 @@ class RawBatchExecutionService {
                 return result
             } else {
                 def errors = new ArrayList<RawMessage>()
-                errors << depStatus.errorMessages
-                errors << depStatus2.errorMessages
-                errors << depStatus3.errorMessages
-                errors << depStatus4.errorMessages
-                errors << depStatus5.errorMessages
+                if (!depStatus?.errorMessages?.isEmpty()) errors.addAll(depStatus.errorMessages)
+                if (!depStatus2.errorMessages.isEmpty()) errors.addAll(depStatus2.errorMessages)
+                if (!depStatus3.errorMessages.isEmpty()) errors.addAll(depStatus3.errorMessages)
+                if (!depStatus4.errorMessages.isEmpty()) errors.addAll(depStatus4.errorMessages)
+                if (!depStatus5.errorMessages.isEmpty()) errors.addAll(depStatus5.errorMessages)
 
                 def result = createRawEventErrorLog(RawEntity.EXTERNAL_INMIGRATION, rawEvent, "memberCode", errors, logReportFileId)
                 return result
@@ -693,8 +693,8 @@ class RawBatchExecutionService {
                 return result
             } else {
                 def errors = new ArrayList<RawMessage>()
-                errors << depStatus.errorMessages
-                errors << depStatus2.errorMessages
+                if (!depStatus?.errorMessages?.isEmpty()) errors.addAll(depStatus.errorMessages)
+                if (!depStatus2.errorMessages.isEmpty()) errors.addAll(depStatus2.errorMessages)
 
                 def result = createRawEventErrorLog(RawEntity.PREGNANCY_REGISTRATION, rawEvent, "code", errors, logReportFileId)
                 return result
@@ -742,9 +742,9 @@ class RawBatchExecutionService {
                 return result
             } else {
                 def errors = new ArrayList<RawMessage>()
-                errors << depStatus.errorMessages
-                errors << depStatus2.errorMessages
-                errors << depStatus3.errorMessages
+                if (!depStatus?.errorMessages?.isEmpty()) errors.addAll(depStatus.errorMessages)
+                if (!depStatus2.errorMessages.isEmpty()) errors.addAll(depStatus2.errorMessages)
+                if (!depStatus3.errorMessages.isEmpty()) errors.addAll(depStatus3.errorMessages)
 
                 def result = createRawEventErrorLog(RawEntity.PREGNANCY_OUTCOME, rawEvent, "code", errors, logReportFileId)
                 return result
@@ -787,8 +787,8 @@ class RawBatchExecutionService {
                 return result
             } else {
                 def errors = new ArrayList<RawMessage>()
-                errors << depStatus.errorMessages
-                errors << depStatus2.errorMessages
+                if (!depStatus?.errorMessages?.isEmpty()) errors.addAll(depStatus.errorMessages)
+                if (!depStatus2.errorMessages.isEmpty()) errors.addAll(depStatus2.errorMessages)
 
                 def result = createRawEventErrorLog(RawEntity.MARITAL_RELATIONSHIP, rawEvent, "memberA", errors, logReportFileId)
                 return result
@@ -842,10 +842,10 @@ class RawBatchExecutionService {
                 return result
             } else {
                 def errors = new ArrayList<RawMessage>()
-                errors << depStatus.errorMessages
-                errors << depStatus2.errorMessages
-                errors << depStatus3.errorMessages
-                errors << depStatus4.errorMessages
+                if (!depStatus?.errorMessages?.isEmpty()) errors.addAll(depStatus.errorMessages)
+                if (!depStatus2.errorMessages.isEmpty()) errors.addAll(depStatus2.errorMessages)
+                if (!depStatus3.errorMessages.isEmpty()) errors.addAll(depStatus3.errorMessages)
+                if (!depStatus4.errorMessages.isEmpty()) errors.addAll(depStatus4.errorMessages)
 
                 def result = createRawEventErrorLog(RawEntity.CHANGE_HEAD_OF_HOUSEHOLD, rawEvent, "newHeadCode", errors, logReportFileId)
                 return result
@@ -890,8 +890,8 @@ class RawBatchExecutionService {
                 return result
             } else {
                 def errors = new ArrayList<RawMessage>()
-                errors << depStatus.errorMessages
-                errors << depStatus2.errorMessages
+                if (!depStatus?.errorMessages?.isEmpty()) errors.addAll(depStatus.errorMessages)
+                if (!depStatus2.errorMessages.isEmpty()) errors.addAll(depStatus2.errorMessages)
 
                 def result = createRawEventErrorLog(RawEntity.INCOMPLETE_VISIT, rawEvent, "visitCode", errors, logReportFileId)
                 return result
@@ -940,7 +940,7 @@ class RawBatchExecutionService {
             }
         }
 
-        errors << getRegionDependencyError(regionCode, columnName)
+        errors.addAll(getRegionDependencyError(regionCode, columnName)
 
         return new RawDependencyStatus(RawEntity.REGION, dependencyResolved, errors)
     }
@@ -968,7 +968,7 @@ class RawBatchExecutionService {
             }
         }
 
-        errors << getHouseholdDependencyError(householdCode, columnName)
+        errors.addAll(getHouseholdDependencyError(householdCode, columnName)
 
         return new RawDependencyStatus(RawEntity.HOUSEHOLD, dependencyResolved, errors)
     }
@@ -995,7 +995,7 @@ class RawBatchExecutionService {
             }
         }
 
-        errors << getMemberDependencyError(memberCode, columnName)
+        errors.addAll(getMemberDependencyError(memberCode, columnName)
 
         return new RawDependencyStatus(RawEntity.MEMBER, dependencyResolved, errors)
     }
@@ -1049,7 +1049,7 @@ class RawBatchExecutionService {
 
         }
 
-        errors << getVisitDependencyError(visitCode, columnName)
+        errors.addAll(getVisitDependencyError(visitCode, columnName)
 
         return new RawDependencyStatus(RawEntity.VISIT, dependencyResolved, errors)
     }

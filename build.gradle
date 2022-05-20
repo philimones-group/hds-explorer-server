@@ -78,7 +78,7 @@ dependencies {
     compile group: 'org.postgresql', name: 'postgresql', version: '42.2.16'
 
     runtime "org.grails.plugins:jquery:1.11.1"
-    compile 'org.grails.plugins:jasper-reports:3.1.2'
+   // compile 'org.grails.plugins:jasper-reports:3.1.2'
     compile "org.grails.plugins:jquery-ui:1.10.4"
     runtime 'org.grails.plugins:twitter-bootstrap:3.3.5'
     //compile 'org.grails.plugins:db-reverse-engineer:4.0.0'

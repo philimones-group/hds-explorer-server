@@ -227,7 +227,7 @@ class RegionService {
         def list = new ArrayList<JRegionLevel>()
         def listRemove = new ArrayList<JRegionLevel>()
 
-        ApplicationParam.executeQuery("select p from ApplicationParam p where p.name like '%hierarchy%' and p.value is not null order by p.name asc" ).each {
+        ApplicationParam.executeQuery("select p from ApplicationParam p where p.name like 'hierarchy%' and p.value is not null order by p.name asc" ).each {
             list << new JRegionLevel(level: it.name, name: it.value, regionLevel: RegionLevel.getFrom(it.name))
         }
 

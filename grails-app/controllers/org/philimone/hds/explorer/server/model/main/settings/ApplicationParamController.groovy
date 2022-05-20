@@ -5,7 +5,7 @@ import org.philimone.hds.explorer.server.model.settings.ApplicationParam
 class ApplicationParamController {
 
     def hierarchyLevels = {
-        def appParams = ApplicationParam.findAllByNameLike("hierarchy%")
+        def appParams = ApplicationParam.findAllByNameLike("hierarchy%", [sort:"id"])
 
         [applicationParamList: appParams, applicationParamCount: appParams.size()]
     }
