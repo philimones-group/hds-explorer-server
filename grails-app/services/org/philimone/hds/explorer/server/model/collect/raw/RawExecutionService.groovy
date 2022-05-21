@@ -50,12 +50,12 @@ class RawExecutionService {
             errorLog.uuid = rawDomainInstance.id
             errorLog.logReportFile = LogReportFile.findById(logReportFileId)
             errorLog.setMessages(result.errorMessages)
-            errorLog.save()
+            errorLog.save(flush:true)
         }
 
         rawDomainInstance.refresh()
         rawDomainInstance.processedStatus = getProcessedStatus(result.status) 
-        rawDomainInstance.save()
+        rawDomainInstance.save(flush:true)
 
         return result
 
@@ -71,12 +71,12 @@ class RawExecutionService {
             errorLog.uuid = rawDomainInstance.id
             errorLog.logReportFile = LogReportFile.findById(logReportFileId)
             errorLog.setMessages(result.errorMessages)
-            errorLog.save()
+            errorLog.save(flush:true)
         }
 
         rawDomainInstance.refresh()
         rawDomainInstance.processedStatus = getProcessedStatus(result.status)
-        rawDomainInstance.save()
+        rawDomainInstance.save(flush:true)
 
         return result
 
@@ -92,12 +92,12 @@ class RawExecutionService {
             errorLog.uuid = rawDomainInstance.id
             errorLog.logReportFile = LogReportFile.findById(logReportFileId)
             errorLog.setMessages(result.errorMessages)
-            errorLog.save()
+            errorLog.save(flush:true)
         }
 
         rawDomainInstance.refresh()
         rawDomainInstance.processedStatus = getProcessedStatus(result.status)
-        rawDomainInstance.save()
+        rawDomainInstance.save(flush:true)
 
         return result
 
@@ -113,12 +113,12 @@ class RawExecutionService {
             errorLog.uuid = rawDomainInstance.id
             errorLog.logReportFile = LogReportFile.findById(logReportFileId)
             errorLog.setMessages(result.errorMessages)
-            errorLog.save()
+            errorLog.save(flush:true)
         }
 
         rawDomainInstance.refresh()
         rawDomainInstance.processedStatus = getProcessedStatus(result.status)
-        rawDomainInstance.save()
+        rawDomainInstance.save(flush:true)
 
         return result
 
@@ -134,12 +134,12 @@ class RawExecutionService {
             errorLog.uuid = rawDomainInstance.id
             errorLog.logReportFile = LogReportFile.findById(logReportFileId)
             errorLog.setMessages(result.errorMessages)
-            errorLog.save()
+            errorLog.save(flush:true)
         }
 
         rawDomainInstance.refresh()
         rawDomainInstance.processedStatus = getProcessedStatus(result.status)
-        rawDomainInstance.save()
+        rawDomainInstance.save(flush:true)
 
         return result
 
@@ -157,12 +157,12 @@ class RawExecutionService {
             errorLog.uuid = rawDomainInstance.id
             errorLog.logReportFile = LogReportFile.findById(logReportFileId)
             errorLog.setMessages(result.errorMessages)
-            errorLog.save()
+            errorLog.save(flush:true)
         }
 
         rawDomainInstance.refresh()
         rawDomainInstance.processedStatus = getProcessedStatus(result.status)
-        rawDomainInstance.save()
+        rawDomainInstance.save(flush:true)
 
         return result
 
@@ -178,12 +178,12 @@ class RawExecutionService {
             errorLog.uuid = rawDomainInstance.id
             errorLog.logReportFile = LogReportFile.findById(logReportFileId)
             errorLog.setMessages(result.errorMessages)
-            errorLog.save()
+            errorLog.save(flush:true)
         }
 
         rawDomainInstance.refresh()
         rawDomainInstance.processedStatus = getProcessedStatus(result.status)
-        rawDomainInstance.save()
+        rawDomainInstance.save(flush:true)
 
         return result
 
@@ -199,12 +199,12 @@ class RawExecutionService {
             errorLog.uuid = rawDomainInstance.id
             errorLog.logReportFile = LogReportFile.findById(logReportFileId)
             errorLog.setMessages(result.errorMessages)
-            errorLog.save()
+            errorLog.save(flush:true)
         }
 
         rawDomainInstance.refresh()
         rawDomainInstance.processedStatus = getProcessedStatus(result.status)
-        rawDomainInstance.save()
+        rawDomainInstance.save(flush:true)
 
         return result
 
@@ -220,12 +220,12 @@ class RawExecutionService {
             errorLog.uuid = rawDomainInstance.id
             errorLog.logReportFile = LogReportFile.findById(logReportFileId)
             errorLog.setMessages(result.errorMessages)
-            errorLog.save()
+            errorLog.save(flush:true)
         }
 
         rawDomainInstance.refresh()
         rawDomainInstance.processedStatus = getProcessedStatus(result.status)
-        rawDomainInstance.save()
+        rawDomainInstance.save(flush:true)
 
         return result
 
@@ -241,12 +241,12 @@ class RawExecutionService {
             errorLog.uuid = rawDomainInstance.id
             errorLog.logReportFile = LogReportFile.findById(logReportFileId)
             errorLog.setMessages(result.errorMessages)
-            errorLog.save()
+            errorLog.save(flush:true)
         }
 
         rawDomainInstance.refresh()
         rawDomainInstance.processedStatus = getProcessedStatus(result.status)
-        rawDomainInstance.save()
+        rawDomainInstance.save(flush:true)
 
         return result
 
@@ -262,14 +262,14 @@ class RawExecutionService {
             errorLog.uuid = rawDomainInstance.id
             errorLog.logReportFile = LogReportFile.findById(logReportFileId)
             errorLog.setMessages(result.errorMessages)
-            errorLog.save()
+            errorLog.save(flush:true)
 
             println "visit: ${errorLog.errors}"
         }
 
         rawDomainInstance.refresh()
         rawDomainInstance.processedStatus = getProcessedStatus(result.status)
-        rawDomainInstance.save()
+        rawDomainInstance.save(flush:true)
 
         return result
 
@@ -287,12 +287,12 @@ class RawExecutionService {
             errorLog.uuid = rawDomainInstance.id
             errorLog.logReportFile = LogReportFile.findById(logReportFileId)
             errorLog.setMessages(result.errorMessages)
-            errorLog.save()
+            errorLog.save(flush:true)
         }
 
         rawDomainInstance.refresh()
         rawDomainInstance.processedStatus = getProcessedStatus(result.status)
-        rawDomainInstance.save()
+        rawDomainInstance.save(flush:true)
 
         return result
 
@@ -308,14 +308,14 @@ class RawExecutionService {
             errorLog.uuid = rawDomainInstance.id
             errorLog.logReportFile = LogReportFile.findById(logReportFileId)
             errorLog.setMessages(result.errorMessages)
-            errorLog.save()
+            errorLog.save(flush:true)
 
             println "incvisit: ${errorLog.errors}"
         }
 
         rawDomainInstance.refresh()
         rawDomainInstance.processedStatus = getProcessedStatus(result.status)
-        rawDomainInstance.save()
+        rawDomainInstance.save(flush:true)
 
         return result
 

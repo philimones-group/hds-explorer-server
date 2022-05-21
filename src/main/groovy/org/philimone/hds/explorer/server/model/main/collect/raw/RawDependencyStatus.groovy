@@ -18,6 +18,6 @@ class RawDependencyStatus {
     }
 
     static RawDependencyStatus dependencyNotSolved(RawEntity entity, List<RawMessage> errorMessages) {
-        return new RawDependencyStatus(entity, true, errorMessages)
+        return new RawDependencyStatus(entity, false, errorMessages)
     }
 }

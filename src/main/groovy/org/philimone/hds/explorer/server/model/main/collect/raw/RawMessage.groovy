@@ -32,4 +32,9 @@ class RawMessage implements Serializable {
     boolean entiltyEqualsTo(RawEntity otherEntity){
         return this.domainEntity?.equals(otherEntity)
     }
+
+    @Override
+    String toString() {
+        return text
+    }
 }
