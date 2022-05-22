@@ -308,7 +308,7 @@ class MemberEnumerationService {
 
         //CX. Validate the visitCode with the householdCode(household being visited)
         if (!isBlankVisitCode && !isBlankHouseholdCode && !memberEnu.visitCode.startsWith(memberEnu.householdCode)){
-            errors << errorMessageService.getRawMessage(RawEntity.MEMBER_ENUMERATION, "validation.field.inmigration.visit.code.prefix.not.current.error", [memberEnu.visitCode, memberEnu.householdCode], ["visitCode","householdCode"])
+            errors << errorMessageService.getRawMessage(RawEntity.MEMBER_ENUMERATION, "validation.field.member.enumeration.visit.code.prefix.not.current.error", [memberEnu.visitCode, memberEnu.householdCode], ["visitCode","householdCode"])
         }
 
         //C2. Check Visit reference existence

@@ -371,7 +371,7 @@ class RawBatchExecutionService {
             def depStatus = solveRegionDependency(parentCode, "parentCode", logReportFileId)
             dependencyResolved = depStatus.solved
 
-            if (dependencyResolved) {
+            if (dependencyResolved || StringUtil.isBlank(parentCode)) { //is solved or its a root
                 def result = rawExecutionService.createRegion(rawObj, logReportFileId)
 
                 //set event has processed
@@ -449,7 +449,7 @@ class RawBatchExecutionService {
 
             //try to solve member dependency (respondent)
             def depStatus2 = solveMemberDependency(respondentCode, "respondentCode", logReportFileId)
-            dependencyResolved = dependencyResolved && depStatus2.solved
+            dependencyResolved = dependencyResolved && (depStatus2.solved || StringUtil.isBlank(respondentCode))
 
             if (dependencyResolved) {
 

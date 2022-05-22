@@ -97,6 +97,7 @@
 
         <fieldset class="form">
 
+            <bi:field bean="${this.rawMemberEnu}" property="visitCode"    label="rawMemberEnu.visitCode.label" mode="${mode}" />
             <bi:field bean="${this.rawMemberEnu}" property="code"    label="rawMemberEnu.code.label" mode="${mode}" />
             <bi:field bean="${this.rawMemberEnu}" property="name"    label="rawMemberEnu.name.label" mode="${mode}" />
             <bi:field bean="${this.rawMemberEnu}" property="gender"    label="rawMemberEnu.gender.label" mode="${mode}" />

@@ -3,7 +3,6 @@ package org.philimone.hds.explorer.server.model.main
 import grails.gorm.transactions.Transactional
 import net.betainteractive.utilities.GeneralUtil
 import net.betainteractive.utilities.StringUtil
-import org.philimone.hds.explorer.server.model.collect.raw.RawExternalInMigration
 import org.philimone.hds.explorer.server.model.collect.raw.RawHeadRelationship
 import org.philimone.hds.explorer.server.model.collect.raw.RawInMigration
 import org.philimone.hds.explorer.server.model.collect.raw.RawOutMigration
@@ -315,6 +314,7 @@ class InMigrationService {
 
             def newRawHeadRelationship = createNewRawHeadRelationshipFrom(rawInMigration)
             def currentResidency = residencyService.getCurrentResidency(member) //current residency
+            def currentHeadRelationship = headRelationshipService.getCurrentHeadRelationship(member)
             def newRawResidency = createNewResidencyFromInMig(rawInMigration)   //possible new residency
 
             /* Member must be Living in current Household */
@@ -349,11 +349,6 @@ class InMigrationService {
             }
 
 
-            //Try to validate the creation of new Head Relationship
-            def innerErrors1 = headRelationshipService.validateCreateHeadRelationship(newRawHeadRelationship)
-            if (innerErrors1.size()>0){
-                errors += errorMessageService.addPrefixToMessages(innerErrors1, "validation.field.inmigration.external.prefix.msg.error", [rawInMigration.id])
-            }
 
             //Try create/close
 
@@ -365,16 +360,36 @@ class InMigrationService {
 
                 //2. Try to create new Residency if OutMigration worked
                 if (errors.size() == 0){
-                    def fakeResidency = createFakeResidency(currentResidency, ResidencyEndType.INTERNAL_OUTMIGRATION, rawOutMigration.migrationDate) //simulates a residency closed by an outmigration
+                    def fakeResidency = createFakeClosedResidency(currentResidency, ResidencyEndType.INTERNAL_OUTMIGRATION, rawOutMigration.migrationDate) //simulates a residency closed by an outmigration
 
                     errors += residencyService.validateCreateResidency(fakeResidency, newRawResidency) //try to see if is possible to register a member in a new household
-                } else {
-                    return errors
                 }
+
+                //3. Try to validate the creation of new Head Relationship - ???? - must have first a outmigration
+                if (errors.size() == 0){
+
+                    //create fake old relationship
+                    def currentHead = headRelationshipService.getCurrentHouseholdHead(destination)
+                    def fakeClosedHeadRelationship = createFakeClosedHeadRelationship(currentHeadRelationship, HeadRelationshipEndType.INTERNAL_OUTMIGRATION, rawOutMigration.migrationDate)
+                    def fakeClosedHouseholdHead = createFakeClosedHeadRelationship(currentHead, HeadRelationshipEndType.INTERNAL_OUTMIGRATION, rawOutMigration.migrationDate)
+                    def innerErrors1 = headRelationshipService.validateCreateHeadRelationship(newRawHeadRelationship, fakeClosedHeadRelationship, fakeClosedHouseholdHead)
+
+                    if (innerErrors1.size()>0){
+                        errors += errorMessageService.addPrefixToMessages(innerErrors1, "validation.field.inmigration.prefix.msg.error", [rawInMigration.id])
+                    }
+                }
+
+
             } else {
                 //In this case you either have none residency for (External InMigration firstime) or you have a closed Residency record
 
                 errors += residencyService.validateCreateResidency(newRawResidency)
+
+                //if it is a external inmigration reentry - already has an outmigration - and if entry dont have any - just validate the creation of head relationship
+                def innerErrors1 = headRelationshipService.validateCreateHeadRelationship(newRawHeadRelationship)
+                if (innerErrors1.size()>0){
+                    errors += errorMessageService.addPrefixToMessages(innerErrors1, "validation.field.inmigration.prefix.msg.error", [rawInMigration.id])
+                }
             }
 
         }
@@ -498,7 +513,7 @@ class InMigrationService {
         return residency
     }
 
-    private static Residency createFakeResidency(Residency residency, ResidencyEndType endType, LocalDate endDate){
+    private static Residency createFakeClosedResidency(Residency residency, ResidencyEndType endType, LocalDate endDate){
         def fakeResidency = new Residency()
         fakeResidency.member = residency.member
         fakeResidency.memberCode = residency.member?.code
@@ -511,6 +526,21 @@ class InMigrationService {
 
         return fakeResidency
     }
+
+    private static HeadRelationship createFakeClosedHeadRelationship(HeadRelationship headRelationship, HeadRelationshipEndType endType, LocalDate endDate){
+        def fakeHeadRelationship = new HeadRelationship()
+        fakeHeadRelationship.member = headRelationship.member
+        fakeHeadRelationship.memberCode = headRelationship.member?.code
+        fakeHeadRelationship.household = headRelationship.household
+        fakeHeadRelationship.householdCode = headRelationship.household?.code
+        fakeHeadRelationship.startType = headRelationship.startType
+        fakeHeadRelationship.startDate = headRelationship.startDate
+        fakeHeadRelationship.endType = endType
+        fakeHeadRelationship.endDate = endDate
+
+        return fakeHeadRelationship
+    }
+
     //</editor-fold>
 
 }

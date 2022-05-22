@@ -65,8 +65,8 @@ class RawErrorLog {
 
     String getCollapsedMessage(){
         def msg = messageText
-        if (msg.length()>=80){
-            return msg.substring(0, 80)
+        if (msg.length()>=100){
+            return msg.substring(0, 100)+" ...."
         }
 
         return msg

@@ -133,7 +133,7 @@
 								<td><bi:formatDate date="${errorLogInstance.createdDate}" format="yyyy-MM-dd HH:mm:ss" /></td>
 
 								<td style="word-wrap: break-word;">
-									${errorLogInstance.messageText}
+									${errorLogInstance.collapsedMessage}
 								</td>
 
 							</tr>
