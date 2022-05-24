@@ -117,6 +117,11 @@
 							<g:select name="tableColumn" required="" value="${dataSetInstance?.tableColumn}" from=""/>
 						</div>
 
+                        <div class="fieldcontain ${hasErrors(bean: dataSetInstance, field: 'modules', 'error')} required">
+                            <label for="module"><g:message code="dataset.modules.label" default="Modules" /><span class="required-indicator">*</span></label>
+                            <g:select id="module" name="allmodules.id"  multiple="multiple" from="${org.philimone.hds.explorer.server.model.main.Module.list()}" optionKey="id" required="" value="${modules}" class="many-to-one"/>
+                        </div>
+
 						<div class="fieldcontain ${hasErrors(bean: dataSetInstance, field: 'enabled', 'error')} ">
 							<label for="enabled"><g:message code="dataset.enabled.label" default="Enabled" /></label>
 							<g:checkBox name="enabled" value="${dataSetInstance?.enabled}" />

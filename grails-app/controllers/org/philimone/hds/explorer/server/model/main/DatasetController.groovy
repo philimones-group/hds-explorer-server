@@ -1,6 +1,6 @@
 package org.philimone.hds.explorer.server.model.main
 
-
+import grails.validation.ValidationException
 import org.philimone.hds.explorer.io.SystemPath
 
 import static org.springframework.http.HttpStatus.*
@@ -10,6 +10,7 @@ class DatasetController {
     static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
 
     def datasetService
+    def moduleService
 
     def tableList = ["Household","Member","Region","User"]
 
@@ -19,7 +20,12 @@ class DatasetController {
     }
 
     def show(String id) {
-        [dataSetInstance:  Dataset.get(id)]
+
+        def datasetInstance = Dataset.get(id)
+
+        def modules = moduleService.findAllByCodes(datasetInstance.modules)
+
+        [dataSetInstance: datasetInstance, modules: modules]
     }
 
     def create = {
@@ -39,18 +45,13 @@ class DatasetController {
         def file = request.getFile('fileUpload')
         def fileName = file.originalFilename
         def newFile = SystemPath.externalDocsPath + File.separator + fileName
-        def tmpFileStr = SystemPath.externalDocsPath + File.separator + fileName + ".tmp"
-        def tmpFile = new File(tmpFileStr)
-        println "test2 ${file}"
-        println "test3 ${file.originalFilename}"
 
-        file.transferTo(tmpFile)
+        println "test ${file.originalFilename}"
+
+        file.transferTo(new File(newFile))
 
         //read csv file and get the list of columns
-        def columnsMap = datasetService.getColumns(tmpFileStr)
-
-        datasetService.copyFileAndRemoveLabels(tmpFileStr, newFile)
-        tmpFile.delete()
+        def columnsMap = datasetService.getColumns(newFile)
 
         //retrive labels
         def labels = ""
@@ -66,6 +67,35 @@ class DatasetController {
         render view: "add", model: [dataSetInstance:dataset, dataSetColumns:columnsMap.keySet(), tableList:  tableList]
     }
 
+    def changeUploadFile = {
+
+        def file = request.getFile('fileUpload')
+        def fileName = file.originalFilename
+        def newFile = SystemPath.externalDocsPath + File.separator + fileName
+
+        println "test3 ${file.originalFilename}"
+
+        file.transferTo(new File(newFile))
+
+        //read csv file and get the list of columns
+        def columnsMap = datasetService.getColumns(newFile)
+
+        //retrive labels
+        def labels = ""
+        columnsMap.values().each {
+            labels += (labels.empty ? "":",") + it
+        }
+
+        def datasetInstance = Dataset.get(params.datasetId)
+        def modules = moduleService.findAllByCodes(datasetInstance.modules)
+
+        datasetInstance.name = datasetService.getDatasetName(fileName)
+        datasetInstance.filename = newFile
+        datasetInstance.tableColumnLabels = labels
+
+        render view: "edit", model: [datasetInstance:datasetInstance, modules: modules, dataSetColumns:columnsMap.keySet(), tableList:  tableList, dataSetInstanceList: Dataset.list(params)]
+    }
+
     def save(Dataset dataSetInstance) {
 
         println "testing"
@@ -74,27 +104,44 @@ class DatasetController {
             notFound()
             return
         }
-
+/*
         if (dataSetInstance.hasErrors()) {
             respond dataSetInstance.errors, view:'add'
             return
+        }*/
+
+        def modules = Module.getAll(params.list("allmodules.id"))
+        modules.each {
+            dataSetInstance.addToModules(it.code)
         }
 
         if (dataSetInstance.save(flush:true)){
             datasetService.createZipFile(dataSetInstance)
         }
 
+        println "errors ${dataSetInstance.errors}"
+
+        if (dataSetInstance.hasErrors()) {
+            def columnsMap = datasetService.getColumns(dataSetInstance.filename)
+            render view: "add", model: [dataSetInstance: dataSetInstance, dataSetColumns:columnsMap.keySet(), tableList:  tableList]
+            return
+        }
+
         request.withFormat {
             form multipartForm {
-                flash.message = message(code: 'default.created.message', args: [message(code: 'dataSet.label', default: 'Dataset'), dataSetInstance.id])
+                flash.message = message(code: 'default.created.message', args: [message(code: 'dataSet.label', default: 'Dataset'), dataSetInstance.name])
                 redirect dataSetInstance
             }
             '*' { respond dataSetInstance, [status: CREATED] }
         }
     }
 
-    def edit(Dataset dataSetInstance) {
-        respond dataSetInstance
+    def edit(Dataset datasetInstance) {
+        def modules = moduleService.findAllByCodes(datasetInstance.modules)
+
+        def columnsMap = datasetService.getColumns(datasetInstance.filename)
+
+        render view: "edit", model: [datasetInstance: datasetInstance, modules: modules, dataSetColumns:columnsMap.keySet(), tableList:  tableList, dataSetInstanceList: Dataset.list(params)]
     }
 
     def update(Dataset dataSetInstance) {
@@ -108,11 +155,20 @@ class DatasetController {
             return
         }
 
-        dataSetInstance.save flush:true
+        try {
+
+            def modules = Module.getAll(params.list("allmodules.id"))
+            datasetService.updateModules(dataSetInstance, modules)
+            dataSetInstance.save(flush:true)
+
+        } catch (ValidationException e) {
+            respond dataSetInstance.errors, view:'edit', model: [modules: moduleService.findAllByCodes(dataSetInstance.modules)]
+            return
+        }
 
         request.withFormat {
             form multipartForm {
-                flash.message = message(code: 'default.updated.message', args: [message(code: 'Dataset.label', default: 'Dataset'), dataSetInstance.id])
+                flash.message = message(code: 'default.updated.message', args: [message(code: 'Dataset.label', default: 'Dataset'), dataSetInstance.name])
                 redirect dataSetInstance
             }
             '*'{ respond dataSetInstance, [status: OK] }
@@ -130,7 +186,7 @@ class DatasetController {
 
         request.withFormat {
             form multipartForm {
-                flash.message = message(code: 'default.deleted.message', args: [message(code: 'Dataset.label', default: 'Dataset'), dataSetInstance.id])
+                flash.message = message(code: 'default.deleted.message', args: [message(code: 'Dataset.label', default: 'Dataset'), dataSetInstance.name])
                 redirect action:"index", method:"GET"
             }
             '*'{ render status: NO_CONTENT }

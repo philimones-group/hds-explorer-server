@@ -9,21 +9,21 @@ import net.betainteractive.utilities.StringUtil
 class DatasetService {
 
     LinkedHashMap<String,String> getColumns(String filenameCsv) {
-        CSVReader reader = new CSVReader(filenameCsv, true, ",")
-        def cols = reader.getFieldNames()
-        reader.close()
-
-
         def map = new LinkedHashMap<String,String>()
 
-        cols.each { name ->
-            def spt = name.split(":")
-            //println(name)
-            if (spt.length > 1) {
-                map.put(spt[0], spt[1])
-            } else {
-                map.put(spt[0], spt[0])
+        try {
+            CSVReader reader = new CSVReader(filenameCsv, true, ",")
+            def cols = reader.getFieldNames()
+            def labels = reader.getFieldLabels()
+            reader.close()
+
+            cols.eachWithIndex { name, index ->
+                def label = index >= 0 && index < labels.size() ? labels.get(index) : name
+
+                map.put(name, label)
             }
+        }catch (Exception ex) {
+            ex.printStackTrace()
         }
 
         return map
@@ -92,5 +92,17 @@ class DatasetService {
         input.close()
         output.close()
 
+    }
+
+    void updateModules(Dataset dataset, List<Module> modules) {
+        def modList = dataset.modules.collect { it}
+        //delete previous modules
+        modList.each {
+            dataset.removeFromModules(it)
+        }
+        //add new modules
+        modules.each {
+            dataset.addToModules(it.code)
+        }
     }
 }
