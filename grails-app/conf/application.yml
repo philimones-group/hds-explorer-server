@@ -66,7 +66,9 @@ grails:
         - text/xml
         - application/xml
       rtf: application/rtf
-      excel: application/vnd.ms-excel
+      excel:
+        - application/vnd.ms-excel
+        - application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
       ods:  application/vnd.oasis.opendocument.spreadsheet
       zip:
         - application/zip
@@ -128,7 +130,7 @@ dataSource:
   dialect: org.hibernate.dialect.MySQL5InnoDBDialect
   username: hds_explorer
   password: d33_2019xx
-  url: jdbc:mysql://localhost/hds_explorer_db?createDatabaseIfNotExist=true&autoReconnect=true&zeroDateTimeBehavior=convertToNull&useSSL=false
+  url: jdbc:mysql://localhost/hds2_explorer?createDatabaseIfNotExist=true&autoReconnect=true&zeroDateTimeBehavior=convertToNull&useSSL=false
   #logSql: true
 
   #PostgreSQL Config
