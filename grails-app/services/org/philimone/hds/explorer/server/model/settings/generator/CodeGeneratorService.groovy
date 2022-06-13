@@ -9,6 +9,7 @@ import org.philimone.hds.explorer.server.model.main.PregnancyRegistration
 import org.philimone.hds.explorer.server.model.main.Region
 import org.philimone.hds.explorer.server.model.main.Module
 import org.philimone.hds.explorer.server.model.main.Round
+import org.philimone.hds.explorer.server.model.main.TrackingList
 import org.philimone.hds.explorer.server.model.main.Visit
 
 @Transactional
@@ -43,6 +44,11 @@ class CodeGeneratorService {
     String generateModuleCode(String moduleName) {
         def codes = Module.list().collect { t -> t.code}
         return codeGenerator.generateModuleCode(moduleName, codes)
+    }
+
+    String generateTrackingListCode() {
+        def codes = TrackingList.list().collect { t -> t.code}
+        return codeGenerator.generateTrackingListCode(codes)
     }
 
     String generateRegionCode(String regionName) {

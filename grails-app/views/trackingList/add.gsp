@@ -7,6 +7,49 @@
 
 		<asset:javascript src="application.js"/>
 		<asset:javascript src="bootstrap.js"/>
+
+        <style>
+
+        .rerrors {
+            font-size: 1em;
+            line-height: 2;
+            margin: 1em 2em;
+            padding: 0.25em;
+        }
+
+        .rerrors {
+            background: #d6e7d0;
+            border: 2px solid #ffaaaa;
+            color: #cc0000;
+            -moz-box-shadow: 0 0 0.25em #ff8888;
+            -webkit-box-shadow: 0 0 0.25em #ff8888;
+            box-shadow: 0 0 0.25em #ff8888;
+        }
+
+        .rerrors_div {
+            color: #666666;
+            border-bottom: 1px solid #CCCCCC;
+            margin: 0.8em 1.3em 0.3em;
+        }
+
+        .rerrors_title {
+            color: #666666;
+            border-bottom: 1px solid #CCCCCC;
+            padding: 0 0.3em;
+        }
+
+        .rerrors ul {
+            padding: 1em;
+        }
+
+        .errors li {
+            list-style: none;
+            background: transparent url(../images/skin/exclamation.png) 0.5em 50% no-repeat;
+            text-indent: 2.2em;
+            padding: 0 0.25em;
+        }
+
+        </style>
 	</head>
 	<body>
 	<g:javascript>
@@ -51,14 +94,24 @@
 		<div class="nav" role="navigation">
 			<ul>
 				<li><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
-				<li><g:link class="list" action="index"><g:message code="default.list.label" args="[entityName]" /></g:link></li>
+				<li><g:link class="list" action="index"><g:message code="trackingList.list.label" /></g:link></li>
 				<li><g:link class="list" controller="module" action="index"><g:message code="default.menu.updates.modules.label" args="" /></g:link></li>
 				<li><g:link class="list" controller="form" action="index"><g:message code="default.menu.updates.forms.label" args="" /></g:link></li>
 				<li><g:link class="list" controller="user" action="index"><g:message code="default.menu.users.label" args="" /></g:link></li>
+				<li><g:link class="create" action="downloadSampleXLS"><g:message code="trackingList.file.sample.download.label" /></g:link></li>
+				<li><g:link class="create" action="downloadTemplateXLS"><g:message code="trackingList.file.template.download.label" /></g:link></li>
 			</ul>
 		</div>
 		<div id="create-trackingList" class="content scaffold-create" role="main">
-			<h1><g:message code="default.create.label" args="[entityName]" /></h1>
+
+            <g:if test="${isUpdating}">
+                <h1><g:message code="trackingList.update.label" /></h1>
+            </g:if>
+            <g:else>
+                <h1><g:message code="trackingList.create.label" /></h1>
+            </g:else>
+
+
 			<g:if test="${flash.message}">
 			<div class="message" role="status">${flash.message}</div>
 			</g:if>
@@ -69,6 +122,17 @@
 				</g:eachError>
 			</ul>
 			</g:hasErrors>
+
+			<g:if test="${errorMessages}">
+				<div class="rerrors_div">
+					<ul class="rerrors" role="alert">
+						<g:each in="${errorMessages}" status="i" var="error">
+							<li data-field-id="${error.text}">${error.text}</li>
+						</g:each>
+					</ul>
+				</div>
+				<br>
+			</g:if>
 
 			<g:uploadForm controller="trackingList" action="uploadFile" >
 				<fieldset class="form">
@@ -85,8 +149,9 @@
 
 					<div class="fieldcontain ${hasErrors(bean: trackingListInstance, field: 'filename', 'error')} required">
 						<label for="filename"><g:message code="trackingList.filename.label" default="Filename" /><span class="required-indicator">*</span></label>
-						<b>${trackingListInstance?.getFilenameOnly()}</b>
+						<b>${trackingListInstance?.filename}</b>
 						<g:hiddenField name="filename" value="${trackingListInstance?.filename}" />
+                        <g:hiddenField name="absoluteFilename" value="${absoluteFilename}" />
 					</div>
 
 					<div class="fieldcontain ${hasErrors(bean: trackingListInstance, field: 'code', 'error')} required">
@@ -99,9 +164,9 @@
 						<g:textField name="name" required="" value="${trackingListInstance?.name}"/>
 					</div>
 
-					<div class="fieldcontain ${hasErrors(bean: trackingListInstance, field: 'module', 'error')} required">
-						<label for="module"><g:message code="trackingList.module.label" default="Module" /><span class="required-indicator">*</span></label>
-						<g:select id="module" name="module.id"  multiple="multiple" from="${org.philimone.hds.explorer.server.model.main.Module.list()}" optionKey="id" required="" value="${trackingListInstance?.module?.id}" class="many-to-one"/>
+					<div class="fieldcontain ${hasErrors(bean: trackingListInstance, field: 'modules', 'error')} required">
+						<label for="module"><g:message code="trackingList.modules.label" default="Modules" /><span class="required-indicator">*</span></label>
+						<g:select id="modules" name="modules"  multiple="multiple" from="${org.philimone.hds.explorer.server.model.main.Module.list()}" optionKey="code" required="" value="${modules}" class="many-to-one"/>
 					</div>
 
 					<div class="fieldcontain ${hasErrors(bean: trackingListInstance, field: 'enabled', 'error')} ">
@@ -109,64 +174,19 @@
 						<g:checkBox name="enabled" value="${trackingListInstance?.enabled}" />
 					</div>
 
-					<div class="fieldcontain ${hasErrors(bean: trackingListInstance, field: 'mappings', 'error')} ">
-						<label for="mappings"><g:message code="trackingList.mappings.label" default="Mappings" /></label>
-
-						<ul class="one-to-many">
-							<g:each in="${trackingListInstance?.mappings?}" var="m">
-								<li><g:link controller="trackingListMapping" action="show" id="${m.id}">${m?.encodeAsHTML()}</g:link></li>
-							</g:each>
-							<li class="add">
-								<g:link controller="trackingListMapping" action="create" params="['trackingList.id': trackingListInstance?.id]">${message(code: 'default.add.label', args: [message(code: 'trackingListMapping.label', default: 'TrackingListMapping')])}</g:link>
-							</li>
-						</ul>
-
-					</div>
-
 				</fieldset>
 				<fieldset class="buttons">
-					<g:submitButton name="create" class="save" value="${message(code: 'trackingList.add.label', default: 'Add')}" />
+                    <g:if test="${isUpdating}">
+                        <g:submitButton name="create" class="save" value="${message(code: 'trackingList.update.button.label', default: 'Update')}" />
+                    </g:if>
+                    <g:else>
+                        <g:submitButton name="create" class="save" value="${message(code: 'trackingList.add.label', default: 'Add')}" />
+                    </g:else>
+
 				</fieldset>
 			</g:form>
 
 			<br>
-
-			<div class="nav2">
-				<table>
-				<thead>
-				<tr>
-
-					<g:sortableColumn property="code" title="${message(code: 'trackingList.code.label', default: 'Code')}" />
-
-					<g:sortableColumn property="name" title="${message(code: 'trackingList.name.label', default: 'Name')}" />
-
-					<th><g:message code="trackingList.module.label" default="Module" /></th>
-
-					<g:sortableColumn property="filename" title="${message(code: 'trackingList.filename.label', default: 'Filename')}" />
-
-					<g:sortableColumn property="enabled" title="${message(code: 'trackingList.enabled.label', default: 'Enabled')}" />
-
-				</tr>
-				</thead>
-				<tbody>
-				<g:each in="${trackingListInstanceList}" status="i" var="trackingListInstance">
-					<tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
-
-						<td><g:link action="show" id="${trackingListInstance.id}">${fieldValue(bean: trackingListInstance, field: "code")}</g:link></td>
-
-						<td>${fieldValue(bean: trackingListInstance, field: "name")}</td>
-
-						<td>${fieldValue(bean: trackingListInstance, field: "module")}</td>
-
-						<td>${fieldValue(bean: trackingListInstance, field: "filenameOnly")}</td>
-
-						<td><g:formatBoolean boolean="${trackingListInstance.enabled}" /></td>
-
-					</tr>
-				</g:each>
-				</tbody>
-			</table>
-			</div>
 
 		</div>
 	</body>

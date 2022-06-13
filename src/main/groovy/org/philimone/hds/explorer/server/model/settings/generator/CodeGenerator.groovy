@@ -6,6 +6,8 @@ interface CodeGenerator {
 
     boolean isModuleCodeValid(String code)
 
+    boolean isTrackingListCodeValid(String code)
+
     boolean isRegionCodeValid(String code)
 
     boolean isHouseholdCodeValid(String code)
@@ -19,6 +21,8 @@ interface CodeGenerator {
     boolean isPregnancyCodeValid(String code)
 
     String generateModuleCode(String moduleName, List<String> existentCodes)
+
+    String generateTrackingListCode(List<String> existentCodes)
 
     String generateRegionCode(String regionName, List<String> existentCodes)
 

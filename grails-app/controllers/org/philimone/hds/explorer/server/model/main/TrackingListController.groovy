@@ -1,7 +1,12 @@
 package org.philimone.hds.explorer.server.model.main
 
-import grails.transaction.Transactional
+import grails.validation.ValidationException
+import net.betainteractive.utilities.GeneralUtil
+import net.betainteractive.utilities.StringUtil
 import org.philimone.hds.explorer.io.SystemPath
+import org.philimone.hds.explorer.server.model.enums.SubjectType
+import org.springframework.http.HttpStatus
+import org.springframework.web.multipart.MultipartFile
 
 import static org.springframework.http.HttpStatus.*
 
@@ -10,6 +15,9 @@ class TrackingListController {
     static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
 
     def trackingListService
+    def codeGeneratorService
+    def moduleService
+    def errorMessageService
 
     def tableList = ["Household","Member","Region","User"]
 
@@ -27,31 +35,36 @@ class TrackingListController {
     }
 
     def add() {
-
-        def max = 9
-
-        params.max = Math.min(max ?: 10, 100)
-        respond new TrackingList(params), model: [tableList:  tableList, trackingListInstanceList: TrackingList.list(params)]
+        respond new TrackingList(params), model: [tableList:  tableList]
     }
 
     def uploadFile = {
 
         def file = request.getFile('fileUpload')
         def fileName = file.originalFilename
-        def newFile = SystemPath.externalDocsPath + File.separator + fileName
+        def newFile = "/tmp/tracklist-web-${GeneralUtil.generateUUID()}" //SystemPath.externalDocsPath + File.separator + fileName
 
-        println "test2 ${file}"
-        println "test3 ${file.originalFilename}"
 
         file.transferTo(new File(newFile))
 
         //read xls file and read tracking lists
         //validate tracking lists first
+        def validationResult = trackingListService.validateXls(newFile.toString())
 
-        def trackingList = trackingListService.getFirstTrackingList(newFile)
-        trackingList.filename = newFile
+        if (validationResult.status == TrackingListService.ValidationStatus.ERROR) {
+            params.filename = fileName
+            render view: "add", model: [trackingListInstance: new TrackingList(params), absoluteFilename: newFile, tableList:  tableList, errorMessages: validationResult.errorMessages]
+            return
+        }
 
-        render view: "add", model: [trackingListInstance:trackingList, tableList:  tableList]
+        params.code = validationResult.isUpdating ? validationResult.xlsContent.code : codeGeneratorService.generateTrackingListCode()
+        params.name = validationResult.xlsContent.name
+        params.filename = fileName
+        params.enabled = validationResult.xlsContent.enabled
+
+        def modules = Module.findAllByCodeInList(validationResult.xlsContent.modules)
+
+        render view: "add", model: [absoluteFilename: newFile, isUpdating: validationResult.isUpdating, trackingListInstance: new TrackingList(params), tableList:  tableList, modules: modules]
     }
 
     def save(TrackingList trackingListInstance) {
@@ -60,47 +73,35 @@ class TrackingListController {
             return
         }
 
-        if (trackingListInstance.hasErrors()) {
-            respond trackingListInstance.errors, view:'create'
+        def modules = Module.getAll(params.list("all_modules.id"))
+
+        modules.each {
+            trackingListInstance.addToModules(it.code)
+        }
+
+        def validationResult = trackingListService.validateXls(params.absoluteFilename)
+
+        if (validationResult.status == TrackingListService.ValidationStatus.ERROR) {
+            render view:'add', model: [trackingListInstance: trackingListInstance, absoluteFilename: params.absoluteFilename, isUpdating: validationResult.isUpdating, tableList:  tableList, errorMessages: validationResult.errorMessages, modules: modules]
             return
         }
 
-        if (trackingListInstance.save(flush:true)){
-            //
+        //saving
+        def saveResult = trackingListService.save(trackingListInstance, validationResult)
+
+        if (saveResult.errors != null && saveResult.errors.size()>0){
+            render view:'add', model: [absoluteFilename: params.absoluteFilename, isUpdating: validationResult.isUpdating, tableList:  tableList, modules: modules, errorMessages: saveResult.errors]
+            return
         }
+
+        trackingListInstance = saveResult.instance
 
         request.withFormat {
             form multipartForm {
-                flash.message = message(code: 'default.created.message', args: [message(code: 'trackingList.label', default: 'TrackingList'), trackingListInstance.id])
+                flash.message = message(code: 'default.created.message', args: [message(code: 'trackingList.label', default: 'TrackingList'), trackingListInstance.name])
                 redirect trackingListInstance
             }
             '*' { respond trackingListInstance, [status: CREATED] }
-        }
-    }
-
-    def edit(TrackingList trackingListInstance) {
-        respond trackingListInstance
-    }
-
-    def update(TrackingList trackingListInstance) {
-        if (trackingListInstance == null) {
-            notFound()
-            return
-        }
-
-        if (trackingListInstance.hasErrors()) {
-            respond trackingListInstance.errors, view:'edit'
-            return
-        }
-
-        trackingListInstance.save flush:true
-
-        request.withFormat {
-            form multipartForm {
-                flash.message = message(code: 'default.updated.message', args: [message(code: 'TrackingList.label', default: 'TrackingList'), trackingListInstance.id])
-                redirect trackingListInstance
-            }
-            '*'{ respond trackingListInstance, [status: OK] }
         }
     }
 
@@ -111,11 +112,12 @@ class TrackingListController {
             return
         }
 
-        trackingListInstance.delete flush:true
+        //delete all that belongs to that Tracking List
+        trackingListService.delete(trackingListInstance)
 
         request.withFormat {
             form multipartForm {
-                flash.message = message(code: 'default.deleted.message', args: [message(code: 'TrackingList.label', default: 'TrackingList'), trackingListInstance.id])
+                flash.message = message(code: 'default.deleted.message', args: [message(code: 'trackingList.label', default: 'TrackingList'), trackingListInstance.name])
                 redirect action:"index", method:"GET"
             }
             '*'{ render status: NO_CONTENT }
@@ -130,5 +132,76 @@ class TrackingListController {
             }
             '*'{ render status: NOT_FOUND }
         }
+    }
+
+    def downloadSampleXLS = {
+        def file = trackingListService.getSampleFileXLS()
+        render file: file, fileName: file.getName(), contentType:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    }
+
+    def downloadTemplateXLS = {
+        def file = trackingListService.getSampleFileEmptyXLS()
+        render file: file, fileName: file.getName(), contentType:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    }
+
+    def addxls = {
+        println "type=${request.contentType}"
+
+        def file = request.getFile('xls_file')
+        def fileName = file.originalFilename
+        def newFile = "/tmp/tracklist-web-${GeneralUtil.generateUUID()}" //SystemPath.externalDocsPath + File.separator + fileName
+
+        file.transferTo(new File(newFile))
+
+
+        println "name=${fileName}"
+        //println("content=${request.inputStream==null}")
+
+        if (new File(newFile).exists()) {
+            def validationResult = trackingListService.validateXls(newFile)
+            def xlsContent = validationResult.xlsContent
+
+            if (validationResult.status == TrackingListService.ValidationStatus.ERROR) {
+                render text: errorMessageService.getRawMessagesText(validationResult.errorMessages), status: BAD_REQUEST
+                return
+            }
+
+            //saving
+            def saveResult = trackingListService.save(null, validationResult)
+
+            if (saveResult?.errors != null && saveResult?.errors.size()>0){
+                render text: errorMessageService.getRawMessagesText(saveResult.errors), status: BAD_REQUEST
+                return
+            }
+
+            render text: "${saveResult.instance.id}", status: CREATED
+            return
+        } else {
+
+            render text: "Coulnd't read the XLS file ${fileName}", status: BAD_REQUEST
+            return
+        }
+    }
+
+    def get(String id) {
+        //create XLS from sample and trackinglist
+
+        def trackingList = TrackingList.get(id)
+
+        if (trackingList == null) {
+            render text: "Follow-up list with id=${id} was not found", status: BAD_REQUEST
+            return
+        }
+
+        def file = trackingListService.createTempTrackingListXLS(trackingList)
+
+        if (file == null) {
+            render text: "Couldnt create Excel file for Follow-up list with id=${id}", status: BAD_REQUEST
+            return
+        }
+
+
+        render file: file, fileName: trackingList.filename, contentType:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+
     }
 }

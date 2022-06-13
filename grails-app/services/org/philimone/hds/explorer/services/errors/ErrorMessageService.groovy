@@ -131,6 +131,11 @@ class ErrorMessageService {
         new RawMessage(msg, null)
     }
 
+    RawMessage getRawMessage(String messageCode){
+        def msg = messageSource.getMessage(messageCode, null, LocaleContextHolder.getLocale())
+        new RawMessage(msg, null)
+    }
+
     ArrayList<RawMessage> addPrefixToMessages(ArrayList<RawMessage> rawMessages, String prefixMessageCode, List<String> prefixArgs){
         rawMessages.each { rawMessage ->
             def prefixMsg = messageSource.getMessage(prefixMessageCode, prefixArgs!=null ? prefixArgs.toArray() : null, LocaleContextHolder.getLocale())

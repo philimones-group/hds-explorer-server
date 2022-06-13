@@ -14,6 +14,8 @@
 				<li><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
 				<li><g:link class="list" action="index"><g:message code="default.list.label" args="[entityName]" /></g:link></li>
 				<li><g:link class="create" action="create"><g:message code="default.new.label" args="[entityName]" /></g:link></li>
+                <li><g:link class="create" action="downloadSampleXLS"><g:message code="trackingList.file.sample.download.label" /></g:link></li>
+				<li><g:link class="create" action="downloadTemplateXLS"><g:message code="trackingList.file.template.download.label" /></g:link></li>
 			</ul>
 		</div>
 		<div id="show-trackingList" class="content scaffold-show" role="main">
@@ -44,20 +46,19 @@
 				</li>
 				</g:if>
 			
-				<g:if test="${trackingListInstance?.module}">
+				<g:if test="${trackingListInstance?.modules}">
 				<li class="fieldcontain">
-					<span id="module-label" class="property-label"><g:message code="trackingList.module.label" default="Module" /></span>
-					<span class="property-value" aria-labelledby="module-label"><g:link controller="module" action="show" id="${trackingListInstance?.module?.id}">${trackingListInstance?.module?.encodeAsHTML()}</g:link></span>
+					<span id="module-label" class="property-label"><g:message code="trackingList.modules.label" default="Modules" /></span>
+
+					<span class="property-value" aria-labelledby="modules-label">
+						<ul>
+							<g:each in="${trackingListInstance.modules}">
+								<li class="list-style-type: square;">${it}</li>
+							</g:each>
+						</ul>
+					</span>
 				</li>
 				</g:if>
-			
-				<g:if test="${trackingListInstance?.hasExtraData}">
-				<li class="fieldcontain">
-					<span id="hasExtraData-label" class="property-label"><g:message code="trackingList.hasExtraData.label" default="Has Extra Data" /></span>
-					<span class="property-value" aria-labelledby="hasExtraData-label"><g:formatBoolean boolean="${trackingListInstance?.hasExtraData}" /></span>
-				</li>
-				</g:if>
-			
 				<g:if test="${trackingListInstance?.enabled}">
 				<li class="fieldcontain">
 					<span id="enabled-label" class="property-label"><g:message code="trackingList.enabled.label" default="Enabled" /></span>
@@ -93,21 +94,11 @@
 				</li>
 				</g:if>
 			
-				<g:if test="${trackingListInstance?.mappings}">
-				<li class="fieldcontain">
-					<span id="mappings-label" class="property-label"><g:message code="trackingList.mappings.label" default="Mappings" /></span>
-					
-					<g:each in="${trackingListInstance.mappings}" var="m">
-						<span class="property-value" aria-labelledby="mappings-label"><g:link controller="trackingListMapping" action="show" id="${m.id}">${m?.encodeAsHTML()}</g:link></span>
-					</g:each>
-				</li>
-				</g:if>
-			
 			</ol>
 			<g:form url="[resource:trackingListInstance, action:'delete']" method="DELETE">
 				<fieldset class="buttons">
-					<g:link class="edit" action="edit" resource="${trackingListInstance}"><g:message code="default.button.edit.label" default="Edit" /></g:link>
 					<g:actionSubmit class="delete" action="delete" value="${message(code: 'default.button.delete.label', default: 'Delete')}" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');" />
+					<g:link class="save" action="get" id="${trackingListInstance.id}"><g:message code="trackingList.download.xls.label" /></g:link>
 				</fieldset>
 			</g:form>
 		</div>

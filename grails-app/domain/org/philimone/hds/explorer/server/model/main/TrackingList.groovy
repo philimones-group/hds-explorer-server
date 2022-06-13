@@ -12,7 +12,7 @@ class TrackingList extends AuditableEntity {
     Boolean hasExtraData = false
     Boolean enabled = true
 
-    static hasMany = [mappings:TrackingListMapping,
+    static hasMany = [groups:TrackingListGroup,
                       modules:String]
 
     String getFilenameOnly(){

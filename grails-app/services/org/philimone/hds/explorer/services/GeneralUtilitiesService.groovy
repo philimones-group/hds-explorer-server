@@ -88,7 +88,7 @@ class GeneralUtilitiesService {
     }
 
     public String getTimeStr(){
-        return new SimpleDateFormat("yyyy-MM-dd-HH-mm").format(new Date());
+        return new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss").format(new Date());
     }
 
 

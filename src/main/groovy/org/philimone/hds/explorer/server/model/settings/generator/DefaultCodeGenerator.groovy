@@ -10,6 +10,7 @@ import org.philimone.hds.explorer.server.model.main.Household
 class DefaultCodeGenerator implements CodeGenerator {
 
     final String MODULE_CODE_PATTERN = '^MX-[0-9]{3}$'
+    final String TRACKLIST_CODE_PATTERN = '^TR-[0-9]{6}$'
     final String REGION_CODE_PATTERN = '^[A-Z0-9]{3}$'
     final String HOUSEHOLD_CODE_PATTERN = '^[A-Z0-9]{6}[0-9]{3}$'
     final String MEMBER_CODE_PATTERN = '^[A-Z0-9]{6}[0-9]{6}$'
@@ -20,6 +21,11 @@ class DefaultCodeGenerator implements CodeGenerator {
     @Override
     boolean isModuleCodeValid(String code) {
         return !StringUtil.isBlank(code) && code.matches(MODULE_CODE_PATTERN)
+    }
+
+    @Override
+    boolean isTrackingListCodeValid(String code) {
+        return false
     }
 
     @Override
@@ -68,6 +74,23 @@ class DefaultCodeGenerator implements CodeGenerator {
 
         return null
 
+    }
+
+    @Override
+    String generateTrackingListCode(List<String> existentCodes) {
+        def baseCode = "TR-"
+        if (existentCodes.size()==0){
+            return "${baseCode}000001"
+        } else {
+            for (int i=1; i <= 999999; i++){
+                def code = "${baseCode}${String.format('%06d', i)}" as String
+                if (!existentCodes.contains(code)){
+                    return code
+                }
+            }
+        }
+
+        return "${baseCode}ERROR"
     }
 
     @Override

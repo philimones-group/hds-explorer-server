@@ -13,6 +13,8 @@
 			<ul>
 				<li><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
 				<li><g:link class="create" action="create"><g:message code="default.new.label" args="[entityName]" /></g:link></li>
+                <li><g:link class="create" action="downloadSampleXLS"><g:message code="trackingList.file.sample.download.label" /></g:link></li>
+				<li><g:link class="create" action="downloadTemplateXLS"><g:message code="trackingList.file.template.download.label" /></g:link></li>
 			</ul>
 		</div>
 		<div id="list-trackingList" class="content scaffold-list" role="main">
@@ -33,6 +35,8 @@
 						<g:sortableColumn property="filename" title="${message(code: 'trackingList.filename.label', default: 'Filename')}" />
 					
 						<g:sortableColumn property="enabled" title="${message(code: 'trackingList.enabled.label', default: 'Enabled')}" />
+
+						<th><g:message code="trackingList.download.xls.label"/></th>
 					
 					</tr>
 				</thead>
@@ -44,11 +48,13 @@
 					
 						<td>${fieldValue(bean: trackingListInstance, field: "name")}</td>
 					
-						<td>${fieldValue(bean: trackingListInstance, field: "module")}</td>
+						<td>${fieldValue(bean: trackingListInstance, field: "modules")}</td>
 
 						<td>${fieldValue(bean: trackingListInstance, field: "filenameOnly")}</td>
 					
 						<td><g:formatBoolean boolean="${trackingListInstance.enabled}" /></td>
+
+						<td><g:link class="create" action="get" id="${trackingListInstance.id}"><g:message code="trackingList.download.label" /></g:link></td>
 					
 					</tr>
 				</g:each>

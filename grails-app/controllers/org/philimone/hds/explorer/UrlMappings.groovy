@@ -86,5 +86,11 @@ class UrlMappings {
         "/api/import/changeheads"(controller: "RawImportApi", action: "changeheads")
         "/api/import/incompletevisits"(controller: "RawImportApi", action: "inconmpletevisits")
 
+        "/api/trackinglist/add"(controller: "trackingList", action: "addxls")  //workds for create and update
+        "/api/trackinglist/get/${id}"(controller: "trackingList", action: "get", id: "${id}") //working
+        "/api/trackinglist/getsample"(controller: "trackingList", action: "downloadSampleXLS") //working
+        "/api/trackinglist/gettemplate"(controller: "trackingList", action: "downloadTemplateXLS") //working
+
+
     }
 }

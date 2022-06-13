@@ -201,7 +201,7 @@ class SyncFilesService {
                 resultLists = TrackingList.findAllByEnabled(true)
             }
 
-            def result = trackingListService.createXMLfrom(resultLists)
+            def result = trackingListService.createXML(resultLists)
 
             println "creating xml file ${resultLists.size()}"
             PrintStream outputFile = new PrintStream(new FileOutputStream(SystemPath.generatedFilesPath + "/trackinglists.xml"), true)
