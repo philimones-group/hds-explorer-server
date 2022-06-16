@@ -852,4 +852,115 @@ class RawImportApiService {
         return new RawParseResult<RawIncompleteVisit>(rawIncompleteVisit, errors)
 
     }
+
+    RawParseResult<RawRegion> parseEditRegion(NodeChild xmlNode) {
+
+        def errors = new ArrayList<RawMessage>()
+        def params = xmlNode.childNodes().collectEntries{[it.name(), it.text()]}
+        def rootnode = xmlNode?.name()
+
+        if (!rootnode.equalsIgnoreCase("rawEditRegion")) {
+            errors << errorMessageService.getRawMessage("validation.field.raw.parsing.rootnode.invalid.error", [rootnode])
+            return new RawParseResult<RawRegion>(null, errors)
+        }
+
+        /* converting non-primitive types must be parsed manually */
+        if (xmlNode.collectedDate.size() > 0) {
+            params.collectedDate = StringUtil.toLocalDateTimePrecise(xmlNode.collectedDate.text())
+
+            if (params.collectedDate==null) {
+                errors << errorMessageService.getRawMessage("validation.field.raw.parsing.localdatetime.error", [xmlNode?.collectedDate.text(), "collectedDate"])
+            }
+        }
+
+        if (xmlNode.uploadedDate.size() > 0) {
+            params.uploadedDate = StringUtil.toLocalDateTimePrecise(xmlNode.uploadedDate.text())
+
+            if (params.uploadedDate==null) {
+                errors << errorMessageService.getRawMessage("validation.field.raw.parsing.localdatetime.error", [xmlNode?.uploadedDate.text(), "uploadedDate"])
+            }
+        } else {
+            params.uploadedDate = LocalDateTime.now()
+        }
+
+        return new RawParseResult<RawRegion>(new RawRegion(params), errors)
+
+    }
+
+    RawParseResult<RawHousehold> parseEditHousehold(NodeChild xmlNode) {
+
+        def errors = new ArrayList<RawMessage>()
+        def params = xmlNode.childNodes().collectEntries{[it.name(), it.text()]}
+        def rootnode = xmlNode?.name()
+
+        if (!rootnode.equalsIgnoreCase("rawEditHousehold")) {
+            errors << errorMessageService.getRawMessage("validation.field.raw.parsing.rootnode.invalid.error", [rootnode])
+            return new RawParseResult<RawHousehold>(null, errors)
+        }
+
+        /* converting non-primitive types must be parsed manually */
+        if (xmlNode.collectedDate.size() > 0) {
+            params.collectedDate = StringUtil.toLocalDateTimePrecise(xmlNode.collectedDate.text())
+
+            if (params.collectedDate==null) {
+                errors << errorMessageService.getRawMessage("validation.field.raw.parsing.localdatetime.error", [xmlNode?.collectedDate.text(), "collectedDate"])
+            }
+        }
+
+        if (xmlNode.uploadedDate.size() > 0) {
+            params.uploadedDate = StringUtil.toLocalDateTimePrecise(xmlNode.uploadedDate.text())
+
+            if (params.uploadedDate==null) {
+                errors << errorMessageService.getRawMessage("validation.field.raw.parsing.localdatetime.error", [xmlNode?.uploadedDate.text(), "uploadedDate"])
+            }
+        } else {
+            params.uploadedDate = LocalDateTime.now()
+        }
+
+        return new RawParseResult<RawHousehold>(new RawHousehold(params), errors)
+
+    }
+
+    RawParseResult<RawMember> parseEditMember(NodeChild xmlNode) {
+
+        def errors = new ArrayList<RawMessage>()
+        def params = xmlNode.childNodes().collectEntries{[it.name(), it.text()]}
+        def rootnode = xmlNode?.name()
+
+        if (!rootnode.equalsIgnoreCase("rawEditMember")) {
+            errors << errorMessageService.getRawMessage("validation.field.raw.parsing.rootnode.invalid.error", [rootnode])
+            return new RawParseResult<RawMember>(null, errors)
+        }
+
+        /* converting non-primitive types must be parsed manually */
+
+        if (xmlNode.dob.size() > 0) {
+            params.dob = StringUtil.toLocalDate(xmlNode.dob.text())
+
+            if (params.dob==null) {
+                errors << errorMessageService.getRawMessage("validation.field.raw.parsing.localdate.error", [xmlNode?.dob.text(), "dob"])
+            }
+        }
+
+        if (xmlNode.collectedDate.size() > 0) {
+            params.collectedDate = StringUtil.toLocalDateTimePrecise(xmlNode.collectedDate.text())
+
+            if (params.collectedDate==null) {
+                errors << errorMessageService.getRawMessage("validation.field.raw.parsing.localdatetime.error", [xmlNode?.collectedDate.text(), "collectedDate"])
+            }
+        }
+
+        if (xmlNode.uploadedDate.size() > 0) {
+            params.uploadedDate = StringUtil.toLocalDateTimePrecise(xmlNode.uploadedDate.text())
+
+            if (params.uploadedDate==null) {
+                errors << errorMessageService.getRawMessage("validation.field.raw.parsing.localdatetime.error", [xmlNode?.uploadedDate.text(), "uploadedDate"])
+            }
+        } else {
+            params.uploadedDate = LocalDateTime.now()
+        }
+
+        return new RawParseResult<RawMember>(new RawMember(params), errors)
+
+    }
 }

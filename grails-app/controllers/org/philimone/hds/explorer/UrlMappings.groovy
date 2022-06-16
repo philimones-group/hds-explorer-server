@@ -84,8 +84,10 @@ class UrlMappings {
         "/api/import/pregnancyoutcomes"(controller: "RawImportApi", action: "pregnancyoutcomes")
         "/api/import/deaths"(controller: "RawImportApi", action: "deaths")
         "/api/import/changeheads"(controller: "RawImportApi", action: "changeheads")
-        "/api/import/incompletevisits"(controller: "RawImportApi", action: "inconmpletevisits")
-
+        "/api/import/inconmpletevisits"(controller: "RawImportApi", action: "inconmpletevisits")
+        "/api/import/editregions"(controller: "RawImportApi", action: "editregions")
+        "/api/import/edithouseholds"(controller: "RawImportApi", action: "edithouseholds")
+        "/api/import/editmembers"(controller: "RawImportApi", action: "editmembers")
         "/api/trackinglist/add"(controller: "trackingList", action: "addxls")  //workds for create and update
         "/api/trackinglist/get/${id}"(controller: "trackingList", action: "get", id: "${id}") //working
         "/api/trackinglist/getsample"(controller: "trackingList", action: "downloadSampleXLS") //working

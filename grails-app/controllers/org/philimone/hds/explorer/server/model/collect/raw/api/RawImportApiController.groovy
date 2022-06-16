@@ -24,10 +24,14 @@ class RawImportApiController {
                              pregnancyoutcomes: "POST",
                              deaths: "POST",
                              changeheads: "POST",
-                             incompletevisits: "POST"]
+                             incompletevisits: "POST",
+                             editregions: "POST",
+                             edithouseholds: "POST",
+                             editmembers: "POST"]
 
     def rawImportApiService
     def rawExecutionService
+    def rawEditExecutionService
     def errorMessageService
 
     def regions = {
@@ -674,5 +678,115 @@ class RawImportApiController {
 
         render text: "OK", status: HttpStatus.OK
     }
+
+    def editregions = {
+        if (request.format != "xml") {
+            def message = message(code: 'validation.field.raw.xml.invalid.error')
+            render text: message, status:  HttpStatus.BAD_REQUEST // Only XML expected
+            return
+        }
+
+        RawParseResult<RawRegion> parseResult = null
+
+        try {
+            def node = request.getXML() as NodeChild
+            parseResult = rawImportApiService.parseEditRegion(node)
+        } catch(Exception ex) {
+            def msg = errorMessageService.getRawMessagesText(ex)
+            render text: msg, status: HttpStatus.BAD_REQUEST
+            return
+        }
+        if (parseResult.hasErrors()) {
+            render text: parseResult.getErrorsText(), status: HttpStatus.BAD_REQUEST
+            return
+        }
+
+        def rawInstance = parseResult.domainInstance
+
+        //execute creation update
+        def result = rawEditExecutionService.updateRegion(rawInstance)
+
+        if (result.status== RawExecutionResult.Status.ERROR){
+            render text: errorMessageService.getRawMessagesText(result.errorMessages), status: HttpStatus.BAD_REQUEST
+            return
+        }
+
+
+        render text: "OK", status: HttpStatus.OK
+    }
+
+    def edithouseholds = {
+        if (request.format != "xml") {
+            def message = message(code: 'validation.field.raw.xml.invalid.error')
+            render text: message, status:  HttpStatus.BAD_REQUEST // Only XML expected
+            return
+        }
+
+        RawParseResult<RawHousehold> parseResult = null
+
+        try {
+            def node = request.getXML() as NodeChild
+            parseResult = rawImportApiService.parseEditHousehold(node)
+        } catch(Exception ex) {
+            def msg = errorMessageService.getRawMessagesText(ex)
+            render text: msg, status: HttpStatus.BAD_REQUEST
+            return
+        }
+        if (parseResult.hasErrors()) {
+            render text: parseResult.getErrorsText(), status: HttpStatus.BAD_REQUEST
+            return
+        }
+
+        def rawInstance = parseResult.domainInstance
+
+        //execute creation update
+        def result = rawEditExecutionService.updateHousehold(rawInstance)
+
+        if (result.status== RawExecutionResult.Status.ERROR){
+            render text: errorMessageService.getRawMessagesText(result.errorMessages), status: HttpStatus.BAD_REQUEST
+            return
+        }
+
+
+        render text: "OK", status: HttpStatus.OK
+    }
+
+    def editmembers = {
+
+        if (request.format != "xml") {
+            def message = message(code: 'validation.field.raw.xml.invalid.error')
+            render text: message, status:  HttpStatus.BAD_REQUEST // Only XML expected
+            return
+        }
+
+        RawParseResult<RawMember> parseResult = null
+
+        try {
+            def node = request.getXML() as NodeChild
+            parseResult = rawImportApiService.parseEditMember(node)
+        } catch(Exception ex) {
+            def msg = errorMessageService.getRawMessagesText(ex)
+            render text: msg, status: HttpStatus.BAD_REQUEST
+            return
+        }
+        if (parseResult.hasErrors()) {
+            render text: parseResult.getErrorsText(), status: HttpStatus.BAD_REQUEST
+            return
+        }
+
+        def rawInstance = parseResult.domainInstance
+
+        //execute creation update
+        def result = rawEditExecutionService.updateMember(rawInstance)
+
+        if (result.status== RawExecutionResult.Status.ERROR){
+            render text: errorMessageService.getRawMessagesText(result.errorMessages), status: HttpStatus.BAD_REQUEST
+            return
+        }
+
+
+        render text: "OK", status: HttpStatus.OK
+    }
+
 
 }
