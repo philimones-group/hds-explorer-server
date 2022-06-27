@@ -472,6 +472,13 @@
                             <g:select name="parent" optionKey="id" optionValue="name" from="" value="${this.region?.parent}" noSelection="['':'']"/>
                         </div>
                     </div>
+
+                    <div class="fieldcontain ${hasErrors(bean: this.region, field: 'modules', 'error')} required">
+                        <label for="modules"><g:message code="region.modules.label" default="Modules" /><span class="required-indicator">*</span></label>
+                        <g:select id="modules" name="modules"  multiple="multiple" from="${org.philimone.hds.explorer.server.model.main.Module.list()}" optionKey="code" required="" value="${modules}" class="many-to-one"/>
+                    </div>
+
+
                     
                 </fieldset>
                 <fieldset class="buttons">

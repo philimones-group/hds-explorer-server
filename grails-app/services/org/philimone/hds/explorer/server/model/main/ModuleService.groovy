@@ -46,7 +46,7 @@ class ModuleService {
     String getListModulesAsText(Collection<? extends String> listModules) {
         def str = "" as String
         listModules?.each {
-            str = (str==null ? "":str+",") + it
+            str = (str.isEmpty() || str == null ? "":str+",") + it
         }
 
         return str

@@ -68,12 +68,16 @@ class SyncFilesService {
     def generateHouseholdDatasets(LogReportCode logReportId) {
         println("saving regions")
         generateRegionsXML(logReportId)
+
         println("saving rounds")
         generateRoundsXML(logReportId)
+
         println("saving households")
         generateHouseHoldsXML(logReportId)
+
         println("saving members")
         generateMembersXML(logReportId)
+
         println("saving residencies")
         generateResidenciesXML(logReportId)
     }

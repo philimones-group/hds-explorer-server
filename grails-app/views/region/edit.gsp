@@ -62,6 +62,11 @@
                         </div>
                     </div>
 
+                    <div class="fieldcontain ${hasErrors(bean: this.region, field: 'modules', 'error')} required">
+                        <label for="modules"><g:message code="region.modules.label" default="Modules" /><span class="required-indicator">*</span></label>
+                        <g:select id="modules" name="modules"  multiple="multiple" from="${org.philimone.hds.explorer.server.model.main.Module.list()}" optionKey="code" required="" value="${modules}" class="many-to-one"/>
+                    </div>
+
                 </fieldset>
                 <fieldset class="buttons">
                     <g:actionSubmit class="save" action="update" value="${message(code: 'default.button.update.label', default: 'Update')}" />

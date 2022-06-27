@@ -74,8 +74,8 @@
                         </span>
                         <span class="property-value" aria-labelledby="modules-label">
                             <ul>
-                                <g:each in="${this.region.modules}">
-                                    <li class="list-style-type: square;">${it}</li>
+                                <g:each in="${modules}">
+                                    <li class="list-style-type: square;">${it.name}</li>
                                 </g:each>
                             </ul>
 

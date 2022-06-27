@@ -73,11 +73,11 @@ class TrackingListController {
             return
         }
 
-        def modules = Module.getAll(params.list("all_modules.id"))
-
-        modules.each {
-            trackingListInstance.addToModules(it.code)
-        }
+        def modules = params.list("modules")
+println "mod ${modules}"
+        //modules.each {
+        //    trackingListInstance.addToModules(it)
+        //}
 
         def validationResult = trackingListService.validateXls(params.absoluteFilename)
 

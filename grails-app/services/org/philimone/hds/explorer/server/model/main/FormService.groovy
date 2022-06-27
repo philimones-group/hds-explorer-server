@@ -92,5 +92,6 @@ class FormService {
         return list
     }
 
+    List<String> getMappingTableList() { ["Household","Member","Region","User","FollowUp-List"] }
 
 }

@@ -12,6 +12,7 @@ import static org.springframework.http.HttpStatus.*
 class RegionController {
 
     RegionService regionService
+    ModuleService moduleService
 
     //static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
 
@@ -26,7 +27,8 @@ class RegionController {
 
         def levelName = regionService.getRegionLevelName(region.hierarchyLevel.code)
 
-        respond region, model: [hierarchyLevel: levelName]
+        def modules = moduleService.findAllByCodes(region.modules)
+        respond region, model: [hierarchyLevel: levelName, modules: modules]
     }
 
     def create() {
@@ -48,14 +50,17 @@ class RegionController {
             parentCode = parentRegion.code
         }
 
+        def modulesText = moduleService.getListModulesAsText(params.list("modules"))
+        def modules = moduleService.findAllByCodes(params.list("modules"))
+
         if (RegionLevel.getFrom(params.hierarchyLevel) != RegionLevel.HIERARCHY_1 && params.parent == null){
             def errorMessages = [new RawMessage(message(code: "region.parent.level.nullable.label", default: "Parent region missing"), ["parent"])]
 
-            respond region, view:'create', model: [errorMessages: errorMessages, hierarchyLevel: params.hierarchyLevel]
+            respond region, view:'create', model: [errorMessages: errorMessages, hierarchyLevel: params.hierarchyLevel, modules: modules]
             return
         }
 
-        RawRegion rawRegion = new RawRegion(regionCode: region.code, regionName: region.name, parentCode: parentCode)
+        RawRegion rawRegion = new RawRegion(regionCode: region.code, regionName: region.name, parentCode: parentCode, modules: modulesText)
 
 
         def result = regionService.createRegion(rawRegion)
@@ -64,7 +69,7 @@ class RegionController {
             region = result.domainInstance
         } else {
 
-            respond region, view:'create', model: [errorMessages: result.errorMessages, hierarchyLevel: params.hierarchyLevel]
+            respond region, view:'create', model: [errorMessages: result.errorMessages, hierarchyLevel: params.hierarchyLevel, modules: modules]
             return
         }
 
@@ -81,7 +86,9 @@ class RegionController {
         def region = regionService.get(params.id)
         def levelName = regionService.getRegionLevelName(region.hierarchyLevel.code)
 
-        respond region, model: [hierarchyLevel: levelName]
+        def modules = Module.findAllByCodeInList(region.modules)
+
+        respond region, model: [hierarchyLevel: levelName, modules: modules]
     }
 
     def update(Region region) {
@@ -89,6 +96,9 @@ class RegionController {
             notFound()
             return
         }
+
+        //def modulesText = moduleService.getListModulesAsText(params.list("modules"))
+        //def modules = Module.getAll(params.list("modules"))
 
         try {
             regionService.save(region)

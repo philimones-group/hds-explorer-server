@@ -36,4 +36,6 @@ class TrackingListMapping {
         subjectVisitCode column: 'subject_visit_code'
         subjectVisitUuid column: 'subject_visit_uuid'
     }
+
+    def static ALL_COLUMNS = ['subject_visit_code', 'subject_visit_uuid']
 }

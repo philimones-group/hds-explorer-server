@@ -44,6 +44,7 @@ class TrackingListService {
             trackingList.filename = currentWebInstance.filename
             trackingList.name = currentWebInstance.name
             trackingList.enabled = currentWebInstance.enabled
+            trackingList.modules = currentWebInstance.modules
         }
 
         if (!trackingList.validate()){
