@@ -3,7 +3,8 @@ package org.philimone.hds.explorer.server.model.enums
 enum Gender {
 
     MALE   ("M", "default.gender.M"),
-    FEMALE ("F", "default.gender.F")
+    FEMALE ("F", "default.gender.F"),
+    UNKNOWN ("UNK", "default.gender.UNK")
 
     String code
     String name

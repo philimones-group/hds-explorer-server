@@ -60,6 +60,11 @@ class GeneralUtil {
         return age
     }
 
+    static int getAgeInDays(LocalDate dobDate, LocalDate endDate){
+        def age = Period.between(dobDate, endDate).days
+        return age
+    }
+
     static String getDurationText(LocalDateTime endTime, LocalDateTime startTime){
         def duration = Duration.between(startTime, endTime)
 

@@ -391,6 +391,7 @@ class DeathService {
 
         death.deathDate = rd.deathDate
         death.ageAtDeath = GeneralUtil.getAge(member.dob, death.deathDate)
+        death.ageDaysAtDeath = GeneralUtil.getAgeInDays(member.dob, death.deathDate)
 
         death.deathCause = rd.deathCause
         death.deathPlace = rd.deathPlace

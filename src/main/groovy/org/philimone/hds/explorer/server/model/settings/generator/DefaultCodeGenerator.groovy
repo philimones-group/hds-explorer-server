@@ -99,7 +99,7 @@ class DefaultCodeGenerator implements CodeGenerator {
         if (StringUtil.isBlank(regionName)) return null
 
         //first 3 characters
-        def u = regionName.toUpperCase()
+        def u = regionName.trim().toUpperCase()
 
         def chars = ("1".."9") + ("A".."Z")
         def alist = [u.chars[0]]
@@ -107,8 +107,12 @@ class DefaultCodeGenerator implements CodeGenerator {
         def clist = (u.length()>2) ? (u.substring(2).chars.toList() + chars) : chars
 
         for (def a : alist){
+            if (a==' ') continue
             for (def b : blist){
+                if (b==' ') continue
                 for (def c : clist){
+                    if (c==' ') continue
+                    
                     def test = "${a}${b}${c}" as String
 
                     if (!existentCodes.contains(test)){

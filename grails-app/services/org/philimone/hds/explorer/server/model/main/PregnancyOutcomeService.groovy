@@ -3,6 +3,7 @@ package org.philimone.hds.explorer.server.model.main
 import grails.gorm.transactions.Transactional
 import net.betainteractive.utilities.GeneralUtil
 import net.betainteractive.utilities.StringUtil
+import org.philimone.hds.explorer.server.model.collect.raw.RawDeath
 import org.philimone.hds.explorer.server.model.collect.raw.RawHeadRelationship
 import org.philimone.hds.explorer.server.model.collect.raw.RawMember
 import org.philimone.hds.explorer.server.model.collect.raw.RawPregnancyChild
@@ -104,35 +105,59 @@ class PregnancyOutcomeService {
             //only create main domains if is a livebirth
             if (outcomeType == PregnancyOutcomeType.LIVEBIRTH) {
                 numberOfLivebirths++
-
-                //create raw domains from RawPregnancyChild
-                def rawMember = createNewRawMemberFrom(rawChild, motherResidency, outcomeDate)
-                def rawResidency = createNewRawResidencyFrom(rawChild, motherResidency, outcomeDate)
-                def rawHeadRelationship = createNewRawHeadRelationshipFrom(rawChild, motherResidency, outcomeDate)
-
-                //create main domain from raw domains using specific services
-                def resultMember =  memberService.createMember(rawMember)
-                def resultResidency =  residencyService.createResidency(rawResidency)
-                def resultHeadRelationship =  headRelationshipService.createHeadRelationship(rawHeadRelationship)
-
-                //get the result domains (can be null values - if it didnt save)
-                childPack.member = resultMember.domainInstance
-                childPack.residency = resultResidency.domainInstance
-                childPack.headRelationship = resultHeadRelationship.domainInstance
-
-                //concatenate all errors
-                def allErrors = new ArrayList<RawMessage>()
-                allErrors += errorMessageService.addPrefixToMessages(resultMember.errorMessages, "validation.field.pregnancy.child.prefix.msg.error", [rawChild.id])
-                allErrors += errorMessageService.addPrefixToMessages(resultResidency.errorMessages, "validation.field.pregnancy.child.prefix.msg.error", [rawChild.id])
-                allErrors += errorMessageService.addPrefixToMessages(resultHeadRelationship.errorMessages, "validation.field.pregnancy.child.prefix.msg.error", [rawChild.id])
-
-
-                //if there is an error get out of the loop
-                if (!allErrors.empty) {
-                    errors += allErrors
-                    break
-                }
             }
+
+            //create raw domains from RawPregnancyChild
+            def rawMember = createNewRawMemberFrom(rawChild, motherResidency, outcomeDate)
+            def rawResidency = createNewRawResidencyFrom(rawChild, motherResidency, outcomeDate)
+            def rawHeadRelationship = createNewRawHeadRelationshipFrom(rawChild, motherResidency, outcomeDate)
+            def rawDeath = createRawDeath(rawPregnancyOutcome, rawChild)
+
+            //create main domain from raw domains using specific services
+            def resultMember =  memberService.createMember(rawMember)
+            def resultResidency =  residencyService.createResidency(rawResidency)
+            def resultHeadRelationship = headRelationshipService.createHeadRelationship(rawHeadRelationship)
+            def resultDeath = null as RawExecutionResult<Death>
+
+            if (outcomeType != PregnancyOutcomeType.LIVEBIRTH){
+                resultDeath = deathService.createDeath(rawDeath)
+            }
+
+
+            //get the result domains (can be null values - if it didnt save)
+            childPack.member = resultMember.domainInstance
+            childPack.residency = resultResidency.domainInstance
+            childPack.headRelationship = resultHeadRelationship.domainInstance
+            childPack.death = resultDeath?.domainInstance
+
+            //concatenate all errors
+            def allErrors = new ArrayList<RawMessage>()
+            if (resultMember.status == RawExecutionResult.Status.ERROR) {
+                allErrors += errorMessageService.addPrefixToMessages(resultMember.errorMessages, "validation.field.pregnancy.child.prefix.msg.error", [rawChild.id])
+            }
+            if (resultResidency.status == RawExecutionResult.Status.ERROR) {
+                allErrors += errorMessageService.addPrefixToMessages(resultResidency.errorMessages, "validation.field.pregnancy.child.prefix.msg.error", [rawChild.id])
+            }
+            if (resultHeadRelationship == RawExecutionResult.Status.ERROR) {
+                allErrors += errorMessageService.addPrefixToMessages(resultHeadRelationship.errorMessages, "validation.field.pregnancy.child.prefix.msg.error", [rawChild.id])
+            }
+            if (resultDeath?.status == RawExecutionResult.Status.ERROR)  {
+                allErrors += errorMessageService.addPrefixToMessages(resultDeath.errorMessages, "validation.field.pregnancy.child.prefix.msg.error", [rawChild.id])
+            } else if (resultDeath?.status == RawExecutionResult.Status.SUCCESS) {
+
+                def death = resultDeath.domainInstance
+                death.isPregOutcomeDeath = true
+                death.save(flush:true)
+
+            }
+
+
+            //if there is an error get out of the loop
+            if (!allErrors.empty) {
+                errors += allErrors
+                break
+            }
+
 
             //the child/member was created/not now create PregnancyChild
             def pregnancyChild = newPregnancyChildInstance(rawChild, pregnancyOutcome, childPack.headRelationship)
@@ -161,6 +186,7 @@ class PregnancyOutcomeService {
                     childPack.headRelationship?.delete(flush: true)
                     childPack.residency?.delete(flush: true)
                     childPack.member?.delete(flush: true)
+                    childPack.death?.delete(flush: true)
 
                 }
                 pregnancyOutcome?.delete(flush: true)
@@ -375,32 +401,32 @@ class PregnancyOutcomeService {
         }
 
         //3. Check blank (code,name,gender,relation to head)
-        if (isBlankChildCode && isLivebirth){
+        if (isBlankChildCode){
             errors << errorMessageService.getRawMessage(RawEntity.PREGNANCY_CHILD, "validation.field.blank", ["childCode"], ["childCode"])
         }
-        if (isBlankChildName && isLivebirth){
+        if (isBlankChildName){
             errors << errorMessageService.getRawMessage(RawEntity.PREGNANCY_CHILD, "validation.field.blank", ["childName"], ["childName"])
         }
-        if (isBlankChildGender && isLivebirth){
+        if (isBlankChildGender){
             errors << errorMessageService.getRawMessage(RawEntity.PREGNANCY_CHILD, "validation.field.blank", ["childGender"], ["childGender"])
         }
-        if (isBlankChildOrdinal && isLivebirth){
+        if (isBlankChildOrdinal){
             errors << errorMessageService.getRawMessage(RawEntity.PREGNANCY_CHILD, "validation.field.blank", ["childOrdinalPosition"], ["childOrdinalPosition"])
         }
-        if (isBlankHeadRelatType && isLivebirth){
+        if (isBlankHeadRelatType){
             errors << errorMessageService.getRawMessage(RawEntity.PREGNANCY_CHILD, "validation.field.blank", ["child.headRelationshipType"], ["headRelationshipType"])
         }
 
         //2. Check child code existence (If is Livebirth)
-        if (!isBlankChildCode && isLivebirth && memberService.exists(pregnancyChild.childCode)){
+        if (!isBlankChildCode && memberService.exists(pregnancyChild.childCode)){
             errors << errorMessageService.getRawMessage(RawEntity.PREGNANCY_CHILD, "validation.field.reference.duplicate.error", ["PregnancyChild", "childCode", pregnancyChild.childCode], ["childCode"])
         }
         //4. Check Gender enum string
-        if (!isBlankChildGender && isLivebirth && Gender.getFrom(pregnancyChild.childGender)==null){
+        if (!isBlankChildGender && Gender.getFrom(pregnancyChild.childGender)==null){
             errors << errorMessageService.getRawMessage(RawEntity.PREGNANCY_CHILD, "validation.field.enum.choices.error", [pregnancyChild.childGender, "childGender"], ["childGender"])
         }
         //5. Check HeadRelationshipType enum string
-        if (!isBlankHeadRelatType && isLivebirth && headRelationshipType==null){
+        if (!isBlankHeadRelatType && headRelationshipType==null){
             errors << errorMessageService.getRawMessage(RawEntity.PREGNANCY_CHILD, "validation.field.enum.choices.error", [pregnancyChild.headRelationshipType, "child.headRelationshipType"], ["child.headRelationshipType"])
         }
 
@@ -472,6 +498,23 @@ class PregnancyOutcomeService {
                 startDate: outcomeDate)
     }
 
+    private RawDeath createRawDeath(RawPregnancyOutcome rawPregnancyOutcome, RawPregnancyChild rawPregnancyChild) {
+        def rawDeath = new RawDeath()
+
+        rawDeath.id = rawPregnancyOutcome.id
+        rawDeath.visitCode = rawPregnancyOutcome.visitCode
+        rawDeath.memberCode = rawPregnancyChild.childCode
+        rawDeath.deathDate = rawPregnancyOutcome.outcomeDate
+        rawDeath.deathCause = rawPregnancyChild.outcomeType
+        rawDeath.deathPlace = rawPregnancyOutcome?.birthPlace.equals("OTHER") ? rawPregnancyOutcome.birthPlaceOther : rawPregnancyOutcome.birthPlace
+
+        rawDeath.collectedBy = rawPregnancyOutcome.collectedBy
+        rawDeath.collectedDate = rawPregnancyOutcome.collectedDate
+        rawDeath.uploadedDate = rawPregnancyOutcome.uploadedDate
+
+        return rawDeath
+    }
+
     private PregnancyOutcome newPregnancyOutcomeInstance(RawPregnancyOutcome po){
 
         def mother = memberService.getMember(po.motherCode)
@@ -535,6 +578,7 @@ class PregnancyOutcomeService {
         Member member
         Residency residency
         HeadRelationship headRelationship
+        Death death
         PregnancyChild pregnancyChild
     }
 }

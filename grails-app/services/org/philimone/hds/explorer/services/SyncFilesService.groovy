@@ -2239,10 +2239,11 @@ class SyncFilesService {
         element.appendChild(createAttributeNonNull(doc, "memberCode", death.memberCode))
         element.appendChild(createAttributeNonNull(doc, "deathDate", StringUtil.format(death.deathDate)))
         element.appendChild(createAttributeNonNull(doc, "ageAtDeath", death.ageAtDeath))
+        element.appendChild(createAttributeNonNull(doc, "ageDaysAtDeath", death.ageDaysAtDeath))
         element.appendChild(createAttributeNonNull(doc, "deathCause", death.deathCause==null ? "" : death.deathCause))
         element.appendChild(createAttributeNonNull(doc, "deathPlace", death.deathPlace==null ? "" : death.deathPlace))
         element.appendChild(createAttributeNonNull(doc, "visitCode", death.visitCode))
-
+        element.appendChild(createAttributeNonNull(doc, "isPregOutcomeDeath", "${death.isPregOutcomeDeath}"))
         element.appendChild(createAttributeNonNull(doc, "collectedId", death.collectedId==null ? "" : death.collectedId))
 
         return element
