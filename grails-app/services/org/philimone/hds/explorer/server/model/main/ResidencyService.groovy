@@ -452,7 +452,7 @@ class ResidencyService {
             }
 
             //C6. Check If endDate is before or equal to startDate
-            if (currentResidency.startDate >= endDate){ //RECHECK THIS WITH >=
+            if (currentResidency.startDate > endDate){ //RECHECK THIS WITH >=
                 errors << errorMessageService.getRawMessage(RawEntity.RESIDENCY, "validation.field.residency.enddate.before.startdate.error", [currentResidency.id, StringUtil.format(endDate), StringUtil.format(currentResidency.startDate)], ["currentResidency.startDate", "new.endDate"])
             }
 

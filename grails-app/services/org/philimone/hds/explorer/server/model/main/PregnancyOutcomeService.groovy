@@ -172,8 +172,6 @@ class PregnancyOutcomeService {
             childPack.pregnancyChild = resultChild //everything went fine - store the pregnancyChild in the pack!!!
         }
 
-        pregnancyOutcome.numberOfLivebirths = numberOfLivebirths
-        pregnancyOutcome.save()
 
         //If there is an error while trying to create childs - delete all created records
         if (!errors.empty) {
@@ -201,6 +199,9 @@ class PregnancyOutcomeService {
             RawExecutionResult<PregnancyOutcome> obj = RawExecutionResult.newErrorResult(RawEntity.PREGNANCY_OUTCOME, errors)
             return obj
         }
+
+        pregnancyOutcome.numberOfLivebirths = numberOfLivebirths
+        pregnancyOutcome.save()
 
         closePregnancyRegistration(pregnancyOutcome)
 
