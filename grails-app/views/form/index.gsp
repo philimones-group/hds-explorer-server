@@ -49,20 +49,20 @@
 					<tr>
 					
 						<g:sortableColumn property="formId" title="${message(code: 'form.formId.label', default: 'Form Id')}" />
-					
+
+						<g:sortableColumn property="formType" title="${message(code: 'form.formType.label', default: 'Form Type')}" />
+
 						<g:sortableColumn property="formName" title="${message(code: 'form.formName.label', default: 'Form Name')}" />
 					
 						<g:sortableColumn property="formDescription" title="${message(code: 'form.formDescription.label', default: 'Form Description')}" />
-					
-						<g:sortableColumn property="gender" title="${message(code: 'form.gender.label', default: 'Gender')}" />
-					
-						<g:sortableColumn property="isRegionForm" title="${message(code: 'form.isRegionForm.label', default: 'Is Region Form')}" />
-					
-						<g:sortableColumn property="isHouseholdForm" title="${message(code: 'form.isHouseholdForm.label', default: 'Is Household Form')}" />
 
-						<g:sortableColumn property="isMemberForm" title="${message(code: 'form.isMemberForm.label', default: 'Is Member Form')}" />
+						<g:sortableColumn property="formSubjectType" title="${message(code: 'form.formSubjectType.label', default: 'Form Subject')}" />
+
+						<g:sortableColumn property="gender" title="${message(code: 'form.gender.label', default: 'Gender')}" />
 
 						<g:sortableColumn property="isFollowUpForm" title="${message(code: 'form.isFollowUpForm.label', default: 'Is FollowUp Form')}" />
+
+						<g:sortableColumn property="enabled" title="${message(code: 'form.enabled.label', default: 'Enabled')}" />
 					
 					</tr>
 				</thead>
@@ -71,20 +71,20 @@
 					<tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
 					
 						<td><g:link action="show" id="${formInstance.id}">${fieldValue(bean: formInstance, field: "formId")}</g:link></td>
-					
+
+						<td><g:message code="${formInstance?.formType?.name}" /></td>
+
 						<td>${fieldValue(bean: formInstance, field: "formName")}</td>
 					
 						<td>${fieldValue(bean: formInstance, field: "formDescription")}</td>
-					
-						<td>${fieldValue(bean: formInstance, field: "gender")}</td>
-					
-						<td>${fieldValue(bean: formInstance, field: "isRegionForm")}</td>
-					
-						<td>${fieldValue(bean: formInstance, field: "isHouseholdForm")}</td>
 
-						<td>${fieldValue(bean: formInstance, field: "isMemberForm")}</td>
+						<td><g:message code="${formInstance?.formSubjectType?.name}" /></td>
+
+						<td>${fieldValue(bean: formInstance, field: "gender")}</td>
 
 						<td>${fieldValue(bean: formInstance, field: "isFollowUpForm")}</td>
+
+						<td>${fieldValue(bean: formInstance, field: "enabled")}</td>
 					
 					</tr>
 				</g:each>

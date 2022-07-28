@@ -1,8 +1,11 @@
 package org.philimone.hds.explorer.server.model.main
 
-
+import grails.converters.JSON
 import grails.validation.ValidationException
 import org.philimone.hds.explorer.server.model.authentication.User
+import org.philimone.hds.explorer.server.model.enums.FormCollectType
+import org.philimone.hds.explorer.server.model.enums.FormSubjectType
+import org.philimone.hds.explorer.server.model.enums.FormType
 import org.springframework.dao.DataIntegrityViolationException
 
 import static org.springframework.http.HttpStatus.*
@@ -37,6 +40,7 @@ class FormController {
     }
 
     def show(String id) {
+        println "form id = ${id}"
         def form = Form.get(id)
         def modules = moduleService.findAllByCodes(form.modules)
         respond form, model: [formService: formService, modules: modules]
@@ -58,6 +62,8 @@ class FormController {
             return
         }
 
+        boolean isGroupForm = false
+
         try {
 
             def modules = Module.getAll(params.list("all_modules.id"))
@@ -65,7 +71,34 @@ class FormController {
                 formInstance.addToModules(it.code)
             }
 
-            formInstance.save(flush:true)
+            if (modules.empty){
+                flash.message = message(code: 'form.modules.empy.error')
+                respond formInstance.errors, view:'create'
+                return
+            }
+
+            def formSubTypeCode = params.formSubjectType
+
+            println "form type ${formSubTypeCode}, ${formInstance.formSubjectType}"
+
+            FormSubjectType formSubjectType = FormSubjectType.getFrom(formSubTypeCode)
+
+
+            isGroupForm = formInstance?.formType== FormType.FORM_GROUP
+            formInstance.isRegionForm = formSubjectType == FormSubjectType.REGION
+            formInstance.isHouseholdForm = formSubjectType == FormSubjectType.HOUSEHOLD
+            formInstance.isMemberForm = formSubjectType == FormSubjectType.MEMBER
+            formInstance.isHouseholdHeadForm = formSubjectType == FormSubjectType.HOUSEHOLD_HEAD
+
+            def result = formInstance.save(flush:true)
+
+            if (formInstance.hasErrors()) {
+                respond formInstance.errors, view:'create'
+                return
+            } else {
+                formInstance = result
+
+            }
 
 
         } catch (ValidationException e) {
@@ -73,15 +106,11 @@ class FormController {
             return
         }
 
-        println "${formInstance.errors}"
+        println "${formInstance.errors}, ${formInstance.id}"
 
-        request.withFormat {
-            form multipartForm {
-                flash.message = message(code: 'default.created.message', args: [message(code: 'form.label', default: 'Form'), formInstance.id])
-                redirect formInstance
-            }
-            '*' { respond formInstance, [status: CREATED] }
-        }
+
+        flash.message = message(code: 'default.created.message', args: [message(code: 'form.label', default: 'Form'), formInstance.formId])
+        redirect action: "show", id: formInstance.id, model: [id: formInstance.id, status: CREATED]
     }
 
     def edit(String id) {
@@ -122,14 +151,18 @@ class FormController {
             return
         }
 
+        def formId = Form.get(id).formId
+
+
         /* delete dependencies*/
         formService.deleteMappings(id)
+        formService.deleteGroupMappings(id)
         formService.delete(id)
 
 
         request.withFormat {
             form multipartForm {
-                flash.message = message(code: 'default.deleted.message', args: [message(code: 'form.label', default: 'Form'), id])
+                flash.message = message(code: 'default.deleted.message', args: [message(code: 'form.label', default: 'Form'), formId])
                 redirect action:"index", method:"GET"
             }
             '*'{ render status: NO_CONTENT }
@@ -168,6 +201,14 @@ class FormController {
 
 
         [formInstance: formInstance, repeatGroups: repeatGroups, formMappingInstance:formMapping, formMappingList: mappings, tableList: tableList, formsList: formsList, formService: formService]
+    }
+
+    def formGroupMapping(Form formInstance){
+        def mappings = FormGroupMapping.findAllByGroupForm(formInstance, [sort:'ordinal', order: 'asc'])
+
+        println "mappings ${mappings.size()}"
+
+        [formInstance: formInstance, formGroupMappingInstance: new FormGroupMapping(), formGroupMappingList: mappings, formService: formService]
     }
 
     def copyFrom = {
@@ -302,6 +343,67 @@ class FormController {
         }
     }
 
+    def saveFormGroupMapping = {
+        def formGroupInstance = new FormGroupMapping(params)
+
+        def groupForm = Form.get(params.groupForm)
+        def form = Form.findByFormId(params['form.name'])
+        def groupOrdinalCount = FormGroupMapping.countByGroupForm(groupForm);
+
+        formGroupInstance.groupForm = groupForm
+        formGroupInstance.groupFormId = groupForm.formId
+        formGroupInstance.form = form
+        formGroupInstance.formId = form.formId
+        formGroupInstance.ordinal = groupOrdinalCount
+        //required,collectType,collectCondition,collectLabel -> comming from params
+
+
+
+        if (formGroupInstance.formCollectType != null && formGroupInstance.formCollectType != FormCollectType.NORMAL_COLLECT && groupOrdinalCount==0) {
+            println "must be normal collect because its the first form to be collected"
+
+            flash.message = g.message(code: "form.groupMapping.formCollectType.first.error")
+
+            def mappings = FormGroupMapping.findAllByGroupForm(groupForm, [sort:'ordinal', order: 'asc'])
+            render view: "formGroupMapping", model: [formInstance: groupForm, formGroupMappingInstance: formGroupInstance, formGroupMappingList: mappings, formService: formService]
+            return
+        }
+
+
+
+        if (!formGroupInstance.save(flush:true)){
+
+            def mappings = FormGroupMapping.findAllByGroupForm(groupForm, [sort:'ordinal', order: 'asc'])
+
+            respond formGroupInstance.errors, view:'formGroupMapping', model: [formInstance: groupForm, formGroupMappingInstance: formGroupInstance, formGroupMappingList: mappings, formService: formService]
+            return
+        } else {
+            form.addToGroupMappings(formGroupInstance)
+            form.save(flush:true)
+
+            if (form.hasErrors()) {
+                println("Uncaught Error:\n${form.errors}")
+            }
+        }
+
+
+
+        flash.message = message(code: 'form.groupMapping.created.label', args: [form.formId, groupForm.formId])
+        redirect action: "formGroupMapping", id: groupForm.id
+
+    }
+
+    def generateFormGroupIdGsp = {
+
+        def formName = params.formName
+
+        def code = formService.generateGroupId(formName)
+
+        println "new generated code: ${code}"
+
+        render "${code}"
+    }
+
     def modelVariables = {
         def modelName = params.name
 
@@ -317,6 +419,8 @@ class FormController {
             list = Region.ALL_COLUMNS
         } else if (modelName.equals("FollowUp-List")) {
             list = TrackingListMapping.ALL_COLUMNS
+        } else if (modelName.equals("Form-Group")) {
+            list = FormGroupMapping.ALL_COLUMNS
         } else if (datasetService.containsDatasetWith(modelName)){
             list = datasetService.getDatasetColumnsWith(modelName)
         }
@@ -361,6 +465,10 @@ class FormController {
         }
 
         render format
+    }
+
+    def formsList = {
+        render formService.formsList(params) as JSON
     }
 
 }

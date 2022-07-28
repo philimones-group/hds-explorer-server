@@ -1,9 +1,13 @@
 package org.philimone.hds.explorer.server.model.main
 
 import grails.gorm.transactions.Transactional
+import net.betainteractive.utilities.StringUtil
+import org.philimone.hds.explorer.server.model.enums.FormType
 import org.philimone.hds.explorer.server.model.json.JConstant
 import org.philimone.hds.explorer.server.model.json.JRegionLevel
 import org.philimone.hds.explorer.server.model.settings.ApplicationParam
+
+import java.util.regex.Pattern
 
 @Transactional
 class FormService {
@@ -25,7 +29,11 @@ class FormService {
     }
 
     void deleteMappings(Serializable id){
-        FormMapping.executeUpdate("delete from FormMapping f where f.id=?", [id])
+        FormMapping.executeUpdate("delete from FormMapping f where f.form.id=?", [id])
+    }
+
+    void deleteGroupMappings(Serializable id){
+        FormGroupMapping.executeUpdate("delete from FormGroupMapping f where f.groupForm.id=?", [id])
     }
 
     Form save(Form form){
@@ -92,6 +100,88 @@ class FormService {
         return list
     }
 
-    List<String> getMappingTableList() { ["Household","Member","Region","User","FollowUp-List"] }
+    List<String> getMappingTableList() { ["Household","Member","Region","User","FollowUp-List","Form-Group"] }
 
+    String generateGroupId(String formName) {
+        //FG0001
+        def codebase = "FG"
+        def codes = Form.findAllByFormIdLike("${codebase}%", [sort:'formId', order: 'asc']).collect{ t -> t.formId}
+        def newcode = "${codebase}"
+        def increment = 0
+
+        if (codes.size() == 0) {
+            //increment = 1
+
+        } else {
+            String lastCode = codes.last()
+            lastCode = lastCode.replace("FG", "")
+
+            println("lastCode removed ${codebase}: ${lastCode}")
+
+            try {
+                increment = Integer.parseInt(lastCode)
+            } catch (Exception e) {
+                e.printStackTrace()
+
+            }
+        }
+
+        newcode = "${codebase}${String.format("%04d", ++increment)}"
+
+        while (codes.contains(newcode)) {
+            newcode = "${codebase}${String.format("%04d", ++increment)}"
+        }
+
+        return newcode
+
+    }
+
+    def formsList(params){
+        //params.term = '01-0101'
+        String term = params.term
+        String regex = '\\d\\d-\\d\\d\\d\\d-\\d\\d\\d\\-\\d\\d'
+        def pattern = Pattern.compile(regex);
+        def matcher = pattern.matcher(term);
+
+        def queryFormId = {
+            eq("formType", FormType.REGULAR)
+            and {
+                like("formId", "${term}%") // term is the parameter send by jQuery autocomplete
+            }
+            projections { // good to select only the required columns.
+                property("formId")
+                property("formName")
+                property("formDescription")
+            }
+        }
+
+        def queryName = {
+            eq("formType", FormType.REGULAR)
+            and {
+                like("formName", "%${term}%") // term is the parameter send by jQuery autocomplete
+            }
+            projections { // good to select only the required columns.
+                property("formId")
+                property("formName")
+                property("formDescription")
+            }
+        }
+
+        def query = (term != null && (matcher.matches() || matcher.hitEnd())) ? queryFormId  : queryName
+
+
+
+        def recordsList = Form.createCriteria().list(query) // execute  to the get the list of companies
+        def list = [] // to add each company details
+
+        recordsList.each {
+            def map = [:] // add to map. jQuery autocomplete expects the JSON object to be with id/label/value.
+            map.put("id", it[0])
+            map.put("label", it[0]+" : "+it[1])
+            map.put("value", it[0])
+            list.add(map) // add to the arraylist
+        }
+
+        return list
+    }
 }

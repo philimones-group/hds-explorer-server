@@ -1,9 +1,6 @@
 package org.philimone.hds.explorer.server.model.enums
 
 enum SubjectType {
-    /*
-    12. Onde é que a visita esta sendo realizada?
-    */
 
     REGION    ("Region", "subjectType.region"),
     HOUSEHOLD ("Household","subjectType.household"),

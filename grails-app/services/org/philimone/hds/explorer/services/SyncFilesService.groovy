@@ -6,6 +6,7 @@ import net.betainteractive.io.writers.ZipMaker
 import net.betainteractive.utilities.StringUtil
 import org.philimone.hds.explorer.server.model.authentication.User
 import org.philimone.hds.explorer.io.SystemPath
+import org.philimone.hds.explorer.server.model.enums.FormType
 import org.philimone.hds.explorer.server.model.enums.settings.LogReportCode
 import org.philimone.hds.explorer.server.model.logs.LogReport
 import org.philimone.hds.explorer.server.model.logs.LogReportFile
@@ -14,6 +15,7 @@ import org.philimone.hds.explorer.server.model.main.CoreFormExtension
 import org.philimone.hds.explorer.server.model.main.Dataset
 import org.philimone.hds.explorer.server.model.main.Death
 import org.philimone.hds.explorer.server.model.main.Form
+import org.philimone.hds.explorer.server.model.main.FormGroupMapping
 import org.philimone.hds.explorer.server.model.main.FormMapping
 import org.philimone.hds.explorer.server.model.main.HeadRelationship
 import org.philimone.hds.explorer.server.model.main.Household
@@ -578,8 +580,9 @@ class SyncFilesService {
                 def formMappingList = form.mappings
                 def redcapMappingList = form.redcapMappings
                 def redcapApi = form.redcapApi
+                def formGroupMappingList = form.groupMappings
 
-                Element element = createForm(doc, form, formMappingList, redcapApi, redcapMappingList);
+                Element element = createForm(doc, form, formMappingList, redcapApi, redcapMappingList, formGroupMappingList);
                 rootElement.appendChild(element);
             }
 
@@ -1964,7 +1967,7 @@ class SyncFilesService {
         return element;
     }
 
-    private Element createForm(Document doc, Form form, Collection<FormMapping> formMappingList, RedcapApi redcapApi, Collection<RedcapMapping> redcapMappingList) {
+    private Element createForm(Document doc, Form form, Collection<FormMapping> formMappingList, RedcapApi redcapApi, Collection<RedcapMapping> redcapMappingList, Collection<FormGroupMapping> groupMappings) {
         Element element = doc.createElement("form");
 
         String formMap = "";
@@ -1992,15 +1995,18 @@ class SyncFilesService {
         }
 
         //group is disabled
+        element.appendChild(createAttributeNonNull(doc, "formType", form.getFormType().code));
         element.appendChild(createAttributeNonNull(doc, "formId", form.getFormId()));
         element.appendChild(createAttributeNonNull(doc, "formName", form.getFormName()));
         element.appendChild(createAttributeNonNull(doc, "formDescription", form.getFormDescription()));
-        element.appendChild(createAttributeNonNull(doc, "formDependencies", form.getDependenciesAsText()));
+
+        element.appendChild(createAttributeNonNull(doc, "formSubjectType", form.formSubjectType.code));
+
         element.appendChild(createAttributeNonNull(doc, "regionLevel", "" + form.getRegionLevel()));
         element.appendChild(createAttributeNonNull(doc, "gender", form.getGender()));
         element.appendChild(createAttributeNonNull(doc, "minAge", form.getMinAge() + ""));
         element.appendChild(createAttributeNonNull(doc, "maxAge", form.getMaxAge() + ""));
-        element.appendChild(createAttributeNonNull(doc, "modules", moduleService.getListModulesAsText(form.modules)));
+
         element.appendChild(createAttributeNonNull(doc, "isRegionForm", "" + form.getIsRegionForm().toString()));
         element.appendChild(createAttributeNonNull(doc, "isHouseholdForm", "" + form.getIsHouseholdForm().toString()));
         element.appendChild(createAttributeNonNull(doc, "isHouseholdHeadForm", "" + form.getIsHouseholdHeadForm().toString()));
@@ -2011,7 +2017,28 @@ class SyncFilesService {
         element.appendChild(createAttributeNonNull(doc, "formMap", formMap));
         element.appendChild(createAttributeNonNull(doc, "redcapApi", redcapApiStr));
         element.appendChild(createAttributeNonNull(doc, "redcapMap", redcapMap));
+        element.appendChild(createAttributeNonNull(doc, "modules", moduleService.getListModulesAsText(form.modules)));
 
+        Element groupMappingElement = doc.createElement("groupMappings");
+
+        //add form groups
+        if (form.getFormType() == FormType.FORM_GROUP) {
+
+            groupMappings.sort{it.ordinal}.each { formGroupInstance ->
+                println("${formGroupInstance.formId} ${formGroupInstance}")
+                Element groupInstance = doc.createElement("formGroup");
+                groupInstance.appendChild(createAttributeNonNull(doc, "ordinal", formGroupInstance.ordinal+""))
+                groupInstance.appendChild(createAttributeNonNull(doc, "formId", formGroupInstance.formId))
+                groupInstance.appendChild(createAttributeNonNull(doc, "formRequired", "${formGroupInstance.formRequired}"))
+                groupInstance.appendChild(createAttributeNonNull(doc, "formCollectType", formGroupInstance.formCollectType.code))
+                groupInstance.appendChild(createAttributeNonNull(doc, "formCollectCondition", formGroupInstance.formCollectCondition==null ? "" : formGroupInstance.formCollectCondition))
+                groupInstance.appendChild(createAttributeNonNull(doc, "formCollectLabel", formGroupInstance.formCollectLabel==null ? "" : formGroupInstance.formCollectLabel))
+
+                groupMappingElement.appendChild(groupInstance)
+            }
+        }
+
+        element.appendChild(groupMappingElement);
 
         return element;
     }

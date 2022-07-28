@@ -24,7 +24,14 @@
 			<div class="message" role="status">${flash.message}</div>
 			</g:if>
 			<ol class="property-list form">
-			
+
+				<g:if test="${this.form?.formType}">
+					<li class="fieldcontain">
+						<span id="formType-label" class="property-label"><g:message code="form.formType.label" default="Form Type" /></span>
+						<span class="property-value" aria-labelledby="formType-label"><g:message code="${this.form.formType.name}"/></span>
+					</li>
+				</g:if>
+
 				<g:if test="${this.form?.formId}">
 				<li class="fieldcontain">
 					<span id="formId-label" class="property-label"><g:message code="form.formId.label" default="Form Id" /></span>
@@ -38,7 +45,7 @@
 				<li class="fieldcontain">
 					<span id="formName-label" class="property-label"><g:message code="form.formName.label" default="Form Name" /></span>
 					
-						<span class="property-value" aria-labelledby="formName-label"><g:fieldValue bean="${this.form}" field="formName"/></span>
+					<span class="property-value" aria-labelledby="formName-label"><g:fieldValue bean="${this.form}" field="formName"/></span>
 					
 				</li>
 				</g:if>
@@ -47,11 +54,16 @@
 				<li class="fieldcontain">
 					<span id="formDescription-label" class="property-label"><g:message code="form.formDescription.label" default="Form Description" /></span>
 					
-						<span class="property-value" aria-labelledby="formDescription-label"><g:fieldValue bean="${this.form}" field="formDescription"/></span>
+					<span class="property-value" aria-labelledby="formDescription-label"><g:fieldValue bean="${this.form}" field="formDescription"/></span>
 					
 				</li>
 				</g:if>
-			
+
+				<li class="fieldcontain">
+					<span id="formSubjectType-label" class="property-label"><g:message code="form.formSubjectType.label" default="Form Subject (linked to)" /></span>
+					<span class="property-value" aria-labelledby="formSubjectType-label"><g:message code="${this.form?.formSubjectType}" /></span>
+				</li>
+
 				<g:if test="${this.form?.gender}">
 				<li class="fieldcontain">
 					<span id="gender-label" class="property-label"><g:message code="form.gender.label" default="Gender" /></span>
@@ -78,22 +90,8 @@
 					
 				</li>
 				</g:if>
-			
-				<g:if test="${this.form?.modules}">
-				<li class="fieldcontain">
-					<span id="modules-label" class="property-label"><g:message code="form.modules.label" default="Modules" /></span>
-					
-					<span class="property-value" aria-labelledby="modules-label">
-						<ul>
-							<g:each in="${this.modules}">
-								<li class="list-style-type: square;">${ message(code: it.name) }</li>
-							</g:each>
-						</ul>
-					</span>
-					
-				</li>
-				</g:if>
 
+				<!--
 				<li class="fieldcontain">
 					<span id="isRegionForm-label" class="property-label"><g:message code="form.isRegionForm.label" default="Is Region Form" /></span>
 					<span class="property-value" aria-labelledby="isRegionForm-label"><g:formatBoolean boolean="${this.form?.isRegionForm}" /></span>
@@ -118,12 +116,27 @@
 					<span id="isMemberForm-label" class="property-label"><g:message code="form.isMemberForm.label" default="Is Member Form" /></span>
 					<span class="property-value" aria-labelledby="isMemberForm-label"><g:formatBoolean boolean="${this.form?.isMemberForm}" /></span>
 				</li>
+				-->
 
 				<li class="fieldcontain">
 					<span id="isFollowUpForm-label" class="property-label"><g:message code="form.isFollowUpForm.label" default="Is Follow-Up Only Form" /></span>
 					<span class="property-value" aria-labelledby="isFollowUpForm-label"><g:formatBoolean boolean="${this.form?.isFollowUpForm}" /></span>
 				</li>
 
+				<g:if test="${this.form?.modules}">
+					<li class="fieldcontain">
+						<span id="modules-label" class="property-label"><g:message code="form.modules.label" default="Modules" /></span>
+
+						<span class="property-value" aria-labelledby="modules-label">
+							<ul>
+								<g:each in="${this.modules}">
+									<li class="list-style-type: square;">${ message(code: it.name) }</li>
+								</g:each>
+							</ul>
+						</span>
+
+					</li>
+				</g:if>
 
 				<li class="fieldcontain">
 					<span id="enabled-label" class="property-label"><g:message code="form.enabled.label" default="Enabled" /></span>
@@ -136,8 +149,15 @@
 				<fieldset class="buttons">
 					<g:link class="edit" action="edit" resource="${this.form}"><g:message code="default.button.edit.label" default="Edit" /></g:link>
 					<g:actionSubmit class="delete" action="delete" value="${message(code: 'default.button.delete.label', default: 'Delete')}" onclick="return confirm('${message(code: 'form.button.delete.confirm.message', default: 'Are you sure?')}');" />
-					<g:link class="save" action="formMapping" resource="${this.form}"><g:message code="formMapping.label" default="Form Mapping" /></g:link>
-					<g:link class="save" action="redcapVarBinder" resource="${this.form}"><g:message code="redcapMapping.label" default="REDCap Mapping" /></g:link>
+
+
+					<g:if test="${this.form.formType==org.philimone.hds.explorer.server.model.enums.FormType.REGULAR}">
+						<g:link class="save" action="formMapping" resource="${this.form}"><g:message code="formMapping.label" default="Form Mapping" /></g:link>
+					</g:if>
+					<g:if test="${this.form.formType==org.philimone.hds.explorer.server.model.enums.FormType.FORM_GROUP}">
+						<g:link class="save" action="formGroupMapping" resource="${this.form}"><g:message code="formGroupMapping.label" default="Map ODK Forms to this FormGroup" /></g:link>
+					</g:if>
+
 				</fieldset>
 			</g:form>
 		</div>

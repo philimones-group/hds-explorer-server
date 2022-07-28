@@ -186,9 +186,11 @@ class GeneralTagLib {
 
     def autoComplete = {attrs, body ->
 
+        def inputValue = attrs.value ? attrs.value : ""
+
         out << g.hiddenField(name: "${attrs.name}.id") + "\n"
         //out << g.textField(name: "${attrs.name}.name", style: "width: 300px;" )
-        out << "<input type=\"text\" name=\"${attrs.name}.name\" style=\"width: 300px;\" value=\"\" id=\"${attrs.name}.name\" onKeyUp=\" resetId();\" />"
+        out << "<input type=\"text\" name=\"${attrs.name}.name\" style=\"width: 300px;\" value=\"${inputValue}\" id=\"${attrs.name}.name\" onKeyUp=\" resetId();\" style=\"display: none\" />"
         out << "\n"
         out << "<script type=\"text/javascript\">\n"
         out << "        \$(document).ready(function () {\n"

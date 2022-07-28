@@ -158,7 +158,7 @@
                         <g:hiddenField id="form" name="form.id" from="${[formInstance]}" optionKey="id" required="" value="${formMappingInstance?.form?.id}" class="many-to-one"/>
                         <div class="fieldcontain ">
                             <label class="label2"><g:message code="formMapping.formVariableName.label" default="Form Variable Name" /></label>
-                            <g:textField name="formVariableName" value="${formMappingInstance?.formVariableName}" required=""/>
+                            <g:textField name="formVariableName" value="${formMappingInstance?.formVariableName}" />
                         </div>
 
                         <g:if test="${repeatGroups.size()>0}">
