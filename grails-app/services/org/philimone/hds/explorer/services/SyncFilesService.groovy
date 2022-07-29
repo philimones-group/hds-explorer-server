@@ -2007,11 +2007,12 @@ class SyncFilesService {
         element.appendChild(createAttributeNonNull(doc, "minAge", form.getMinAge() + ""));
         element.appendChild(createAttributeNonNull(doc, "maxAge", form.getMaxAge() + ""));
 
-        element.appendChild(createAttributeNonNull(doc, "isRegionForm", "" + form.getIsRegionForm().toString()));
-        element.appendChild(createAttributeNonNull(doc, "isHouseholdForm", "" + form.getIsHouseholdForm().toString()));
-        element.appendChild(createAttributeNonNull(doc, "isHouseholdHeadForm", "" + form.getIsHouseholdHeadForm().toString()));
-        element.appendChild(createAttributeNonNull(doc, "isMemberForm", "" + form.getIsMemberForm().toString()));
-        element.appendChild(createAttributeNonNull(doc, "isFollowUpForm", "" + form.isFollowUpForm.toString()));
+        //element.appendChild(createAttributeNonNull(doc, "isRegionForm", "" + form.getIsRegionForm().toString()));
+        //element.appendChild(createAttributeNonNull(doc, "isHouseholdForm", "" + form.getIsHouseholdForm().toString()));
+        //element.appendChild(createAttributeNonNull(doc, "isHouseholdHeadForm", "" + form.getIsHouseholdHeadForm().toString()));
+        //element.appendChild(createAttributeNonNull(doc, "isMemberForm", "" + form.getIsMemberForm().toString()));
+        element.appendChild(createAttributeNonNull(doc, "isFollowUpForm", "" + form.isFollowUpExclusive.toString()));
+        element.appendChild(createAttributeNonNull(doc, "isFormGroupExclusive", "" + form.isFormGroupExclusive.toString()));
         //println "is follow up only"
         element.appendChild(createAttributeNonNull(doc, "multiCollPerSession", form.multiCollPerSession.toString()));
         element.appendChild(createAttributeNonNull(doc, "formMap", formMap));

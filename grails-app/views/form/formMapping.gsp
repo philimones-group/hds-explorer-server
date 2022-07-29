@@ -43,7 +43,7 @@
 					$("#isHouseholdForm").prop('checked', false);
 					$("#isHouseholdHeadForm").prop('checked', false);
 					$("#isMemberForm").prop('checked', false);
-					//$("#isFollowUpForm").prop('checked', false);
+					//$("#isFollowUpExclusive").prop('checked', false);
 
 					$("#divRegion").show();
 					$("#divMemberFilters").hide();

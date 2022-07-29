@@ -138,7 +138,7 @@ class FormController {
 
         request.withFormat {
             form multipartForm {
-                flash.message = message(code: 'default.updated.message', args: [message(code: 'form.label', default: 'Form'), formInstance.id])
+                flash.message = message(code: 'default.updated.message', args: [message(code: 'form.label', default: 'Form'), formInstance.formId])
                 redirect formInstance
             }
             '*'{ respond formInstance, [status: OK] }

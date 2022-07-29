@@ -60,7 +60,7 @@
 
 						<g:sortableColumn property="gender" title="${message(code: 'form.gender.label', default: 'Gender')}" />
 
-						<g:sortableColumn property="isFollowUpForm" title="${message(code: 'form.isFollowUpForm.label', default: 'Is FollowUp Form')}" />
+						<g:sortableColumn property="isFollowUpExclusive" title="${message(code: 'form.isFollowUpForm.label', default: 'Is FollowUp Form')}" />
 
 						<g:sortableColumn property="enabled" title="${message(code: 'form.enabled.label', default: 'Enabled')}" />
 					
@@ -82,7 +82,7 @@
 
 						<td>${fieldValue(bean: formInstance, field: "gender")}</td>
 
-						<td>${fieldValue(bean: formInstance, field: "isFollowUpForm")}</td>
+						<td>${fieldValue(bean: formInstance, field: "isFollowUpExclusive")}</td>
 
 						<td>${fieldValue(bean: formInstance, field: "enabled")}</td>
 					

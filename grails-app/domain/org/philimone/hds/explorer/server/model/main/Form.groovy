@@ -31,8 +31,9 @@ class Form extends AuditableEntity {
     boolean isHouseholdForm
     boolean isMemberForm
     boolean isHouseholdHeadForm
-    boolean isFollowUpForm
 
+    boolean isFollowUpExclusive
+    boolean isFormGroupExclusive
     boolean multiCollPerSession
 
     RedcapApi redcapApi
@@ -73,8 +74,9 @@ class Form extends AuditableEntity {
         isHouseholdForm()
         isHouseholdHeadForm()
         isMemberForm()
-        isFollowUpForm()
 
+        isFollowUpExclusive()
+        isFormGroupExclusive()
         multiCollPerSession()
 
         redcapApi nullable: true
@@ -104,8 +106,8 @@ class Form extends AuditableEntity {
         isHouseholdForm column: 'is_household'
         isMemberForm column: 'is_member'
         isHouseholdHeadForm column: 'is_household_head'
-        isFollowUpForm column: 'is_followup_only'
-
+        isFollowUpExclusive column: 'is_followup_only'
+        isFormGroupExclusive column: 'is_form_group_exclusive'
         multiCollPerSession column: "multi_coll_per_session"
 
         redcapApi column: 'redcap_api'

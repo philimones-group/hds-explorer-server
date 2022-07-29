@@ -248,11 +248,18 @@
 
 	<div class="panel panel-default">
 		<div class="panel-body">
-			<div class="fieldcontain ${hasErrors(bean: this.form, field: 'isFollowUpForm', 'error')} ">
-				<label for="isFollowUpForm">
+			<div class="fieldcontain ${hasErrors(bean: this.form, field: 'isFollowUpExclusive', 'error')} ">
+				<label for="isFollowUpExclusive">
 					<g:message code="form.isFollowUpForm.label" default="Is a Follow Up Only Form" />
 				</label>
-				<g:checkBox name="isFollowUpForm" value="${this.form?.isFollowUpForm}" />
+				<g:checkBox name="isFollowUpExclusive" value="${this.form?.isFollowUpExclusive}" />
+			</div>
+
+			<div class="fieldcontain ${hasErrors(bean: this.form, field: 'isFormGroupExclusive', 'error')} ">
+				<label for="isFormGroupExclusive">
+					<g:message code="form.isFormGroupExclusive.label" default="Is a Form Group Exclusive" />
+				</label>
+				<g:checkBox name="isFormGroupExclusive" value="${this.form?.isFormGroupExclusive}" />
 			</div>
 
 			<div class="fieldcontain ${hasErrors(bean: this.form, field: 'multiCollPerSession', 'error')} ">

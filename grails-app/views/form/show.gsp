@@ -119,8 +119,13 @@
 				-->
 
 				<li class="fieldcontain">
-					<span id="isFollowUpForm-label" class="property-label"><g:message code="form.isFollowUpForm.label" default="Is Follow-Up Only Form" /></span>
-					<span class="property-value" aria-labelledby="isFollowUpForm-label"><g:formatBoolean boolean="${this.form?.isFollowUpForm}" /></span>
+					<span id="isFollowUpExclusive-label" class="property-label"><g:message code="form.isFollowUpForm.label" default="Is Follow-Up Only Form" /></span>
+					<span class="property-value" aria-labelledby="isFollowUpExclusive-label"><g:formatBoolean boolean="${this.form?.isFollowUpExclusive}" /></span>
+				</li>
+
+				<li class="fieldcontain">
+					<span id="isFormGroupExclusive-label" class="property-label"><g:message code="form.isFormGroupExclusive.label" default="Is Form Group Form" /></span>
+					<span class="property-value" aria-labelledby="isFollowUpExclusive-label"><g:formatBoolean boolean="${this.form?.isFormGroupExclusive}" /></span>
 				</li>
 
 				<g:if test="${this.form?.modules}">
