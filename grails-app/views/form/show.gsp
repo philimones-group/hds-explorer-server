@@ -61,7 +61,7 @@
 
 				<li class="fieldcontain">
 					<span id="formSubjectType-label" class="property-label"><g:message code="form.formSubjectType.label" default="Form Subject (linked to)" /></span>
-					<span class="property-value" aria-labelledby="formSubjectType-label"><g:message code="${this.form?.formSubjectType}" /></span>
+					<span class="property-value" aria-labelledby="formSubjectType-label"><g:message code="${this.form?.formSubjectType.name}" /></span>
 				</li>
 
 				<g:if test="${this.form?.gender}">
