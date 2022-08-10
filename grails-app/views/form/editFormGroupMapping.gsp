@@ -10,8 +10,6 @@
         <asset:javascript src="application.js"/>
         <asset:javascript src="bootstrap.js"/>
 
-        <dt:defaultResources />
-
 	</head>
 	<body>
     <g:javascript>
@@ -58,7 +56,7 @@
             </ul>
 		</div>
 		<div id="show-form" class="content scaffold-show" role="main">
-			<h1><g:message code="formGroupMapping.label" default="Mapping Forms to Group" /></h1>
+			<h1><g:message code="formGroupMapping.edit.label" default="Edit Mapping Forms to Group" /></h1>
 			<g:if test="${flash.message}">
 			<div class="message" role="status">${flash.message}</div>
 			</g:if>
@@ -108,10 +106,17 @@
                         <div class="panel-body">
 
                             <!-- Add new Form Mapping Variable -->
-                            <g:form controller="form" action="saveFormGroupMapping" method="post" >
+                            <g:form controller="form" action="updateFormGroupMapping" method="post" >
                                 <div class="nav2">
                                     <fieldset class="form">
+                                        <g:hiddenField name="id" value="${formGroupMappingInstance.id}" required="" class="many-to-one"/>
+
                                         <g:hiddenField name="groupForm" value="${formInstance.id}" required="" class="many-to-one"/>
+
+                                        <div class="fieldcontain ">
+                                            <label class="label2"><g:message code="groupFormMapping.ordinal.label" default="Ordinal" /></label>
+                                            <g:textField name="ordinal" value="${formGroupMappingInstance?.ordinal}" readonly="readonly"/>
+                                        </div>
 
                                         <div class="fieldcontain ">
                                             <label class="label2"><g:message code="groupFormMapping.form.label" default="Grouped Form" /></label>
@@ -149,7 +154,7 @@
 
                                 <div class="nav2">
                                     <fieldset class="buttons2">
-                                        <g:submitButton name="create" class="save" value="Add Form to Group" />
+                                        <g:submitButton name="create" class="save" value="Update Form Group" />
                                     </fieldset>
                                 </div>
                             </g:form>
@@ -158,55 +163,7 @@
 
                 </div>
             </fieldset>
-
-            <div class="nav2">
-                <table id="mappingTable" class="display nowrap compact cell-border" style="width:100%" cellpadding="0">
-                    <thead>
-                    <tr>
-
-                        <th><g:message code="formGroupMapping.ordinal.label" default="Order" /></th>
-
-                        <th><g:message code="formGroupMapping.formId.label" default="Form Id" /></th>
-
-                        <th><g:message code="formGroupMapping.formName.label" default="Form Name" /></th>
-
-                        <th><g:message code="formGroupMapping.formRequired.label" default="Is Required" /></th>
-
-                        <th><g:message code="formGroupMapping.formCollectType.label" default="Collection Mode" /></th>
-
-                        <th><g:message code="formGroupMapping.formCollectCondition.label" default="Collect Condition" /></th>
-
-                        <th><g:message code="formGroupMapping.formCollectLabel.label" default="Collect Label" /></th>
-
-
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <g:each in="${formGroupMappingList}" status="i" var="groupMappingInstance">
-                        <tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
-
-                            <td>${groupMappingInstance.ordinal}</td>
-
-                            <td><g:link controller="form" action="editFormGroupMapping" id="${groupMappingInstance.id}">${groupMappingInstance.formId}</g:link></td>
-
-                            <td>${groupMappingInstance.form.formName}</td>
-
-                            <td><g:checkBox name="formRequired" value="${groupMappingInstance.formRequired}" /></td>
-
-                            <td><g:message code="${groupMappingInstance.formCollectType.name}" default="${groupMappingInstance.formCollectType}" /></td>
-
-                            <td>${groupMappingInstance.formCollectCondition}</td>
-
-                            <td>${groupMappingInstance.formCollectLabel}</td>
-
-                        </tr>
-                    </g:each>
-                    </tbody>
-                </table>
-            </div>
-
 		</div>
 
-        <dt:loadDatatable name="mappingTable" nosort="true" />
 	</body>
 </html>

@@ -344,41 +344,41 @@ class FormController {
     }
 
     def saveFormGroupMapping = {
-        def formGroupInstance = new FormGroupMapping(params)
+        def formGroupMappingInstance = new FormGroupMapping(params)
 
         def groupForm = Form.get(params.groupForm)
         def form = Form.findByFormId(params['form.name'])
         def groupOrdinalCount = FormGroupMapping.countByGroupForm(groupForm);
 
-        formGroupInstance.groupForm = groupForm
-        formGroupInstance.groupFormId = groupForm.formId
-        formGroupInstance.form = form
-        formGroupInstance.formId = form.formId
-        formGroupInstance.ordinal = groupOrdinalCount
+        formGroupMappingInstance.groupForm = groupForm
+        formGroupMappingInstance.groupFormId = groupForm.formId
+        formGroupMappingInstance.form = form
+        formGroupMappingInstance.formId = form.formId
+        formGroupMappingInstance.ordinal = groupOrdinalCount
         //required,collectType,collectCondition,collectLabel -> comming from params
 
 
 
-        if (formGroupInstance.formCollectType != null && formGroupInstance.formCollectType != FormCollectType.NORMAL_COLLECT && groupOrdinalCount==0) {
+        if (formGroupMappingInstance.formCollectType != null && formGroupMappingInstance.formCollectType != FormCollectType.NORMAL_COLLECT && groupOrdinalCount==0) {
             println "must be normal collect because its the first form to be collected"
 
             flash.message = g.message(code: "form.groupMapping.formCollectType.first.error")
 
             def mappings = FormGroupMapping.findAllByGroupForm(groupForm, [sort:'ordinal', order: 'asc'])
-            render view: "formGroupMapping", model: [formInstance: groupForm, formGroupMappingInstance: formGroupInstance, formGroupMappingList: mappings, formService: formService]
+            render view: "formGroupMapping", model: [formInstance: groupForm, formGroupMappingInstance: formGroupMappingInstance, formGroupMappingList: mappings, formService: formService]
             return
         }
 
 
 
-        if (!formGroupInstance.save(flush:true)){
+        if (!formGroupMappingInstance.save(flush:true)){
 
             def mappings = FormGroupMapping.findAllByGroupForm(groupForm, [sort:'ordinal', order: 'asc'])
 
-            respond formGroupInstance.errors, view:'formGroupMapping', model: [formInstance: groupForm, formGroupMappingInstance: formGroupInstance, formGroupMappingList: mappings, formService: formService]
+            respond formGroupMappingInstance.errors, view:'formGroupMapping', model: [formInstance: groupForm, formGroupMappingInstance: formGroupMappingInstance, formGroupMappingList: mappings, formService: formService]
             return
         } else {
-            form.addToGroupMappings(formGroupInstance)
+            form.addToGroupMappings(formGroupMappingInstance)
             form.save(flush:true)
 
             if (form.hasErrors()) {
@@ -391,6 +391,65 @@ class FormController {
         flash.message = message(code: 'form.groupMapping.created.label', args: [form.formId, groupForm.formId])
         redirect action: "formGroupMapping", id: groupForm.id
 
+    }
+
+    def editFormGroupMapping(String id) {
+        def formGroupMapping = FormGroupMapping.get(id)
+
+        [formInstance: formGroupMapping.groupForm, formGroupMappingInstance: formGroupMapping]
+    }
+
+    def updateFormGroupMapping = {
+        def formGroupMappingInstance = FormGroupMapping.get(params.id)
+
+
+
+
+        bindData(formGroupMappingInstance, params)
+
+        def groupForm = Form.get(params.groupForm)
+        def form = Form.findByFormId(params['form.name'])
+
+        formGroupMappingInstance.groupForm = groupForm
+        formGroupMappingInstance.groupFormId = groupForm.formId
+        formGroupMappingInstance.form = form
+        formGroupMappingInstance.formId = form.formId
+
+        /*
+        formGroupMappingInstance.ordinal = Integer.parseInt(params.ordinal)
+        formGroupMappingInstance.formRequired = params.formRequired
+        formGroupMappingInstance.formCollectType = params.formCollectType
+        formGroupMappingInstance.formCollectCondition = params.formCollectCondition
+        formGroupMappingInstance.formCollectLabel = params.formCollectLabel
+*/
+        println(params)
+
+
+        if (formGroupMappingInstance.formCollectType != null && formGroupMappingInstance.formCollectType != FormCollectType.NORMAL_COLLECT && formGroupMappingInstance.ordinal==0) {
+            println "must be normal collect because its the first form to be collected"
+
+            flash.message = g.message(code: "form.groupMapping.formCollectType.first.error")
+
+            def mappings = FormGroupMapping.findAllByGroupForm(groupForm, [sort:'ordinal', order: 'asc'])
+            render view: "formGroupMapping", model: [formInstance: groupForm, formGroupMappingInstance: formGroupMappingInstance, formGroupMappingList: mappings, formService: formService]
+            return
+        }
+
+
+
+        if (!formGroupMappingInstance.save(flush:true)){
+
+            def mappings = FormGroupMapping.findAllByGroupForm(groupForm, [sort:'ordinal', order: 'asc'])
+
+            respond formGroupMappingInstance.errors, view:'formGroupMapping', model: [formInstance: groupForm, formGroupMappingInstance: formGroupMappingInstance, formGroupMappingList: mappings, formService: formService]
+            return
+        }
+
+
+
+        flash.message = message(code: 'form.groupMapping.updated.label', args: [form.formId, groupForm.formId])
+        redirect action: "formGroupMapping", id: groupForm.id
+        
     }
 
     def generateFormGroupIdGsp = {

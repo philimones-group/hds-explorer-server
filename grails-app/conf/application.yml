@@ -168,6 +168,7 @@ environments:
       logSql: false
   production:
     dataSource:
+      url: jdbc:mysql://localhost/hds2_explorer?createDatabaseIfNotExist=true&autoReconnect=true&zeroDateTimeBehavior=convertToNull&useSSL=false
       dbCreate: none
       polled: true
       properties:
