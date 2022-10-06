@@ -141,7 +141,7 @@ class UserService {
             def subject = generalUtilitiesService.getMessage("default.mail.user.subject.updated_password", "")
             def message = generalUtilitiesService.getMessage("default.mail.user.message.updated_password", [url, user.username, newPassword] as String[], "")
 
-            svc.sendTextEmail(user.email, subject, message)
+            generalUtilitiesService.sendTextEmail(user.email, subject, message)
         }
 
         user

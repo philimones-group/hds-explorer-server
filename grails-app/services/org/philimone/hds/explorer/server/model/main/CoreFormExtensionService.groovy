@@ -224,7 +224,7 @@ class CoreFormExtensionService {
     String mapToString(Map<String, String> colsMap){
         String str = ""
         colsMap.each { k, v ->
-            str += (str.empty ? "":";") + "${k}:${v}"
+            str += (str.empty ? "":";") + "${k}<#>${v}"
         }
 
         return str;

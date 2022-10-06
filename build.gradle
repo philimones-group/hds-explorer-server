@@ -11,7 +11,7 @@ buildscript {
     }
 }
 
-version "1.0.0 build 200"
+version "1.0.0 build 201"
 group "org.philimone.hds.explorer"
 
 apply plugin:"eclipse"
@@ -73,11 +73,11 @@ dependencies {
     compile 'org.grails.plugins:fields:2.2.10'
 
     compile 'com.google.guava:guava:22.0'
-    runtime 'mysql:mysql-connector-java:5.1.44'
+    runtime 'mysql:mysql-connector-java:5.1.49'
     //runtime 'org.postgresql:postgresql:9.3-1101-jdbc41'
     compile group: 'org.postgresql', name: 'postgresql', version: '42.2.16'
 
-    //runtime "org.grails.plugins:jquery:1.11.1"
+    //runtime "org.grails.plugins:jquery:1.11.1"9
     //compile 'org.grails.plugins:jasper-reports:3.1.2'
     //compile "org.grails.plugins:jquery-ui:1.10.4"
     //runtime 'org.grails.plugins:twitter-bootstrap:3.3.5'
