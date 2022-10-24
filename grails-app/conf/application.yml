@@ -129,8 +129,8 @@ dataSource:
   driverClassName: com.mysql.jdbc.Driver
   dialect: org.hibernate.dialect.MySQL5InnoDBDialect
   username: hds_explorer
-  password: d33_2019xx
-  url: jdbc:mysql://localhost/hds2_explorer?createDatabaseIfNotExist=true&autoReconnect=true&zeroDateTimeBehavior=convertToNull&useSSL=false
+  password: hds_test
+  url: jdbc:mysql://localhost/hds_explorer_db?createDatabaseIfNotExist=true&autoReconnect=true&zeroDateTimeBehavior=convertToNull&useSSL=false
   #logSql: true
 
   #PostgreSQL Config
@@ -155,7 +155,7 @@ environments:
       driverClassName: com.mysql.jdbc.Driver
       dialect: org.hibernate.dialect.MySQL5InnoDBDialect
       username: hds_explorer #hds_test
-      password: d33_2019xx #hds_test
+      password: hds_test #hds_test
       #url: jdbc:mysql://localhost/hds_explorer_db_test?createDatabaseIfNotExist=true&autoReconnect=true&zeroDateTimeBehavior=convertToNull&useSSL=false
       url: jdbc:mysql://localhost/hds_explorer_db?createDatabaseIfNotExist=true&autoReconnect=true&zeroDateTimeBehavior=convertToNull&useSSL=false
       #            dbCreate: create-drop
@@ -168,7 +168,7 @@ environments:
       logSql: false
   production:
     dataSource:
-      url: jdbc:mysql://localhost/hds2_explorer?createDatabaseIfNotExist=true&autoReconnect=true&zeroDateTimeBehavior=convertToNull&useSSL=false
+      url: jdbc:mysql://localhost/hds_explorer_db?createDatabaseIfNotExist=true&autoReconnect=true&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true
       dbCreate: none
       polled: true
       properties:

@@ -3,6 +3,8 @@
 <head>
     <meta name="layout" content="main"/>
     <title><g:message code="default.application.name"/></title>
+
+    <asset:stylesheet src="login.css" />
 </head>
 <body>
 
@@ -22,10 +24,11 @@
             <br>
             <br>
             <div id="controllers" role="navigation">
-                <h2>Philimone's Group News:</h2>
+                <h2><g:message code="default.main.welcome.links" /></h2>
                 <ul>
-                    <li class="controller"> <g:link url="https://bitbucket.com/HDSExplorer">HDS Explorer Public repository (soon)</g:link></li>
-                    <li class="controller"> <g:link controller="syncFiles" action="downloadAndroidApk">Download HDS-Explorer for Android (APK)</g:link></li>
+                    <li class="controller"> <g:link url="https://github.com/philimones-group/hds-explorer-server"><g:message code="default.main.welcome.server.source" /></g:link></li>
+                    <li class="controller"> <g:link url="https://github.com/philimones-group/hds-explorer-tablet"><g:message code="default.main.welcome.mobile.source" /></g:link></li>
+                    <li class="controller"> <g:link controller="syncFiles" action="downloadAndroidApk"><g:message code="default.main.welcome.mobile.apk.download" /></g:link></li>
                 </ul>
             </div>
 

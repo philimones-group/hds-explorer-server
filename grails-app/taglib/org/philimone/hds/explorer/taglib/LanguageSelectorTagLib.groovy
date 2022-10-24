@@ -8,7 +8,7 @@ class LanguageSelectorTagLib {
 
     static namespace = 'language'
 
-    List<Locale> locales = [new Locale("pt", ), Locale.ENGLISH]
+    List<Locale> locales = [new Locale("pt", ), Locale.ENGLISH, Locale.FRENCH]
 
     /**
      * Renders a locale selector.
