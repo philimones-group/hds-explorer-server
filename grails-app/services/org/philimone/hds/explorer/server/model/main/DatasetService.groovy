@@ -46,7 +46,7 @@ class DatasetService {
         def dataset = Dataset.findByName(name)
         if (dataset != null){
 
-            return getColumns(dataset.filename)
+            return getColumns(dataset.filename).keySet().toList()
         }
 
         return null

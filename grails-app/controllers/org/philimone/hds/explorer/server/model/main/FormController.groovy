@@ -24,19 +24,19 @@ class FormController {
         def module_id = params['modules.id']
 
         Module module = (module_id==null || module_id.empty) ? null : Module.get(module_id)
-        List<Form> list = null
+        List<Form> list = []
+
+        println "${module?.code}"
 
         if (module != null){
-            list = Form.createCriteria().list(){ //Form.createCriteria().list(params){
-                modules{
-                    eq('id', module.id)
-                }
+            Form.list().each {
+                if (it.modules.contains(module.code)) list.add(it)
             }
         }else{
             list = Form.list() //Form.list(params)
         }
 
-        respond list, model:[formCount: formService.count(), currentModule: module]
+        respond list, model:[formCount: formService.count(), currentModule: module?.id]
     }
 
     def show(String id) {
@@ -190,7 +190,6 @@ class FormController {
         datasetService.datasetNames.each {
             tableList.add("[${it}]")
         }
-
 
         def formMapping = new FormMapping(form: formInstance)
 
@@ -378,11 +377,11 @@ class FormController {
             respond formGroupMappingInstance.errors, view:'formGroupMapping', model: [formInstance: groupForm, formGroupMappingInstance: formGroupMappingInstance, formGroupMappingList: mappings, formService: formService]
             return
         } else {
-            form.addToGroupMappings(formGroupMappingInstance)
-            form.save(flush:true)
+            groupForm.addToGroupMappings(formGroupMappingInstance)
+            groupForm.save(flush:true)
 
-            if (form.hasErrors()) {
-                println("Uncaught Error:\n${form.errors}")
+            if (groupForm.hasErrors()) {
+                println("Uncaught Error:\n${groupForm.errors}")
             }
         }
 
@@ -401,9 +400,6 @@ class FormController {
 
     def updateFormGroupMapping = {
         def formGroupMappingInstance = FormGroupMapping.get(params.id)
-
-
-
 
         bindData(formGroupMappingInstance, params)
 
@@ -466,6 +462,7 @@ class FormController {
     def modelVariables = {
         def modelName = params.name
 
+        println "modelname ${modelName}"
         def list = []
 
         if (modelName.equals("Household")){
@@ -480,7 +477,7 @@ class FormController {
             list = TrackingListMapping.ALL_COLUMNS
         } else if (modelName.equals("Form-Group")) {
             list = FormGroupMapping.ALL_COLUMNS
-        } else if (datasetService.containsDatasetWith(modelName)){
+        } else if (datasetService.containsDatasetWith(modelName)) {
             list = datasetService.getDatasetColumnsWith(modelName)
         }
 

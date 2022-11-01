@@ -99,7 +99,8 @@ class DefaultCodeGenerator implements CodeGenerator {
         if (StringUtil.isBlank(regionName)) return null
 
         //first 3 characters
-        def u = regionName.trim().toUpperCase()
+        def u = StringUtil.removeAcentuation(regionName.trim().toUpperCase())
+        u = StringUtil.removeNonAlphanumeric(u)
 
         def chars = ("1".."9") + ("A".."Z")
         def alist = [u.chars[0]]
@@ -200,8 +201,12 @@ class DefaultCodeGenerator implements CodeGenerator {
         }else {
             //def codes = User.list().collect{ t -> t.code}
 
-            def f = user.firstName.toUpperCase()
-            def l = user.lastName.toUpperCase()
+            def f = StringUtil.removeAcentuation(user.firstName.toUpperCase())
+            def l = StringUtil.removeAcentuation(user.lastName.toUpperCase())
+
+            f = StringUtil.removeNonAlphanumeric(f)
+            l = StringUtil.removeNonAlphanumeric(l)
+
             def alist = f.chars.toList()
             def blist = l.chars.toList()
             def clist = ("1".."9") + (l.length()>1 ? l.substring(1).chars.toList() : []) + ("A".."Z")
