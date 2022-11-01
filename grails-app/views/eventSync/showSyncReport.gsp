@@ -148,7 +148,7 @@
 			</ol>
 			<g:form url="#" method="DELETE">
 				<fieldset class="buttons">
-					<g:actionSubmit class="delete" value="Refresh" />
+					<g:actionSubmit class="delete" value="${message(code:'logreport.update.label', default:'Refresh')}" />
 				</fieldset>
 			</g:form>
 		</div>

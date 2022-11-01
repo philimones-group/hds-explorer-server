@@ -30,7 +30,7 @@
 					
 						<g:sortableColumn property="name" title="${message(code: 'trackingList.name.label', default: 'Name')}" />
 					
-						<th><g:message code="trackingList.module.label" default="Module" /></th>
+						<th><g:message code="trackingList.modules.label" default="Module" /></th>
 
 						<g:sortableColumn property="filename" title="${message(code: 'trackingList.filename.label', default: 'Filename')}" />
 					

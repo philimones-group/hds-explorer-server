@@ -157,10 +157,10 @@
 
 
 					<g:if test="${this.form.formType==org.philimone.hds.explorer.server.model.enums.FormType.REGULAR}">
-						<g:link class="save" action="formMapping" resource="${this.form}"><g:message code="formMapping.label" default="Form Mapping" /></g:link>
+						<g:link class="save" action="formMapping" resource="${this.form}"><g:message code="formMapping.create.action.label" default="Form Mapping" /></g:link>
 					</g:if>
 					<g:if test="${this.form.formType==org.philimone.hds.explorer.server.model.enums.FormType.FORM_GROUP}">
-						<g:link class="save" action="formGroupMapping" resource="${this.form}"><g:message code="formGroupMapping.label" default="Map ODK Forms to this FormGroup" /></g:link>
+						<g:link class="save" action="formGroupMapping" resource="${this.form}"><g:message code="formGroupMapping.create.action.label" default="Map ODK Forms to this FormGroup" /></g:link>
 					</g:if>
 
 				</fieldset>

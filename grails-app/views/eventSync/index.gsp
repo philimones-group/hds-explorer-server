@@ -66,8 +66,8 @@
 					<thead>
 					<tr>
 						<th colspan="1" scope="colgroup"></th>
-						<th colspan="1" scope="colgroup" style="text-align: center; vertical-align: middle;">Main Dataset</th>
-						<th colspan="4" scope="colgroup" style="text-align: center; vertical-align: middle;">Raw Data from Last Executed Synchronization</th>
+						<th colspan="1" scope="colgroup" style="text-align: center; vertical-align: middle;"><g:message code="syncdss.sync.status.main.label" /></th>
+						<th colspan="4" scope="colgroup" style="text-align: center; vertical-align: middle;"><g:message code="syncdss.sync.status.lastexecution.label" /></th>
 					</tr>
 					<tr>
 						<th style="text-align: center; vertical-align: middle;"><g:message code="syncdss.sync.status.table.label" /></th>

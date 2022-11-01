@@ -55,9 +55,14 @@
         $(document).ready(function() {
             $("#tableName").change(function() {
 
+                var value = this.value.replace("[","")
+                value = value.replace("]","")
+
+                //alert(value)
+
                 $.ajax({
                     url: "${createLink(controller: "form", action: "modelVariables")}",
-                    data: "name=" + this.value,
+                    data: "name=" + value,
                     cache: false,
                     success: function(html) {
                         $("#columnName").html(html);
@@ -197,7 +202,7 @@
                         <br>
 
                         <div class="fieldcontain ">
-                            <label class="label2"><g:message code="formMapping.copyFrom.label" default="Copy from From Form:" /></label>
+                            <label class="label2"><g:message code="formMapping.copyFrom.label" default="Copy from Form:" /></label>
                             <g:select id="formToCopy" name="formToCopy" from="${formsList}" optionKey="id" />
                         </div>
                     </fieldset>
@@ -205,8 +210,8 @@
 
                 <div class="nav2">
                     <fieldset class="buttons2">
-                        <g:submitButton name="create" class="save" value="Add New Variable" />
-                        <g:actionSubmit name="create" class="save" value="Copy variables from " action="copyFrom" />
+                        <g:submitButton name="create" class="save" value="${message(code: 'formMapping.add.new.variable.label', default: 'Add New Variable')}" />
+                        <g:actionSubmit name="create" class="save" value="${message(code: 'formMapping.add.copy.variable.label', default: 'Copy variables from')}" action="copyFrom" />
                     </fieldset>
                 </div>
             </g:form>

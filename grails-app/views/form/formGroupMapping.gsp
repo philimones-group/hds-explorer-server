@@ -114,29 +114,29 @@
                                         <g:hiddenField name="groupForm" value="${formInstance.id}" required="" class="many-to-one"/>
 
                                         <div class="fieldcontain ">
-                                            <label class="label2"><g:message code="groupFormMapping.form.label" default="Grouped Form" /></label>
+                                            <label class="label2"><g:message code="formGroupMapping.form.label" default="Grouped Form" /></label>
                                             <bi:autoComplete name="form" controller="form" action="formsList" value="${formGroupMappingInstance?.formId}"/>
                                         </div>
 
                                         <div class="fieldcontain ">
-                                            <label class="label2"><g:message code="groupFormMapping.formRequired.label" default="Is Required" /></label>
+                                            <label class="label2"><g:message code="formGroupMapping.formRequired.label" default="Is Required" /></label>
                                             <g:checkBox name="formRequired" value="${formGroupMappingInstance?.formRequired}" />
                                         </div>
 
                                         <div class="fieldcontain ">
-                                            <label class="label2"><g:message code="groupFormMapping.formCollectType.label" default="Collection Mode" /></label>
+                                            <label class="label2"><g:message code="formGroupMapping.formCollectType.label" default="Collection Mode" /></label>
                                             <g:select name="formCollectType" from="${org.philimone.hds.explorer.server.model.enums.FormCollectType.values()}" value="${formGroupMappingInstance?.formCollectType}" optionKey="code" valueMessagePrefix="formCollectType"/>
                                         </div>
 
                                         <div id="divCollection">
 
                                             <div class="fieldcontain " >
-                                                <label class="label2"><g:message code="groupFormMapping.formCollectCondition.label" default="Collect Condition" /></label>
+                                                <label class="label2"><g:message code="formGroupMapping.formCollectCondition.label" default="Collect Condition" /></label>
                                                 <g:textField name="formCollectCondition" value="${formGroupMappingInstance?.formCollectCondition}" />
                                             </div>
 
                                             <div class="fieldcontain ">
-                                                <label class="label2"><g:message code="groupFormMapping.formCollectLabel.label" default="Collect Condition Label" /></label>
+                                                <label class="label2"><g:message code="formGroupMapping.formCollectLabel.label" default="Collect Condition Label" /></label>
                                                 <g:textField name="formCollectLabel" value="${formGroupMappingInstance?.formCollectLabel}" />
                                             </div>
 
@@ -149,7 +149,7 @@
 
                                 <div class="nav2">
                                     <fieldset class="buttons2">
-                                        <g:submitButton name="create" class="save" value="Add Form to Group" />
+                                        <g:submitButton name="create" class="save" value="${message(code: 'formGroupMapping.add.label', default: 'Add Form to Group')}" />
                                     </fieldset>
                                 </div>
                             </g:form>
