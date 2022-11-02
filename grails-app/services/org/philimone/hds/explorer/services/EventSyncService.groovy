@@ -70,8 +70,8 @@ class EventSyncService {
             LogReportFile reportFile = LogReportFile.findById(reportFileId)
 
             reportFile.end = LocalDateTime.now()
-            reportFile.processedCount = processed
-            reportFile.errorsCount = errors
+            //reportFile.processedCount = processed
+            //reportFile.errorsCount = errors
             reportFile.save(flush:true)
 
             logReport.end = LocalDateTime.now()
@@ -115,8 +115,8 @@ class EventSyncService {
             reportFile.start = start
             reportFile.end = LocalDateTime.now()
             reportFile.creationDate = LocalDateTime.now()
-            reportFile.processedCount = processed
-            reportFile.errorsCount = errors
+            //reportFile.processedCount = processed
+            //reportFile.errorsCount = errors
 
             logReport.end = LocalDateTime.now()
             logReport.status = logStatusValue
@@ -174,8 +174,8 @@ class EventSyncService {
             LogReportFile reportFile = LogReportFile.findById(reportFileId)
 
             reportFile.end = LocalDateTime.now()
-            reportFile.processedCount = processed
-            reportFile.errorsCount = errors
+            //reportFile.processedCount = processed
+            //reportFile.errorsCount = errors
             reportFile.save(flush:true)
 
             logReport.end = LocalDateTime.now()
@@ -239,8 +239,8 @@ class EventSyncService {
             LogReportFile reportFile = LogReportFile.findById(reportFileId)
 
             reportFile.end = LocalDateTime.now()
-            reportFile.processedCount = processed
-            reportFile.errorsCount = errors
+            //reportFile.processedCount = processed
+            //reportFile.errorsCount = errors
             reportFile.save(flush:true)
 
             logReport.end = LocalDateTime.now()

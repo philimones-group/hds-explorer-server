@@ -3,8 +3,6 @@
 <head>
     <meta name="layout" content="main"/>
     <title><g:message code="default.application.name"/></title>
-
-    <asset:stylesheet src="login.css" />
 </head>
 <body>
 

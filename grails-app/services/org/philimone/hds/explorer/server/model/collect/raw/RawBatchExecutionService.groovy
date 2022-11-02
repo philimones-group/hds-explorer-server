@@ -225,6 +225,19 @@ class RawBatchExecutionService {
             }
         }
 
+        //GET TOTAL EVENTS TO EXECUTE AND ERROR LOGS COUNT - REPORT TO LogReportFile
+        LogReportFile.withTransaction {
+            def logReportFile = LogReportFile.get(logReportFileId)
+            if (logReportFile != null) {
+                def errorLogsCount = RawErrorLog.countByLogReportFile(logReportFile, [sort: "createdDate", order: "asc"])
+
+                logReportFile.processedCount = initialEvents.size() + otherEvents.size() + maritalEvents.size()
+                logReportFile.errorsCount = errorLogsCount
+
+                logReportFile.save(flush:true)
+            }
+        }
+
     }
 
     RawExecutionResult executeEvent(RawEvent event, String logReportFileId) {
@@ -989,19 +1002,19 @@ class RawBatchExecutionService {
     }
 
     RawMessage getRegionDependencyError(String regionCode, String columnName) {
-        return errorMessageService.getRawMessage(RawEntity.REGION, "validation.dependency.region.not.found", [columnName, regionCode], [columnName])
+        return errorMessageService.getRawMessage(RawEntity.REGION, "validation.dependency.region.not.found", [regionCode, columnName], [columnName])
     }
 
     RawMessage getHouseholdDependencyError(String householdCode, String columnName) {
-        return errorMessageService.getRawMessage(RawEntity.HOUSEHOLD, "validation.dependency.household.not.found", [columnName, householdCode], [columnName])
+        return errorMessageService.getRawMessage(RawEntity.HOUSEHOLD, "validation.dependency.household.not.found", [householdCode, columnName], [columnName])
     }
 
     RawMessage getVisitDependencyError(String visitCode, String columnName) {
-        return errorMessageService.getRawMessage(RawEntity.HOUSEHOLD, "validation.dependency.visit.not.found", [columnName, visitCode], [columnName])
+        return errorMessageService.getRawMessage(RawEntity.HOUSEHOLD, "validation.dependency.visit.not.found", [visitCode, columnName], [columnName])
     }
 
     RawMessage getMemberDependencyError(String memberCode, String columnName) {
-        return errorMessageService.getRawMessage(RawEntity.HOUSEHOLD, "validation.dependency.member.not.found", [columnName, memberCode], [columnName])
+        return errorMessageService.getRawMessage(RawEntity.HOUSEHOLD, "validation.dependency.member.not.found", [memberCode, columnName], [columnName])
     }
 
     RawDependencyStatus solveRegionDependency(String regionCode, String columnName, String logReportFileId) {
