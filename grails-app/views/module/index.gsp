@@ -3,7 +3,7 @@
     <head>
         <meta name="layout" content="main" />
         <g:set var="entityName" value="${message(code: 'module.label', default: 'Module')}" />
-        <title><g:message code="default.list.label" args="[entityName]" /></title>
+        <title><g:message code="module.list.label" args="[entityName]" /></title>
 
         <dt:defaultResources />
     </head>
@@ -12,8 +12,8 @@
         <div class="nav" role="navigation">
             <ul>
                 <li><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
-                <li><g:link class="create" action="create"><g:message code="default.new.label" args="[entityName]" /></g:link></li>
-                <li><g:link class="create" action="add">Grant Module Access to Entities</g:link></li>
+                <li><g:link class="create" action="create"><g:message code="module.new.label" args="[entityName]" /></g:link></li>
+                <li><g:link class="create" action="add"><g:message code="module.updates.label" /></g:link></li>
             </ul>
         </div>
         <div id="list-module" class="content scaffold-list" role="main">
