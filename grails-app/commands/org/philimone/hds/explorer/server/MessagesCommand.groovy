@@ -151,6 +151,10 @@ class MessagesCommand implements GrailsApplicationCommand {
         if (currentLanguage == I18nLanguage.PORTUGUESE){
             generateForDomainClassPt(domainClass)
         }
+
+        if (currentLanguage == I18nLanguage.FRENCH){
+            generateForDomainClassFr(domainClass)
+        }
     }
 
     def generateForDomainClassEn(domainClass) {
@@ -354,6 +358,106 @@ class MessagesCommand implements GrailsApplicationCommand {
         println ""
     }
 
+    def generateForDomainClassFr(domainClass) {
+        // print generic messages for this domain class
+        println "# ${domainClass.shortName} messages, Customized by X-47"
+        println "${domainClass.propertyName}.label=${domainClass.shortName}"
+        println "${domainClass.propertyName}.add.label=Ajouter ${domainClass.shortName}"
+        println "${domainClass.propertyName}.import.label=Importer ${domainClass.shortName}"
+        println "${domainClass.propertyName}.search.label=Rechercher ${domainClass.shortName}"
+        println "${domainClass.propertyName}.create.label=Créer ${domainClass.shortName}"
+        println "${domainClass.propertyName}.edit.label=Modifier ${domainClass.shortName}"
+        println "${domainClass.propertyName}.list.label=Liste de la ${domainClass.shortName}"
+        println "${domainClass.propertyName}.new.label=Ajouter une nouvelle ${domainClass.shortName}"
+        println "${domainClass.propertyName}.show.label=Afficher ${domainClass.shortName}"
+
+        println "${domainClass.propertyName}.create.button.label=Sauvegarder ${domainClass.shortName}"
+        println "${domainClass.propertyName}.update.button.label==Mise à jour de la ${domainClass.shortName}"
+        println "${domainClass.propertyName}.delete.button.label=Supprimer ${domainClass.shortName}"
+        println "${domainClass.propertyName}.edit.button.label=Edit ${domainClass.shortName}"
+
+        println "${domainClass.propertyName}.created=${domainClass.shortName} {0} créée"
+        println "${domainClass.propertyName}.updated=${domainClass.shortName} {0} mise à jour"
+        println "${domainClass.propertyName}.deleted=${domainClass.shortName} {0} supprimée"
+        println "${domainClass.propertyName}.not.found=${domainClass.shortName} non trouvé avec l'id {0}"
+        println "${domainClass.propertyName}.not.deleted=${domainClass.shortName} non supprimée avec id{0}"
+        println "${domainClass.propertyName}.optimistic.locking.failure=Un autre utilisateur a mis à jour cette ${domainClass.shortName} pendant que vous changiez"
+
+        // print messages for all properties contained by domain class
+        def props = domainClass.properties.findAll { it.name != 'version' }
+        Collections.sort(props, new DomainClassPropertyComparator(domainClass))
+        props.each { p ->
+            println "${domainClass.propertyName}.${p.name}.label=${p.naturalName}"
+
+            // print messages for inList constraint values
+            def cp = domainClass.constrainedProperties[p.name]
+            if (cp?.inList) {
+                cp.inList.each { v ->
+                    println "${domainClass.propertyName}.${p.name}.${v}=${v}"
+                }
+            }
+
+            // print error messages for constraints
+            cp?.appliedConstraints?.each { c ->
+                //println("constraint: ${c.name}")
+                switch (c.name) {
+                    case ConstrainedProperty.BLANK_CONSTRAINT:
+                        if (!c.parameter)
+                        println "${domainClass.propertyName}.${p.name}.${c.name}.error=Le champ [${p.naturalName}] de la classe [${domainClass.shortName}] ne peut pas être vide"
+                        break
+                    case ConstrainedProperty.CREDIT_CARD_CONSTRAINT:
+                        println "${domainClass.propertyName}.${p.name}.${c.name}.error=Le champ [${p.naturalName}] de la classe [${domainClass.shortName}] avec la valeur [{2}] n'est pas un numéro de carte de crédit valide"
+                        break
+                    case ConstrainedProperty.EMAIL_CONSTRAINT:
+                        println "${domainClass.propertyName}.${p.name}.${c.name}.error=Le champ [${p.naturalName}] de la classe [${domainClass.shortName}] avec la valeur [{2}] n'est pas une adresse e-mail valide"
+                        break
+                    case ConstrainedProperty.IN_LIST_CONSTRAINT:
+                        println "${domainClass.propertyName}.${p.name}.${c.name}.error=Le champ [${p.naturalName}] de la classe [${domainClass.shortName}] avec la valeur [{2}] ne fait pas partie de la liste [{3}]"
+                        break
+                    case ConstrainedProperty.MATCHES_CONSTRAINT:
+                        println "${domainClass.propertyName}.${p.name}.${c.name}.error=Le champ [${p.naturalName}] de la classe [${domainClass.shortName}] avec la valeur [{2}] ne correspond pas au pattern [{3}]"
+                        break
+                    case ConstrainedProperty.MAX_CONSTRAINT:
+                        println "${domainClass.propertyName}.${p.name}.${c.name}.error=Le champ [${p.naturalName}] de la classe [${domainClass.shortName}] avec la valeur [{2}] est supérieure à la valeur maximum [{3}]"
+                        break
+                    case ConstrainedProperty.MAX_SIZE_CONSTRAINT:
+                        println "${domainClass.propertyName}.${p.name}.${c.name}.error=Le champ [${p.naturalName}] de la classe [${domainClass.shortName}] avec la valeur [{2}] est supérieure à la valeur maximum [{3}]"
+                        break
+                    case ConstrainedProperty.MIN_CONSTRAINT:
+                        println "${domainClass.propertyName}.${p.name}.${c.name}.error=Le champ [${p.naturalName}] de la classe [${domainClass.shortName}] avec la valeur [{2}] est inférieure à la valeur minimum [{3}]"
+                        break
+                    case ConstrainedProperty.MIN_SIZE_CONSTRAINT:
+                        println "${domainClass.propertyName}.${p.name}.${c.name}.error=Le champ [${p.naturalName}] de la classe [${domainClass.shortName}] avec la valeur [{2}] est inférieure à la valeur minimum [{3}]"
+                        break
+                    case ConstrainedProperty.NOT_EQUAL_CONSTRAINT:
+                        println "${domainClass.propertyName}.${p.name}.${c.name}.error=Le champ [${p.naturalName}] de la classe [${domainClass.shortName}] avec la valeur [{2}] ne peut pas être égale à [{3}]"
+                        break
+                    case ConstrainedProperty.NULLABLE_CONSTRAINT:
+                        if (!c.parameter)
+                            println "${domainClass.propertyName}.${p.name}.${c.name}.error=Le champ [${p.naturalName}] de la classe [${domainClass.shortName}] ne peut pas être nulle"
+                        break
+                    case ConstrainedProperty.RANGE_CONSTRAINT:
+                        println "${domainClass.propertyName}.${p.name}.${c.name}.error=Le champ [${p.naturalName}] de la classe [${domainClass.shortName}] avec la valeur [{2}] n'est pas contenue dans l'intervalle [{3}] à [{4}]"
+                        break
+                    case ConstrainedProperty.SIZE_CONSTRAINT:
+                        println "${domainClass.propertyName}.${p.name}.${c.name}.error=Le champ [${p.naturalName}] de la classe [${domainClass.shortName}] avec la valeur [{2}] n'est pas contenue dans l'intervalle [{3}] à [{4}]"
+                        break
+                    case ConstrainedExtraProperty.UNIQUE_CONSTRAINT: // unique constraint reference not available
+                        println "${domainClass.propertyName}.${p.name}.${c.name}.error=Le champ [${p.naturalName}] de la classe [${domainClass.shortName}] avec la valeur [{2}] doit être unique"
+                        break
+                    case ConstrainedProperty.URL_CONSTRAINT:
+                        println "${domainClass.propertyName}.${p.name}.${c.name}.error=Le champ [${p.naturalName}] de la classe [${domainClass.shortName}] avec la valeur [{2}] n'est pas une URL valide"
+                        break
+                    case ConstrainedProperty.VALIDATOR_CONSTRAINT:
+                        println "${domainClass.propertyName}.${p.name}.${c.name}.error=Le champ [${p.naturalName}] de la classe [${domainClass.shortName}] avec la valeur [{2}] n'est pas valide"
+                        break
+                }
+            }
+        }
+
+        println ""
+    }
+
     //constants
     class ConstrainedExtraProperty {
         public static final UNIQUE_CONSTRAINT = "unique"
@@ -361,7 +465,8 @@ class MessagesCommand implements GrailsApplicationCommand {
 
     enum I18nLanguage {
         ENGLISH("en"),
-        PORTUGUESE("pt")
+        PORTUGUESE("pt"),
+        FRENCH("fr")
 
         private String name;
         private static Map<String, I18nLanguage> mapLangs = new HashMap<>();
