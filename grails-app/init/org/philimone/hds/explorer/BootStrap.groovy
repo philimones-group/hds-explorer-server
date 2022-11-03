@@ -135,7 +135,7 @@ class BootStrap {
             //new SecurityMap(url: "/household/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
             //new SecurityMap(url: "/member/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
 
-            //new SecurityMap(url: "/settings/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
+            new SecurityMap(url: "/settings/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
             //new SecurityMap(url: "/reports/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
             new SecurityMap(url: "/logReport/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
 
@@ -374,6 +374,7 @@ class BootStrap {
         aps.addParam(Codes.PARAMS_MIN_AGE_OF_HEAD, StringUtil.getInteger(hmaxAge))
         aps.addParam(Codes.PARAMS_MIN_AGE_OF_SPOUSE, StringUtil.getInteger(smaxAge))
         aps.addParam(Codes.PARAMS_GENDER_CHECKING, StringUtil.getBoolean(gndChck))
+        aps.addParam(Codes.PARAMS_SYSTEM_LANGUAGE, "en") //set default language to english
 
         aps.addParamNullable(RegionLevel.HIERARCHY_1.code, null)
         aps.addParamNullable(RegionLevel.HIERARCHY_2.code, null)
@@ -385,6 +386,8 @@ class BootStrap {
         aps.addParamNullable(RegionLevel.HIERARCHY_8.code, null)
         aps.addParamNullable(RegionLevel.HIERARCHY_9.code, null)
         aps.addParamNullable(RegionLevel.HIERARCHY_10.code, null)
+
+
 
         //Inserting Default Mapping Formats
         new MappingFormatType(description: "Boolean [yes, no]", type: "Boolean", format:"yes,no").save(flush: true)
@@ -454,6 +457,7 @@ class BootStrap {
         def valueAgh = applicationParamService.getIntegerValue(Codes.PARAMS_MIN_AGE_OF_HEAD)
         def valueAgs = applicationParamService.getIntegerValue(Codes.PARAMS_MIN_AGE_OF_SPOUSE)
         def valueGch = applicationParamService.getBooleanValue(Codes.PARAMS_GENDER_CHECKING)
+        def valueSlg = applicationParamService.getStringValue(Codes.PARAMS_SYSTEM_LANGUAGE)
 
         Codes.MAX_TRACKLIST_DATA_COLUMNS_VALUE = valueDtc != null ? valueDtc : Codes.MAX_TRACKLIST_DATA_COLUMNS_VALUE
         Codes.MIN_MOTHER_AGE_VALUE = valueAgm != null ? valueAgm : Codes.MIN_MOTHER_AGE_VALUE
@@ -461,6 +465,9 @@ class BootStrap {
         Codes.MIN_HEAD_AGE_VALUE = valueAgh != null ? valueAgh : Codes.MIN_HEAD_AGE_VALUE
         Codes.MIN_SPOUSE_AGE_VALUE = valueAgs != null ? valueAgs : Codes.MIN_SPOUSE_AGE_VALUE
         Codes.GENDER_CHECKING = valueGch != null ? valueGch : Codes.GENDER_CHECKING
+        Codes.SYSTEM_LANGUAGE = valueSlg != null ? valueSlg : Codes.SYSTEM_LANGUAGE
+
+        println("gender ${Codes.GENDER_CHECKING}")
     }
 
     def testApp() {

@@ -2,8 +2,11 @@ package org.philimone.hds.explorer.services
 
 import grails.gorm.transactions.Transactional
 import net.betainteractive.io.LogOutput
+import net.betainteractive.utilities.StringUtil
 import org.philimone.hds.explorer.server.model.authentication.Notification
 import org.philimone.hds.explorer.server.model.authentication.User
+import org.philimone.hds.explorer.server.model.json.JLanguage
+import org.philimone.hds.explorer.server.model.settings.Codes
 import org.springframework.context.i18n.LocaleContextHolder
 
 import java.text.SimpleDateFormat
@@ -13,7 +16,10 @@ class GeneralUtilitiesService {
 
     def springSecurityService
     def mailService
+    def applicationParamService
     def grailsApplication
+
+    def List<Locale> locales = [new Locale("pt", ), Locale.ENGLISH, Locale.FRENCH]
 
     def boolean isUsingOpenHDS(){
         return grailsApplication.config.openva.database.using_openhds
@@ -56,11 +62,11 @@ class GeneralUtilitiesService {
     }
 
     def String getMessage(String messageCode, Object[] args, String defaultMessage){
-        getMessage(messageCode, args, defaultMessage, LocaleContextHolder.getLocale())
+        getMessage(messageCode, args, defaultMessage, new Locale(Codes.SYSTEM_LANGUAGE))
     }
 
     def String getMessage(String messageCode, String defaultMessage){
-        getMessage(messageCode, null, defaultMessage, LocaleContextHolder.getLocale())
+        getMessage(messageCode, null, defaultMessage, new Locale(Codes.SYSTEM_LANGUAGE))
     }
 
     def String userFullName() {
@@ -107,4 +113,29 @@ class GeneralUtilitiesService {
 
         return new LogOutput(output: output, logFileName: logFile);
     }
+
+    List<JLanguage> getSystemLanguages() {
+        def languages = new ArrayList<JLanguage>()
+
+        locales.each {
+            def lang = new JLanguage(it.language, StringUtil.capitalize(it.getDisplayLanguage(it)))
+            languages.add(lang)
+        }
+
+        return languages
+    }
+
+    JLanguage getCurrentSystemLanguage(){
+        def currentLanguageCode = applicationParamService.getStringValue(Codes.PARAMS_SYSTEM_LANGUAGE)
+
+        for (Locale it : locales) {
+            if (it.language.equals(currentLanguageCode)) {
+                return new JLanguage(currentLanguageCode, StringUtil.capitalize(it.getDisplayLanguage(it)))
+            }
+        }
+
+        return null
+    }
+
+
 }

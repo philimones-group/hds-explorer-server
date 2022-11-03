@@ -8,6 +8,7 @@ class Codes {
     static final String PARAMS_MIN_AGE_OF_MOTHER = "hds.explorer.constraints.mother.age.min"
     static final String PARAMS_MIN_AGE_OF_HEAD   = "hds.explorer.constraints.head.age.min"
     static final String PARAMS_MIN_AGE_OF_SPOUSE   = "hds.explorer.constraints.spouse.age.min"
+    static final String PARAMS_SYSTEM_LANGUAGE = "hds.explorer.system.language"
 
     static final String MEMBER_UNKNOWN_CODE = "UNK"
 
@@ -18,4 +19,5 @@ class Codes {
     static int MIN_HEAD_AGE_VALUE = 12
     static int MIN_SPOUSE_AGE_VALUE = 16
     static boolean GENDER_CHECKING = true
+    static String SYSTEM_LANGUAGE = "en"
 }

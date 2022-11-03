@@ -11,7 +11,6 @@ import org.philimone.hds.explorer.server.model.enums.RawEntity
 import org.philimone.hds.explorer.server.model.main.collect.raw.RawExecutionResult
 import org.philimone.hds.explorer.server.model.main.collect.raw.RawMessage
 import org.philimone.hds.explorer.server.model.settings.Codes
-import org.springframework.context.i18n.LocaleContextHolder
 
 import java.time.LocalDate
 
@@ -356,8 +355,8 @@ class MaritalRelationshipService {
         if (Codes.GENDER_CHECKING && memberAExists && memberBExists){
             //who's male whos female
             if (memberA.gender == memberB.gender){
-                def genderA = messageSource.getMessage(memberA.gender.name, null, LocaleContextHolder.getLocale())
-                def genderB = messageSource.getMessage(memberB.gender.name, null, LocaleContextHolder.getLocale())
+                def genderA = messageSource.getMessage(memberA.gender.name, null, new Locale(Codes.SYSTEM_LANGUAGE))
+                def genderB = messageSource.getMessage(memberB.gender.name, null, new Locale(Codes.SYSTEM_LANGUAGE))
                 errors << errorMessageService.getRawMessage(RawEntity.MARITAL_RELATIONSHIP, "validation.field.gender.spouse.error", [genderA, genderB], ["member.gender"])
             }
         }

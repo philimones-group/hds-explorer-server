@@ -103,7 +103,7 @@ class ApplicationParamService {
     String getStringValue(String paramName){
         def param = ApplicationParam.findByName(paramName)
 
-        if (param != null && param.type == ApplicationParamType.INTEGER){
+        if (param != null && param.type == ApplicationParamType.STRING){
             return param.value
         }
 

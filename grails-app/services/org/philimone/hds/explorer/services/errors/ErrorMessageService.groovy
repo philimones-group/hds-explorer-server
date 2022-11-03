@@ -6,6 +6,7 @@ import net.betainteractive.utilities.StringUtil
 import org.grails.datastore.gorm.GormEntity
 import org.philimone.hds.explorer.server.model.enums.RawEntity
 import org.philimone.hds.explorer.server.model.main.collect.raw.RawMessage
+import org.philimone.hds.explorer.server.model.settings.Codes
 import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.validation.ObjectError
 
@@ -41,7 +42,7 @@ class ErrorMessageService {
         def errors = ""
 
         domain.errors.allErrors.each { obj ->
-            def err = messageSource.getMessage(obj, LocaleContextHolder.getLocale())
+            def err = messageSource.getMessage(obj, new Locale(Codes.SYSTEM_LANGUAGE))
             //err = removeClassDefFromErrDetails(err)
             err = StringUtil.removePackageNames(err)
             errors += err + "\n"
@@ -54,7 +55,7 @@ class ErrorMessageService {
         def errors = new ArrayList<RawMessage>()
 
         domain.errors.fieldErrors.each { obj ->
-            def msg = messageSource.getMessage(obj, LocaleContextHolder.getLocale())
+            def msg = messageSource.getMessage(obj, new Locale(Codes.SYSTEM_LANGUAGE))
             //err = removeClassDefFromErrDetails(err)
             msg = StringUtil.removePackageNames(msg)
 
@@ -68,7 +69,7 @@ class ErrorMessageService {
         def errors = ""
 
         domain.errors.fieldErrors.each { obj ->
-            def msg = messageSource.getMessage(obj, LocaleContextHolder.getLocale())
+            def msg = messageSource.getMessage(obj, new Locale(Codes.SYSTEM_LANGUAGE))
             //err = removeClassDefFromErrDetails(err)
             msg = StringUtil.removePackageNames(msg)
 
@@ -107,38 +108,38 @@ class ErrorMessageService {
     }
 
     RawMessage getRawMessage(RawEntity entity, String messageCode, String[] args, String[] fields){
-        def msg = messageSource.getMessage(messageCode, args, LocaleContextHolder.getLocale())
+        def msg = messageSource.getMessage(messageCode, args, new Locale(Codes.SYSTEM_LANGUAGE))
         new RawMessage(entity, msg, fields)
     }
 
     RawMessage getRawMessage(RawEntity entity, String messageCode, List<String> args, List<String> fields){
-        def msg = messageSource.getMessage(messageCode, args!=null ? args.toArray() : null, LocaleContextHolder.getLocale())
+        def msg = messageSource.getMessage(messageCode, args!=null ? args.toArray() : null, new Locale(Codes.SYSTEM_LANGUAGE))
         new RawMessage(entity, msg, fields)
     }
 
     RawMessage getRawMessage(String messageCode, String[] args, String[] fields){
-        def msg = messageSource.getMessage(messageCode, args, LocaleContextHolder.getLocale())
+        def msg = messageSource.getMessage(messageCode, args, new Locale(Codes.SYSTEM_LANGUAGE))
         new RawMessage(msg, fields)
     }
 
     RawMessage getRawMessage(String messageCode, List<String> args, List<String> fields){
-        def msg = messageSource.getMessage(messageCode, args!=null ? args.toArray() : null, LocaleContextHolder.getLocale())
+        def msg = messageSource.getMessage(messageCode, args!=null ? args.toArray() : null, new Locale(Codes.SYSTEM_LANGUAGE))
         new RawMessage(msg, fields)
     }
 
     RawMessage getRawMessage(String messageCode, List<String> args){
-        def msg = messageSource.getMessage(messageCode, args!=null ? args.toArray() : null, LocaleContextHolder.getLocale())
+        def msg = messageSource.getMessage(messageCode, args!=null ? args.toArray() : null, new Locale(Codes.SYSTEM_LANGUAGE))
         new RawMessage(msg, null)
     }
 
     RawMessage getRawMessage(String messageCode){
-        def msg = messageSource.getMessage(messageCode, null, LocaleContextHolder.getLocale())
+        def msg = messageSource.getMessage(messageCode, null, new Locale(Codes.SYSTEM_LANGUAGE))
         new RawMessage(msg, null)
     }
 
     ArrayList<RawMessage> addPrefixToMessages(ArrayList<RawMessage> rawMessages, String prefixMessageCode, List<String> prefixArgs){
         rawMessages.each { rawMessage ->
-            def prefixMsg = messageSource.getMessage(prefixMessageCode, prefixArgs!=null ? prefixArgs.toArray() : null, LocaleContextHolder.getLocale())
+            def prefixMsg = messageSource.getMessage(prefixMessageCode, prefixArgs!=null ? prefixArgs.toArray() : null, new Locale(Codes.SYSTEM_LANGUAGE))
             rawMessage.text = prefixMsg + " -> " + rawMessage.text
         }
 

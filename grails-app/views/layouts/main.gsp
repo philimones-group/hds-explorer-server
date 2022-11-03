@@ -29,8 +29,6 @@
                 <div id="headerLeft">
                     <asset:image src="hds_explorer_logo.png" width="283" height="70" />
                 </div>
-
-
             </div>
 
             <bi:menuBar>
@@ -54,7 +52,6 @@
                     <bi:menu label="${g.message(code: 'default.menu.updates.regions.label')}" link="${createLink(controller: 'region', action: 'index')}" />
                     <bi:menu label="${g.message(code: 'default.menu.updates.households.label')}" />
                     <bi:menu label="${g.message(code: 'default.menu.updates.members.label')}" />
-
                 </bi:dropmenu>
                 <bi:dropmenu label="${g.message(code: 'default.menu.lists.label')}">
                     <bi:menu label="${g.message(code: 'default.menu.lists.trackinglists.label')}" link="${createLink(controller: 'trackingList', action: 'add')}" />
@@ -69,7 +66,11 @@
                     <bi:menu label="${g.message(code: 'default.menu.settings.modules.label')}" link="${createLink(controller: 'module', action: 'index')}" />
                     <bi:menu label="${g.message(code: 'default.menu.settings.coreformsext.label')}" link="${createLink(controller: 'coreFormExtension', action: 'index')}" />
                     <bi:menu label="${g.message(code: 'default.menu.settings.hierarchylevels.label')}" link="${createLink(controller: 'applicationParam', action: 'hierarchyLevels')}" />
+                    <sec:ifAllGranted roles="${org.philimone.hds.explorer.server.model.authentication.Role.ROLE_ADMINISTRATOR}">
+                        <bi:menu label="${g.message(code: 'default.menu.settings.system.label')}" link="${createLink(controller: 'settings', action: 'parameters')}" />
+                    </sec:ifAllGranted>
                 </bi:dropmenu>
+
                 <bi:dropmenu label="${g.message(code: 'default.language.select')}">
                     <language:selectMenu />
                 </bi:dropmenu>
