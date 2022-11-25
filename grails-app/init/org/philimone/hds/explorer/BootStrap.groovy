@@ -167,7 +167,7 @@ class BootStrap {
             new SecurityMap(url: "/api/export/sync-report/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER},${Role.ROLE_FIELD_WORKER}").save(flush: true)
 
             //File downloads
-            new SecurityMap(url: "/download/free/android/apk", configAttribute: "permitAll").save(flush: true)
+            new SecurityMap(url: "/download/apk", configAttribute: "permitAll").save(flush: true)
             new SecurityMap(url: "/syncFiles/downloadAndroidApk", configAttribute: "permitAll").save(flush: true)
 
 

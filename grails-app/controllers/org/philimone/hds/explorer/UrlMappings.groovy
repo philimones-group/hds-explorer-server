@@ -94,5 +94,7 @@ class UrlMappings {
         "/api/trackinglist/gettemplate"(controller: "trackingList", action: "downloadTemplateXLS") //working
 
 
+        "/download/apk"(controller: "syncFiles", action:"downloadAndroidApk")
+
     }
 }
