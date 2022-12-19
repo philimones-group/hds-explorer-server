@@ -7,7 +7,7 @@ HDS-Explorer Server application provides the data repository for a Health and De
 
 This application server can be deployed on a Tomcat server (or any servlet 2.5+ compatible web container) and backed by any Hibernate supported database (eg. MySQL or PostgreSQL database server, etc).
 
-* HDS-Explorer website: [https://www.philimones-group.co.mz/hds-explorer/](https://opendatakit.org/use/aggregate/)
+* HDS-Explorer website: [https://www.hds-explorer.org](https://opendatakit.org/use/aggregate/)
 * ODK website: [https://opendatakit.org](https://opendatakit.org)
 
 
