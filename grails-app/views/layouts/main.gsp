@@ -50,8 +50,8 @@
                     <bi:menu label="${g.message(code: 'default.menu.updates.forms.label')}" link="${createLink(controller: 'form', action: 'index')}" />
                     <bi:menu label="${g.message(code: 'default.menu.updates.rounds.label')}" link="${createLink(controller: 'round', action: 'index')}" />
                     <bi:menu label="${g.message(code: 'default.menu.updates.regions.label')}" link="${createLink(controller: 'region', action: 'index')}" />
-                    <bi:menu label="${g.message(code: 'default.menu.updates.households.label')}" />
-                    <bi:menu label="${g.message(code: 'default.menu.updates.members.label')}" />
+                    <bi:menu label="${g.message(code: 'default.menu.updates.households.label')}" link="${createLink(controller: 'household', action: 'index')}" />
+                    <bi:menu label="${g.message(code: 'default.menu.updates.members.label')}" link="${createLink(controller: 'member', action: 'index')}"/>
                 </bi:dropmenu>
                 <bi:dropmenu label="${g.message(code: 'default.menu.lists.label')}">
                     <bi:menu label="${g.message(code: 'default.menu.lists.trackinglists.label')}" link="${createLink(controller: 'trackingList', action: 'add')}" />
