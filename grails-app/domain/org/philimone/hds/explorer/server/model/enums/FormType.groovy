@@ -18,6 +18,11 @@ enum FormType {
         return code
     }
 
+    @Override
+    String toString() {
+        return name
+    }
+
     /* Finding Enum by code */
     private static final Map<String, FormType> MAP = new HashMap<>()
 

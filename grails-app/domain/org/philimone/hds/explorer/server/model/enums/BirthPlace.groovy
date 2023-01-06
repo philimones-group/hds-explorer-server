@@ -20,6 +20,11 @@ enum BirthPlace {
         return code
     }
 
+    @Override
+    String toString() {
+        return name
+    }
+
     /* Finding Enum by code */
     private static final Map<String, BirthPlace> MAP = new HashMap<>()
 

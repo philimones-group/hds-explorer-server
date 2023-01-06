@@ -23,9 +23,23 @@ class MessagesCommand implements GrailsApplicationCommand {
         def lang = getLanguageFromArguments(command.remainingArgs)
         def args = removeLanguageFromArguments(command.remainingArgs)
 
-        currentLanguage = lang
 
-        startGenerator(args)
+        if (lang == I18nLanguage.ALL) {
+
+            I18nLanguage.values().each { language ->
+                if (language != I18nLanguage.ALL) {
+                    currentLanguage = language
+                    startGenerator(args)
+                }
+            }
+
+
+        } else {
+            currentLanguage = lang
+            startGenerator(args)
+        }
+
+
 
         return true
     }
@@ -464,6 +478,9 @@ class MessagesCommand implements GrailsApplicationCommand {
     }
 
     enum I18nLanguage {
+
+        ALL("all"),
+
         ENGLISH("en"),
         PORTUGUESE("pt"),
         FRENCH("fr")

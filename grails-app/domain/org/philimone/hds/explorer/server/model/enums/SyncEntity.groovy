@@ -53,6 +53,11 @@ enum SyncEntity {
         "${filename}.zip"
     }
 
+    @Override
+    String toString() {
+        return name
+    }
+
     /* Finding Enum by code */
     private static final Map<Integer, SyncEntity> MAP = new HashMap<>()
 

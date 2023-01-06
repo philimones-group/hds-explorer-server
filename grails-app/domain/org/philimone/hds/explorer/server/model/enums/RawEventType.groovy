@@ -27,6 +27,11 @@ enum RawEventType {
         return code
     }
 
+    @Override
+    String toString() {
+        return name
+    }
+
     /* Finding Enum by code */
     private static final Map<Integer, RawEventType> MAP = new HashMap<>()
 

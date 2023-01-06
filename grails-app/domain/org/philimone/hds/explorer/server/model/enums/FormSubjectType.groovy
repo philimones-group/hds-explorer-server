@@ -21,7 +21,7 @@ enum FormSubjectType {
 
     @Override
     String toString() {
-        return super.toString()
+        return name
     }
 
     /* Finding Enum by code */

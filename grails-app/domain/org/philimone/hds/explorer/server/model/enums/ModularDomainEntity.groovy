@@ -21,7 +21,8 @@ enum ModularDomainEntity {
     String toString() {
         return name
     }
-/* Finding Enum by code */
+
+    /* Finding Enum by code */
     private static final Map<Integer, ModularDomainEntity> MAP = new HashMap<>()
 
     static {

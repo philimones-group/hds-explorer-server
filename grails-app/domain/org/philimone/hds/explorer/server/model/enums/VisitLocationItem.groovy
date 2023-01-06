@@ -22,6 +22,11 @@ enum VisitLocationItem {
         return code
     }
 
+    @Override
+    String toString() {
+        return name
+    }
+
     /* Finding Enum by code */
     private static final Map<String, VisitLocationItem> MAP = new HashMap<>()
 

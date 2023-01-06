@@ -19,6 +19,11 @@ enum SubjectType {
         return code
     }
 
+    @Override
+    String toString() {
+        return name
+    }
+
     /* Finding Enum by code */
     private static final Map<String, SubjectType> MAP = new HashMap<>()
 

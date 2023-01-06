@@ -32,6 +32,11 @@ enum RawEntity {
         name()
     }
 
+    @Override
+    String toString() {
+        return name
+    }
+
     /* Finding Enum by code */
     private static final Map<String, RawEntity> MAP = new HashMap<>()
 

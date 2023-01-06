@@ -18,6 +18,11 @@ enum PregnancyStatus {
         return code
     }
 
+    @Override
+    String toString() {
+        return name
+    }
+
     /* Finding Enum by code */
     private static final Map<String, PregnancyStatus> MAP = new HashMap<>()
 

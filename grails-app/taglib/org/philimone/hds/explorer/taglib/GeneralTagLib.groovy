@@ -99,7 +99,8 @@ class GeneralTagLib {
         def beanInstance = attrs.get("bean")
         def propertyName = attrs.property
         def label = attrs.label
-        def mode = attrs.mode //edit|display
+        def mode = attrs.mode //edit|show/display
+        def valueMessage = attrs.valueMessage
 
         if ("show".equalsIgnoreCase("${mode}")){
             //output display, getmessages for label
@@ -108,6 +109,10 @@ class GeneralTagLib {
             def propertyDefaultLabel = StringUtil.removePascalCase(propertyName)
             def labelText = g.message(code: label, default: propertyDefaultLabel)
             def objValue = getObjectValue(propertyValue)
+
+            if ("true".equalsIgnoreCase("${valueMessage}")) {
+                objValue = g.message(code: objValue, default: objValue)
+            }
 
             out << "            <div class=\"fieldcontain required\">\n"
             out << "                <label for=\"${propertyName}\">\n"

@@ -24,6 +24,11 @@ enum HeadRelationshipType {
         return code
     }
 
+    @Override
+    String toString() {
+        return name
+    }
+
     /* Finding Enum by code */
     private static final Map<String, HeadRelationshipType> MAP = new HashMap<>()
 

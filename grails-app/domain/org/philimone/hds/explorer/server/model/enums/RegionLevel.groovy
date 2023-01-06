@@ -25,8 +25,19 @@ enum RegionLevel {
         code
     }
 
+    @Override
+    String toString() {
+        return name
+    }
+
+    public RegionLevel nextLevel() {
+        if (this.ordinal()==9) return null; //the next level of HIERARCHY_10 dont exists
+        return VALS[(this.ordinal() + 1) % VALS.length];
+    }
+
     /* Finding Enum by code */
-    private static final Map<String, RegionLevel> MAP = new HashMap<>()
+    private static final RegionLevel[] VALS = values();
+    private static final Map<String, RegionLevel> MAP = new LinkedHashMap<>()
 
     static {
         for (RegionLevel e: values()) {
