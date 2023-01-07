@@ -23,6 +23,6 @@ class Codes {
     static int MIN_SPOUSE_AGE_VALUE = 16
     static boolean GENDER_CHECKING = true
     static String SYSTEM_LANGUAGE = "en"
-    static String SYSTEM_CODE_GENERATOR = "org.philimone.hds.explorer.server.model.settings.generator.DefaultCodeGenerator"
+    static String SYSTEM_CODE_GENERATOR = "org.philimone.hds.explorer.server.settings.generator.DefaultCodeGenerator"
     static List<JConstant> SYSTEM_ALL_CODE_GENERATORS = new ArrayList<>()
 }

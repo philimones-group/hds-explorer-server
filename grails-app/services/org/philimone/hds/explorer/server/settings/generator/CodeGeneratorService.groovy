@@ -1,7 +1,6 @@
-package org.philimone.hds.explorer.server.model.settings.generator
+package org.philimone.hds.explorer.server.settings.generator
 
 import grails.gorm.transactions.Transactional
-import net.betainteractive.utilities.StringUtil
 import org.philimone.hds.explorer.server.model.authentication.User
 import org.philimone.hds.explorer.server.model.main.Household
 import org.philimone.hds.explorer.server.model.main.Member

@@ -1,4 +1,4 @@
-package org.philimone.hds.explorer.server.model.settings.generator
+package org.philimone.hds.explorer.server.settings.generator
 
 import org.philimone.hds.explorer.server.model.settings.Codes
 

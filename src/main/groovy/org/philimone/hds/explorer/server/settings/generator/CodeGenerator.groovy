@@ -1,4 +1,4 @@
-package org.philimone.hds.explorer.server.model.settings.generator
+package org.philimone.hds.explorer.server.settings.generator
 
 import org.philimone.hds.explorer.server.model.authentication.User
 import org.philimone.hds.explorer.server.model.main.Household
@@ -9,7 +9,7 @@ import javax.annotation.Nonnull
 
 /*
  * Code Generator Template Interface
- * To add new selectable code generators you must implement this interface in this package only (org.philimone.hds.explorer.server.model.settings.generator)
+ * To add new selectable code generators you must implement this interface in this package only (org.philimone.hds.explorer.server.settings.generator)
  * After creating your implementation of HDS-Explorer Code generator the system will detect them automatically and you will be able to select it in the webapp
  */
 

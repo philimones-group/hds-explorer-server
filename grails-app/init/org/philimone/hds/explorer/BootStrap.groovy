@@ -486,7 +486,7 @@ class BootStrap {
 
     def setupCodeGenerators() {
 
-        Reflections reflections = new Reflections("org.philimone.hds.explorer.server.model.settings.generator")
+        Reflections reflections = new Reflections("org.philimone.hds.explorer.server.settings.generator")
         def subTypes = reflections.getSubTypesOf(CodeGenerator.class);
 
         println "Number of Code Generator Implementations: ${subTypes.size()}"

@@ -8,7 +8,7 @@ hds.explorer.constraints.head.age.min: 12
 hds.explorer.constraints.spouse.age.min: 16
 hds.explorer.constraints.gender.checking: true
 hds.explorer.system.language: "en"
-hds.explorer.system.codegenerator: "org.philimone.hds.explorer.server.model.settings.generator.DefaultCodeGenerator"
+hds.explorer.system.codegenerator: "org.philimone.hds.explorer.server.settings.generator.DefaultCodeGenerator"
 
 
 #dataSources:
