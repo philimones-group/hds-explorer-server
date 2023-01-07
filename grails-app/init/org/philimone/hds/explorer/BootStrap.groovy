@@ -24,9 +24,8 @@ import org.philimone.hds.explorer.server.model.main.Module
 import org.philimone.hds.explorer.server.model.enums.SyncEntity
 import org.philimone.hds.explorer.server.model.settings.Codes
 import org.philimone.hds.explorer.server.model.settings.SyncFilesReport
-import org.philimone.hds.explorer.server.model.settings.generator.CodeGenerator
-import org.philimone.hds.explorer.server.model.settings.generator.CodeGeneratorFactory
-import org.philimone.hds.explorer.server.model.settings.generator.CodeGeneratorService
+import org.philimone.hds.explorer.server.settings.generator.CodeGenerator
+import org.philimone.hds.explorer.server.settings.generator.CodeGeneratorFactory
 import org.reflections.Reflections
 
 class BootStrap {

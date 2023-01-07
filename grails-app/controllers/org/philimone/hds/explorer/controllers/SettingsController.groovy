@@ -8,7 +8,7 @@ import org.philimone.hds.explorer.server.model.main.Household
 import org.philimone.hds.explorer.server.model.main.Module
 import org.philimone.hds.explorer.server.model.main.Region
 import org.philimone.hds.explorer.server.model.settings.Codes
-import org.philimone.hds.explorer.server.model.settings.generator.CodeGeneratorFactory
+import org.philimone.hds.explorer.server.settings.generator.CodeGeneratorFactory
 
 class SettingsController {
 

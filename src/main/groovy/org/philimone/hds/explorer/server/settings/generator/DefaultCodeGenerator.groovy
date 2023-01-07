@@ -142,7 +142,7 @@ class DefaultCodeGenerator implements CodeGenerator {
 
     String generateLowestRegionCode(Region parentRegion, String regionName, List<String> existentCodes) {
         //Other implementations of codegenerators can use a different approach to generate lowest region level codes
-        return generateRegionCode(null, parentRegion, regionName, existentCodes)
+        return generateRegionCode(parentRegion, regionName, existentCodes)
     }
 
     @Override

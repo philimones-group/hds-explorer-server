@@ -86,7 +86,7 @@ class RegionService {
 
         def lowestRegionLevel = getLowestRegionLevel()
 
-        if ((parentRegion == null && lowestRegionLevel==RegionLevel.HIERARCHY_1) || (parentRegion != null && lowestRegionLevel == parentRegion.hierarchyLevel)) {
+        if ((parentRegion == null && lowestRegionLevel==RegionLevel.HIERARCHY_1) || (parentRegion != null && lowestRegionLevel == getNextLevel(parentRegion))) {
             return codeGeneratorService.generateLowestRegionCode(parentRegion, regionName)
         }
 

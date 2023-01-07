@@ -143,7 +143,7 @@ class DefaultSimpleCodeGenerator implements CodeGenerator {
 
     String generateLowestRegionCode(Region parentRegion, String regionName, List<String> existentCodes) {
         //Other implementations of codegenerators can use a different approach to generate lowest region level codes
-        return generateRegionCode(null, parentRegion, regionName, existentCodes)
+        return generateRegionCode(parentRegion, regionName, existentCodes)
     }
 
     @Override
@@ -153,10 +153,10 @@ class DefaultSimpleCodeGenerator implements CodeGenerator {
         if (StringUtil.isBlank(baseCode)) return null
 
         if (existentCodes.size()==0){
-            return "${baseCode}001"
+            return "${baseCode}000001"
         } else {
-            for (int i=1; i <= 999; i++){
-                def code = "${baseCode}${String.format('%03d', i)}" as String
+            for (int i=1; i <= 999999; i++){
+                def code = "${baseCode}${String.format('%06d', i)}" as String
                 if (!existentCodes.contains(code)){
                     return code
                 }

@@ -3,14 +3,13 @@ package org.philimone.hds.explorer.server.model.main
 import grails.validation.ValidationException
 import org.philimone.hds.explorer.io.SystemPath
 import org.philimone.hds.explorer.server.model.enums.ModularDomainEntity
-import org.philimone.hds.explorer.server.model.settings.generator.CodeGeneratorService
 
 import static org.springframework.http.HttpStatus.*
 
 class ModuleController {
 
-    ModuleService moduleService
-    CodeGeneratorService codeGeneratorService
+    def moduleService
+    def codeGeneratorService
 
     static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
 
