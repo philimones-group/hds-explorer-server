@@ -17,8 +17,20 @@ class CodeGeneratorService {
 
     def codeGenerator = CodeGeneratorFactory.newInstance()
 
+    boolean isModuleCodeValid(String code) {
+        return codeGenerator.isModuleCodeValid(code)
+    }
+
+    boolean isTrackingListCodeValid(String code) {
+        return codeGenerator.isTrackingListCodeValid(code)
+    }
+
     boolean isRegionCodeValid(String code) {
         return codeGenerator.isRegionCodeValid(code)
+    }
+
+    boolean isLowestRegionCodeValid(String code) {
+        return codeGenerator.isLowestRegionCodeValid(code)
     }
 
     boolean isHouseholdCodeValid(String code) {
@@ -51,15 +63,21 @@ class CodeGeneratorService {
         return codeGenerator.generateTrackingListCode(codes)
     }
 
-    String generateRegionCode(String regionName) {
+    String generateRegionCode(Region parentRegion, String regionName) {
 
         def codes = Region.list().collect { t -> t.code}
-        return codeGenerator.generateRegionCode(regionName, codes)
+        return codeGenerator.generateRegionCode(parentRegion, regionName, codes)
+    }
+
+    String generateLowestRegionCode(Region parentRegion, String regionName) {
+
+        def codes = Region.list().collect { t -> t.code}
+        return codeGenerator.generateLowestRegionCode(parentRegion, regionName, codes)
     }
 
     String generateHouseholdCode(Region region, User user) {
 
-        def cbase = "${region.code}${user.code}"
+        def cbase = codeGenerator.getHouseholdBaseCode(region, user)
         def codes = Household.findAllByCodeLike("${cbase}%", [sort:'code', order: 'asc']).collect{ t -> t.code}
 
         return codeGenerator.generateHouseholdCode(cbase, codes)
@@ -76,9 +94,10 @@ class CodeGeneratorService {
     String generateVisitCode(Household household) {
         //use new pattern, household + round number + ordinal
         def maxround = Round.executeQuery("select max(roundNumber) from Round")
-        long round = maxround.size()>0 ? maxround[0] : 0
+        long roundNumber = maxround.size()>0 ? maxround[0] : 0
+        def currentRound = Round.findByRoundNumber(maxround)
 
-        def cbase = "${household.code}-" + String.format('%03d', round)
+        def cbase = codeGenerator.getVisitBaseCode(household, currentRound)
         def codes = Visit.findAllByCodeLike("${cbase}%", [sort:'code', order: 'asc']).collect{ t -> t.code}
 
         return codeGenerator.generateVisitCode(cbase, codes)
@@ -97,4 +116,41 @@ class CodeGeneratorService {
 
         return codeGenerator.generatePregnancyCode(cbase, codes)
     }
+
+    String getModuleSampleCode() {
+        return codeGenerator.getModuleSampleCode()
+    }
+
+    String getTrackingListSampleCode() {
+        return codeGenerator.getTrackingListSampleCode()
+    }
+
+    String getRegionSampleCode() {
+        return codeGenerator.getRegionSampleCode()
+    }
+
+    String getLowestRegionSampleCode() {
+        return codeGenerator.getLowestRegionSampleCode()
+    }
+
+    String getHouseholdSampleCode() {
+        return codeGenerator.getHouseholdSampleCode()
+    }
+
+    String getMemberSampleCode() {
+        return codeGenerator.getMemberSampleCode()
+    }
+
+    String getVisitSampleCode() {
+        return codeGenerator.getVisitSampleCode()
+    }
+
+    String getUserSampleCode() {
+        return codeGenerator.getUserSampleCode()
+    }
+
+    String getPregnancySampleCode() {
+        return codeGenerator.getPregnancySampleCode()
+    }
+
 }

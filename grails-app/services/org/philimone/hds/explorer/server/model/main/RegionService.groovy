@@ -36,6 +36,14 @@ class RegionService {
         if (region == null)
             return  RegionLevel.HIERARCHY_1
         else {
+
+            def level = region.hierarchyLevel
+
+            if (level == getLowestRegionLevel()) return null
+
+            return level?.nextLevel()
+
+            /*
             int level = 0
             try {
                 def c = region.hierarchyLevel.code
@@ -48,6 +56,7 @@ class RegionService {
             level++
 
             return RegionLevel."HIERARCHY_${level}"
+            */
         }
     }
 
@@ -73,8 +82,16 @@ class RegionService {
         return hierarchy
     }
 
-    String generateCode(String regionName){
-        return codeGeneratorService.generateRegionCode(regionName)
+    String generateCode(Region parentRegion, String regionName){
+
+        def lowestRegionLevel = getLowestRegionLevel()
+
+        if ((parentRegion == null && lowestRegionLevel==RegionLevel.HIERARCHY_1) || (parentRegion != null && lowestRegionLevel == parentRegion.hierarchyLevel)) {
+            return codeGeneratorService.generateLowestRegionCode(parentRegion, regionName)
+        }
+
+
+        return codeGeneratorService.generateRegionCode(parentRegion, regionName)
     }
 
     //</editor-fold>
@@ -136,13 +153,39 @@ class RegionService {
         //if (isBlankParentCode){
         //    errors << errorMessageService.getRawMessage(RawEntity.REGION, "validation.field.blank", ["parentCode"], ["parentCode"])
         //}
-        //C2. Check Code Regex Pattern
-        if (!isBlankRegionCode && !codeGeneratorService.isRegionCodeValid(region.regionCode)) {
-            errors << errorMessageService.getRawMessage(RawEntity.REGION, "validation.field.pattern.no.matches", ["regionCode", "TXU"], ["regionCode"])
-        }
-        //C3. Check Region reference existence
+
+        //C3. Check parent Region reference existence
         if (!isBlankParentCode && !exists(region.parentCode)){
             errors << errorMessageService.getRawMessage(RawEntity.REGION, "validation.field.reference.error", ["Region", "parentCode", region.parentCode], ["parentCode"])
+        }
+
+        //C2. Check Code Regex Pattern
+        if (!isBlankRegionCode) {
+            def lowestLevel = getLowestRegionLevel()
+            def validateLowest = isBlankParentCode && lowestLevel==RegionLevel.HIERARCHY_1
+            println "lwl = ${lowestLevel}"
+
+            if (validateLowest==false && !isBlankParentCode && exists(region.parentCode)){
+                def parentRegion = getRegion(region.parentCode)
+                def nextLevel = getNextLevel(parentRegion)
+
+                if (nextLevel == null) {
+                    //error: Can't create a new region with code=[{0}], because the region parent with parentCode=[{1}] is invalid, it is the lowest region level available
+                    errors << errorMessageService.getRawMessage(RawEntity.REGION, "validation.field.region.invalid.parent.error", [region.regionCode, region.parentCode], ["parentCode"])
+
+
+                } else if (nextLevel == lowestLevel) {
+                    validateLowest = true
+                }
+            }
+
+            println "validate ${validateLowest}"
+
+            //Validate using lowestRegionCodeValidation and regionCodeValidation
+            if ((validateLowest && !codeGeneratorService.isLowestRegionCodeValid(region.regionCode)) || (!validateLowest && !codeGeneratorService.isRegionCodeValid(region.regionCode))) {
+                errors << errorMessageService.getRawMessage(RawEntity.REGION, "validation.field.pattern.no.matches", ["regionCode", codeGeneratorService.regionSampleCode], ["regionCode"])
+            }
+
         }
 
         //C4. Check User existence
@@ -258,11 +301,21 @@ class RegionService {
     }
 
     Map<String, String> getRegionLevelNames(){
-        def map = [:]
+        def map = new LinkedHashMap()
         ApplicationParam.executeQuery("select p from ApplicationParam p where p.name like '%hierarchy%' and p.value is not null order by p.name asc" ).each {
             map.put(it.name, it.value)
         }
         return map
+    }
+
+    RegionLevel getLowestRegionLevel() {
+        def lastHierarchy = ""
+        ApplicationParam.executeQuery("select p from ApplicationParam p where p.name like '%hierarchy%' and p.value is not null order by p.name asc" ).each { ap ->
+            lastHierarchy = ap.name
+        }
+
+        return RegionLevel.getFrom(lastHierarchy)
+
     }
 
     class HierarchyRegion {

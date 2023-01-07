@@ -57,9 +57,13 @@
             $(document).ready(function() {
 
                 $("#name").change(function() {
+
+                    //parent
+                    var parentRegionId = $('#parent option:selected').val()
+
                     $.ajax({
                         url: "${createLink(controller: "region", action: "generateCodeGsp")}",
-                        data: "name=" + this.value,
+                        data: "name=" + this.value + ":" + parentRegionId,
                         cache: false,
                         success: function(html) {
                             $("#code").val(html);
@@ -383,15 +387,6 @@
             <g:form resource="${this.region}" method="POST">
                 <fieldset class="form">
 
-                    <div class="fieldcontain ${hasErrors(bean: this.region, field: 'code', 'error')} required">
-                        <label for="code">
-                            <g:message code="region.code.label" default="Region Code" /><span class="required-indicator">*</span>
-                        </label>
-                        <g:textField name="code" value="${this.region.code}" readonly="readonly"/>
-                    </div>
-
-                    <f:field bean="region" property="name" />
-
                     <div class="fieldcontain ${hasErrors(bean: this.region, field: 'hierarchyLevel', 'error')} required">
                         <label for="hierarchyLevel">
                             <g:message code="region.hierarchyLevel.label" default="Hierarchy Level" /><span class="required-indicator">*</span>
@@ -471,6 +466,15 @@
 
                             <g:select name="parent" optionKey="id" optionValue="name" from="" value="${this.region?.parent}" noSelection="['':'']"/>
                         </div>
+                    </div>
+
+                    <f:field bean="region" property="name" />
+
+                    <div class="fieldcontain ${hasErrors(bean: this.region, field: 'code', 'error')} required">
+                        <label for="code">
+                            <g:message code="region.code.label" default="Region Code" /><span class="required-indicator">*</span>
+                        </label>
+                        <g:textField name="code" value="${this.region.code}" readonly="readonly"/>
                     </div>
 
                     <div class="fieldcontain ${hasErrors(bean: this.region, field: 'modules', 'error')} required">

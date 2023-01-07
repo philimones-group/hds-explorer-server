@@ -240,7 +240,7 @@ class MemberEnumerationService {
 
         //C2. Check Code Regex Pattern
         if (!isBlankCode && !codeGeneratorService.isMemberCodeValid(memberEnu.code)) {
-            errors << errorMessageService.getRawMessage(RawEntity.MEMBER_ENUMERATION, "validation.field.pattern.no.matches", ["code", "TXUPF1001001"], ["code"])
+            errors << errorMessageService.getRawMessage(RawEntity.MEMBER_ENUMERATION, "validation.field.pattern.no.matches", ["code", codeGeneratorService.memberSampleCode], ["code"])
         }
         //C3. Check Code Prefix Reference existence (Household Existence in code)
         if (!isBlankCode && !householdService.prefixExists(memberEnu.code)){

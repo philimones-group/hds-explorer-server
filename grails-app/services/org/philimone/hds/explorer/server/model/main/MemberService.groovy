@@ -22,6 +22,28 @@ class MemberService {
     def codeGeneratorService
     def errorMessageService
 
+    //<editor-fold desc="Controller service methods">
+    Member get(Serializable id){
+        Member.get(id)
+    }
+
+    List<Member> list(Map args){
+        Member.list(args)
+    }
+
+    Long count(){
+        Member.count()
+    }
+
+    Member save(Member member){
+        member.save(flush:true)
+    }
+
+    void delete(Serializable id){
+        get(id).delete()
+    }
+    //</editor-fold>
+
     //<editor-fold desc="Member Utilities Methods">
     boolean exists(String memberCode) {
         if (StringUtil.isBlank(memberCode)) return false
@@ -136,7 +158,7 @@ class MemberService {
 
         //C2. Check Code Regex Pattern
         if (!isBlankMemberCode && !codeGeneratorService.isMemberCodeValid(member.code)) {
-            errors << errorMessageService.getRawMessage(RawEntity.MEMBER, "validation.field.pattern.no.matches", ["code", "TXUPF1001001"], ["code"])
+            errors << errorMessageService.getRawMessage(RawEntity.MEMBER, "validation.field.pattern.no.matches", ["code", codeGeneratorService.memberSampleCode], ["code"])
         }
         //C3. Check Code Prefix Reference existence (Household Existence in memberCode)
         if (!isBlankMemberCode && !householdService.prefixExists(member.code)){

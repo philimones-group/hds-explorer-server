@@ -25,7 +25,7 @@ class Region extends CollectableEntity {
 
     @Override
     String toString() {
-        "${code},${name},${hierarchyLevel},${parent?.code}"
+        "${code} - ${name}"
     }
 
     static constraints = {

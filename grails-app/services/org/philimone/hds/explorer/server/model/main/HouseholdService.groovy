@@ -5,6 +5,7 @@ import net.betainteractive.utilities.StringUtil
 import org.philimone.hds.explorer.server.model.authentication.User
 import org.philimone.hds.explorer.server.model.collect.raw.RawHousehold
 import org.philimone.hds.explorer.server.model.enums.RawEntity
+import org.philimone.hds.explorer.server.model.enums.temporal.ResidencyEndType
 import org.philimone.hds.explorer.server.model.main.collect.raw.RawExecutionResult
 import org.philimone.hds.explorer.server.model.main.collect.raw.RawMessage
 
@@ -16,6 +17,28 @@ class HouseholdService {
     def moduleService
     def codeGeneratorService
     def errorMessageService
+
+    //<editor-fold desc="Controller service methods">
+    Household get(Serializable id){
+        Household.get(id)
+    }
+
+    List<Household> list(Map args){
+        Household.list(args)
+    }
+
+    Long count(){
+        Household.count()
+    }
+
+    Household save(Household household){
+        household.save(flush:true)
+    }
+
+    void delete(Serializable id){
+        get(id).delete()
+    }
+    //</editor-fold>
 
     //<editor-fold desc="Household Utilities Methods">
     boolean exists(String householdCode) {
@@ -35,6 +58,11 @@ class HouseholdService {
 
     String generateCode(Region region, User user){
         return codeGeneratorService.generateHouseholdCode(region, user)
+    }
+
+    List<Member> getResidentMembers(Household household) {
+        def members = Residency.findAllByHouseholdAndEndType(household, ResidencyEndType.NOT_APPLICABLE).collect { it.member }
+        return members
     }
 
     //</editor-fold>
@@ -97,7 +125,7 @@ class HouseholdService {
         }
         //C2. Check Code Regex Pattern
         if (!isBlankHouseholdCode && !codeGeneratorService.isHouseholdCodeValid(household.householdCode)) {
-            errors << errorMessageService.getRawMessage(RawEntity.HOUSEHOLD, "validation.field.pattern.no.matches", ["householdCode", "TXUPF1001"], ["householdCode"])
+            errors << errorMessageService.getRawMessage(RawEntity.HOUSEHOLD, "validation.field.pattern.no.matches", ["householdCode", codeGeneratorService.householdSampleCode], ["householdCode"])
         }
         //C3. Check Region reference existence
         if (!isBlankRegionCode && !regionService.exists(household.regionCode)){
@@ -176,4 +204,5 @@ class HouseholdService {
 
     }
     //</editor-fold>
+
 }

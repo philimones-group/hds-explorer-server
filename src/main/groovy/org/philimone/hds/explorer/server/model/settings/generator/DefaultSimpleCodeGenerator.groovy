@@ -7,22 +7,23 @@ import org.philimone.hds.explorer.server.model.main.Region
 import org.philimone.hds.explorer.server.model.main.Round
 
 /*
- * The HDS-Explorer Default code generator (different sites can implement they own type of codes)
+ * The HDS-Explorer Simple Code generator (creates Household Codes without User/Fieldworker Code)
  */
-class DefaultCodeGenerator implements CodeGenerator {
+
+class DefaultSimpleCodeGenerator implements CodeGenerator {
 
     final String MODULE_CODE_PATTERN = '^MX-[0-9]{3}$'
     final String TRACKLIST_CODE_PATTERN = '^TR-[0-9]{6}$'
     final String REGION_CODE_PATTERN = '^[A-Z0-9]{3}$'
-    final String HOUSEHOLD_CODE_PATTERN = '^[A-Z0-9]{6}[0-9]{3}$'
-    final String MEMBER_CODE_PATTERN = '^[A-Z0-9]{6}[0-9]{6}$'
-    final String VISIT_CODE_PATTERN = '^[A-Z0-9]{6}[0-9]{3}-[0-9]{3}-[0-9]{3}$' //TXUPF1001-000-001 - HOUSEHOLD+ROUND+ORDINAL
+    final String HOUSEHOLD_CODE_PATTERN = '^[A-Z0-9]{3}[0-9]{6}$'
+    final String MEMBER_CODE_PATTERN = '^[A-Z0-9]{3}[0-9]{9}$'
+    final String VISIT_CODE_PATTERN = '^[A-Z0-9]{3}[0-9]{6}-[0-9]{3}-[0-9]{3}$' //TXU000001-000-001 - HOUSEHOLD+ROUND+ORDINAL
     final String USER_CODE_PATTERN = '^[A-Z0-9]{3}$'
-    final String PREGNANCY_CODE_PATTERN = '^[A-Z0-9]{6}[0-9]{6}-[0-9]{2}$'
+    final String PREGNANCY_CODE_PATTERN = '^[A-Z0-9]{3}[0-9]{9}-[0-9]{2}$'
 
     @Override
     String getName() {
-        return "Default Code Scheme Generator"
+        return "Simple Code Scheme Generator (Household w/o user code)"
     }
 
     @Override
@@ -273,7 +274,7 @@ class DefaultCodeGenerator implements CodeGenerator {
 
     @Override
     String getHouseholdBaseCode(Region region, User user) {
-        return "${region.code}${user.code}"
+        return "${region.code}"
     }
 
     @Override
@@ -304,17 +305,17 @@ class DefaultCodeGenerator implements CodeGenerator {
 
     @Override
     String getHouseholdSampleCode() {
-        return "TXUPF1001"
+        return "TXU000001"
     }
 
     @Override
     String getMemberSampleCode() {
-        return "TXUPF1001001"
+        return "TXU000001001"
     }
 
     @Override
     String getVisitSampleCode() {
-        return "TXUPF1001-000-001"
+        return "TXU000001-000-001"
     }
 
     @Override
@@ -324,6 +325,6 @@ class DefaultCodeGenerator implements CodeGenerator {
 
     @Override
     String getPregnancySampleCode() {
-        return "TXUPF1001001-01"
+        return "TXU000001001-01"
     }
 }

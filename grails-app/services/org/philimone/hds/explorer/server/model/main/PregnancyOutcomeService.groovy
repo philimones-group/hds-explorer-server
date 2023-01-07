@@ -286,7 +286,7 @@ class PregnancyOutcomeService {
 
         //C1.1 Check Code Regex Pattern
         if (!isBlankCode && !codeGeneratorService.isPregnancyCodeValid(pregnancyOutcome.code)) {
-            errors << errorMessageService.getRawMessage(RawEntity.PREGNANCY_OUTCOME, "validation.field.pattern.no.matches", ["code", "TXUPF1001001-01"], ["code"])
+            errors << errorMessageService.getRawMessage(RawEntity.PREGNANCY_OUTCOME, "validation.field.pattern.no.matches", ["code", codeGeneratorService.pregnancySampleCode], ["code"])
         }
 
         //C2. Check Mother reference existence

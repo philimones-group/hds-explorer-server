@@ -17,11 +17,15 @@
             <g:if test="${flash.message}">
                 <div class="message" role="status">${flash.message}</div>
             </g:if>
-            <g:if test="${errorMessage}">
+
+            <g:if test="${errorMessages.size()>0}">
                 <ul class="errors" role="alert">
-                    <li data-field-id="systemLanguage}">${errorMessage}</li>
+                    <g:each in="${errorMessages}" status="i" var="errorMessage" >
+                        <li data-field-id="systemLanguage}">${errorMessage}</li>
+                    </g:each>
                 </ul>
             </g:if>
+
             <g:form controller="settings" action="updateParameters" method="POST">
                 <fieldset class="form">
 
@@ -32,6 +36,16 @@
                         </label>
 
                         <g:select name="systemLanguage" required="" value="${selectedLanguage}" from="${languages}" optionKey="language" optionValue="displayLanguage" class="many-to-one"/>
+
+                    </div>
+
+                    <div class="fieldcontain ${hasErrors(bean: this.parameters, field: 'code', 'error')} ">
+                        <label for="codeGenerator" title="${message(code: 'settings.parameters.codegenerator.description.label')}">
+                            <g:message code="settings.parameters.codegenerator.label" />
+                            <span class="required-indicator">*</span>
+                        </label>
+
+                        <g:select name="codeGenerator" required="" value="${selectedCodeGenerator}" from="${codeGenerators}" optionKey="value" optionValue="name" class="many-to-one"/>
 
                     </div>
 

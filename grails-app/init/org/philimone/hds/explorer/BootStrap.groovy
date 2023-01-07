@@ -13,6 +13,7 @@ import org.philimone.hds.explorer.server.model.enums.MaritalStatus
 import org.philimone.hds.explorer.server.model.enums.RegionLevel
 import org.philimone.hds.explorer.server.model.enums.settings.LogGroupCode
 import org.philimone.hds.explorer.server.model.enums.settings.LogReportCode
+import org.philimone.hds.explorer.server.model.json.JConstant
 import org.philimone.hds.explorer.server.model.logs.LogGroup
 import org.philimone.hds.explorer.server.model.logs.LogReport
 import org.philimone.hds.explorer.server.model.enums.LogStatus
@@ -23,6 +24,10 @@ import org.philimone.hds.explorer.server.model.main.Module
 import org.philimone.hds.explorer.server.model.enums.SyncEntity
 import org.philimone.hds.explorer.server.model.settings.Codes
 import org.philimone.hds.explorer.server.model.settings.SyncFilesReport
+import org.philimone.hds.explorer.server.model.settings.generator.CodeGenerator
+import org.philimone.hds.explorer.server.model.settings.generator.CodeGeneratorFactory
+import org.philimone.hds.explorer.server.model.settings.generator.CodeGeneratorService
+import org.reflections.Reflections
 
 class BootStrap {
 
@@ -36,9 +41,11 @@ class BootStrap {
 
         createDirectories(servletContext)
         configSecurityMap()
-        defaultAppUser()
         insertDefaults()
         retrieveAndPopulateStaticConstants()
+        setupCodeGenerators()
+        defaultAppUser()
+
         testApp()
     }
 
@@ -367,6 +374,8 @@ class BootStrap {
         def hmaxAge = svc.getConfigValue("${Codes.PARAMS_MIN_AGE_OF_HEAD}")
         def smaxAge = svc.getConfigValue("${Codes.PARAMS_MIN_AGE_OF_SPOUSE}")
         def gndChck = svc.getConfigValue("${Codes.PARAMS_GENDER_CHECKING}")
+        def sysLang = svc.getConfigValue("${Codes.PARAMS_SYSTEM_LANGUAGE}")
+        def sysCdgn = svc.getConfigValue("${Codes.PARAMS_SYSTEM_CODE_GENERATOR}")
         println "code: ${maxCols}"
 
         //Save Application/System Parameters to database, Will persist to the database only when its empty - changing parameters will be done through database
@@ -376,7 +385,8 @@ class BootStrap {
         aps.addParam(Codes.PARAMS_MIN_AGE_OF_HEAD, StringUtil.getInteger(hmaxAge))
         aps.addParam(Codes.PARAMS_MIN_AGE_OF_SPOUSE, StringUtil.getInteger(smaxAge))
         aps.addParam(Codes.PARAMS_GENDER_CHECKING, StringUtil.getBoolean(gndChck))
-        aps.addParam(Codes.PARAMS_SYSTEM_LANGUAGE, "en") //set default language to english
+        aps.addParam(Codes.PARAMS_SYSTEM_LANGUAGE, sysLang) //set default language to english
+        aps.addParam(Codes.PARAMS_SYSTEM_CODE_GENERATOR, sysCdgn)
 
         aps.addParamNullable(RegionLevel.HIERARCHY_1.code, null)
         aps.addParamNullable(RegionLevel.HIERARCHY_2.code, null)
@@ -460,16 +470,40 @@ class BootStrap {
         def valueAgs = applicationParamService.getIntegerValue(Codes.PARAMS_MIN_AGE_OF_SPOUSE)
         def valueGch = applicationParamService.getBooleanValue(Codes.PARAMS_GENDER_CHECKING)
         def valueSlg = applicationParamService.getStringValue(Codes.PARAMS_SYSTEM_LANGUAGE)
+        def valueScg = applicationParamService.getStringValue(Codes.PARAMS_SYSTEM_CODE_GENERATOR)
 
         Codes.MAX_TRACKLIST_DATA_COLUMNS_VALUE = valueDtc != null ? valueDtc : Codes.MAX_TRACKLIST_DATA_COLUMNS_VALUE
         Codes.MIN_MOTHER_AGE_VALUE = valueAgm != null ? valueAgm : Codes.MIN_MOTHER_AGE_VALUE
         Codes.MIN_FATHER_AGE_VALUE = valueAgf != null ? valueAgf : Codes.MIN_FATHER_AGE_VALUE
-        Codes.MIN_HEAD_AGE_VALUE = valueAgh != null ? valueAgh : Codes.MIN_HEAD_AGE_VALUE
+        Codes.MIN_HEAD_AGE_VALUE =   valueAgh != null ? valueAgh : Codes.MIN_HEAD_AGE_VALUE
         Codes.MIN_SPOUSE_AGE_VALUE = valueAgs != null ? valueAgs : Codes.MIN_SPOUSE_AGE_VALUE
-        Codes.GENDER_CHECKING = valueGch != null ? valueGch : Codes.GENDER_CHECKING
-        Codes.SYSTEM_LANGUAGE = valueSlg != null ? valueSlg : Codes.SYSTEM_LANGUAGE
+        Codes.GENDER_CHECKING =      valueGch != null ? valueGch : Codes.GENDER_CHECKING
+        Codes.SYSTEM_LANGUAGE =      !StringUtil.isBlank(valueSlg) ? valueSlg : Codes.SYSTEM_LANGUAGE
+        Codes.SYSTEM_CODE_GENERATOR = !StringUtil.isBlank(valueScg) ? valueScg : Codes.SYSTEM_CODE_GENERATOR
 
         println("gender ${Codes.GENDER_CHECKING}")
+    }
+
+    def setupCodeGenerators() {
+
+        Reflections reflections = new Reflections("org.philimone.hds.explorer.server.model.settings.generator")
+        def subTypes = reflections.getSubTypesOf(CodeGenerator.class);
+
+        println "Number of Code Generator Implementations: ${subTypes.size()}"
+
+
+        for (def implClass : subTypes) {
+            def codeGen = (CodeGenerator) implClass.newInstance()
+            def jcgen = new JConstant(name: codeGen.getName(), value: implClass.name)
+
+            Codes.SYSTEM_ALL_CODE_GENERATORS.add(jcgen)
+
+            println "Implemented class: "+implClass.name
+            println "Implemented name:  "+codeGen.getName()
+        }
+
+        //Initialize Code Generator after retrieving from the database
+        codeGeneratorService.codeGenerator = CodeGeneratorFactory.newInstance()
     }
 
     def testApp() {

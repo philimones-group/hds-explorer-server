@@ -90,7 +90,7 @@ class CodeGeneratorServiceSpec extends Specification implements ServiceUnitTest<
         DefaultCodeGenerator generator = new DefaultCodeGenerator()
 
         regionNames.each { name ->
-            def gen = generator.generateRegionCode(name, regions)
+            def gen = generator.generateRegionCode(null, name, regions)
 
             println "name=${name}, gen.code=${gen}"
 
@@ -189,7 +189,7 @@ class CodeGeneratorServiceSpec extends Specification implements ServiceUnitTest<
         println "service region existent codes -> ${Region.count()}"
 
         regionNames.each { name ->
-            def gen = service.generateRegionCode(name)
+            def gen = service.generateRegionCode(null, name)
 
             println "name=${name}, gen.code=${gen}"
 

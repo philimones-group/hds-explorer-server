@@ -142,7 +142,7 @@ class VisitService {
 
         //C2. Check VisitCode Regex Pattern
         if (!isBlankCode && !codeGeneratorService.isVisitCodeValid(rawVisit.code)) {
-            errors << errorMessageService.getRawMessage(RawEntity.VISIT, "validation.field.pattern.no.matches", ["code", "TXUPF1001001"], ["code"])
+            errors << errorMessageService.getRawMessage(RawEntity.VISIT, "validation.field.pattern.no.matches", ["code", codeGeneratorService.visitSampleCode], ["code"])
         }
 
         if (!isBlankCode && !isBlankHouseholdCode && !rawVisit.code.startsWith(rawVisit.householdCode)){

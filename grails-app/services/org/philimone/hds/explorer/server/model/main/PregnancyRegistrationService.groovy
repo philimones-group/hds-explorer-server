@@ -136,7 +136,7 @@ class PregnancyRegistrationService {
         }
         //C1.1 Check Code Regex Pattern
         if (!isBlankCode && !codeGeneratorService.isPregnancyCodeValid(pregnancyRegistration.code)) {
-            errors << errorMessageService.getRawMessage(RawEntity.PREGNANCY_REGISTRATION, "validation.field.pattern.no.matches", ["code", "TXUPF1001001-01"], ["code"])
+            errors << errorMessageService.getRawMessage(RawEntity.PREGNANCY_REGISTRATION, "validation.field.pattern.no.matches", ["code", codeGeneratorService.pregnancySampleCode], ["code"])
         }
         //C1. Check Blank Fields (motherCode)
         if (isBlankMotherCode){

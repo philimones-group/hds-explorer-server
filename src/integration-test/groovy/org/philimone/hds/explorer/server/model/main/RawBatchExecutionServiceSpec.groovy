@@ -77,14 +77,14 @@ class RawBatchExecutionServiceSpec extends Specification {
     def setupRegions(){
         def user = User.findByUsername("dragon")
 
-        def rg1 = new RawRegion(id: "u100", regionCode: codeGeneratorService.generateRegionCode("Maputo"), regionName: "Maputo", parentCode: "", collectedBy: user.username, collectedDate: LocalDateTime.now(), uploadedDate: LocalDateTime.now())
-        def rg11 = new RawRegion(id: "u101",regionCode: codeGeneratorService.generateRegionCode("Matola"), regionName: "Matola", parentCode: "MAP", collectedBy: user.username, collectedDate: LocalDateTime.now(), uploadedDate: LocalDateTime.now())
-        def rg111 = new RawRegion(id: "u102",regionCode: codeGeneratorService.generateRegionCode("Txumene"), regionName: "Txumene", parentCode: "MAT", collectedBy: user.username, collectedDate: LocalDateTime.now(), uploadedDate: LocalDateTime.now())
-        def rg112 = new RawRegion(id: "u103",regionCode: codeGeneratorService.generateRegionCode("Fomento"), regionName: "Fomento", parentCode: "MAT", collectedBy: user.username, collectedDate: LocalDateTime.now(), uploadedDate: LocalDateTime.now())
-        def rg2 = new RawRegion(id: "u104",regionCode: codeGeneratorService.generateRegionCode("Gaza"), regionName: "Gaza", parentCode: "", collectedBy: user.username, collectedDate: LocalDateTime.now(), uploadedDate: LocalDateTime.now())
-        def rg21 = new RawRegion(id: "u105",regionCode: codeGeneratorService.generateRegionCode("Xai-Xai"), regionName: "Xai-Xai", parentCode: "GAZ", collectedBy: user.username, collectedDate: LocalDateTime.now(), uploadedDate: LocalDateTime.now())
-        def rg211 = new RawRegion(id: "u106",regionCode: codeGeneratorService.generateRegionCode("Zongoene"), regionName: "Zongoene", parentCode: "XAI", collectedBy: user.username, collectedDate: LocalDateTime.now(), uploadedDate: LocalDateTime.now())
-        def rg212 = new RawRegion(id: "u107",regionCode: codeGeneratorService.generateRegionCode("Limpopo"), regionName: "Limpopo", parentCode: "XAI", collectedBy: user.username, collectedDate: LocalDateTime.now(), uploadedDate: LocalDateTime.now())
+        def rg1 = new RawRegion(id: "u100", regionCode: codeGeneratorService.generateRegionCode(null, "Maputo"), regionName: "Maputo", parentCode: "", collectedBy: user.username, collectedDate: LocalDateTime.now(), uploadedDate: LocalDateTime.now())
+        def rg11 = new RawRegion(id: "u101",regionCode: codeGeneratorService.generateRegionCode(null, "Matola"), regionName: "Matola", parentCode: "MAP", collectedBy: user.username, collectedDate: LocalDateTime.now(), uploadedDate: LocalDateTime.now())
+        def rg111 = new RawRegion(id: "u102",regionCode: codeGeneratorService.generateRegionCode(null, "Txumene"), regionName: "Txumene", parentCode: "MAT", collectedBy: user.username, collectedDate: LocalDateTime.now(), uploadedDate: LocalDateTime.now())
+        def rg112 = new RawRegion(id: "u103",regionCode: codeGeneratorService.generateRegionCode(null, "Fomento"), regionName: "Fomento", parentCode: "MAT", collectedBy: user.username, collectedDate: LocalDateTime.now(), uploadedDate: LocalDateTime.now())
+        def rg2 = new RawRegion(id: "u104",regionCode: codeGeneratorService.generateRegionCode(null, "Gaza"), regionName: "Gaza", parentCode: "", collectedBy: user.username, collectedDate: LocalDateTime.now(), uploadedDate: LocalDateTime.now())
+        def rg21 = new RawRegion(id: "u105",regionCode: codeGeneratorService.generateRegionCode(null, "Xai-Xai"), regionName: "Xai-Xai", parentCode: "GAZ", collectedBy: user.username, collectedDate: LocalDateTime.now(), uploadedDate: LocalDateTime.now())
+        def rg211 = new RawRegion(id: "u106",regionCode: codeGeneratorService.generateRegionCode(null, "Zongoene"), regionName: "Zongoene", parentCode: "XAI", collectedBy: user.username, collectedDate: LocalDateTime.now(), uploadedDate: LocalDateTime.now())
+        def rg212 = new RawRegion(id: "u107",regionCode: codeGeneratorService.generateRegionCode(null, "Limpopo"), regionName: "Limpopo", parentCode: "XAI", collectedBy: user.username, collectedDate: LocalDateTime.now(), uploadedDate: LocalDateTime.now())
 
         rg1.id = "u101"
         rg11.id = "u102"

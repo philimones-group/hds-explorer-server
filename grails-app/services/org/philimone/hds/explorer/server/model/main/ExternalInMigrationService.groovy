@@ -181,7 +181,7 @@ class ExternalInMigrationService {
 
         //C2. Check Code Regex Pattern
         if (!isBlankMemberCode && !codeGeneratorService.isMemberCodeValid(externalInMigration.memberCode)) {
-            errors << errorMessageService.getRawMessage(RawEntity.EXTERNAL_INMIGRATION, "validation.field.pattern.no.matches", ["memberCode", "TXUPF1001001"], ["memberCode"])
+            errors << errorMessageService.getRawMessage(RawEntity.EXTERNAL_INMIGRATION, "validation.field.pattern.no.matches", ["memberCode", codeGeneratorService.memberSampleCode], ["memberCode"])
         }
         //C3. Check Code Prefix Reference existence (Household Existence in memberCode)
         if (!isBlankMemberCode && !householdService.prefixExists(externalInMigration.memberCode)){

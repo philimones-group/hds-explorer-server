@@ -144,8 +144,11 @@ class RegionController {
     }
 
     def generateCodeGsp = {
-        def regionName = params.name
-        def code = regionService.generateCode(regionName)
+        def args = params.name.split(":") //name+":"+parentRegionId
+        def regionName = args[0] as String
+        def parentRegionId = args[1] as String
+        def parentRegion = regionService.get(parentRegionId)
+        def code = regionService.generateCode(parentRegion, regionName)
 
         println "new generated code: ${code}"
 

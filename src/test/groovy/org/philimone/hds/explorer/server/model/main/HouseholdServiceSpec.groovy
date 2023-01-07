@@ -62,8 +62,8 @@ class HouseholdServiceSpec extends Specification implements ServiceUnitTest<Hous
     }
 
     def setupRegions(){
-        def rg1 = new RawRegion(regionCode: codeGeneratorService.generateRegionCode("Matola"), regionName: "Matola", parentCode: "")
-        def rg2 = new RawRegion(regionCode: codeGeneratorService.generateRegionCode("Txumene"), regionName: "Txumene", parentCode: "MAT")
+        def rg1 = new RawRegion(regionCode: codeGeneratorService.generateRegionCode(null, "Matola"), regionName: "Matola", parentCode: "")
+        def rg2 = new RawRegion(regionCode: codeGeneratorService.generateRegionCode(null, "Txumene"), regionName: "Txumene", parentCode: "MAT")
         regionService.userService = userService
         regionService.codeGeneratorService = codeGeneratorService
         regionService.errorMessageService = errorMessageService

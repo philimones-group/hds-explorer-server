@@ -7,11 +7,9 @@ hds.explorer.constraints.mother.age.min: 12
 hds.explorer.constraints.head.age.min: 12
 hds.explorer.constraints.spouse.age.min: 16
 hds.explorer.constraints.gender.checking: true
+hds.explorer.system.language: "en"
+hds.explorer.system.codegenerator: "org.philimone.hds.explorer.server.model.settings.generator.DefaultCodeGenerator"
 
-# Access to OpenHDS Web Application
-hds.explorer.openhds_web.url: http://localhost:8081/openhds
-hds.explorer.openhds_web.username: admin
-hds.explorer.openhds_web.password: Simple123!
 
 #dataSources:
   # Default datasource for HDS-Database
@@ -38,8 +36,8 @@ grails:
   mail:
     host: "smtp.gmail.com"
     port: 465
-    username: "phils.group.noreply@gmail.com"
-    password: "testingacc123"
+    username: "youremailaccount@gmail.com"
+    password: "youremailaccountpassword"
     props:
       mail.smtp.auth: "true"
       mail.smtp.socketFactory.port: "465"
