@@ -12,6 +12,7 @@ class Codes {
     static final String PARAMS_MIN_AGE_OF_SPOUSE   = "hds.explorer.constraints.spouse.age.min"
     static final String PARAMS_SYSTEM_LANGUAGE = "hds.explorer.system.language"
     static final String PARAMS_SYSTEM_CODE_GENERATOR = "hds.explorer.system.codegenerator"
+    static final String PARAMS_SYSTEM_HOMEPATH = "hds.explorer.system.path"
 
     static final String MEMBER_UNKNOWN_CODE = "UNK"
 
@@ -24,5 +25,6 @@ class Codes {
     static boolean GENDER_CHECKING = true
     static String SYSTEM_LANGUAGE = "en"
     static String SYSTEM_CODE_GENERATOR = "org.philimone.hds.explorer.server.settings.generator.DefaultCodeGenerator"
+    static String SYSTEM_HOMEPATH = "/var/lib/hds-explorer"
     static List<JConstant> SYSTEM_ALL_CODE_GENERATORS = new ArrayList<>()
 }

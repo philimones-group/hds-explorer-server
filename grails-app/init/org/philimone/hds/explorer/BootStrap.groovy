@@ -38,10 +38,10 @@ class BootStrap {
 
     def init = { servletContext ->
 
-        createDirectories(servletContext)
         configSecurityMap()
         insertDefaults()
         retrieveAndPopulateStaticConstants()
+        createDirectories(servletContext)
         setupCodeGenerators()
         defaultAppUser()
 
@@ -375,6 +375,7 @@ class BootStrap {
         def gndChck = svc.getConfigValue("${Codes.PARAMS_GENDER_CHECKING}")
         def sysLang = svc.getConfigValue("${Codes.PARAMS_SYSTEM_LANGUAGE}")
         def sysCdgn = svc.getConfigValue("${Codes.PARAMS_SYSTEM_CODE_GENERATOR}")
+        def sysPath = svc.getConfigValue("${Codes.PARAMS_SYSTEM_HOMEPATH}")
         println "code: ${maxCols}"
 
         //Save Application/System Parameters to database, Will persist to the database only when its empty - changing parameters will be done through database
@@ -386,6 +387,7 @@ class BootStrap {
         aps.addParam(Codes.PARAMS_GENDER_CHECKING, StringUtil.getBoolean(gndChck))
         aps.addParam(Codes.PARAMS_SYSTEM_LANGUAGE, sysLang) //set default language to english
         aps.addParam(Codes.PARAMS_SYSTEM_CODE_GENERATOR, sysCdgn)
+        aps.addParam(Codes.PARAMS_SYSTEM_HOMEPATH, sysPath)
 
         aps.addParamNullable(RegionLevel.HIERARCHY_1.code, null)
         aps.addParamNullable(RegionLevel.HIERARCHY_2.code, null)
@@ -470,6 +472,7 @@ class BootStrap {
         def valueGch = applicationParamService.getBooleanValue(Codes.PARAMS_GENDER_CHECKING)
         def valueSlg = applicationParamService.getStringValue(Codes.PARAMS_SYSTEM_LANGUAGE)
         def valueScg = applicationParamService.getStringValue(Codes.PARAMS_SYSTEM_CODE_GENERATOR)
+        def valuePth = applicationParamService.getStringValue(Codes.PARAMS_SYSTEM_HOMEPATH)
 
         Codes.MAX_TRACKLIST_DATA_COLUMNS_VALUE = valueDtc != null ? valueDtc : Codes.MAX_TRACKLIST_DATA_COLUMNS_VALUE
         Codes.MIN_MOTHER_AGE_VALUE = valueAgm != null ? valueAgm : Codes.MIN_MOTHER_AGE_VALUE
@@ -479,6 +482,8 @@ class BootStrap {
         Codes.GENDER_CHECKING =      valueGch != null ? valueGch : Codes.GENDER_CHECKING
         Codes.SYSTEM_LANGUAGE =      !StringUtil.isBlank(valueSlg) ? valueSlg : Codes.SYSTEM_LANGUAGE
         Codes.SYSTEM_CODE_GENERATOR = !StringUtil.isBlank(valueScg) ? valueScg : Codes.SYSTEM_CODE_GENERATOR
+        Codes.SYSTEM_HOMEPATH = !StringUtil.isBlank(valuePth) ? valuePth : Codes.SYSTEM_HOMEPATH
+        SystemPath.HOME_PATH = Codes.SYSTEM_HOMEPATH
 
         println("gender ${Codes.GENDER_CHECKING}")
     }
