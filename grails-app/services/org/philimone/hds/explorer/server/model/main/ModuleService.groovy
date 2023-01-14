@@ -3,9 +3,14 @@ package org.philimone.hds.explorer.server.model.main
 import grails.gorm.transactions.Transactional
 import net.betainteractive.utilities.StringUtil
 import org.philimone.hds.explorer.server.model.enums.ModularDomainEntity
+import org.philimone.hds.explorer.server.model.json.JConstant
+import org.springframework.web.servlet.i18n.SessionLocaleResolver
 
 @Transactional
 class ModuleService {
+
+    def generalUtilitiesService
+    SessionLocaleResolver localeResolver
 
     Module get(Serializable id){
         Module.get(id)
@@ -165,5 +170,84 @@ class ModuleService {
         return list
     }
 
+    int[] grantEntitiesAccess(List<List<String>> list, List<Module> modules) {
+        int[] result = new int[3];
 
+        int countr = 0;
+        int counth = 0;
+        int countm = 0;
+
+        //regions
+        list.get(0).each { code ->
+            def entity = Region.findByCode(code)
+            if (entity != null) {
+                modules.each { module ->
+                    if (entity != null) entity.addToModules(module.code)
+                }
+
+                entity.save(flush: true)
+                countr += !entity.hasErrors() ? 1 : 0
+            }
+        }
+
+        //households
+        list.get(1).each { code ->
+
+            def entity = Household.findByCode(code)
+            if (entity != null) {
+                modules.each { module ->
+                    if (entity != null) entity.addToModules(module.code)
+                }
+
+                entity.save(flush: true)
+                counth += !entity.hasErrors() ? 1 : 0
+            }
+        }
+
+        //members
+        list.get(2).each { code ->
+            def entity = Member.findByCode(code)
+            if (entity != null) {
+                modules.each { module ->
+                    if (entity != null) entity.addToModules(module.code)
+                }
+
+                entity.save(flush: true)
+                countm += !entity.hasErrors() ? 1 : 0
+            }
+        }
+
+        result[0] = countr
+        result[1] = counth
+        result[2] = countm
+
+        return result
+    }
+
+    def grantRegionsAccess(List<Module> modules) {
+        Region.list().each {
+            modules.each { module ->
+                it.addToModules(module.code)
+                it.save()
+            }
+        }
+    }
+
+    def grantHouseholdsAccess(List<Module> modules) {
+        Household.list().each {
+            modules.each { module ->
+                it.addToModules(module.code)
+                it.save()
+            }
+        }
+    }
+
+    def grantMembersAccess(List<Module> modules) {
+        Member.list().each {
+            modules.each { module ->
+                it.addToModules(module.code)
+                it.save()
+            }
+        }
+    }
 }

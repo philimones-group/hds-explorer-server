@@ -3,6 +3,7 @@ package org.philimone.hds.explorer.server.model.main
 import grails.validation.ValidationException
 import org.philimone.hds.explorer.io.SystemPath
 import org.philimone.hds.explorer.server.model.enums.ModularDomainEntity
+import org.philimone.hds.explorer.server.model.json.JConstant
 
 import static org.springframework.http.HttpStatus.*
 
@@ -107,7 +108,7 @@ class ModuleController {
 
         def entities = ModularDomainEntity.values()
 
-        [groupModulesMappings:  moduleService.getGroupModulesMappings(), entities: entities]
+        [groupModulesMappings:  moduleService.getGroupModulesMappings(), entities: entities, grantModes: getGrantModes()]
     }
 
     def uploadCodesFile = {
@@ -126,65 +127,63 @@ class ModuleController {
         def selectedEntity = params.selectedEntity
         def entities = ModularDomainEntity.values()
         def selectedModules = params.selectedModules
+        def grantMode = params.grantMode
 
         render view: "add", model: [groupModulesMappings:  moduleService.getGroupModulesMappings(), modulesShortFilename: fileName, modulesFilename: newFile , selectedEntity: selectedEntity, entities: entities,
-                                    totalRegions: ccounts[0], totalHouseholds: ccounts[1], totalMembers: ccounts[2], selectedModules: selectedModules]
+                                    totalRegions: ccounts[0], totalHouseholds: ccounts[1], totalMembers: ccounts[2], selectedModules: selectedModules, grantModes: getGrantModes(), grantModeValue: grantMode]
     }
 
     def saveModuleMappings = {
+        def grantMode = params.grantModeValue
+        def selEntity = params.entity
         def filename = params["filename"]
         def modules = Module.getAll(params.list("modules"))
 
         println "file ${filename}, modules: ${modules}, ${params}"
 
 
-        def list = moduleService.getEntitiesCodesList(filename)
-        int countr = 0;
-        int counth = 0;
-        int countm = 0;
+        if (grantMode == "0") {
 
-        //regions
-        list.get(0).each { code ->
-            def entity = Region.findByCode(code)
-            if (entity != null) {
-                modules.each { module ->
-                    if (entity != null) entity.addToModules(module.code)
-                }
+            def list = moduleService.getEntitiesCodesList(filename)
 
-                entity.save(flush: true)
-                countr += !entity.hasErrors() ? 1 : 0
-            }
+
+            def resultList = moduleService.grantEntitiesAccess(list, modules)
+
+            int countr = resultList[0];
+            int counth = resultList[1];
+            int countm = resultList[2];
+
+            flash.message = g.message(code: "module.updates.success.csv.label", args: [countr, counth, countm])
         }
+        else if (grantMode == "1") {
 
-        //households
-        list.get(1).each { code ->
-
-            def entity = Household.findByCode(code)
-            if (entity != null) {
-                modules.each { module ->
-                    if (entity != null) entity.addToModules(module.code)
-                }
-
-                entity.save(flush: true)
-                counth += !entity.hasErrors() ? 1 : 0
+            if (ModularDomainEntity.REGION.name.equalsIgnoreCase(selEntity)) {
+                //grant access to all Regions
+                moduleService.grantRegionsAccess(modules)
             }
-        }
 
-        //members
-        list.get(2).each { code ->
-            def entity = Member.findByCode(code)
-            if (entity != null) {
-                modules.each { module ->
-                    if (entity != null) entity.addToModules(module.code)
-                }
-
-                entity.save(flush: true)
-                countm += !entity.hasErrors() ? 1 : 0
+            if (ModularDomainEntity.HOUSEHOLD.name.equalsIgnoreCase(selEntity)) {
+                //grant access to all Households
+                moduleService.grantHouseholdsAccess(modules)
             }
-        }
 
-        flash.message = "Entity Modules Update: ${countr} regions, ${counth} households, ${countm} members updated!!"
+            if (ModularDomainEntity.MEMBER.name.equalsIgnoreCase(selEntity)) {
+                //grant access to all Members
+                moduleService.grantMembersAccess(modules)
+            }
+
+            flash.message = g.message(code: "module.updates.success.all.label", args: [selEntity])
+        }
 
         redirect action: "add"
+    }
+
+    List<JConstant> getGrantModes(){
+        def list = new ArrayList<JConstant>()
+
+        list << new JConstant(name: g.message(code: "module.updates.grantMode.csv.label"), value: "0")
+        list << new JConstant(name: g.message(code: "module.updates.grantMode.all.label"), value: "1")
+
+        return list
     }
 }

@@ -7,6 +7,53 @@
 
 		<asset:javascript src="application.js"/>
 		<asset:javascript src="bootstrap.js"/>
+
+		<g:javascript>
+
+			$(window).load(
+				function () {
+					//alert("testing jquery");
+
+					var mode = $('#grantMode option:selected').val()
+
+					if (mode == "0") { //CSV File mode
+						$("#panelUpload").show();
+						$("#divBreak").hide();
+						$("#divEntity").hide();
+						$("#grantModeValue").val("0");
+					} else {
+						$("#panelUpload").hide();
+						$("#divBreak").show();
+						$("#divEntity").show();
+						$("#grantModeValue").val("1");
+					}
+				}
+			);
+
+			$(document).ready(function() {
+
+                $("#grantMode").change(function() {
+
+                    //parent
+                    var mode = this.value;
+
+                    if (mode == "0") { //CSV File mode
+                        $("#panelUpload").show();
+						$("#divBreak").hide();
+						$("#divEntity").hide();
+						$("#grantModeValue").val("0");
+                    } else {
+                        $("#panelUpload").hide();
+						$("#divBreak").show();
+						$("#divEntity").show();
+						$("#grantModeValue").val("1");
+                    }
+
+                });
+			});
+
+		</g:javascript>
+
 	</head>
 	<body>
 
@@ -26,44 +73,61 @@
 			<div class="message" role="status">${flash.message}</div>
 			</g:if>
 
-			<g:uploadForm controller="module" action="uploadCodesFile" >
-				<fieldset class="form">
+			<br>
+
+			<div class="fieldcontain false">
+				<label for="grantMode"><g:message code="module.updates.grantMode.label" /></label>
+				<g:select name="grantMode" from="${grantModes}" value="${grantModeValue}" optionKey="value" optionValue="name" />
+			</div>
+
+			<div id="divBreak">
+				<br>
+			</div>
+
+			<fieldset id="panelUpload" class="form">
+				<g:uploadForm controller="module" action="uploadCodesFile" >
+
 					<div class="fieldcontain " >
 						<label for="filename"><g:message code="module.updates.filename.label" /></label>
 						<input type="file" id="fileUpload" name="fileUpload" style="display:inline;" />
 						<g:submitButton name="create" class="button_link" value="${message(code: 'module.updates.upload.label')}" />
 					</div>
-				</fieldset>
-			</g:uploadForm>
+
+				</g:uploadForm>
+
+				<div class="fieldcontain required">
+					<label for="filename"><g:message code="module.updates.uploaded.label" default="Filename" /><span class="required-indicator">*</span></label>
+					<b>${modulesShortFilename}</b>
+				</div>
+
+				<div class="fieldcontain required">
+					<label for="regions"><g:message code="module.updates.regions.label" /><span class="required-indicator">*</span></label>
+					<b>${totalRegions}</b>
+				</div>
+
+				<div class="fieldcontain required">
+					<label for="households"><g:message code="module.updates.households.label" /><span class="required-indicator">*</span></label>
+					<b>${totalHouseholds}</b>
+				</div>
+
+				<div class="fieldcontain required">
+					<label for="members"><g:message code="module.updates.members.label" /><span class="required-indicator">*</span></label>
+					<b>${totalMembers}</b>
+				</div>
+
+			</fieldset>
 
 			<g:form controller="module" action="saveModuleMappings" method="POST" >
 				<div class="nav2">
 					<fieldset class="form">
 
-						<div class="fieldcontain required">
-							<label for="filename"><g:message code="module.updates.uploaded.label" default="Filename" /><span class="required-indicator">*</span></label>
-							<b>${modulesShortFilename}</b>
-							<g:hiddenField name="filename" value="${modulesFilename}" />
-						</div>
+						<g:hiddenField name="grantModeValue" value="${grantModeValue}" />
+						
+						<g:hiddenField name="filename" value="${modulesFilename}" />
 
-						<div class="fieldcontain required">
+						<div id="divEntity" class="fieldcontain required">
 							<label for="entity"><g:message code="module.updates.list.entity.label" default="Key Column" /><span class="required-indicator">*</span></label>
 							<g:select name="entity" required="" value="${selectedEntity}" from="${entities}" class="many-to-one"/>
-						</div>
-
-						<div class="fieldcontain required">
-							<label for="regions"><g:message code="module.updates.regions.label" /><span class="required-indicator">*</span></label>
-							<b>${totalRegions}</b>
-						</div>
-
-						<div class="fieldcontain required">
-							<label for="households"><g:message code="module.updates.households.label" /><span class="required-indicator">*</span></label>
-							<b>${totalHouseholds}</b>
-						</div>
-
-						<div class="fieldcontain required">
-							<label for="members"><g:message code="module.updates.members.label" /><span class="required-indicator">*</span></label>
-							<b>${totalMembers}</b>
 						</div>
 
 						<!-- select modules -->
