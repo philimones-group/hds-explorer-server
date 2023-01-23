@@ -39,6 +39,8 @@ class Household extends CollectableEntity {
     Double cosLongitude
     Double sinLongitude
 
+    Boolean preRegistered = false
+
     static hasMany = [modules:String]
 
     static constraints = {
@@ -72,6 +74,8 @@ class Household extends CollectableEntity {
         sinLatitude nullable: true
         cosLongitude nullable: true
         sinLongitude nullable: true
+
+        preRegistered nullable: false
 
         modules nullable: true, index: "idx_modules"
     }
@@ -110,6 +114,8 @@ class Household extends CollectableEntity {
         sinLatitude column: 'sin_latitude'
         cosLongitude column: 'cos_longitude'
         sinLongitude column: 'sin_longitude'
+
+        preRegistered column: 'pre_registered'
 
         modules column: "modules", type: StringCollectionType
     }

@@ -11,6 +11,7 @@ class RawImportApiController {
     static responseFormats = ['xml']
 
     static allowedMethods = [regions: "POST",
+                             prehouseholds: "POST",
                              households: "POST",
                              members: "POST",
                              visits: "POST",
@@ -67,6 +68,49 @@ class RawImportApiController {
 
         if (resultSave.postExecution){ //execute creation
             def result = rawExecutionService.createRegion(resultSave)
+
+            if (result.status== RawExecutionResult.Status.ERROR){
+                render text: errorMessageService.getRawMessagesText(result.errorMessages), status: HttpStatus.BAD_REQUEST
+                return
+            }
+        }
+
+        render text: "OK", status: HttpStatus.OK
+    }
+
+    def prehouseholds = {
+
+        if (request.format != "xml") {
+            def message = message(code: 'validation.field.raw.xml.invalid.error')
+            render text: message, status:  HttpStatus.BAD_REQUEST // Only XML expected
+            return
+        }
+
+        RawParseResult<RawHousehold> parseResult = null
+
+        try {
+            def node = request.getXML() as NodeChild
+            parseResult = rawImportApiService.parsePreHousehold(node)
+        } catch(Exception ex) {
+            def msg = errorMessageService.getRawMessagesText(ex)
+            render text: msg, status: HttpStatus.BAD_REQUEST
+            return
+        }
+        if (parseResult.hasErrors()) {
+            render text: parseResult.getErrorsText(), status: HttpStatus.BAD_REQUEST
+            return
+        }
+
+        def rawInstance = parseResult.domainInstance
+        def resultSave = rawInstance.save(flush: true)
+
+        if (rawInstance.hasErrors()){
+            render text: errorMessageService.getRawMessagesText(rawInstance), status: HttpStatus.BAD_REQUEST
+            return
+        }
+
+        if (resultSave.postExecution){ //execute creation
+            def result = rawExecutionService.createHousehold(resultSave)
 
             if (result.status== RawExecutionResult.Status.ERROR){
                 render text: errorMessageService.getRawMessagesText(result.errorMessages), status: HttpStatus.BAD_REQUEST

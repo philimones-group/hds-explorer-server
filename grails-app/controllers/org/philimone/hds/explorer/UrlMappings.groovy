@@ -70,6 +70,7 @@ class UrlMappings {
         "/api/export/sync-report"(controller: "syncFiles", action: "syncFilesReport")
 
         //API
+        "/api/import/prehouseholds"(controller: "RawImportApi", action: "prehouseholds")
         "/api/import/households"(controller: "RawImportApi", action: "households")
         "/api/import/regions"(controller: "RawImportApi", action: "regions")
         "/api/import/members"(controller: "RawImportApi", action: "members")

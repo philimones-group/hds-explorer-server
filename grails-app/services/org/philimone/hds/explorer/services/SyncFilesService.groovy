@@ -2329,6 +2329,8 @@ class SyncFilesService {
                 ((h.gpsLatitude == null) ?   "<gpsLatitude />" : "<gpsLatitude>${h.gpsLatitude}</gpsLatitude>") +
                 ((h.gpsLongitude == null) ? "<gpsLongitude />" : "<gpsLongitude>${h.gpsLongitude}</gpsLongitude>") +
 
+                ((h.preRegistered == null) ? "<preRegistered />" : "<preRegistered>${h.preRegistered}</preRegistered>") +
+
                 ((h.collectedId == null) ? "<collectedId />" : "<collectedId>${h.collectedId}</collectedId>") +
 
                 ((h.modules.empty)        ?  "<modules />"     : "<modules>${moduleService.getListModulesAsText(h.modules)}</modules>")+

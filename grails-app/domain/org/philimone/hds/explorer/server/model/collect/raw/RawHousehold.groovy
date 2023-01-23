@@ -24,6 +24,8 @@ class RawHousehold {
 
     String modules
 
+    Boolean preRegistered
+
     String collectedBy //fieldWorkerId
     LocalDateTime collectedDate //visitDate / creationDate
     LocalDateTime uploadedDate  //submissionDate
@@ -49,6 +51,8 @@ class RawHousehold {
 
         modules nullable: true
 
+        preRegistered nullable: false
+
         collectedBy blank: true
         collectedDate nullable: true
         uploadedDate nullable: true
@@ -73,6 +77,8 @@ class RawHousehold {
         gpsAlt column: "gps_altitude"
         gpsLat column: "gps_latitude"
         gpsAcc column: "gps_accuracy"
+
+        preRegistered column: "pre_registered"
 
         modules column: "modules"
 

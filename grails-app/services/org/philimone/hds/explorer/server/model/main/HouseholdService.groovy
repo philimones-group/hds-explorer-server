@@ -141,8 +141,26 @@ class HouseholdService {
         }
 
         //C6. Check Duplicate of householdCode
-        if (!isBlankHouseholdCode && exists(household.householdCode)){
-            errors << errorMessageService.getRawMessage(RawEntity.HOUSEHOLD, "validation.field.reference.duplicate.error", ["Household", "householdCode", household.householdCode], ["householdCode"])
+        if (!isBlankHouseholdCode){
+
+            def existentHousehold = getHousehold(household.householdCode)
+            boolean exists = existentHousehold != null
+
+
+            //check is if is a pre-registration trying to be registered while the code exists
+            if (exists) {
+
+                if (household.preRegistered) {
+                    errors << errorMessageService.getRawMessage(RawEntity.HOUSEHOLD, "validation.field.household.code.cannot.preregist.error", [household.householdCode], ["householdCode"])
+                } else {
+                    if (!existentHousehold.preRegistered) {
+                        //its duplicate - otherwise it can upgrade the household status from pre-registered to fully registered
+                        errors << errorMessageService.getRawMessage(RawEntity.HOUSEHOLD, "validation.field.reference.duplicate.error", ["Household", "householdCode", household.householdCode], ["householdCode"])
+                    }
+                }
+
+            }
+
         }
 
         //Check If invalid modules where selected
@@ -159,7 +177,12 @@ class HouseholdService {
         def modules = moduleService.getListModulesFrom(rh.modules)
         moduleService.addDefaultModuleTo(modules) //ensure it has a default module = generall access
 
-        Household household = new Household()
+        Household household = getHousehold(rh.householdCode) //get Household if exists
+
+        if (!(household != null && household.preRegistered)) { //upgrades a Household to fully registered or create a new one
+            household = new Household()
+        }
+
 
         household.code = rh.householdCode
         household.name = rh.householdName
@@ -183,12 +206,14 @@ class HouseholdService {
         household.gpsAltitude = StringUtil.getDouble(rh.gpsAlt)
         household.gpsLatitude = StringUtil.getDouble(rh.gpsLat)
         household.gpsLongitude = StringUtil.getDouble(rh.gpsLon)
-        household.gpsNull = household.gpsLatitude==null || household.gpsLongitude
+        household.gpsNull = household.gpsLatitude==null || household.gpsLongitude==null
 
         household.cosLatitude =  household.gpsLatitude==null ?  null : Math.cos(household.gpsLatitude*Math.PI / 180.0)
         household.sinLatitude =  household.gpsLatitude==null ?  null : Math.sin(household.gpsLatitude*Math.PI / 180.0)
         household.cosLongitude = household.gpsLongitude==null ? null : Math.cos(household.gpsLongitude*Math.PI / 180.0)
         household.sinLongitude = household.gpsLongitude==null ? null : Math.sin(household.gpsLongitude*Math.PI / 180.0)
+
+        household.preRegistered = rh.preRegistered
 
         modules.each {
             household.addToModules(it)

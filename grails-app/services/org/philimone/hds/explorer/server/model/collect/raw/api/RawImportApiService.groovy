@@ -1,19 +1,21 @@
 package org.philimone.hds.explorer.server.model.collect.raw.api
 
 import grails.gorm.transactions.Transactional
+import grails.web.databinding.DataBinder
 import groovy.util.slurpersupport.NodeChild
 import groovy.util.slurpersupport.Node
 import net.betainteractive.utilities.StringUtil
 import org.philimone.hds.explorer.server.model.collect.raw.*
 import org.philimone.hds.explorer.server.model.enums.MaritalEndStatus
 import org.philimone.hds.explorer.server.model.enums.MaritalStartStatus
+import org.philimone.hds.explorer.server.model.enums.ProcessedStatus
 import org.philimone.hds.explorer.server.model.main.collect.raw.RawMessage
 import org.philimone.hds.explorer.server.model.main.collect.raw.RawParseResult
 
 import java.time.LocalDateTime
 
 @Transactional
-class RawImportApiService {
+class RawImportApiService implements DataBinder {
 
     def errorMessageService
 
@@ -47,7 +49,52 @@ class RawImportApiService {
             params.uploadedDate = LocalDateTime.now()
         }
 
-        return new RawParseResult<RawRegion>(new RawRegion(params), errors)
+        def rawRegion = new RawRegion(params)
+        rawRegion.id = params.id
+
+        return new RawParseResult<RawRegion>(rawRegion, errors)
+
+    }
+
+    RawParseResult<RawHousehold> parsePreHousehold(NodeChild xmlNode) {
+
+        def errors = new ArrayList<RawMessage>()
+        def params = xmlNode.childNodes().collectEntries{[it.name(), it.text()]}
+        def rootnode = xmlNode?.name()
+
+        if (!rootnode.equalsIgnoreCase("RawPreHousehold")) {
+            errors << errorMessageService.getRawMessage("validation.field.raw.parsing.rootnode.invalid.error", [rootnode])
+            return new RawParseResult<RawHousehold>(null, errors)
+        }
+
+        /* converting non-primitive types must be parsed manually */
+
+        if (xmlNode.collectedDate.size() > 0) {
+            params.collectedDate = StringUtil.toLocalDateTimePrecise(xmlNode.collectedDate.text())
+
+            if (params.collectedDate==null) {
+                errors << errorMessageService.getRawMessage("validation.field.raw.parsing.localdatetime.error", [xmlNode?.collectedDate.text(), "collectedDate"])
+            }
+        }
+
+        //overwrite this - with uploadedDate saved when persisting the data
+        if (xmlNode.uploadedDate.size() > 0) {
+            params.uploadedDate = StringUtil.toLocalDateTimePrecise(xmlNode.uploadedDate.text())
+
+            if (params.uploadedDate==null) {
+                errors << errorMessageService.getRawMessage("validation.field.raw.parsing.localdatetime.error", [xmlNode?.uploadedDate.text(), "uploadedDate"])
+            }
+        } else {
+            params.uploadedDate = LocalDateTime.now()
+        }
+
+        //println("new-id = "+params.id)
+
+        def rawHousehold = new RawHousehold(params)
+        rawHousehold.id = params.id
+        rawHousehold.preRegistered = true
+
+        return new RawParseResult<RawHousehold>(rawHousehold, errors)
 
     }
 
@@ -88,6 +135,19 @@ class RawImportApiService {
 
         def rawHousehold = new RawHousehold(params)
         rawHousehold.id = params.id
+
+        //find a preregistered household with the same householdCode to be overwritten with a completed household registration
+        def preRegHousehold = RawHousehold.findByHouseholdCodeAndPreRegistered(rawHousehold.householdCode, true)
+
+        if (preRegHousehold != null) {
+            rawHousehold = preRegHousehold
+            //rawHousehold.id = params.id
+
+            bindData(rawHousehold, params)
+
+            rawHousehold.preRegistered = false
+            rawHousehold.processedStatus = ProcessedStatus.NOT_PROCESSED
+        }
 
         return new RawParseResult<RawHousehold>(rawHousehold, errors)
 
