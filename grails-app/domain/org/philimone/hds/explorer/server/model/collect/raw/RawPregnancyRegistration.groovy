@@ -38,7 +38,7 @@ class RawPregnancyRegistration {
     static constraints = {
         id maxSize: 32
 
-        code unique: true
+        code nullable: false
         motherCode nullable: false, blank: false
         recordedDate nullable: false
         pregMonths nullable: true

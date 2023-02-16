@@ -36,7 +36,7 @@ class RawMember {
     static constraints = {
         id maxSize: 32
 
-        code blank: false, unique: true
+        code blank: false
         name blank: false
         gender blank: false
         dob blank: false

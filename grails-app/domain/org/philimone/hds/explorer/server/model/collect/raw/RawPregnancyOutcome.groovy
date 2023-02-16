@@ -36,7 +36,7 @@ class RawPregnancyOutcome {
     static constraints = {
         id maxSize: 32
 
-        code unique: true
+        code nullable: false
         motherCode nullable: false, blank: false
         fatherCode nullable: false, blank: false
         numberOfOutcomes min: 1
@@ -47,7 +47,12 @@ class RawPregnancyOutcome {
 
         visitCode nullable: false, blank: false
 
+        collectedBy blank: true
+        collectedDate nullable: true
+        uploadedDate nullable: true
+
         modules nullable: true
+
     }
 
     static mapping = {

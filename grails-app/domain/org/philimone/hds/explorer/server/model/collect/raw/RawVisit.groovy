@@ -39,7 +39,7 @@ class RawVisit {
     static constraints = {
         id maxSize: 32
 
-        code unique: true, nullable: false
+        code nullable: false
 
         householdCode nullable: false
         roundNumber min: 0

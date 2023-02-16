@@ -40,7 +40,7 @@ class RawHousehold {
 
         regionCode blank: false
         regionName blank: true, nullable: true
-        householdCode blank: true, unique: true
+        householdCode blank: true
         householdName blank: true
         headCode blank: true, nullable: true
         headName blank: true, nullable: true
