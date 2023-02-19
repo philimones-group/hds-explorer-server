@@ -145,9 +145,11 @@ class RawImportApiService implements DataBinder {
 
             bindData(rawHousehold, params)
 
-            rawHousehold.preRegistered = false
             rawHousehold.processedStatus = ProcessedStatus.NOT_PROCESSED
         }
+
+        //all uploads to rawHousehold are not pre-registered
+        rawHousehold.preRegistered = false
 
         return new RawParseResult<RawHousehold>(rawHousehold, errors)
 

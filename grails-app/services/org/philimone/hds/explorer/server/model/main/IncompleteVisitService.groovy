@@ -153,6 +153,9 @@ class IncompleteVisitService {
         //set collected by info
         incompleteVisit.collectedId = riv.id
         incompleteVisit.collectedBy = userService.getUser(riv.collectedBy)
+        incompleteVisit.collectedDeviceId = riv.collectedDeviceId
+        incompleteVisit.collectedHouseholdId = riv.collectedHouseholdId
+        incompleteVisit.collectedMemberId = riv.collectedMemberId
         incompleteVisit.collectedDate = riv.collectedDate
         incompleteVisit.updatedDate = riv.uploadedDate
 

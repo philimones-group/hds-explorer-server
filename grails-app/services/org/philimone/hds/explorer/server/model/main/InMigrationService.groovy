@@ -436,6 +436,9 @@ class InMigrationService {
         //set collected by info
         inmigration.collectedId = rin.id
         inmigration.collectedBy = userService.getUser(rin.collectedBy)
+        inmigration.collectedDeviceId = rin.collectedDeviceId
+        inmigration.collectedHouseholdId = rin.collectedHouseholdId
+        inmigration.collectedMemberId = rin.collectedMemberId
         inmigration.collectedDate = rin.collectedDate
 
         return inmigration
@@ -464,6 +467,9 @@ class InMigrationService {
         rawOutm.migrationReason = rawInMigration.migrationReason
 
         rawOutm.collectedBy = rawInMigration.collectedBy
+        rawOutm.collectedDeviceId = rawInMigration.collectedDeviceId
+        rawOutm.collectedHouseholdId = rawInMigration.collectedHouseholdId
+        rawOutm.collectedMemberId = rawInMigration.collectedMemberId
         rawOutm.collectedDate = rawInMigration.collectedDate
         rawOutm.uploadedDate = rawInMigration.uploadedDate
 
@@ -483,6 +489,9 @@ class InMigrationService {
         rawOutm.migrationReason = inMigration.migrationReason
 
         rawOutm.collectedBy = inMigration.collectedBy.code
+        rawOutm.collectedDeviceId = inMigration.collectedDeviceId
+        rawOutm.collectedHouseholdId = inMigration.collectedHouseholdId
+        rawOutm.collectedMemberId = inMigration.collectedMemberId
         rawOutm.collectedDate = inMigration.collectedDate
         //rawOutm.uploadedDate = inMigration.uploadedDate
 

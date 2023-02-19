@@ -498,6 +498,9 @@ class MaritalRelationshipService {
 
         maritalRelationship.collectedId = mr.id
         maritalRelationship.collectedBy = userService.getUser(mr.collectedBy)
+        maritalRelationship.collectedDeviceId = mr.collectedDeviceId
+        maritalRelationship.collectedHouseholdId = mr.collectedHouseholdId
+        maritalRelationship.collectedMemberId = mr.collectedMemberId
         maritalRelationship.collectedDate = mr.collectedDate
         maritalRelationship.updatedDate = mr.uploadedDate
 

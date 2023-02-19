@@ -311,6 +311,13 @@ class ExternalInMigrationService {
                     return errors
                 }
 
+                //this is not duplicated by memberCode - check if this extInMig is entering to the correct household by validating collectedHouseholdId
+                if (destination.collectedId != null && !destination.collectedId.equalsIgnoreCase(externalInMigration.collectedHouseholdId)) {
+                    //duplicate error
+                    errors << errorMessageService.getRawMessage(RawEntity.EXTERNAL_INMIGRATION, "validation.field.inmigration.household.code.duplicated.error", [externalInMigration.destinationCode, destination.collectedId, externalInMigration.collectedHouseholdId], ["memberCode", "householdCode", "collectedHouseholdId"])
+                    return errors
+                }
+
             }
 
             //We cant try to create Residency/HeadRelationship, member doesnt exists yet
@@ -329,6 +336,7 @@ class ExternalInMigrationService {
     private RawMember createNewRawMemberFrom(RawExternalInMigration externalInMigration){
 
         return new RawMember(
+                id: externalInMigration.collectedMemberId,
                 code: externalInMigration.memberCode,
                 name: externalInMigration.memberName,
                 gender: externalInMigration.memberGender,
@@ -336,6 +344,12 @@ class ExternalInMigrationService {
                 motherCode: externalInMigration.memberMotherCode,
                 fatherCode: externalInMigration.memberFatherCode,
                 householdCode: externalInMigration.destinationCode,
+                collectedId: externalInMigration.collectedMemberId,
+                collectedBy: externalInMigration.collectedBy,
+                collectedDate: externalInMigration.collectedDate,
+                collectedDeviceId: externalInMigration.collectedDeviceId,
+                collectedHouseholdId: externalInMigration.collectedHouseholdId,
+                collectedMemberId: externalInMigration.collectedMemberId,
                 modules: externalInMigration.modules)
     }
 
@@ -355,6 +369,9 @@ class ExternalInMigrationService {
         rawInMig.headRelationshipType = rawExternalInMigration.headRelationshipType
 
         rawInMig.collectedBy = rawExternalInMigration.collectedBy
+        rawInMig.collectedDeviceId = rawExternalInMigration.collectedDeviceId
+        rawInMig.collectedHouseholdId = rawExternalInMigration.collectedHouseholdId
+        rawInMig.collectedMemberId = rawExternalInMigration.collectedMemberId
         rawInMig.collectedDate = rawExternalInMigration.collectedDate
         rawInMig.uploadedDate = rawExternalInMigration.uploadedDate
 

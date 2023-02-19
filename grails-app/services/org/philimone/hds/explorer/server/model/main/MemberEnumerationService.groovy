@@ -88,7 +88,7 @@ class MemberEnumerationService {
 
         if (!errors.isEmpty()){
             //create result and close
-            RawExecutionResult<Member> obj = RawExecutionResult.newErrorResult(RawEntity.MEMBER_ENUMERATION, errors)
+            RawExecutionResult<Enumeration> obj = RawExecutionResult.newErrorResult(RawEntity.MEMBER_ENUMERATION, errors)
             return obj
         }
 
@@ -108,7 +108,7 @@ class MemberEnumerationService {
 
             errors += errorMessageService.addPrefixToMessages(resultMember.errorMessages, "validation.field.member.enumeration.prefix.msg.error", [rawMemberEnu.id])
 
-            RawExecutionResult<Member> obj = RawExecutionResult.newErrorResult(RawEntity.MEMBER_ENUMERATION, errors)
+            RawExecutionResult<Enumeration> obj = RawExecutionResult.newErrorResult(RawEntity.MEMBER_ENUMERATION, errors)
             return obj
         }
 
@@ -125,7 +125,7 @@ class MemberEnumerationService {
 
             errors = errorMessageService.addPrefixToMessages(errors, "validation.field.member.enumeration.prefix.msg.error", [rawMemberEnu.id])
 
-            RawExecutionResult<Member> obj = RawExecutionResult.newErrorResult(RawEntity.MEMBER_ENUMERATION, errors)
+            RawExecutionResult<Enumeration> obj = RawExecutionResult.newErrorResult(RawEntity.MEMBER_ENUMERATION, errors)
             return obj
         }
 
@@ -142,7 +142,7 @@ class MemberEnumerationService {
 
             errors = errorMessageService.addPrefixToMessages(errors, "validation.field.member.enumeration.prefix.msg.error", [rawMemberEnu.id])
 
-            RawExecutionResult<Member> obj = RawExecutionResult.newErrorResult(RawEntity.MEMBER_ENUMERATION, errors)
+            RawExecutionResult<Enumeration> obj = RawExecutionResult.newErrorResult(RawEntity.MEMBER_ENUMERATION, errors)
             return obj
         }
 
@@ -155,6 +155,12 @@ class MemberEnumerationService {
         enumeration.member = resultMember.domainInstance
         enumeration.memberCode = enumeration.member.code
         enumeration.eventDate = rawMemberEnu.residencyStartDate
+        enumeration.collectedId = rawMemberEnu.id
+        enumeration.collectedBy = userService.getUser(rawMemberEnu.collectedBy)
+        enumeration.collectedDate = rawMemberEnu.collectedDate
+        enumeration.collectedDeviceId = rawMemberEnu.collectedDeviceId
+        enumeration.collectedHouseholdId = rawMemberEnu.collectedHouseholdId
+        enumeration.collectedMemberId = rawMemberEnu.collectedMemberId
         enumeration.save(flush:true)
 
 
@@ -347,6 +353,13 @@ class MemberEnumerationService {
                 return errors
             }
 
+            //this is not duplicated by memberCode - check if this memberEnu is entering to the correct household by validating collectedHouseholdId
+            if (household.collectedId != null && !household.collectedId.equalsIgnoreCase(memberEnu.collectedHouseholdId)) {
+                //duplicate error
+                errors << errorMessageService.getRawMessage(RawEntity.MEMBER_ENUMERATION, "validation.field.member.enumeration.household.code.duplicated.error", [memberEnu.householdCode, household.collectedId, memberEnu.collectedHouseholdId], ["memberCode", "householdCode", "collectedHouseholdId"])
+                return errors
+            }
+
             //check if there is a HeadOfHousehold already
             if (headRelationshipType == HeadRelationshipType.HEAD_OF_HOUSEHOLD) {
 
@@ -387,8 +400,11 @@ class MemberEnumerationService {
                 fatherCode: memberEnu.fatherCode,
                 householdCode: memberEnu.householdCode,
                 modules: memberEnu.modules,
-                collectedId: memberEnu.id,
+                collectedId: memberEnu.collectedMemberId,
                 collectedBy: memberEnu.collectedBy,
+                collectedDeviceId: memberEnu.collectedDeviceId,
+                collectedHouseholdId: memberEnu.collectedHouseholdId,
+                collectedMemberId: memberEnu.collectedMemberId,
                 collectedDate: memberEnu.collectedDate,
                 uploadedDate: memberEnu.uploadedDate
         )

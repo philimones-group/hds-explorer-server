@@ -398,6 +398,9 @@ class DeathService {
 
         //set collected by info
         death.collectedId = rd.id
+        death.collectedDeviceId = rd.collectedDeviceId
+        death.collectedHouseholdId = rd.collectedHouseholdId
+        death.collectedMemberId = rd.collectedMemberId
         death.collectedBy = userService.getUser(rd.collectedBy)
         death.collectedDate = rd.collectedDate
         death.updatedDate = rd.uploadedDate

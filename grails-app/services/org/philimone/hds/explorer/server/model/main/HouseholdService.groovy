@@ -45,6 +45,14 @@ class HouseholdService {
         Household.countByCode(householdCode) > 0
     }
 
+    boolean existsByCollectedId(String collectedId) {
+        Household.countByCollectedId(collectedId) > 0
+    }
+
+    boolean existsByCodeAndCollectedId(String householdCode, String collectedId) {
+        Household.countByCodeAndCollectedId(householdCode, collectedId) > 0
+    }
+
     boolean prefixExists(String memberCode){
         exists(memberCode.length()>8 ? memberCode.substring(0, 9) : memberCode)
     }
@@ -221,6 +229,7 @@ class HouseholdService {
 
         //set collected by info
         household.collectedId = rh.id
+        household.collectedDeviceId = rh.collectedDeviceId
         household.collectedBy = userService.getUser(rh.collectedBy)
         household.collectedDate = rh.collectedDate
         household.updatedDate = rh.uploadedDate

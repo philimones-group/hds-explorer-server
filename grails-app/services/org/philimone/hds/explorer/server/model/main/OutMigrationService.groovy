@@ -323,6 +323,9 @@ class OutMigrationService {
         //set collected by info
         outMigration.collectedId = rout.id
         outMigration.collectedBy = userService.getUser(rout.collectedBy)
+        outMigration.collectedDeviceId = rout.collectedDeviceId
+        outMigration.collectedHouseholdId = rout.collectedHouseholdId
+        outMigration.collectedMemberId = rout.collectedMemberId
         outMigration.collectedDate = rout.collectedDate
         outMigration.updatedDate = rout.uploadedDate
 

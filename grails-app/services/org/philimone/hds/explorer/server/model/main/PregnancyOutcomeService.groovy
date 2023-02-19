@@ -242,6 +242,7 @@ class PregnancyOutcomeService {
         def mother = memberService.getMember(pregnancyOutcome.motherCode)
         def father = memberService.getMember(pregnancyOutcome.fatherCode)
         def visit = visitService.getVisit(pregnancyOutcome.visitCode)
+        def household = visit != null ? householdService.getHousehold(visit?.householdCode) : null
 
         def motherExists = mother != null
         def fatherExists = father != null
@@ -368,6 +369,13 @@ class PregnancyOutcomeService {
                 return errors
             }
 
+            //this is not duplicated by memberCode - check if this pregOutcome childs are entering to the correct household by validating collectedHouseholdId
+            if (household.collectedId != null && !household.collectedId.equalsIgnoreCase(pregnancyOutcome.collectedHouseholdId)) {
+                //duplicate error
+                errors << errorMessageService.getRawMessage(RawEntity.PREGNANCY_OUTCOME, "validation.field.pregnancy.outcome.household.code.duplicated.error", [household.code, household.collectedId, pregnancyOutcome.collectedHouseholdId], ["memberCode", "householdCode", "collectedHouseholdId"])
+                return errors
+            }
+
             pregnancyChildren.each { rawChild ->
                 errors += validate(rawChild)
             }
@@ -476,8 +484,11 @@ class PregnancyOutcomeService {
                 fatherCode: fatherCode,
                 householdCode: motherResidency.household.code,
                 modules: pregnancyOutcome.modules,
-                collectedId: pregnancyOutcome.id,
+                collectedId: pregnancyChild.childCollectedId,
                 collectedBy: pregnancyOutcome.collectedBy,
+                collectedDeviceId: pregnancyOutcome.collectedDeviceId,
+                collectedHouseholdId: pregnancyOutcome.collectedHouseholdId,
+                collectedMemberId: pregnancyChild.childCollectedId,
                 collectedDate: pregnancyOutcome.collectedDate,
                 uploadedDate: pregnancyOutcome.uploadedDate)
     }
@@ -510,6 +521,9 @@ class PregnancyOutcomeService {
         rawDeath.deathPlace = rawPregnancyOutcome?.birthPlace.equals("OTHER") ? rawPregnancyOutcome.birthPlaceOther : rawPregnancyOutcome.birthPlace
 
         rawDeath.collectedBy = rawPregnancyOutcome.collectedBy
+        rawDeath.collectedDeviceId = rawPregnancyOutcome.collectedDeviceId
+        rawDeath.collectedHouseholdId = rawPregnancyOutcome.collectedHouseholdId
+        rawDeath.collectedMemberId = rawPregnancyChild.childCollectedId
         rawDeath.collectedDate = rawPregnancyOutcome.collectedDate
         rawDeath.uploadedDate = rawPregnancyOutcome.uploadedDate
 
@@ -544,6 +558,9 @@ class PregnancyOutcomeService {
         //set collected by info
         pregnancyOutcome.collectedId = po.id
         pregnancyOutcome.collectedBy = userService.getUser(po.collectedBy)
+        pregnancyOutcome.collectedDeviceId = po.collectedDeviceId
+        pregnancyOutcome.collectedHouseholdId = po.collectedHouseholdId
+        pregnancyOutcome.collectedMemberId = po.collectedMemberId
         pregnancyOutcome.collectedDate = po.collectedDate
         pregnancyOutcome.updatedDate = po.uploadedDate
 
@@ -566,6 +583,7 @@ class PregnancyOutcomeService {
             def child = memberService.getMember(pc.childCode)
 
             pregnancyChild.child = child
+            pregnancyChild.childCollectedId = pc.childCollectedId
             pregnancyChild.childCode = child.code
             pregnancyChild.childOrdinalPosition = pc.childOrdinalPosition
             pregnancyChild.childHeadRelationship = headRelationship
