@@ -19,6 +19,9 @@ class RawOutMigration {
     String migrationReason
 
     String collectedBy //fieldWorkerId
+    String collectedDeviceId
+    String collectedHouseholdId
+    String collectedMemberId
     LocalDateTime collectedDate //visitDate / creationDate
     LocalDateTime uploadedDate  //submissionDate
 
@@ -40,6 +43,9 @@ class RawOutMigration {
         visitCode blank: false, nullable: false
 
         collectedBy blank: true
+        collectedDeviceId nullable:true
+        collectedHouseholdId nullable:true
+        collectedMemberId nullable:true
         collectedDate nullable: true
         uploadedDate nullable: true
 
@@ -63,6 +69,9 @@ class RawOutMigration {
         visitCode column: "visit_code", index: "idx_visit_code"
 
         collectedBy column: "collected_by", index: "idx_collected_by"
+        collectedDeviceId column: "collected_device_id", index: "idx_cdeviceid"
+        collectedHouseholdId column: "collected_household_id", index: "idx_chouseid"
+        collectedMemberId column: "collected_member_id", index: "idx_cmemberid"
         collectedDate column: "collected_date"
         uploadedDate column: "uploaded_date"
 
@@ -71,3 +80,4 @@ class RawOutMigration {
         processedStatus column: "processed", enumType: "identity"
     }
 }
+

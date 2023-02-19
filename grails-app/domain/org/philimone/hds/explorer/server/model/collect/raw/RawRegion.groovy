@@ -18,6 +18,7 @@ class RawRegion {
     String modules
 
     String collectedBy //fieldWorkerId
+    String collectedDeviceId
     LocalDateTime collectedDate //visitDate / creationDate
     LocalDateTime uploadedDate  //submissionDate
 
@@ -36,6 +37,7 @@ class RawRegion {
         modules nullable: true
 
         collectedBy blank: true
+        collectedDeviceId nullable: true
         collectedDate nullable: true
         uploadedDate nullable: true
 
@@ -56,6 +58,7 @@ class RawRegion {
         modules column: "modules"
 
         collectedBy column: "collected_by", index: "idx_collected_by"
+        collectedDeviceId column: "collected_device_id", index: "idx_cdeviceid"
         collectedDate column: "collected_date"
         uploadedDate column: "uploaded_date"
 

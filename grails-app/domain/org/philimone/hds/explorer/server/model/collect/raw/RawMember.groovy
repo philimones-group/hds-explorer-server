@@ -25,6 +25,9 @@ class RawMember {
     String modules
 
     String collectedBy
+    String collectedDeviceId
+    String collectedHouseholdId
+    String collectedMemberId
     LocalDateTime collectedDate
     LocalDateTime uploadedDate
 
@@ -50,6 +53,9 @@ class RawMember {
         modules nullable: true
 
         collectedBy blank: true
+        collectedDeviceId nullable:true
+        collectedHouseholdId nullable:true
+        collectedMemberId nullable:true
         collectedDate nullable: true
         uploadedDate nullable: true
 
@@ -87,3 +93,4 @@ class RawMember {
         processedStatus column: "processed", enumType: "identity"
     }
 }
+

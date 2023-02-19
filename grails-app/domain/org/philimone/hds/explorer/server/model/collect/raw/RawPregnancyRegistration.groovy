@@ -27,6 +27,9 @@ class RawPregnancyRegistration {
     String visitCode
 
     String collectedBy
+    String collectedDeviceId
+    String collectedHouseholdId
+    String collectedMemberId
     LocalDateTime collectedDate
     LocalDateTime uploadedDate
 
@@ -51,6 +54,13 @@ class RawPregnancyRegistration {
         expectedDeliveryDate nullable: true
         status nullable: false
         visitCode blank: false
+
+        collectedBy blank: true
+        collectedDeviceId nullable:true
+        collectedHouseholdId nullable:true
+        collectedMemberId nullable:true
+        collectedDate nullable: true
+        uploadedDate nullable: true
     }
 
     static mapping = {
@@ -75,6 +85,9 @@ class RawPregnancyRegistration {
         visitCode column: "visit_code", index: "idx_visit_code"
 
         collectedBy column: "collected_by", index: "idx_collected_by"
+        collectedDeviceId column: "collected_device_id", index: "idx_cdeviceid"
+        collectedHouseholdId column: "collected_household_id", index: "idx_chouseid"
+        collectedMemberId column: "collected_member_id", index: "idx_cmemberid"
         collectedDate column: "collected_date"
         uploadedDate column: "uploaded_date"
 
@@ -83,3 +96,4 @@ class RawPregnancyRegistration {
         processedStatus column: "processed", enumType: "identity"
     }
 }
+

@@ -28,6 +28,9 @@ class RawVisit {
     String gpsAcc
 
     String collectedBy //fieldWorkerId
+    String collectedDeviceId
+    String collectedHouseholdId
+    String collectedMemberId
     LocalDateTime collectedDate //visitDate / creationDate
     LocalDateTime uploadedDate  //submissionDate
 
@@ -59,6 +62,9 @@ class RawVisit {
         gpsLon nullable: true
 
         collectedBy blank: true
+        collectedDeviceId nullable:true
+        collectedHouseholdId nullable:true
+        collectedMemberId nullable:true
         collectedDate nullable: true
         uploadedDate nullable: true
 
@@ -92,6 +98,9 @@ class RawVisit {
         gpsLon column: "gps_longitude"
 
         collectedBy column: "collected_by", index: "idx_collected_by"
+        collectedDeviceId column: "collected_device_id", index: "idx_cdeviceid"
+        collectedHouseholdId column: "collected_household_id", index: "idx_chouseid"
+        collectedMemberId column: "collected_member_id", index: "idx_cmemberid"
         collectedDate column: "collected_date"
         uploadedDate column: "uploaded_date"
 
@@ -100,3 +109,4 @@ class RawVisit {
         processedStatus column: "processed", enumType: "identity"
     }
 }
+

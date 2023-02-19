@@ -11,6 +11,7 @@ class RawPregnancyChild {
     String id
     RawPregnancyOutcome outcome
     String outcomeType
+    String childCollectedId
     String childCode
     String childName
     String childGender
@@ -36,6 +37,7 @@ class RawPregnancyChild {
 
         outcome column: "pregnancy_outcome_id"
         outcomeType column: "outcomde_type"
+        childCollectedId column: "child_collected_id"
         childCode column: "child_code", index: "idx_child_code"
         childName column: "child_name"
         childGender column: "child_gender"

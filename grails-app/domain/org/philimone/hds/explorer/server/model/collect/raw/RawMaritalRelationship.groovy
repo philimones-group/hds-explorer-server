@@ -17,6 +17,9 @@ class RawMaritalRelationship {
     LocalDate endDate
 
     String collectedBy //fieldWorkerId
+    String collectedDeviceId
+    String collectedHouseholdId
+    String collectedMemberId
     LocalDateTime collectedDate //visitDate / creationDate
     LocalDateTime uploadedDate  //submissionDate
 
@@ -37,6 +40,9 @@ class RawMaritalRelationship {
         endDate nullable: true
 
         collectedBy blank: true
+        collectedDeviceId nullable:true
+        collectedHouseholdId nullable:true
+        collectedMemberId nullable:true
         collectedDate nullable: true
         uploadedDate nullable: true
 
@@ -56,6 +62,9 @@ class RawMaritalRelationship {
         endDate column: "end_date"
 
         collectedBy column: "collected_by", index: "idx_collected_by"
+        collectedDeviceId column: "collected_device_id", index: "idx_cdeviceid"
+        collectedHouseholdId column: "collected_household_id", index: "idx_chouseid"
+        collectedMemberId column: "collected_member_id", index: "idx_cmemberid"
         collectedDate column: "collected_date"
         uploadedDate column: "uploaded_date"
 
@@ -64,3 +73,4 @@ class RawMaritalRelationship {
         processedStatus column: "processed", enumType: "identity"
     }
 }
+

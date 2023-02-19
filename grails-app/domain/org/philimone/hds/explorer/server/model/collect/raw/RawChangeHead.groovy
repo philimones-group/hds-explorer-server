@@ -17,6 +17,9 @@ class RawChangeHead {
     String reason
 
     String collectedBy //fieldWorkerId
+    String collectedDeviceId
+    String collectedHouseholdId
+    String collectedMemberId
     LocalDateTime collectedDate //visitDate / creationDate
     LocalDateTime uploadedDate  //submissionDate
 
@@ -36,6 +39,9 @@ class RawChangeHead {
         eventDate nullable: false
 
         collectedBy blank: true
+        collectedDeviceId nullable:true
+        collectedHouseholdId nullable:true
+        collectedMemberId nullable:true
         collectedDate nullable: true
         uploadedDate nullable: true
 
@@ -55,6 +61,9 @@ class RawChangeHead {
         reason column: "reason"
 
         collectedBy column: "collected_by", index: "idx_coll_by"
+        collectedDeviceId column: "collected_device_id", index: "idx_cdeviceid"
+        collectedHouseholdId column: "collected_household_id", index: "idx_chouseid"
+        collectedMemberId column: "collected_member_id", index: "idx_cmemberid"
         collectedDate column: "collected_date"
         uploadedDate column: "uploaded_date"
 
@@ -63,3 +72,4 @@ class RawChangeHead {
         processedStatus column: "processed", enumType: "identity"
     }
 }
+

@@ -27,6 +27,7 @@ class RawHousehold {
     Boolean preRegistered
 
     String collectedBy //fieldWorkerId
+    String collectedDeviceId
     LocalDateTime collectedDate //visitDate / creationDate
     LocalDateTime uploadedDate  //submissionDate
 
@@ -54,6 +55,7 @@ class RawHousehold {
         preRegistered nullable: false
 
         collectedBy blank: true
+        collectedDeviceId nullable:true
         collectedDate nullable: true
         uploadedDate nullable: true
 
@@ -83,6 +85,7 @@ class RawHousehold {
         modules column: "modules"
 
         collectedBy column: "collected_by", index: "idx_collected_by"
+        collectedDeviceId column: "collected_device_id", index: "idx_cdeviceid"
         collectedDate column: "collected_date"
         uploadedDate column: "uploaded_date"
 
@@ -91,3 +94,4 @@ class RawHousehold {
         processedStatus column: "processed", enumType: "identity"
     }
 }
+

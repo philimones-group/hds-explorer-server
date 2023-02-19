@@ -16,6 +16,9 @@ class RawDeath {
     String deathPlace
 
     String collectedBy //fieldWorkerId
+    String collectedDeviceId
+    String collectedHouseholdId
+    String collectedMemberId
     LocalDateTime collectedDate //visitDate / creationDate
     LocalDateTime uploadedDate  //submissionDate
 
@@ -35,6 +38,9 @@ class RawDeath {
         visitCode nullable: false, blank: false
 
         collectedBy blank: true
+        collectedDeviceId nullable:true
+        collectedHouseholdId nullable:true
+        collectedMemberId nullable:true
         collectedDate nullable: true
         uploadedDate nullable: true
 
@@ -55,6 +61,9 @@ class RawDeath {
         deathPlace column: "death_place"
 
         collectedBy column: "collected_by", index: "idx_collby"
+        collectedDeviceId column: "collected_device_id", index: "idx_cdeviceid"
+        collectedHouseholdId column: "collected_household_id", index: "idx_chouseid"
+        collectedMemberId column: "collected_member_id", index: "idx_cmemberid"
         collectedDate column: "collected_date"
         uploadedDate column: "uploaded_date"
 
@@ -63,3 +72,4 @@ class RawDeath {
         processedStatus column: "processed", enumType: "identity"
     }
 }
+

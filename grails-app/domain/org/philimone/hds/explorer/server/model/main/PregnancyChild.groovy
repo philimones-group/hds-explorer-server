@@ -9,6 +9,7 @@ class PregnancyChild {
     String outcomeCode
     PregnancyOutcomeType outcomeType
     Member child
+    String childCollectedId
     String childCode
     Integer childOrdinalPosition
     HeadRelationship childHeadRelationship
@@ -22,6 +23,7 @@ class PregnancyChild {
         outcomeCode nullable: false, blank: false
         outcomeType nullable: false
         child nullable: true
+        childCollectedId nullable: true
         childCode nullable: true, blank: true
         childOrdinalPosition nullable: true
         childHeadRelationship nullable: true
@@ -36,6 +38,7 @@ class PregnancyChild {
         outcomeCode column: "pregnancy_outcome_code", index: "idx_outcome_code"
         outcomeType column: "outcomde_type"
         child column: "child_id"
+        childCollectedId column: "child_collected_id", index: "idx_child_coll_id"
         childCode column: "child_code", index: "idx_child_code"
         childOrdinalPosition column: "child_ordinal_pos"
         childHeadRelationship column: "child_head_relationship_id"

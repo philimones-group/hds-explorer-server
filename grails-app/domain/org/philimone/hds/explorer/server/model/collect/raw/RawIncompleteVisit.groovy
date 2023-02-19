@@ -16,6 +16,9 @@ class RawIncompleteVisit {
     String reasonOther
 
     String collectedBy //fieldWorkerId
+    String collectedDeviceId
+    String collectedHouseholdId
+    String collectedMemberId
     LocalDateTime collectedDate //visitDate / creationDate
     LocalDateTime uploadedDate  //submissionDate
 
@@ -34,6 +37,9 @@ class RawIncompleteVisit {
         reasonOther nullable: true, blank: true
 
         collectedBy blank: true
+        collectedDeviceId nullable:true
+        collectedHouseholdId nullable:true
+        collectedMemberId nullable:true
         collectedDate nullable: true
         uploadedDate nullable: true
 
@@ -52,6 +58,9 @@ class RawIncompleteVisit {
         reasonOther column: "other_visit_reason"
 
         collectedBy column: "collected_by", index: "idx_collected_by"
+        collectedDeviceId column: "collected_device_id", index: "idx_cdeviceid"
+        collectedHouseholdId column: "collected_household_id", index: "idx_chouseid"
+        collectedMemberId column: "collected_member_id", index: "idx_cmemberid"
         collectedDate column: "collected_date"
         uploadedDate column: "uploaded_date"
 
@@ -60,3 +69,4 @@ class RawIncompleteVisit {
         processedStatus column: "processed", enumType: "identity"
     }
 }
+
