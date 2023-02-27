@@ -3,6 +3,7 @@ package org.philimone.hds.explorer.server.model.main
 import grails.gorm.transactions.Transactional
 import net.betainteractive.utilities.GeneralUtil
 import net.betainteractive.utilities.StringUtil
+import org.philimone.hds.explorer.server.model.collect.raw.RawExternalInMigration
 import org.philimone.hds.explorer.server.model.collect.raw.RawHeadRelationship
 import org.philimone.hds.explorer.server.model.collect.raw.RawInMigration
 import org.philimone.hds.explorer.server.model.collect.raw.RawOutMigration
@@ -177,8 +178,19 @@ class InMigrationService {
             inmigration.save(flush:true)
         }
 
+        afterNewHouseholdMember(rawInMigration)
+
         RawExecutionResult<InMigration> obj = RawExecutionResult.newSuccessResult(RawEntity.IN_MIGRATION, inmigration, errors)
         return obj
+    }
+
+    def afterNewHouseholdMember(RawInMigration rawObj) {
+        def visit = visitService.getVisit(rawObj.visitCode)
+
+        if (visit != null && visit.respondent == null && rawObj.memberCode?.equalsIgnoreCase(visit.respondentCode)) {
+            visit.respondent = memberService.getMember(rawObj.memberCode)
+            visit.save(flush:true)
+        }
     }
 
     ArrayList<RawMessage> validate(RawInMigration rawInMigration){

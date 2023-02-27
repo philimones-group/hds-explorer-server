@@ -11,7 +11,7 @@ buildscript {
     }
 }
 
-version "1.0.0 build 210"
+version "1.0.0 build 220"
 group "org.philimone.hds.explorer"
 
 apply plugin:"eclipse"

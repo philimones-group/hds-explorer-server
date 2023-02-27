@@ -16,7 +16,7 @@ abstract class CollectableEntity extends AuditableEntity {
     LocalDateTime collectedDate
 
     static constraints = {
-        collectedId nullable:true
+        collectedId nullable:true, unique:true
         collectedBy nullable:true
         collectedDeviceId nullable:true
         collectedHouseholdId nullable:true

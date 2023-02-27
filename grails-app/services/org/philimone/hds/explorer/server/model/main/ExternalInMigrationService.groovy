@@ -99,9 +99,20 @@ class ExternalInMigrationService {
             return obj
         }
 
+        afterNewHouseholdMember(rawExternalInMigration)
+
         //SUCCESS
         RawExecutionResult<InMigration> obj = RawExecutionResult.newSuccessResult(RawEntity.EXTERNAL_INMIGRATION, resultInMigration.domainInstance)
         return obj
+    }
+
+    def afterNewHouseholdMember(RawExternalInMigration rawObj) {
+        def visit = visitService.getVisit(rawObj.visitCode)
+
+        if (visit != null && visit.respondent == null && rawObj.memberCode?.equalsIgnoreCase(visit.respondentCode)) {
+            visit.respondent = memberService.getMember(rawObj.memberCode)
+            visit.save(flush:true)
+        }
     }
 
     ArrayList<RawMessage> validate(RawExternalInMigration externalInMigration){

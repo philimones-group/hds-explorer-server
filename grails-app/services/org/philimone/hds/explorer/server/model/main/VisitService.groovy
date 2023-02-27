@@ -173,10 +173,10 @@ class VisitService {
         if (!isBlankHouseholdCode && !householdExists){
             errors << errorMessageService.getRawMessage(RawEntity.VISIT, "validation.field.reference.error", ["Household", "householdCode", rawVisit.householdCode], ["householdCode"])
         }
-        //C4. Check Respondent reference existence
-        if (visitReason != VisitReason.MIGRATION && visitReason != VisitReason.NEW_HOUSEHOLD && !respondentExists){
+        //C4. Check Respondent reference existence - ignore this for cases where respondent is not yet registered
+        /*if (visitReason != VisitReason.MIGRATION && visitReason != VisitReason.NEW_HOUSEHOLD && !respondentExists){
             errors << errorMessageService.getRawMessage(RawEntity.VISIT, "validation.field.reference.error", ["Member", "respondentCode", rawVisit.respondentCode], ["respondentCode"])
-        }
+        }*/
 
         //C5. Check CollectedBy User existence
         if (!isBlankCollectedBy && !userService.exists(rawVisit.collectedBy)){
@@ -210,7 +210,7 @@ class VisitService {
         visit.roundNumber = rv.roundNumber
 
         visit.respondent = respondent
-        visit.respondentCode = respondent?.code
+        visit.respondentCode = rv.respondentCode
 
         visit.hasInterpreter = rv.hasInterpreter
         visit.interpreterName = rv.interpreterName

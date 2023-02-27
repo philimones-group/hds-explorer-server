@@ -171,9 +171,20 @@ class MemberEnumerationService {
             return obj
         }
 
+        afterNewHouseholdMember(rawMemberEnu, resultMember.domainInstance);
+
         //SUCCESS
         RawExecutionResult<Enumeration> obj = RawExecutionResult.newSuccessResult(RawEntity.MEMBER_ENUMERATION, enumeration)
         return obj
+    }
+
+    def afterNewHouseholdMember(RawMemberEnu rawObj, Member member) {
+        def visit = visitService.getVisit(rawObj.visitCode)
+
+        if (visit != null && visit.respondent == null && rawObj.code?.equalsIgnoreCase(visit.respondentCode)) {
+            visit.respondent = member
+            visit.save(flush:true)
+        }
     }
 
     ArrayList<RawMessage> validate(RawMemberEnu memberEnu){
