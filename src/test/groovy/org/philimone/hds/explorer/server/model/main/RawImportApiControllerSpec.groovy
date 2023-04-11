@@ -10,7 +10,7 @@ import org.philimone.hds.explorer.server.model.collect.raw.aggregate.RawEvent
 import org.philimone.hds.explorer.server.model.collect.raw.api.RawImportApiController
 import org.philimone.hds.explorer.server.model.collect.raw.api.RawImportApiService
 import org.philimone.hds.explorer.server.model.main.Region
-import org.philimone.hds.explorer.server.model.settings.generator.CodeGeneratorService
+import org.philimone.hds.explorer.server.settings.generator.CodeGeneratorService
 import org.philimone.hds.explorer.services.errors.ErrorMessageService
 import org.springframework.context.MessageSource
 import org.springframework.context.support.ResourceBundleMessageSource

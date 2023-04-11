@@ -18,7 +18,7 @@ import org.philimone.hds.explorer.server.model.enums.RawEntity
 import org.philimone.hds.explorer.server.model.main.collect.raw.RawExecutionResult
 import org.philimone.hds.explorer.server.model.main.collect.raw.RawMessage
 import org.philimone.hds.explorer.server.model.settings.Codes
-import org.philimone.hds.explorer.server.model.settings.generator.CodeGeneratorService
+import org.philimone.hds.explorer.server.settings.generator.CodeGeneratorService
 import org.philimone.hds.explorer.services.errors.ErrorMessageService
 import org.springframework.context.MessageSource
 import org.springframework.context.support.ResourceBundleMessageSource

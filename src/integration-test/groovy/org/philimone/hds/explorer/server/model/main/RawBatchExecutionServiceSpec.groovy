@@ -23,7 +23,7 @@ import org.philimone.hds.explorer.server.model.main.collect.raw.RawExecutionResu
 import org.philimone.hds.explorer.server.model.main.collect.raw.RawMessage
 import org.philimone.hds.explorer.server.model.settings.ApplicationParamService
 import org.philimone.hds.explorer.server.model.settings.Codes
-import org.philimone.hds.explorer.server.model.settings.generator.CodeGeneratorService
+import org.philimone.hds.explorer.server.settings.generator.CodeGeneratorService
 import org.philimone.hds.explorer.services.errors.ErrorMessageService
 import org.springframework.beans.factory.annotation.Autowired
 import spock.lang.Specification

@@ -34,7 +34,7 @@ import org.philimone.hds.explorer.server.model.main.VisitService
 import org.philimone.hds.explorer.server.model.main.collect.raw.RawExecutionResult
 import org.philimone.hds.explorer.server.model.main.collect.raw.RawMessage
 import org.philimone.hds.explorer.server.model.settings.Codes
-import org.philimone.hds.explorer.server.model.settings.generator.CodeGeneratorService
+import org.philimone.hds.explorer.server.settings.generator.CodeGeneratorService
 import org.philimone.hds.explorer.services.errors.ErrorMessageService
 import org.springframework.beans.factory.annotation.Autowired
 import spock.lang.Specification

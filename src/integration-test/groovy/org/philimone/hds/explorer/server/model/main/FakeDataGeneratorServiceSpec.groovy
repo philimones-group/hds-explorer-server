@@ -10,7 +10,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import org.philimone.hds.explorer.server.model.authentication.User
 import org.philimone.hds.explorer.server.model.enums.Gender
 import org.philimone.hds.explorer.server.model.settings.ApplicationParam
-import org.philimone.hds.explorer.server.model.settings.generator.CodeGeneratorService
+import org.philimone.hds.explorer.server.settings.generator.CodeGeneratorService
 import org.springframework.beans.factory.annotation.Autowired
 import spock.lang.Specification
 
