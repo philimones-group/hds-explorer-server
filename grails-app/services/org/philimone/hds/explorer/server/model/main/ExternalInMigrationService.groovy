@@ -231,6 +231,16 @@ class ExternalInMigrationService {
             errors << errorMessageService.getRawMessage(RawEntity.EXTERNAL_INMIGRATION, "validation.field.dob.father.minage.error", [StringUtil.format(father.dob), Codes.MIN_FATHER_AGE_VALUE+""], ["father.dob"])
         }
 
+        //C8. Check loop on memberCode equals to fatherCode
+        if (!isBlankCode && !isBlankFatherCode && externalInMigration.memberCode.equalsIgnoreCase(externalInMigration.memberFatherCode)) {
+            errors << errorMessageService.getRawMessage(RawEntity.EXTERNAL_INMIGRATION, "validation.field.inmigration.member.code.loop.father.error", [externalInMigration.memberCode], ["fatherCode"])
+        }
+
+        //C8. Check loop on memberCode equals to motherCode
+        if (!isBlankCode && !isBlankMotherCode && externalInMigration.memberCode.equalsIgnoreCase(externalInMigration.memberMotherCode)) {
+            errors << errorMessageService.getRawMessage(RawEntity.EXTERNAL_INMIGRATION, "validation.field.inmigration.member.code.loop.mother.error", [externalInMigration.memberCode], ["motherCode"])
+        }
+
         //C9. Check mother Gender
         if (Codes.GENDER_CHECKING && !motherUnknown &&  motherExists && mother.gender==Gender.MALE && !isReturningToStudyArea){
             errors << errorMessageService.getRawMessage(RawEntity.EXTERNAL_INMIGRATION, "validation.field.gender.mother.error", [], ["mother.gender"])

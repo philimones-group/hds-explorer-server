@@ -74,6 +74,8 @@ class RawBatchExecutionService {
         //entity_code (household, member, visit, pregnancy code, etc)
         //event_processed (yes / no)
 
+        resetEventsToNotProcessed(logReportFileId)
+
         //Read raw domain models that are not processed and save at raw_event table, raw data will be read ordered by dateOfEvent
         compileEvents()
 
@@ -460,9 +462,9 @@ class RawBatchExecutionService {
             def depStatus = solveHouseholdDependency(householdCode, "householdCode", logReportFileId)
             dependencyResolved = depStatus.solved
 
-            //try to solve member dependency (respondent)
-            def depStatus2 = solveMemberDependency(respondentCode, "respondentCode", logReportFileId)
-            dependencyResolved = dependencyResolved && (depStatus2.solved || StringUtil.isBlank(respondentCode))
+            //try to solve member dependency (respondent) - dont solve this dependency to avoid loops
+            //def depStatus2 = solveMemberDependency(respondentCode, "respondentCode", logReportFileId)
+            //dependencyResolved = dependencyResolved && (depStatus2.solved || StringUtil.isBlank(respondentCode))
 
             if (dependencyResolved) {
 
@@ -475,7 +477,7 @@ class RawBatchExecutionService {
             } else {
                 def errors = new ArrayList<RawMessage>()
                 if (!depStatus.errorMessages.isEmpty()) errors.addAll(depStatus.errorMessages)
-                if (!depStatus2.errorMessages.isEmpty()) errors.addAll(depStatus2.errorMessages)
+                //if (!depStatus2.errorMessages.isEmpty()) errors.addAll(depStatus2.errorMessages)
 
                 def result = createRawEventErrorLog(RawEntity.VISIT, rawEvent, RawDomainObj.attach(rawObj), "code", errors, logReportFileId)
                 return result

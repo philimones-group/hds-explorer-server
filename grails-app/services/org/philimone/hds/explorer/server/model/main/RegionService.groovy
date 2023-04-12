@@ -159,6 +159,11 @@ class RegionService {
             errors << errorMessageService.getRawMessage(RawEntity.REGION, "validation.field.reference.error", ["Region", "parentCode", region.parentCode], ["parentCode"])
         }
 
+        //C4. Check loop on regionCode equals to parentCode
+        if (!isBlankRegionCode && !isBlankParentCode && region.regionCode.equalsIgnoreCase(region.parentCode)) {
+            errors << errorMessageService.getRawMessage(RawEntity.REGION, "validation.field.region.code.loop.parent.error", [region.regionCode, region.parentCode], ["regionCode"])
+        }
+
         //C2. Check Code Regex Pattern
         if (!isBlankRegionCode) {
             def lowestLevel = getLowestRegionLevel()

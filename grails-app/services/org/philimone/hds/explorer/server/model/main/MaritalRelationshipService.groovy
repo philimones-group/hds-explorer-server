@@ -454,6 +454,11 @@ class MaritalRelationshipService {
             }
         }
 
+        //C7. Check member A and B equality
+        if (!isBlankMemberACode && !isBlankMemberBCode && maritalRelationship.memberA.equalsIgnoreCase(maritalRelationship.memberB)) {
+            errors << errorMessageService.getRawMessage(RawEntity.MARITAL_RELATIONSHIP, "validation.field.maritalRelationship.same.member.error", [memberA.code, memberB.code], ["memberA.code", "memberB.code"])
+        }
+
         //Validation part 2: Previous MaritalRelationship against new MaritalRelationship
         if (memberAExists && memberBExists){
             def currentMaritalRelationship = getCurrentMaritalRelationship(memberA, memberB)

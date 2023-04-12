@@ -302,6 +302,11 @@ class ChangeHeadService {
             errors << errorMessageService.getRawMessage(RawEntity.CHANGE_HEAD_OF_HOUSEHOLD, "validation.field.changehead.new.head.invalid.error", [changeHead.newHeadCode], ["newHeadCode"])
         }
 
+        //C9. Check oldHeadCode and newHeadCode equality
+        if (!isBlankOldHeadCode && !isBlankNewHeadCode && changeHead.oldHeadCode.equalsIgnoreCase(changeHead.newHeadCode)) {
+            errors << errorMessageService.getRawMessage(RawEntity.CHANGE_HEAD_OF_HOUSEHOLD, "validation.field.changehead.head.same.member.error", [changeHead.oldHeadCode], ["newHeadCode", "oldHeadCode"])
+        }
+
         //Validation part 2
         if (errors.empty){
 

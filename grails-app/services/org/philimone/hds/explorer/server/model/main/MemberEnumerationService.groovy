@@ -305,6 +305,16 @@ class MemberEnumerationService {
             errors << errorMessageService.getRawMessage(RawEntity.MEMBER_ENUMERATION, "validation.field.gender.father.error", [], ["father.gender"])
         }
 
+        //C11. Check loop on memberCode equals to fatherCode
+        if (!isBlankCode && !isBlankFatherCode && memberEnu.code.equalsIgnoreCase(memberEnu.fatherCode)) {
+            errors << errorMessageService.getRawMessage(RawEntity.MEMBER_ENUMERATION, "validation.field.member.enumeration.code.loop.father.error", [memberEnu.code], ["fatherCode"])
+        }
+
+        //C11. Check loop on memberCode equals to motherCode
+        if (!isBlankCode && !isBlankMotherCode && memberEnu.code.equalsIgnoreCase(memberEnu.motherCode)) {
+            errors << errorMessageService.getRawMessage(RawEntity.MEMBER_ENUMERATION, "validation.field.member.enumeration.code.loop.mother.error", [memberEnu.code], ["motherCode"])
+        }
+
         //C1. Check Blank Fields (householdCode)
         if (isBlankHouseholdCode){
             errors << errorMessageService.getRawMessage(RawEntity.MEMBER_ENUMERATION, "validation.field.blank", ["householdCode"], ["householdCode"])
