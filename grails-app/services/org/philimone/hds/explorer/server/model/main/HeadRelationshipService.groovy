@@ -26,7 +26,7 @@ class HeadRelationshipService {
     HeadRelationship getCurrentHeadRelationship(Member member) {
         if (member != null && member.id != null) {
 
-            def headRelationships = HeadRelationship.executeQuery("select r from HeadRelationship r where r.member.id=? order by r.startDate desc", [member.id], [offset:0, max:1]) // limit 1
+            def headRelationships = HeadRelationship.executeQuery("select r from HeadRelationship r where r.member.id=?0 order by r.startDate desc", [member.id], [offset:0, max:1]) // limit 1
 
             if (headRelationships != null && headRelationships.size()>0) {
                 return headRelationships.first()
@@ -39,7 +39,7 @@ class HeadRelationshipService {
     HeadRelationship getCurrentHeadRelationship(String memberCode) {
         if (!StringUtil.isBlank(memberCode)) {
 
-            def headRelationships = HeadRelationship.executeQuery("select r from HeadRelationship r where r.member.code=? order by r.startDate desc", [memberCode], [offset:0, max:1]) // limit 1
+            def headRelationships = HeadRelationship.executeQuery("select r from HeadRelationship r where r.member.code=?0 order by r.startDate desc", [memberCode], [offset:0, max:1]) // limit 1
 
             if (headRelationships != null && headRelationships.size()>0) {
                 return headRelationships.first()
@@ -52,7 +52,7 @@ class HeadRelationshipService {
     HeadRelationship getCurrentHeadRelationship(Member member, Household household) {
         if (member != null && member.id != null && household != null && household.id != null) {
 
-            def headRelationships = HeadRelationship.executeQuery("select r from HeadRelationship r where r.member.id=? and r.household.id=? order by r.startDate desc", [member.id, household.id], [offset:0, max:1]) // limit 1
+            def headRelationships = HeadRelationship.executeQuery("select r from HeadRelationship r where r.member.id=?0 and r.household.id=?1 order by r.startDate desc", [member.id, household.id], [offset:0, max:1]) // limit 1
 
             if (headRelationships != null && headRelationships.size()>0) {
                 return headRelationships.first()
@@ -68,7 +68,7 @@ class HeadRelationshipService {
     HeadRelationship getCurrentHouseholdHead(Household household){
 
         if (household != null && household.id != null){
-            def headRelationships = HeadRelationship.executeQuery("select r from HeadRelationship r where r.household.id=? and r.relationshipType=? order by r.startDate desc", [household.id, HeadRelationshipType.HEAD_OF_HOUSEHOLD], [offset:0, max:1]) // limit 1
+            def headRelationships = HeadRelationship.executeQuery("select r from HeadRelationship r where r.household.id=?0 and r.relationshipType=?1 order by r.startDate desc", [household.id, HeadRelationshipType.HEAD_OF_HOUSEHOLD], [offset:0, max:1]) // limit 1
 
             if (headRelationships != null && headRelationships.size()>0) {
                 return headRelationships.first()
@@ -81,7 +81,7 @@ class HeadRelationshipService {
     HeadRelationship getCurrentHouseholdHead(String householdCode){
 
         if (!StringUtil.isBlank(householdCode)){
-            def headRelationships = HeadRelationship.executeQuery("select r from HeadRelationship r where r.household.code=? and r.relationshipType=? order by r.startDate desc", [householdCode, HeadRelationshipType.HEAD_OF_HOUSEHOLD], [offset:0, max:1]) // limit 1
+            def headRelationships = HeadRelationship.executeQuery("select r from HeadRelationship r where r.household.code=?0 and r.relationshipType=?1 order by r.startDate desc", [householdCode, HeadRelationshipType.HEAD_OF_HOUSEHOLD], [offset:0, max:1]) // limit 1
 
             if (headRelationships != null && headRelationships.size()>0) {
                 return headRelationships.first()
@@ -98,7 +98,7 @@ class HeadRelationshipService {
     HeadRelationship getCurrentHouseholdHead(Member member){
 
         if (member != null && member?.id != null){
-            def headRelationships = HeadRelationship.executeQuery("select r from HeadRelationship r where r.member.id=? and r.relationshipType=? order by r.startDate desc", [member.id, HeadRelationshipType.HEAD_OF_HOUSEHOLD], [offset:0, max:1]) // limit 1
+            def headRelationships = HeadRelationship.executeQuery("select r from HeadRelationship r where r.member.id=?0 and r.relationshipType=?1 order by r.startDate desc", [member.id, HeadRelationshipType.HEAD_OF_HOUSEHOLD], [offset:0, max:1]) // limit 1
 
             if (headRelationships != null && headRelationships.size()>0) {
                 return headRelationships.first()
@@ -128,7 +128,7 @@ class HeadRelationshipService {
     List<HeadRelationship> getCurrentHeadRelationships(Member headOfHousehold, Household household){
         if (headOfHousehold != null && headOfHousehold.id != null && household != null && household.id != null) {
 
-            def headRelationships = HeadRelationship.executeQuery("select r from HeadRelationship r where r.head.id=? and r.household.id=? order by r.startDate", [headOfHousehold.id, household.id])
+            def headRelationships = HeadRelationship.executeQuery("select r from HeadRelationship r where r.head.id=?0 and r.household.id=?1 order by r.startDate", [headOfHousehold.id, household.id])
 
             return headRelationships
 

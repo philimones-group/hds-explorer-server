@@ -57,7 +57,7 @@ class InMigrationService {
         def errors = new ArrayList<RawMessage>()
 
         try {
-            Residency.executeUpdate("delete from Residency r where r.member.id=?", [member.id])
+            Residency.executeUpdate("delete from Residency r where r.member.id=?0", [member.id])
         } catch(Exception ex) {
             errors << errorMessageService.getRawMessage(RawEntity.MEMBER, "validation.general.database.residency.error", [ ex.getMessage() ], [])
             ex.printStackTrace()

@@ -29,11 +29,11 @@ class FormService {
     }
 
     void deleteMappings(Serializable id){
-        FormMapping.executeUpdate("delete from FormMapping f where f.form.id=?", [id])
+        FormMapping.executeUpdate("delete from FormMapping f where f.form.id=?0", [id])
     }
 
     void deleteGroupMappings(Serializable id){
-        FormGroupMapping.executeUpdate("delete from FormGroupMapping f where f.groupForm.id=?", [id])
+        FormGroupMapping.executeUpdate("delete from FormGroupMapping f where f.groupForm.id=?0", [id])
     }
 
     Form save(Form form){

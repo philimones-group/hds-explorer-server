@@ -183,7 +183,7 @@ class FormController {
     /* Form Mapping Variables */
 
     def formMapping(Form formInstance){
-        def mappings = FormMapping.executeQuery("select m from FormMapping m where m.form=? order by m.id", [formInstance]) //FormMapping.findAllByForm(formInstance)
+        def mappings = FormMapping.executeQuery("select m from FormMapping m where m.form=?0 order by m.id", [formInstance]) //FormMapping.findAllByForm(formInstance)
 
         def tableList = formService.getMappingTableList()
 

@@ -1388,7 +1388,7 @@ class RawBatchExecutionService {
         list.collate(200).each { batch ->
             RawEvent.withTransaction {
                 batch.each {
-                    def codes = RawPregnancyChild.executeQuery("select p.childCode from RawPregnancyChild p where p.outcome=?", [it])
+                    def codes = RawPregnancyChild.executeQuery("select p.childCode from RawPregnancyChild p where p.outcome=?0", [it])
                     def event = new RawEvent(keyDate: it.outcomeDate.atStartOfDay(), eventType: RawEventType.EVENT_PREGNANCY_OUTCOME, eventId: it.id, entityCode: it.code)
                     event.setChildCodesFrom(codes)
                     event.save()

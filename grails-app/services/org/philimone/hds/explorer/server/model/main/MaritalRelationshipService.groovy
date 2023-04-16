@@ -28,8 +28,8 @@ class MaritalRelationshipService {
     MaritalRelationship getCurrentMaritalRelationship(Member member) {
         if (member != null && member.id != null) {
 
-            def maritalRelationshipsA = MaritalRelationship.executeQuery("select r from MaritalRelationship r where r.memberA.id=? order by r.startDate desc", [member.id], [offset:0, max:1]) // limit 1
-            def maritalRelationshipsB = MaritalRelationship.executeQuery("select r from MaritalRelationship r where r.memberB.id=? order by r.startDate desc", [member.id], [offset:0, max:1]) // limit 1
+            def maritalRelationshipsA = MaritalRelationship.executeQuery("select r from MaritalRelationship r where r.memberA.id=?0 order by r.startDate desc", [member.id], [offset:0, max:1]) // limit 1
+            def maritalRelationshipsB = MaritalRelationship.executeQuery("select r from MaritalRelationship r where r.memberB.id=?0 order by r.startDate desc", [member.id], [offset:0, max:1]) // limit 1
             MaritalRelationship relationA = (maritalRelationshipsA != null && maritalRelationshipsA.size() > 0) ? maritalRelationshipsA.first() as MaritalRelationship : null
             MaritalRelationship relationB = (maritalRelationshipsB != null && maritalRelationshipsB.size() > 0) ? maritalRelationshipsB.first() as MaritalRelationship : null
 
@@ -49,8 +49,8 @@ class MaritalRelationshipService {
 
         if (memberA != null && memberA.id != null && memberB != null && memberB.id != null) {
 
-            def maritalRelationshipsA = MaritalRelationship.executeQuery("select r from MaritalRelationship r where r.memberA=? and r.memberB=? order by r.startDate desc", [memberA, memberB], [offset:0, max:1]) // limit 1
-            def maritalRelationshipsB = MaritalRelationship.executeQuery("select r from MaritalRelationship r where r.memberA=? and r.memberB=? order by r.startDate desc", [memberB, memberA], [offset:0, max:1]) // limit 1
+            def maritalRelationshipsA = MaritalRelationship.executeQuery("select r from MaritalRelationship r where r.memberA=?0 and r.memberB=?1 order by r.startDate desc", [memberA, memberB], [offset:0, max:1]) // limit 1
+            def maritalRelationshipsB = MaritalRelationship.executeQuery("select r from MaritalRelationship r where r.memberA=?0 and r.memberB=?1 order by r.startDate desc", [memberB, memberA], [offset:0, max:1]) // limit 1
             MaritalRelationship relationA = (maritalRelationshipsA != null && maritalRelationshipsA.size() > 0) ? maritalRelationshipsA.first() as MaritalRelationship : null
             MaritalRelationship relationB = (maritalRelationshipsB != null && maritalRelationshipsB.size() > 0) ? maritalRelationshipsB.first() as MaritalRelationship : null
 

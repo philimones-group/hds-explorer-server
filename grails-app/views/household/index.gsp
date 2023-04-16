@@ -21,7 +21,7 @@
                 <div class="message" role="status">${flash.message}</div>
             </g:if>
 
-            <f:table id="householdTable" collection="${householdList}" properties="code, name, headCode, headName, collectedDate, createdDate"  template="table" />
+            <bi:tableList id="householdTable" class="household" collection="${householdList}" columns="code, name, headCode, headName, collectedDate, createdDate" />
 
             <div class="pagination">
                 <g:paginate total="${householdCount ?: 0}" />

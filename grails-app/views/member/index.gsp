@@ -20,8 +20,9 @@
             <g:if test="${flash.message}">
                 <div class="message" role="status">${flash.message}</div>
             </g:if>
-            <f:table id="memberTable" collection="${memberList}" properties="code, name, gender, dob, householdCode, collectedDate, createdDate" />
 
+            <bi:tableList id="memberTable" class="member" collection="${memberList}" columns="code, name, gender, dob, householdCode, collectedDate, createdDate" messageColumns="gender"/>
+            
             <div class="pagination">
                 <g:paginate total="${memberCount ?: 0}" />
             </div>

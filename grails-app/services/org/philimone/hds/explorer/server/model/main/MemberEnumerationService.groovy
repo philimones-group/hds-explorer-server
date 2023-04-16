@@ -54,7 +54,7 @@ class MemberEnumerationService {
             residency.member = null;
             residency.household = null;
             residency.save()
-            Residency.executeUpdate("delete from Residency r where r.id=?", [residency.id])
+            Residency.executeUpdate("delete from Residency r where r.id=?0", [residency.id])
         } catch(Exception ex) {
             errors << errorMessageService.getRawMessage(RawEntity.RESIDENCY, "validation.general.database.residency.error", [ ex.getMessage() ], [])
             ex.printStackTrace()

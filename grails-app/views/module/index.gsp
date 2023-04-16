@@ -22,7 +22,7 @@
                 <div class="message" role="status">${flash.message}</div>
             </g:if>
 
-            <f:table id="modulesTable" collection="${moduleList}" properties="code, name, description, createdBy, createdDate, updatedBy, updatedDate"  template="table" />
+            <bi:tableList id="modulesTable" class="module" collection="${moduleList}" columns="code, name, description, createdBy, createdDate, updatedBy, updatedDate" />
 
             <div class="pagination">
                 <g:paginate total="${moduleCount ?: 0}" />

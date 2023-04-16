@@ -1,5 +1,9 @@
 package org.philimone.hds.explorer.server.model.main.collect.raw
 
+import groovy.transform.CompileStatic
+import org.grails.datastore.gorm.GormEntity
+
+@CompileStatic
 class RawDomainObj<D> {
     D domainInstance
 
@@ -7,7 +11,7 @@ class RawDomainObj<D> {
         this.domainInstance = domainInstance
     }
 
-    static RawDomainObj attach(D domainInstance){
+    static <D> RawDomainObj<D> attach(D domainInstance){
         new RawDomainObj(domainInstance)
     }
 }

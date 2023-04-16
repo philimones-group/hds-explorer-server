@@ -1,0 +1,24 @@
+-------------------------------
+-- Upgrading to Grails 5.3.2 --
+-------------------------------
+
+- Update spring-security-plugin to 4.0.4
+
+  Spring Security 5 changed the way passwords are encoded and compared for matches.
+  Formerly a salt was passed into the encoder when calling encode for the password.
+  To upgrade, you must migrate your password database data first to look like so by putting the salt in curly brackets before the password:
+  {bcrypt}someencryptedpassword   // using bcrypt
+  {noop}plaintextpassword         // using plain text
+
+  SQL Statement to update User passwords
+  use hds_explorer_db; //or equivalent
+  update _user u set u.password = concat('{bcrypt}', u.password) where u.password not like '{bcrypt}%';
+
+- Grails Configuration now are acessible using:
+  grailsApplication.config.getProperty('foo.bar.hello', String.class)
+
+- Grails binding date variables from controllers
+  Can no longer use params.startDate to get a date from the GSP datePicker to the controller, must use params.getDate('startDate')
+
+- Update to Hibernate 5.4 changes
+  - legacy-style query parameters (`?`) are no longer supported; use JPA-style ordinal parameters (e.g., `?0` or `?1`)

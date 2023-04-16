@@ -21,20 +21,16 @@ class GeneralUtilitiesService {
 
     def List<Locale> locales = [new Locale("pt", ), Locale.ENGLISH, Locale.FRENCH]
 
-    def boolean isUsingOpenHDS(){
-        return grailsApplication.config.openva.database.using_openhds
-    }
-
     def boolean isUsingMailService(){
-        return grailsApplication.config.hds.explorer.mail.configured
+        return grailsApplication.config.getProperty("hds.explorer.mail.configured", String.class)
     }
 
     def String getDefaultMailSender(){
-        return grailsApplication.config.grails.mail.username
+        return grailsApplication.config.getProperty("grails.mail.username", String.class)
     }
 
     def String getConfigValue(String variable){
-        return grailsApplication.config."${variable}"
+        return grailsApplication.config.getProperty("${variable}", String.class)
     }
 
     def sendTextEmail(String toEmail, String subjectText, String message){

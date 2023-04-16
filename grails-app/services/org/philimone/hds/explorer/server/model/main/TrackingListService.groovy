@@ -24,10 +24,10 @@ class TrackingListService {
     def delete(TrackingList trackingListInstance) {
 
         TrackingListGroup.findAllByTrackingList(trackingListInstance).each {
-            TrackingListMapping.executeUpdate("delete from TrackingListMapping m where m.group=?", [it])
+            TrackingListMapping.executeUpdate("delete from TrackingListMapping m where m.group=?0", [it])
         }
 
-        TrackingListGroup.executeUpdate("delete from TrackingListGroup g where g.trackingList=?", [trackingListInstance])
+        TrackingListGroup.executeUpdate("delete from TrackingListGroup g where g.trackingList=?0", [trackingListInstance])
 
         trackingListInstance.delete(flush:true)
     }
@@ -57,10 +57,10 @@ class TrackingListService {
         //delete previous groups and lists
         if (validationResult.isUpdating) {
             TrackingListGroup.findAllByTrackingList(trackingList).each {
-                TrackingListMapping.executeUpdate("delete from TrackingListMapping m where m.group=?", [it])
+                TrackingListMapping.executeUpdate("delete from TrackingListMapping m where m.group=?0", [it])
             }
 
-            TrackingListGroup.executeUpdate("delete from TrackingListGroup g where g.trackingList=?", [trackingList])
+            TrackingListGroup.executeUpdate("delete from TrackingListGroup g where g.trackingList=?0", [trackingList])
         }
 
         trackingListGroups.each {

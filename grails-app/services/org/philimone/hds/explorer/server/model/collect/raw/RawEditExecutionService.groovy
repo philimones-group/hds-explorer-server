@@ -81,7 +81,7 @@ class RawEditExecutionService {
 
             if (!domainInstance.hasErrors()) {
                 //update members with householdName
-                Member.executeUpdate("update Member m set m.householdName=? where m.householdCode=?", [domainInstance.name, domainInstance.code])
+                Member.executeUpdate("update Member m set m.householdName=?0 where m.householdCode=?1", [domainInstance.name, domainInstance.code])
 
             } else {
                 //throw an error
@@ -125,13 +125,13 @@ class RawEditExecutionService {
 
             if (!domainInstance.hasErrors()) {
                 //update dependants
-                Household.executeUpdate("update Household h set h.headName=? where h.headCode=?", [domainInstance.name, domainInstance.code])
-                Member.executeUpdate("update Member m set m.fatherName=? where m.fatherCode=?", [domainInstance.name, domainInstance.code])
-                Member.executeUpdate("update Member m set m.motherName=? where m.motherCode=?", [domainInstance.name, domainInstance.code])
-                Member.executeUpdate("update Member m set m.spouseName=? where m.spouseCode=?", [domainInstance.name, domainInstance.code])
+                Household.executeUpdate("update Household h set h.headName=?0 where h.headCode=?1", [domainInstance.name, domainInstance.code])
+                Member.executeUpdate("update Member m set m.fatherName=?0 where m.fatherCode=?1", [domainInstance.name, domainInstance.code])
+                Member.executeUpdate("update Member m set m.motherName=?0 where m.motherCode=?1", [domainInstance.name, domainInstance.code])
+                Member.executeUpdate("update Member m set m.spouseName=?0 where m.spouseCode=?1", [domainInstance.name, domainInstance.code])
 
-                Residency.executeUpdate("update Residency r set r.startDate=? where r.member.id=? and r.startType=?", [domainInstance.dob, domainInstance.id, ResidencyStartType.BIRTH])
-                HeadRelationship.executeUpdate("update HeadRelationship r set r.startDate=? where r.member.id=? and r.startType=?", [domainInstance.dob, domainInstance.id, HeadRelationshipStartType.BIRTH])
+                Residency.executeUpdate("update Residency r set r.startDate=?0 where r.member.id=?1 and r.startType=?2", [domainInstance.dob, domainInstance.id, ResidencyStartType.BIRTH])
+                HeadRelationship.executeUpdate("update HeadRelationship r set r.startDate=?0 where r.member.id=?1 and r.startType=?2", [domainInstance.dob, domainInstance.id, HeadRelationshipStartType.BIRTH])
 
                 def childMember = PregnancyChild.findByChild(domainInstance)
                 if (childMember != null) {

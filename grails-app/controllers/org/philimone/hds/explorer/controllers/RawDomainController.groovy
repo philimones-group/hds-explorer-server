@@ -147,7 +147,7 @@ class RawDomainController {
                 //reset the event
                 RawHousehold.executeUpdate("update RawHousehold r set r.processedStatus=:status where r.id=:rawId", [status: ProcessedStatus.NOT_PROCESSED, rawId: rawHousehold.id])
                 RawEvent.executeUpdate("update RawEvent r set r.processed=:status where r.eventId=:rawId", [status: ProcessedStatus.NOT_PROCESSED, rawId: rawHousehold.id])
-                RawErrorLog.executeUpdate("delete from RawErrorLog r where r.uuid=?", [rawHousehold.id])
+                RawErrorLog.executeUpdate("delete from RawErrorLog r where r.uuid=?0", [rawHousehold.id])
             }
 
         } catch (ValidationException e) {
@@ -170,9 +170,9 @@ class RawDomainController {
             reset = params.reset
         }
 
-        params.visitDate = StringUtil.toLocalDateFromDate(params.visitDate)
-        params.collectedDate = StringUtil.toLocalDateTime(params.collectedDate)
-        params.uploadedDate = StringUtil.toLocalDateTime(params.uploadedDate)
+        params.visitDate = StringUtil.toLocalDateFromDate(params.getDate('visitDate'))
+        params.collectedDate = StringUtil.toLocalDateTime(params.getDate('collectedDate'))
+        params.uploadedDate = StringUtil.toLocalDateTime(params.getDate('uploadedDate'))
 
         try {
             bindData(rawVisit, params)
@@ -182,7 +182,7 @@ class RawDomainController {
                 //reset the event
                 RawVisit.executeUpdate("update RawVisit r set r.processedStatus=:status where r.id=:rawId", [status: ProcessedStatus.NOT_PROCESSED, rawId: rawVisit.id])
                 RawEvent.executeUpdate("update RawEvent r set r.processed=:status where r.eventId=:rawId", [status: ProcessedStatus.NOT_PROCESSED, rawId: rawVisit.id])
-                RawErrorLog.executeUpdate("delete from RawErrorLog r where r.uuid=?", [rawVisit.id])
+                RawErrorLog.executeUpdate("delete from RawErrorLog r where r.uuid=?0", [rawVisit.id])
             }
 
         } catch (ValidationException e) {
@@ -205,8 +205,8 @@ class RawDomainController {
             reset = params.reset
         }
 
-        params.collectedDate = StringUtil.toLocalDateTime(params.collectedDate)
-        params.uploadedDate = StringUtil.toLocalDateTime(params.uploadedDate)
+        params.collectedDate = StringUtil.toLocalDateTime(params.getDate('collectedDate'))
+        params.uploadedDate = StringUtil.toLocalDateTime(params.getDate('uploadedDate'))
 
         try {
             bindData(rawIncompleteVisit, params)
@@ -216,7 +216,7 @@ class RawDomainController {
                 //reset the event
                 RawIncompleteVisit.executeUpdate("update RawIncompleteVisit r set r.processedStatus=:status where r.id=:rawId", [status: ProcessedStatus.NOT_PROCESSED, rawId: rawIncompleteVisit.id])
                 RawEvent.executeUpdate("update RawEvent r set r.processed=:status where r.eventId=:rawId", [status: ProcessedStatus.NOT_PROCESSED, rawId: rawIncompleteVisit.id])
-                RawErrorLog.executeUpdate("delete from RawErrorLog r where r.uuid=?", [rawIncompleteVisit.id])
+                RawErrorLog.executeUpdate("delete from RawErrorLog r where r.uuid=?0", [rawIncompleteVisit.id])
             }
 
         } catch (ValidationException e) {
@@ -239,10 +239,10 @@ class RawDomainController {
             reset = params.reset
         }
 
-        params.dob = StringUtil.toLocalDateFromDate(params.dob)
-        params.residencyStartDate = StringUtil.toLocalDateFromDate(params.residencyStartDate)
-        params.collectedDate = StringUtil.toLocalDateTime(params.collectedDate)
-        params.uploadedDate = StringUtil.toLocalDateTime(params.uploadedDate)
+        params.dob = StringUtil.toLocalDateFromDate(params.getDate('dob'))
+        params.residencyStartDate = StringUtil.toLocalDateFromDate(params.getDate('residencyStartDate'))
+        params.collectedDate = StringUtil.toLocalDateTime(params.getDate('collectedDate'))
+        params.uploadedDate = StringUtil.toLocalDateTime(params.getDate('uploadedDate'))
 
         try {
             bindData(rawMemberEnu, params)
@@ -252,7 +252,7 @@ class RawDomainController {
                 //reset the event
                 RawMemberEnu.executeUpdate("update RawMemberEnu r set r.processedStatus=:status where r.id=:rawId", [status: ProcessedStatus.NOT_PROCESSED, rawId: rawMemberEnu.id])
                 RawEvent.executeUpdate("update RawEvent r set r.processed=:status where r.eventId=:rawId", [status: ProcessedStatus.NOT_PROCESSED, rawId: rawMemberEnu.id])
-                RawErrorLog.executeUpdate("delete from RawErrorLog r where r.uuid=?", [rawMemberEnu.id])
+                RawErrorLog.executeUpdate("delete from RawErrorLog r where r.uuid=?0", [rawMemberEnu.id])
             }
 
         } catch (ValidationException e) {
@@ -275,9 +275,9 @@ class RawDomainController {
             reset = params.reset
         }
 
-        params.deathDate = StringUtil.toLocalDateFromDate(params.deathDate)
-        params.collectedDate = StringUtil.toLocalDateTime(params.collectedDate)
-        params.uploadedDate = StringUtil.toLocalDateTime(params.uploadedDate)
+        params.deathDate = StringUtil.toLocalDateFromDate(params.getDate('deathDate'))
+        params.collectedDate = StringUtil.toLocalDateTime(params.getDate('collectedDate'))
+        params.uploadedDate = StringUtil.toLocalDateTime(params.getDate('uploadedDate'))
 
         try {
             bindData(rawDeath, params)
@@ -287,7 +287,7 @@ class RawDomainController {
                 //reset the event
                 RawDeath.executeUpdate("update RawDeath r set r.processedStatus=:status where r.id=:rawId", [status: ProcessedStatus.NOT_PROCESSED, rawId: rawDeath.id])
                 RawEvent.executeUpdate("update RawEvent r set r.processed=:status where r.eventId=:rawId", [status: ProcessedStatus.NOT_PROCESSED, rawId: rawDeath.id])
-                RawErrorLog.executeUpdate("delete from RawErrorLog r where r.uuid=?", [rawDeath.id])
+                RawErrorLog.executeUpdate("delete from RawErrorLog r where r.uuid=?0", [rawDeath.id])
             }
 
         } catch (ValidationException e) {
@@ -310,9 +310,9 @@ class RawDomainController {
             reset = params.reset
         }
 
-        params.migrationDate = StringUtil.toLocalDateFromDate(params.migrationDate)
-        params.collectedDate = StringUtil.toLocalDateTime(params.collectedDate)
-        params.uploadedDate = StringUtil.toLocalDateTime(params.uploadedDate)
+        params.migrationDate = StringUtil.toLocalDateFromDate(params.getDate('migrationDate'))
+        params.collectedDate = StringUtil.toLocalDateTime(params.getDate('collectedDate'))
+        params.uploadedDate = StringUtil.toLocalDateTime(params.getDate('uploadedDate'))
 
         try {
             bindData(rawOutMigration, params)
@@ -322,7 +322,7 @@ class RawDomainController {
                 //reset the event
                 RawOutMigration.executeUpdate("update RawOutMigration r set r.processedStatus=:status where r.id=:rawId", [status: ProcessedStatus.NOT_PROCESSED, rawId: rawOutMigration.id])
                 RawEvent.executeUpdate("update RawEvent r set r.processed=:status where r.eventId=:rawId", [status: ProcessedStatus.NOT_PROCESSED, rawId: rawOutMigration.id])
-                RawErrorLog.executeUpdate("delete from RawErrorLog r where r.uuid=?", [rawOutMigration.id])
+                RawErrorLog.executeUpdate("delete from RawErrorLog r where r.uuid=?0", [rawOutMigration.id])
             }
 
         } catch (ValidationException e) {
@@ -345,9 +345,9 @@ class RawDomainController {
             reset = params.reset
         }
 
-        params.migrationDate = StringUtil.toLocalDateFromDate(params.migrationDate)
-        params.collectedDate = StringUtil.toLocalDateTime(params.collectedDate)
-        params.uploadedDate = StringUtil.toLocalDateTime(params.uploadedDate)
+        params.migrationDate = StringUtil.toLocalDateFromDate(params.getDate('migrationDate'))
+        params.collectedDate = StringUtil.toLocalDateTime(params.getDate('collectedDate'))
+        params.uploadedDate = StringUtil.toLocalDateTime(params.getDate('uploadedDate'))
 
         try {
             bindData(rawInMigration, params)
@@ -357,7 +357,7 @@ class RawDomainController {
                 //reset the event
                 RawInMigration.executeUpdate("update RawInMigration r set r.processedStatus=:status where r.id=:rawId", [status: ProcessedStatus.NOT_PROCESSED, rawId: rawInMigration.id])
                 RawEvent.executeUpdate("update RawEvent r set r.processed=:status where r.eventId=:rawId", [status: ProcessedStatus.NOT_PROCESSED, rawId: rawInMigration.id])
-                RawErrorLog.executeUpdate("delete from RawErrorLog r where r.uuid=?", [rawInMigration.id])
+                RawErrorLog.executeUpdate("delete from RawErrorLog r where r.uuid=?0", [rawInMigration.id])
             }
 
         } catch (ValidationException e) {
@@ -380,10 +380,10 @@ class RawDomainController {
             reset = params.reset
         }
 
-        params.memberDob = StringUtil.toLocalDateFromDate(params.memberDob)
-        params.migrationDate = StringUtil.toLocalDateFromDate(params.migrationDate)
-        params.collectedDate = StringUtil.toLocalDateTime(params.collectedDate)
-        params.uploadedDate = StringUtil.toLocalDateTime(params.uploadedDate)
+        params.memberDob = StringUtil.toLocalDateFromDate(params.getDate('memberDob'))
+        params.migrationDate = StringUtil.toLocalDateFromDate(params.getDate('migrationDate'))
+        params.collectedDate = StringUtil.toLocalDateTime(params.getDate('collectedDate'))
+        params.uploadedDate = StringUtil.toLocalDateTime(params.getDate('uploadedDate'))
 
         try {
             bindData(rawExternalInMigration, params)
@@ -393,7 +393,7 @@ class RawDomainController {
                 //reset the event
                 RawExternalInMigration.executeUpdate("update RawExternalInMigration r set r.processedStatus=:status where r.id=:rawId", [status: ProcessedStatus.NOT_PROCESSED, rawId: rawExternalInMigration.id])
                 RawEvent.executeUpdate("update RawEvent r set r.processed=:status where r.eventId=:rawId", [status: ProcessedStatus.NOT_PROCESSED, rawId: rawExternalInMigration.id])
-                RawErrorLog.executeUpdate("delete from RawErrorLog r where r.uuid=?", [rawExternalInMigration.id])
+                RawErrorLog.executeUpdate("delete from RawErrorLog r where r.uuid=?0", [rawExternalInMigration.id])
             }
 
         } catch (ValidationException e) {
@@ -416,12 +416,12 @@ class RawDomainController {
             reset = params.reset
         }
 
-        params.recordedDate = StringUtil.toLocalDateFromDate(params.recordedDate)
-        params.eddDate = StringUtil.toLocalDateFromDate(params.eddDate)
-        params.lmpDate = StringUtil.toLocalDateFromDate(params.lmpDate)
-        params.expectedDeliveryDate = StringUtil.toLocalDateFromDate(params.expectedDeliveryDate)
-        params.collectedDate = StringUtil.toLocalDateTime(params.collectedDate)
-        params.uploadedDate = StringUtil.toLocalDateTime(params.uploadedDate)
+        params.recordedDate = StringUtil.toLocalDateFromDate(params.getDate('recordedDate'))
+        params.eddDate = StringUtil.toLocalDateFromDate(params.getDate('eddDate'))
+        params.lmpDate = StringUtil.toLocalDateFromDate(params.getDate('lmpDate'))
+        params.expectedDeliveryDate = StringUtil.toLocalDateFromDate(params.getDate('expectedDeliveryDate'))
+        params.collectedDate = StringUtil.toLocalDateTime(params.getDate('collectedDate'))
+        params.uploadedDate = StringUtil.toLocalDateTime(params.getDate('uploadedDate'))
 
         try {
             bindData(rawPregnancyRegistration, params)
@@ -431,7 +431,7 @@ class RawDomainController {
                 //reset the event
                 RawPregnancyRegistration.executeUpdate("update RawPregnancyRegistration r set r.processedStatus=:status where r.id=:rawId", [status: ProcessedStatus.NOT_PROCESSED, rawId: rawPregnancyRegistration.id])
                 RawEvent.executeUpdate("update RawEvent r set r.processed=:status where r.eventId=:rawId", [status: ProcessedStatus.NOT_PROCESSED, rawId: rawPregnancyRegistration.id])
-                RawErrorLog.executeUpdate("delete from RawErrorLog r where r.uuid=?", [rawPregnancyRegistration.id])
+                RawErrorLog.executeUpdate("delete from RawErrorLog r where r.uuid=?0", [rawPregnancyRegistration.id])
             }
 
         } catch (ValidationException e) {
@@ -454,9 +454,9 @@ class RawDomainController {
             reset = params.reset
         }
 
-        params.outcomeDate = StringUtil.toLocalDateFromDate(params.outcomeDate)
-        params.collectedDate = StringUtil.toLocalDateTime(params.collectedDate)
-        params.uploadedDate = StringUtil.toLocalDateTime(params.uploadedDate)
+        params.outcomeDate = StringUtil.toLocalDateFromDate(params.getDate('outcomeDate'))
+        params.collectedDate = StringUtil.toLocalDateTime(params.getDate('collectedDate'))
+        params.uploadedDate = StringUtil.toLocalDateTime(params.getDate('uploadedDate'))
 
         try {
             bindData(rawPregnancyOutcome, params)
@@ -466,7 +466,7 @@ class RawDomainController {
                 //reset the event
                 RawPregnancyOutcome.executeUpdate("update RawPregnancyOutcome r set r.processedStatus=:status where r.id=:rawId", [status: ProcessedStatus.NOT_PROCESSED, rawId: rawPregnancyOutcome.id])
                 RawEvent.executeUpdate("update RawEvent r set r.processed=:status where r.eventId=:rawId", [status: ProcessedStatus.NOT_PROCESSED, rawId: rawPregnancyOutcome.id])
-                RawErrorLog.executeUpdate("delete from RawErrorLog r where r.uuid=?", [rawPregnancyOutcome.id])
+                RawErrorLog.executeUpdate("delete from RawErrorLog r where r.uuid=?0", [rawPregnancyOutcome.id])
             }
 
         } catch (ValidationException e) {
@@ -489,10 +489,10 @@ class RawDomainController {
             reset = params.reset
         }
 
-        params.startDate = StringUtil.toLocalDateFromDate(params.startDate)
-        params.endDate = StringUtil.toLocalDateFromDate(params.endDate)
-        params.collectedDate = StringUtil.toLocalDateTime(params.collectedDate)
-        params.uploadedDate = StringUtil.toLocalDateTime(params.uploadedDate)
+        params.startDate = StringUtil.toLocalDateFromDate(params.getDate('startDate'))
+        params.endDate = StringUtil.toLocalDateFromDate(params.getDate('endDate'))
+        params.collectedDate = StringUtil.toLocalDateTime(params.getDate('collectedDate'))
+        params.uploadedDate = StringUtil.toLocalDateTime(params.getDate('uploadedDate'))
 
         try {
             bindData(rawMaritalRelationship, params)
@@ -502,7 +502,7 @@ class RawDomainController {
                 //reset the event
                 RawMaritalRelationship.executeUpdate("update RawMaritalRelationship r set r.processedStatus=:status where r.id=:rawId", [status: ProcessedStatus.NOT_PROCESSED, rawId: rawMaritalRelationship.id])
                 RawEvent.executeUpdate("update RawEvent r set r.processed=:status where r.eventId=:rawId", [status: ProcessedStatus.NOT_PROCESSED, rawId: rawMaritalRelationship.id])
-                RawErrorLog.executeUpdate("delete from RawErrorLog r where r.uuid=?", [rawMaritalRelationship.id])
+                RawErrorLog.executeUpdate("delete from RawErrorLog r where r.uuid=?0", [rawMaritalRelationship.id])
             }
 
         } catch (ValidationException e) {
@@ -525,9 +525,9 @@ class RawDomainController {
             reset = params.reset
         }
 
-        params.eventDate = StringUtil.toLocalDateFromDate(params.eventDate)
-        params.collectedDate = StringUtil.toLocalDateTime(params.collectedDate)
-        params.uploadedDate = StringUtil.toLocalDateTime(params.uploadedDate)
+        params.eventDate = StringUtil.toLocalDateFromDate(params.getDate('eventDate'))
+        params.collectedDate = StringUtil.toLocalDateTime(params.getDate('collectedDate'))
+        params.uploadedDate = StringUtil.toLocalDateTime(params.getDate('uploadedDate'))
 
         try {
             bindData(rawChangeHead, params)
@@ -537,7 +537,7 @@ class RawDomainController {
                 //reset the event
                 RawChangeHead.executeUpdate("update RawChangeHead r set r.processedStatus=:status where r.id=:rawId", [status: ProcessedStatus.NOT_PROCESSED, rawId: rawChangeHead.id])
                 RawEvent.executeUpdate("update RawEvent r set r.processed=:status where r.eventId=:rawId", [status: ProcessedStatus.NOT_PROCESSED, rawId: rawChangeHead.id])
-                RawErrorLog.executeUpdate("delete from RawErrorLog r where r.uuid=?", [rawChangeHead.id])
+                RawErrorLog.executeUpdate("delete from RawErrorLog r where r.uuid=?0", [rawChangeHead.id])
             }
 
         } catch (ValidationException e) {

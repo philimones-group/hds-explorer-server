@@ -126,7 +126,7 @@ class FakeDataGeneratorServiceSpec extends Specification {
 
         fakeDataUsers.each { oldcode, f ->
             //change user code BALPF1001(001/-001-001)
-            User.executeUpdate("update User u set u.code=?, u.username=?, u.firstName=?, u.lastName=? where u.id=?", [f.new_code, f.new_username, f.new_firstname, f.new_lastname, f.id])
+            User.executeUpdate("update User u set u.code=?0, u.username=?1, u.firstName=?2, u.lastName=?3 where u.id=?4", [f.new_code, f.new_username, f.new_firstname, f.new_lastname, f.id])
 
             //Update all dependencies that use ${oldcode}
 
@@ -190,8 +190,8 @@ class FakeDataGeneratorServiceSpec extends Specification {
 
         fakeDataRegions.each { oldcode, f ->
             //change region code BAL/PF1001(001/-001-001)
-            Region.executeUpdate("update Region r set r.code=?, r.name=? where r.id=?", [f.new_code, f.new_name, f.id])
-            Region.executeUpdate("update Region r set r.parentRegionCode=? where r.parentRegionCode=?", [f.new_code, oldcode])
+            Region.executeUpdate("update Region r set r.code=?0, r.name=?1 where r.id=?2", [f.new_code, f.new_name, f.id])
+            Region.executeUpdate("update Region r set r.parentRegionCode=?0 where r.parentRegionCode=?1", [f.new_code, oldcode])
 
             //Update all dependencies that use ${oldcode} region code
 
@@ -321,9 +321,9 @@ class FakeDataGeneratorServiceSpec extends Specification {
             it.save()
         }
 
-        Module.executeUpdate("update Module set name=?, description=? where code=?", ["Study One", "First Study Project", "MX-002"])
-        Module.executeUpdate("update Module set name=?, description=? where code=?", ["MALTEM Project", "Malaria Elimination Study", "MX-003"])
-        Module.executeUpdate("update Module set name=?, description=? where code=?", ["CHAMPS Mozambique", "CHAMPS Project in Mozambique Site", "MX-004"])
+        Module.executeUpdate("update Module set name=?0, description=?1 where code=?2", ["Study One", "First Study Project", "MX-002"])
+        Module.executeUpdate("update Module set name=?0, description=?1 where code=?2", ["MALTEM Project", "Malaria Elimination Study", "MX-003"])
+        Module.executeUpdate("update Module set name=?0, description=?1 where code=?2", ["CHAMPS Mozambique", "CHAMPS Project in Mozambique Site", "MX-004"])
     }
 
     def changeForms() {
@@ -334,35 +334,35 @@ class FakeDataGeneratorServiceSpec extends Specification {
         FormMapping.executeUpdate("delete from FormMapping f where f.form.id in (:list)", [list:exclude_form_uuids])
         Form.executeUpdate("delete from Form where id in (:list)", [list: exclude_form_uuids])
 
-        Form.executeUpdate("update Form set formName=?, formDescription=? where id=?", ["CHAMPS Form 1", "CHAMPS First Form", "2c9fc91d81ae6c480181c8ab04160058"])
-        Form.executeUpdate("update Form set formName=?, formDescription=? where id=?", ["CHAMPS Form 2", "CHAMPS Second Form", "2c9fc91d821045d20182106b9ec3004f"])
-        Form.executeUpdate("update Form set formName=?, formDescription=? where id=?", ["CHAMPS Form 3", "CHAMPS Third Form", "2c9fc91d821045d20182106c5cea0050"])
-        Form.executeUpdate("update Form set formName=?, formDescription=? where id=?", ["CHAMPS Form 4", "CHAMPS Fourth Form", "2c9fc91d823425cc018234e19833004f"])
-        Form.executeUpdate("update Form set formName=?, formDescription=? where id=?", ["CHAMPS Form 5", "CHAMPS Fiveth Form", "2c9fc91d82452398018258e26eb6004f"])
-        Form.executeUpdate("update Form set formName=?, formDescription=? where id=?", ["CHAMPS Form 6", "CHAMPS Sixth Form", "2c9fc91d826ef501018281a0140e004f"])
+        Form.executeUpdate("update Form set formName=?0, formDescription=?1 where id=?2", ["CHAMPS Form 1", "CHAMPS First Form", "2c9fc91d81ae6c480181c8ab04160058"])
+        Form.executeUpdate("update Form set formName=?0, formDescription=?1 where id=?2", ["CHAMPS Form 2", "CHAMPS Second Form", "2c9fc91d821045d20182106b9ec3004f"])
+        Form.executeUpdate("update Form set formName=?0, formDescription=?1 where id=?2", ["CHAMPS Form 3", "CHAMPS Third Form", "2c9fc91d821045d20182106c5cea0050"])
+        Form.executeUpdate("update Form set formName=?0, formDescription=?1 where id=?2", ["CHAMPS Form 4", "CHAMPS Fourth Form", "2c9fc91d823425cc018234e19833004f"])
+        Form.executeUpdate("update Form set formName=?0, formDescription=?1 where id=?2", ["CHAMPS Form 5", "CHAMPS Fiveth Form", "2c9fc91d82452398018258e26eb6004f"])
+        Form.executeUpdate("update Form set formName=?0, formDescription=?1 where id=?2", ["CHAMPS Form 6", "CHAMPS Sixth Form", "2c9fc91d826ef501018281a0140e004f"])
 
-        Form.executeUpdate("update Form set formName=?, formDescription=? where id=?", ["MALTEM Household Enroll Form", "Maltem Form 1", "ff80818180e8db410180e8db89cd06fd"])
-        Form.executeUpdate("update Form set formName=?, formDescription=? where id=?", ["MALTEM Individual Enrollment Form", "Maltem Form 2", "ff80818180e8db410180e8db8a0b0701"])
-        Form.executeUpdate("update Form set formName=?, formDescription=? where id=?", ["MALTEM Individual Updates Form", "Maltem Form 3",	"ff80818180e8db410180e8db8a4c070a"])
-        Form.executeUpdate("update Form set formName=?, formDescription=? where id=?", ["MALTEM Specimen Collection Form", "Maltem Form 4", "ff80818180e8db410180e8db8a930714"])
-        Form.executeUpdate("update Form set formName=?, formDescription=? where id=?", ["MALTEM Form 5", "Maltem Form 5", "ff80818180e8db410180e8db8ada071f"])
-        Form.executeUpdate("update Form set formName=?, formDescription=? where id=?", ["MALTEM Student Withdrawal Form", "Maltem Form 6", "ff80818180e8db410180e8db8b30072a"])
-        Form.executeUpdate("update Form set formName=?, formDescription=? where id=?", ["MALTEM Form 7", "Maltem Form 7", "ff80818180e8db410180e8db8b820736"])
-        Form.executeUpdate("update Form set formName=?, formDescription=? where id=?", ["MALTEM Form 8", "Maltem Form 8", "ff80818180e8db410180e8db8bd60741"])
-        Form.executeUpdate("update Form set formName=?, formDescription=? where id=?", ["MALTEM Form 9", "Maltem Form 9", "ff80818180e8db410180e8db8c28074c"])
-        Form.executeUpdate("update Form set formName=?, formDescription=? where id=?", ["MALTEM Form X", "Maltem Form X", "ff80818180e8db410180e8db8c790758"])
+        Form.executeUpdate("update Form set formName=?0, formDescription=?1 where id=?2", ["MALTEM Household Enroll Form", "Maltem Form 1", "ff80818180e8db410180e8db89cd06fd"])
+        Form.executeUpdate("update Form set formName=?0, formDescription=?1 where id=?2", ["MALTEM Individual Enrollment Form", "Maltem Form 2", "ff80818180e8db410180e8db8a0b0701"])
+        Form.executeUpdate("update Form set formName=?0, formDescription=?1 where id=?2", ["MALTEM Individual Updates Form", "Maltem Form 3",	"ff80818180e8db410180e8db8a4c070a"])
+        Form.executeUpdate("update Form set formName=?0, formDescription=?1 where id=?2", ["MALTEM Specimen Collection Form", "Maltem Form 4", "ff80818180e8db410180e8db8a930714"])
+        Form.executeUpdate("update Form set formName=?0, formDescription=?1 where id=?2", ["MALTEM Form 5", "Maltem Form 5", "ff80818180e8db410180e8db8ada071f"])
+        Form.executeUpdate("update Form set formName=?0, formDescription=?1 where id=?2", ["MALTEM Student Withdrawal Form", "Maltem Form 6", "ff80818180e8db410180e8db8b30072a"])
+        Form.executeUpdate("update Form set formName=?0, formDescription=?1 where id=?2", ["MALTEM Form 7", "Maltem Form 7", "ff80818180e8db410180e8db8b820736"])
+        Form.executeUpdate("update Form set formName=?0, formDescription=?1 where id=?2", ["MALTEM Form 8", "Maltem Form 8", "ff80818180e8db410180e8db8bd60741"])
+        Form.executeUpdate("update Form set formName=?0, formDescription=?1 where id=?2", ["MALTEM Form 9", "Maltem Form 9", "ff80818180e8db410180e8db8c28074c"])
+        Form.executeUpdate("update Form set formName=?0, formDescription=?1 where id=?2", ["MALTEM Form X", "Maltem Form X", "ff80818180e8db410180e8db8c790758"])
 
 
         //Tracking Lists
 
-        TrackingList.executeUpdate("update TrackingList set name=? where code=?", ["MALTEM MDA Individuals", "TR-000001"])
+        TrackingList.executeUpdate("update TrackingList set name=?0 where code=?1", ["MALTEM MDA Individuals", "TR-000001"])
         TrackingListGroup.list().each {
             it.groupName = "MDA Individuals"
             it.groupTitle = "Manica group ${it.groupCode.substring(1)}"
             it.groupDetails = "Manica Individuals drugs admin."
             it.save()
         }
-        TrackingListMapping.executeUpdate("update TrackingListMapping set listTitle=?", ["Individuals List"])
+        TrackingListMapping.executeUpdate("update TrackingListMapping set listTitle=?0", ["Individuals List"])
 
     }
 

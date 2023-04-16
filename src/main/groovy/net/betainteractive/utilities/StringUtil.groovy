@@ -485,6 +485,17 @@ public class StringUtil {
         }
     }
 
+    public static LocalDateTime toLocalDateTime(Date date) {
+        try {
+            def dateString = format(date,"yyyy-MM-dd HH:mm:ss.SSS")
+
+            return LocalDateTime.parse(dateString, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS"));
+        } catch (Exception ex) {
+            //ex.printStackTrace();
+            return null;
+        }
+    }
+
     public static LocalDateTime toLocalDateTimePrecise(String dateString) {
         try {
             return LocalDateTime.parse(dateString, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS"));
@@ -612,6 +623,8 @@ public class StringUtil {
     }
 
     public static String removePascalCase(String text){
+        if (text == null) return null;
+
         def str = toSnakeCase(text)
         def spt = str.split("_")
         str = ""

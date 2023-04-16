@@ -310,7 +310,7 @@ class SyncFilesController {
     /**/
     def index = {
 
-        def logReports = LogReport.executeQuery("select lr from LogReport lr where lr.group.groupId=? order by lr.reportId", [LogGroupCode.GROUP_GENERATE_FILES])
+        def logReports = LogReport.executeQuery("select lr from LogReport lr where lr.group.groupId=?0 order by lr.reportId", [LogGroupCode.GROUP_GENERATE_FILES])
 
         render view: "index", model: [logReports : logReports]
     }

@@ -12,7 +12,7 @@ class LogReportController {
     def showLogReport(){
         def logReportInstance = LogReport.get(params.id)
 
-        def logFiles = LogReportFile.executeQuery("select f from LogReportFile f where f.logReport=? order by f.keyTimestamp desc, f.start desc", [logReportInstance])
+        def logFiles = LogReportFile.executeQuery("select f from LogReportFile f where f.logReport=?0 order by f.keyTimestamp desc, f.start desc", [logReportInstance])
 
         render view:"showLogReport", model : [logReportInstance : logReportInstance, logFiles: logFiles]
     }

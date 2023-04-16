@@ -1,7 +1,9 @@
 package org.philimone.hds.explorer.server.model.main.collect.raw
 
+import groovy.transform.CompileStatic
 import org.philimone.hds.explorer.server.model.enums.RawEntity
 
+@CompileStatic
 class RawExecutionResult<D> {
     enum Status {
         SUCCESS, SEMI_ERROR, ERROR
@@ -23,27 +25,27 @@ class RawExecutionResult<D> {
         this.domainInstance = instance
     }
 
-    static RawExecutionResult<D> newResult(RawEntity entity, Status status, List<RawMessage> errorMessages){
+    static <D> RawExecutionResult<D> newResult(RawEntity entity, Status status, List<RawMessage> errorMessages){
         new RawExecutionResult(entity, status, errorMessages)
     }
 
-    static RawExecutionResult<D> newSuccessResult(RawEntity entity){
+    static <D> RawExecutionResult<D> newSuccessResult(RawEntity entity){
         new RawExecutionResult(entity, Status.SUCCESS, null)
     }
 
-    static RawExecutionResult<D> newSuccessResult(RawEntity entity, D instance){
+    static <D> RawExecutionResult<D> newSuccessResult(RawEntity entity, D instance){
         new RawExecutionResult(entity, Status.SUCCESS, instance,null)
     }
 
-    static RawExecutionResult<D> newSuccessResult(RawEntity entity, D instance, List<RawMessage> otherErrors){
+    static <D> RawExecutionResult<D> newSuccessResult(RawEntity entity, D instance, List<RawMessage> otherErrors){
         new RawExecutionResult(entity, Status.SUCCESS, instance, otherErrors)
     }
 
-    static RawExecutionResult<D> newErrorResult(RawEntity entity, List<RawMessage> errorMessages){
+    static <D> RawExecutionResult<D> newErrorResult(RawEntity entity, List<RawMessage> errorMessages){
         new RawExecutionResult(entity, Status.ERROR, errorMessages)
     }
 
-    static RawExecutionResult<D> newSemiErrorResult(RawEntity entity, List<RawMessage> errorMessages){
+    static <D> RawExecutionResult<D> newSemiErrorResult(RawEntity entity, List<RawMessage> errorMessages){
         new RawExecutionResult(entity, Status.SEMI_ERROR, errorMessages)
     }
 }

@@ -21,7 +21,8 @@
                 <div class="message" role="status">${flash.message}</div>
             </g:if>
 
-            <f:table id="roundsTable" collection="${roundList}" properties="roundNumber, startDate, endDate, description, createdBy, createdDate, updatedBy, updatedDate"  template="table" />
+            <bi:tableList id="roundsTable" class="round" collection="${roundList}" columns="roundNumber, startDate, endDate, description, createdBy, createdDate, updatedBy, updatedDate"
+                          linkAction="show" linkColumn="roundNumber" linkId="id"/>
 
             <div class="pagination">
                 <g:paginate total="${roundCount ?: 0}" />

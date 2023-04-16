@@ -2,7 +2,6 @@ package org.philimone.hds.explorer.services.testdata
 
 import grails.gorm.transactions.Transactional
 import groovy.time.TimeCategory
-import mw.mac.dcs.model.logs.LogReportFile
 import net.betainteractive.utilities.GeneralUtil
 import net.betainteractive.utilities.StringUtil
 import org.grails.datastore.mapping.model.PersistentEntity

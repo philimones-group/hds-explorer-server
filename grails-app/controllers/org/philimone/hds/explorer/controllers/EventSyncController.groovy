@@ -14,7 +14,7 @@ class EventSyncController {
     def eventSyncService
 
     def index = {
-        def logReports = LogReport.executeQuery("select lr from LogReport lr where lr.group.groupId=? order by lr.reportId", [LogGroupCode.GROUP_SYNC_DSS_DATA_FROM_CLIENT])
+        def logReports = LogReport.executeQuery("select lr from LogReport lr where lr.group.groupId=?0 order by lr.reportId", [LogGroupCode.GROUP_SYNC_DSS_DATA_FROM_CLIENT])
 
         def syncProcesses = eventSyncService.mainProcessedStatus()
 
@@ -70,7 +70,7 @@ class EventSyncController {
     def showSyncReport(){
         def logReportInstance = LogReport.get(params.id)
 
-        def logFiles = LogReportFile.executeQuery("select f from LogReportFile f where f.logReport=? order by f.keyTimestamp desc, f.start desc", [logReportInstance])
+        def logFiles = LogReportFile.executeQuery("select f from LogReportFile f where f.logReport=?0 order by f.keyTimestamp desc, f.start desc", [logReportInstance])
 
         render view:"showSyncReport", model : [logReportInstance: logReportInstance, logFiles: logFiles]
     }

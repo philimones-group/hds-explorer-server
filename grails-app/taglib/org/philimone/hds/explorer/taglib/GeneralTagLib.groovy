@@ -160,6 +160,85 @@ class GeneralTagLib {
 
     }
 
+    def tableList = { attrs, body ->
+        def id = attrs.id
+        def className = attrs.class
+        def collectionObjs = (List) attrs.get("collection")
+        def linkColumn = attrs.linkColumn
+        def linkAction = attrs.linkAction
+        def linkId = attrs.linkId
+        def columns = attrs.columns
+        def messageColumns = attrs.messageColumns
+        def strcolumns = columns==null ? "" : columns.replaceAll("\\s+","")
+        def strmessages= messageColumns==null ? "" : messageColumns.replaceAll("\\s+","")
+        def columnsList = strcolumns.empty ? new ArrayList<String>() : strcolumns.split(",").toList()
+        def messageColsList = strmessages.empty ? new ArrayList<String>() : strmessages.split(",").toList()
+
+        println "col objs: " + collectionObjs?.size()
+        println "col: ${strcolumns}, ${columns}"
+
+        out << "            <table id=\"${id}\" class=\"display nowrap compact cell-border\" style=\"width:99%\" cellpadding=\"0\">\n"
+        out << "                <thead>\n"
+        out << "                <tr>\n"
+
+        columnsList.each { column ->
+            def messageCode = "${className}.${column}.label"
+            out << "                    ${g.sortableColumn(property: column, title: g.message(code: messageCode))}\n"
+        }
+
+        out << "                </tr>\n"
+        out << "                </thead>\n"
+        out << "                <tbody>\n"
+
+        collectionObjs?.eachWithIndex { obj, i ->
+
+            out << "                    <tr class=\"${(i % 2) == 0 ? 'even' : 'odd'}\">\n"
+
+            columnsList.each { column ->
+
+                def hasLink = linkColumn != null && column.toString().equals(linkColumn.toString())
+
+                def columnValue = obj?."${column}"
+
+                out << "                        <td>"
+
+                def textValue = ""
+
+                if (columnValue instanceof LocalDate) {
+
+                    textValue = StringUtil.format(columnValue, "yyyy-MM-dd")
+
+                } else if (columnValue instanceof LocalDateTime) {
+
+                    textValue = StringUtil.format(columnValue, "yyyy-MM-dd HH:mm:ss")
+
+                } else {
+
+                    if (messageColsList.contains(column)) {
+                        //message variable
+                        textValue = "" + message(code: columnValue)
+                    } else {
+                        //normal variable
+                        textValue = columnValue==null ? "" : "" + columnValue
+                    }
+
+                }
+
+                if (hasLink) {
+                    out << "${g.link( action: linkAction, id: obj."${linkId}") { textValue }}"
+                } else {
+                    out << textValue
+                }
+
+                out << "</td>\n"
+            }
+
+        }
+
+        out << "                </tbody>\n"
+        out << "            </table>"
+    }
+
     Date getDateValue(def propertyValue){
         if (propertyValue == null) return null;
 

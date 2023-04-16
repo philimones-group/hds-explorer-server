@@ -41,11 +41,34 @@
             <g:if test="${flash.message}">
                 <div class="message" role="status">${flash.message}</div>
             </g:if>
-            <f:table id="memberTable" collection="${residentsList}" properties="code, name, gender, dob, householdCode, collectedDate, createdDate" />
 
-            <div class="pagination">
-                <g:paginate total="${memberCount ?: 0}" />
-            </div>
+
+            <table id="memberTable" class="display nowrap compact cell-border" style="width:99%" cellpadding="0">
+                <thead>
+                <tr>
+                    <g:sortableColumn property="code" title="${message(code: 'member.code.label')}" />
+                    <g:sortableColumn property="name" title="${message(code: 'member.name.label')}" />
+                    <g:sortableColumn property="gender" title="${message(code: 'member.gender.label')}" />
+                    <g:sortableColumn property="dob" title="${message(code: 'member.dob.label')}" />
+                    <g:sortableColumn property="householdCode" title="${message(code: 'member.householdCode.label')}" />
+                    <g:sortableColumn property="collectedDate" title="${message(code: 'member.collectedDate.label')}" />
+                    <g:sortableColumn property="createdDate" title="${message(code: 'member.createdDate.label')}" />
+                </tr>
+                </thead>
+                <tbody>
+                <g:each in="${residentsList}" status="i" var="memberInstance">
+                    <tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
+                        <td><g:link action="show" id="${memberInstance.id}">${fieldValue(bean: memberInstance, field: "code")}</g:link></td>
+                        <td>${fieldValue(bean: memberInstance, field: "name")}</td>
+                        <td><g:message code="${memberInstance?.gender.name}" /></td>
+                        <td>${fieldValue(bean: memberInstance, field: "dob")}</td>
+                        <td><g:message code="${memberInstance?.householdCode}" /></td>
+                        <td><bi:formatDate date="${memberInstance?.collectedDate}" format="yyyy-MM-dd HH:mm:ss" /></td>
+                        <td><bi:formatDate date="${memberInstance?.createdDate}" format="yyyy-MM-dd HH:mm:ss" /></td>
+                    </tr>
+                </g:each>
+                </tbody>
+            </table>
 
             <dt:loadDatatable name="memberTable" />
         </div>

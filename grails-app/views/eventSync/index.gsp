@@ -21,14 +21,12 @@
 			<table>
 			<thead>
 					<tr>
-
 						<th><g:message code="" default="Id" /></th>
 						<th><g:message code="logreport.description.label" default="Process Description" /></th>
 						<th><g:message code="logreport.start.label" default="Last Synch Start" /></th>
 						<th><g:message code="logreport.end.label" default="Last Synch End" /></th>
 						<th><g:message code="logreport.status.label" default="Current Status" /></th>
 						<th><g:message code="" default="" /></th>
-					
 					</tr>
 				</thead>
 				<tbody>
