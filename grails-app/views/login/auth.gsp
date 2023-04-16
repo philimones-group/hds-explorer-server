@@ -31,7 +31,7 @@
                 <li><g:message code="login.tips.label"/>
                     <a href="#"><g:message code="login.forgot.password.label"/></a>
                 </li>
-                <li><g:message code="login.system.version.label"/> <g:meta name="app.version"/></li>
+                <li><g:message code="login.system.version.label"/> <g:meta name="info.app.version"/></li>
             </ul>
 
 		</div>

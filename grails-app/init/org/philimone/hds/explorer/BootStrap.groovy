@@ -377,6 +377,8 @@ class BootStrap {
         def sysCdgn = svc.getConfigValue("${Codes.PARAMS_SYSTEM_CODE_GENERATOR}")
         def sysPath = svc.getConfigValue("${Codes.PARAMS_SYSTEM_HOMEPATH}")
 
+        println "config: ${fmaxAge}"
+
         //Save Application/System Parameters to database, Will persist to the database only when its empty - changing parameters will be done through database
         aps.addParam(Codes.PARAMS_MIN_AGE_OF_MOTHER, StringUtil.getInteger(mmaxAge))
         aps.addParam(Codes.PARAMS_MIN_AGE_OF_FATHER, StringUtil.getInteger(fmaxAge))

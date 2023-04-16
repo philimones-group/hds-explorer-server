@@ -449,10 +449,4 @@ class GeneralTagLib {
         return "'"+v+"'"
     }
 
-    def isUsingOpenHDS = { attrs, body ->
-        if (generalUtilitiesService.isUsingOpenHDS()){
-            out << body()
-        }
-    }
-
 }

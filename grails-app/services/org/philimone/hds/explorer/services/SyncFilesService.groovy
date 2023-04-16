@@ -1944,9 +1944,12 @@ class SyncFilesService {
     private Element createUser(Document doc, User user) {
         Element userElement = doc.createElement("user");
 
+        //Removing spring-security-core addition to passwords {bcrypt}
+        def userPassword = user.password?.replaceFirst("\\{bcrypt\\}", "");
+
         userElement.appendChild(createAttributeNonNull(doc, "code", user.getCode()));
         userElement.appendChild(createAttributeNonNull(doc, "username", user.getUsername()));
-        userElement.appendChild(createAttributeNonNull(doc, "password", user.getPassword()));
+        userElement.appendChild(createAttributeNonNull(doc, "password", userPassword));
         userElement.appendChild(createAttributeNonNull(doc, "firstName", user.getFirstName()));
         userElement.appendChild(createAttributeNonNull(doc, "lastName", user.getLastName()));
         userElement.appendChild(createAttributeNonNull(doc, "fullName", user.toString()));

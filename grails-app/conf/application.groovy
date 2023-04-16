@@ -1,4 +1,4 @@
-grails.databinding.dateFormats = ['yyyy-MM-dd HH:mm:ss']
+grails.databinding.dateFormats = ['MMddyyyy', 'yyyy-MM-dd', 'yyyy-MM-dd HH:mm:ss', 'yyyy-MM-dd HH:mm:ss.S', "yyyy-MM-dd'T'hh:mm:ss'Z'"]
 
 // configurations taken from Config.groovy
 grails.plugins.twitterbootstrap.fixtaglib = true

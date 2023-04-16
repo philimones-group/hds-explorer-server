@@ -13,23 +13,41 @@ info:
     name: '@info.app.name@'
     version: '@info.app.version@'
     grailsVersion: '@info.app.grailsVersion@'
+
+environments:
+  development:
+    server:
+      servlet:
+        context-path: /hds-explorer-server
+
+
 spring:
   main:
     banner-mode: "off"
   groovy:
     template:
       check-template-location: false
+  devtools:
+    restart:
+      additional-exclude:
+        - 'grails-app/views/**'
+        - 'grails-app/i18n/**'
+        - 'grails-app/conf/**'
+        - '*.gsp'
+        - '**/*.gsp'
+        - '*.gson'
+        - '**/*.gson'
+        - 'logback.xml'
+        - '*.properties'
 
-environments:
-  development:
-    server:
-      contextPath: /hds-explorer-server
-
+---
 # Spring Actuator Endpoints are Disabled by Default
-endpoints:
-  enabled: false
+spring:
   jmx:
-    enabled: true
+    unique-names: true
+management:
+  endpoints:
+    enabled-by-default: false
 
 ---
 grails:
@@ -94,9 +112,7 @@ grails:
         scriptlets: html
         taglib: none
         staticparts: none
-endpoints:
-  jmx:
-    unique-names: true
+
 ---
 grails:
   plugin:
@@ -126,8 +142,8 @@ grails:
 dataSource:
   #MySQL Config
   pooled: true
-  driverClassName: com.mysql.jdbc.Driver
-  dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+  driverClassName: com.mysql.cj.jdbc.Driver
+  dialect: org.hibernate.dialect.MySQL8Dialect
   username: hds_explorer
   password: hds_test
   url: jdbc:mysql://localhost/hds_explorer_db?createDatabaseIfNotExist=true&autoReconnect=true&zeroDateTimeBehavior=convertToNull&useSSL=false
@@ -147,23 +163,17 @@ environments:
   development:
     dataSource:
       dbCreate: none
-      url: jdbc:mysql://localhost/hds_explorer_db?createDatabaseIfNotExist=true&autoReconnect=true&zeroDateTimeBehavior=convertToNull&useSSL=false
+      url: jdbc:mysql://localhost/hds_explorer_demo?createDatabaseIfNotExist=true&autoReconnect=true&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true
+      logSql: false
   test:
     dataSource:
-      dbCreate: none
-      pooled: true
-      driverClassName: com.mysql.jdbc.Driver
-      dialect: org.hibernate.dialect.MySQL5InnoDBDialect
-      username: hds_explorer #hds_test
-      password: hds_test #hds_test
-      #url: jdbc:mysql://localhost/hds_explorer_db_test?createDatabaseIfNotExist=true&autoReconnect=true&zeroDateTimeBehavior=convertToNull&useSSL=false
-      url: jdbc:mysql://localhost/hds_explorer_db?createDatabaseIfNotExist=true&autoReconnect=true&zeroDateTimeBehavior=convertToNull&useSSL=false
-      #            dbCreate: create-drop
-      #            username: hds_test
-      #            password:
-      #            driverClassName: org.h2.Driver
-      #            dialect: org.hibernate.dialect.H2Dialect
-      #            url: jdbc:h2:file:/tmp/hdsTestDb;MVCC=TRUE;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=FALSE
+
+      dbCreate: create-drop
+      username: hds_test
+      password:
+      driverClassName: org.h2.Driver
+      dialect: org.hibernate.dialect.H2Dialect
+      url: jdbc:h2:file:/tmp/hdsTestDb;MVCC=TRUE;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=FALSE
       #url: jdbc:h2:mem:hdsTestDb;MVCC=TRUE;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=FALSE
       logSql: false
   production:

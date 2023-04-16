@@ -34,6 +34,6 @@ class UserPasswordEncoderListener {
     }
 
     private String encodePassword(String password) {
-        springSecurityService?.passwordEncoder ? springSecurityService.encodePassword(password, "8") : password  //salt 8 the same used on openhds fieldworkers
+        springSecurityService?.passwordEncoder ? springSecurityService.encodePassword(password) : password  //{bcrypt} - no more salt 8 the same used on openhds fieldworkers
     }
 }

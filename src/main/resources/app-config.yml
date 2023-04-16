@@ -13,8 +13,8 @@ hds.explorer.system.path: "/var/lib/hds-explorer"
 # Default datasource for HDS-Database
 # MySQL Config
   #dataSource.pooled: true
-  #dataSource.driverClassName: com.mysql.jdbc.Driver
-  #dataSource.dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+  #dataSource.driverClassName: com.mysql.cj.jdbc.Driver
+  #dataSource.dialect: org.hibernate.dialect.MySQL8Dialect
   #dataSource.username: hds_explorer
   #dataSource.password: d33_2019xx
   #dataSource.url: jdbc:mysql://localhost/hds_explorer_db?createDatabaseIfNotExist=true&autoReconnect=true&zeroDateTimeBehavior=convertToNull&useSSL=false
