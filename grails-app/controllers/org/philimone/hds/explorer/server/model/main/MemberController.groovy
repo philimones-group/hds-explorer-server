@@ -6,6 +6,7 @@ import static org.springframework.http.HttpStatus.*
 class MemberController {
 
     MemberService memberService
+    HouseholdService householdService
 
     static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
 
@@ -95,5 +96,11 @@ class MemberController {
             }
             '*'{ render status: NOT_FOUND }
         }
+    }
+
+    def showHousehold = {
+        def household = householdService.getHousehold(params.id)
+
+        redirect controller: "household", action: "show", id: household.id
     }
 }

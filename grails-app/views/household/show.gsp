@@ -58,7 +58,7 @@
                 <tbody>
                 <g:each in="${residentsList}" status="i" var="memberInstance">
                     <tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
-                        <td><g:link action="show" id="${memberInstance.id}">${fieldValue(bean: memberInstance, field: "code")}</g:link></td>
+                        <td><g:link controller="member" action="show" id="${memberInstance.id}">${fieldValue(bean: memberInstance, field: "code")}</g:link></td>
                         <td>${fieldValue(bean: memberInstance, field: "name")}</td>
                         <td><g:message code="${memberInstance?.gender.name}" /></td>
                         <td>${fieldValue(bean: memberInstance, field: "dob")}</td>

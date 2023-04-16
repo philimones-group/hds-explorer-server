@@ -21,7 +21,8 @@
                 <div class="message" role="status">${flash.message}</div>
             </g:if>
 
-            <bi:tableList id="memberTable" class="member" collection="${memberList}" columns="code, name, gender, dob, householdCode, collectedDate, createdDate" messageColumns="gender"/>
+            <bi:tableList id="memberTable" class="member" collection="${memberList}" columns="code, name, gender, dob, householdCode, collectedDate, createdDate" messageColumns="gender"
+                          linkAction="showHousehold" linkColumn="householdCode" linkId="householdCode"/>
             
             <div class="pagination">
                 <g:paginate total="${memberCount ?: 0}" />

@@ -163,7 +163,7 @@ environments:
   development:
     dataSource:
       dbCreate: none
-      url: jdbc:mysql://localhost/hds_explorer_demo?createDatabaseIfNotExist=true&autoReconnect=true&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true
+      url: jdbc:mysql://localhost/hds_explorer_db?createDatabaseIfNotExist=true&autoReconnect=true&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true
       logSql: false
   test:
     dataSource:
