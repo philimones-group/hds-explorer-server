@@ -100,7 +100,7 @@ class FormService {
         return list
     }
 
-    List<String> getMappingTableList() { ["Household","Member","Region","User","FollowUp-List","Form-Group"] }
+    List<String> getMappingTableList() { ["Household","Member","Region","User", "Visit", "FollowUp-List","Form-Group"] }
 
     String generateGroupId(String formName) {
         //FG0001

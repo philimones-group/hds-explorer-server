@@ -473,6 +473,8 @@ class FormController {
             list = User.ALL_COLUMNS
         } else if (modelName.equals("Region")){
             list = Region.ALL_COLUMNS
+        } else if (modelName.equals("Visit")){
+            list = Visit.ALL_COLUMNS
         } else if (modelName.equals("FollowUp-List")) {
             list = TrackingListMapping.ALL_COLUMNS
         } else if (modelName.equals("Form-Group")) {
@@ -500,7 +502,7 @@ class FormController {
         println "model ${modelName}"
 
         if (modelName == "" || modelName==null){
-            tableList = ["Household","Member","User","Region"]
+            tableList = ["Household","Member","Region","User","Visit"]
             tableList.addAll(datasetService.datasetNames)
         }
 

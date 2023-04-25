@@ -95,4 +95,6 @@ class Visit extends CollectableEntity {
         gpsLongitude column: "gps_longitude"
 
     }
+
+    def static ALL_COLUMNS = ['code', 'roundNumber', 'householdCode', 'visitDate', 'visitLocation', 'visitLocationOther', 'respondentCode', 'interpreterName', 'gpsAccuracy', 'gpsAltitude', 'gpsLatitude', 'gpsLongitude']
 }
