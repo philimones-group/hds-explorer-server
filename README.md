@@ -12,14 +12,14 @@ This application server can be deployed on a Tomcat server (or any servlet 2.5+ 
 
 
 ### Build/Development Instructions
-HDS-Explorer is being developed using Grails Framework 3.3.12, a Groovy Web Application Framework https://grails.org.
+HDS-Explorer is being developed using Grails Framework 5.3.2, a Groovy Web Application Framework https://grails.org.
 
 To get started with HDS-Explorer, simply clone the repository and then from within your local copy:
 
 **Install the Development Framework - Grails using SDKMAN**  
    For instructions on how to install SDKMAN visit https://sdkman.io/install
-   * Execute the command below to install grails 3.3.12  
-   `sdk install grails 3.3.12`   
+   * Execute the command below to install grails 5.3.2  
+   `sdk install grails 5.3.2`   
    * Clone HDS-Explorer repository  
    `git clone https://github.com/philimones-group/hds-explorer-server.git`
    * Configure the MySQL Database Access (under the cloned directory hds-explorer, import the file **user.sql** to mysql database)  
@@ -34,10 +34,13 @@ To get started with HDS-Explorer, simply clone the repository and then from with
 ### Binary Files for HDS-Explorer Server and Client/Mobile
 
 **hds-explorer-server.war** - A War binary file to be deployed in a Java web container server  
-**hds-explorer-tablet.apk** - A Android APK file to be installed in a Android Device (Minimum: API-21 or Android 5.0+)  
+**hds-explorer-tablet.apk** - A Android APK file to be installed in a Android Device (Minimum: API-21 or Android 5.0+)<br>
+**hds-explorer-installer-vXXX.run** - A executable file for Linux enviroments that allows you to use a graphical interface to customize HDS-Explorer Server database access and app parameters and then export a War file to be deployed on Tomcat  
+**hds-explorer-installer-vXXX.exe** - A executable file for Windows enviroments that allows you to use a graphical interface to customize HDS-Explorer Server database access and app parameters and then export a War file to be deployed on Tomcat
 
 The binary file **hds-explorer-server.war** can be found in link https://github.com/philimones-group/hds-explorer-server/releases    
-The binary file **hds-explorer-tablet.apk** can be found in link https://github.com/philimones-group/hds-explorer-tablet/releases
+The binary file **hds-explorer-tablet.apk** can be found in link https://github.com/philimones-group/hds-explorer-tablet/releases<br />
+The binary file **hds-explorer-installer-vXXX.run/exe** can be found in link https://github.com/philimones-group/hds-explorer-server/releases
 
 ### Server Deployment instructions (in Linux System):
 Lets consider that we are in a Linux distribution and Tomcat Server that was manually installed in the path: /opt/tomcat.
