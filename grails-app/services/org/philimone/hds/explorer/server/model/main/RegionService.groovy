@@ -233,6 +233,8 @@ class RegionService {
         region.collectedId = rr.id
         region.collectedBy = userService.getUser(rr.collectedBy)
         region.collectedDeviceId = rr.collectedDeviceId
+        region.collectedStart = rr.collectedStart
+        region.collectedEnd = rr.collectedEnd
         region.collectedDate = rr.collectedDate
         region.updatedDate = rr.uploadedDate
 

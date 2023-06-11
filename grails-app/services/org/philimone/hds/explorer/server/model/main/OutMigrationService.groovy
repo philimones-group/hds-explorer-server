@@ -326,6 +326,8 @@ class OutMigrationService {
         outMigration.collectedDeviceId = rout.collectedDeviceId
         outMigration.collectedHouseholdId = rout.collectedHouseholdId
         outMigration.collectedMemberId = rout.collectedMemberId
+        outMigration.collectedStart = rout.collectedStart
+        outMigration.collectedEnd = rout.collectedEnd
         outMigration.collectedDate = rout.collectedDate
         outMigration.updatedDate = rout.uploadedDate
 

@@ -393,6 +393,8 @@ class ExternalInMigrationService {
         rawInMig.collectedDeviceId = rawExternalInMigration.collectedDeviceId
         rawInMig.collectedHouseholdId = rawExternalInMigration.collectedHouseholdId
         rawInMig.collectedMemberId = rawExternalInMigration.collectedMemberId
+        rawInMig.collectedStart = rawExternalInMigration.collectedStart
+        rawInMig.collectedEnd = rawExternalInMigration.collectedEnd
         rawInMig.collectedDate = rawExternalInMigration.collectedDate
         rawInMig.uploadedDate = rawExternalInMigration.uploadedDate
 

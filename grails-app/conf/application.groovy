@@ -39,7 +39,7 @@ grails.plugin.springsecurity.password.algorithm = 'bcrypt'
 grails.plugin.springsecurity.logout.postOnly = false
 
 // add this fix to be able to get current user from springSecurityService
-// grails.plugin.springsecurity.sch.strategyName = org.springframework.security.core.context.SecurityContextHolder.MODE_INHERITABLETHREADLOCAL
+grails.plugin.springsecurity.sch.strategyName = org.springframework.security.core.context.SecurityContextHolder.MODE_INHERITABLETHREADLOCAL
 
 grails.plugin.springsecurity.rejectIfNoRule = true
 

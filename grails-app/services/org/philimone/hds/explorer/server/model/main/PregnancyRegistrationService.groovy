@@ -298,6 +298,8 @@ class PregnancyRegistrationService {
         pregnancyRegistration.collectedDeviceId = pr.collectedDeviceId
         pregnancyRegistration.collectedHouseholdId = pr.collectedHouseholdId
         pregnancyRegistration.collectedMemberId = pr.collectedMemberId
+        pregnancyRegistration.collectedStart = pr.collectedStart
+        pregnancyRegistration.collectedEnd = pr.collectedEnd
         pregnancyRegistration.collectedDate = pr.collectedDate
         pregnancyRegistration.updatedDate = pr.uploadedDate
 

@@ -42,6 +42,6 @@ class Enumeration extends CollectableEntity {
         householdCode column: "household_code"
         member column: "member_id"
         memberCode column: "member_code"
-        eventDate column: "visit_reason"
+        eventDate column: "event_date"
     }
 }

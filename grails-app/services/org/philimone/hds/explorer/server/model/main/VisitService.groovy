@@ -227,6 +227,8 @@ class VisitService {
         visit.collectedBy = userService.getUser(rv.collectedBy)
         visit.collectedDeviceId = rv.collectedDeviceId
         visit.collectedHouseholdId = rv.collectedHouseholdId
+        visit.collectedStart = rv.collectedStart
+        visit.collectedEnd = rv.collectedEnd
         visit.collectedDate = rv.collectedDate
         visit.updatedDate = rv.uploadedDate
 

@@ -451,6 +451,8 @@ class InMigrationService {
         inmigration.collectedDeviceId = rin.collectedDeviceId
         inmigration.collectedHouseholdId = rin.collectedHouseholdId
         inmigration.collectedMemberId = rin.collectedMemberId
+        inmigration.collectedStart = rin.collectedStart
+        inmigration.collectedEnd = rin.collectedEnd
         inmigration.collectedDate = rin.collectedDate
 
         return inmigration
@@ -482,6 +484,8 @@ class InMigrationService {
         rawOutm.collectedDeviceId = rawInMigration.collectedDeviceId
         rawOutm.collectedHouseholdId = rawInMigration.collectedHouseholdId
         rawOutm.collectedMemberId = rawInMigration.collectedMemberId
+        rawOutm.collectedStart = rawInMigration.collectedStart
+        rawOutm.collectedEnd = rawInMigration.collectedEnd
         rawOutm.collectedDate = rawInMigration.collectedDate
         rawOutm.uploadedDate = rawInMigration.uploadedDate
 
@@ -504,6 +508,8 @@ class InMigrationService {
         rawOutm.collectedDeviceId = inMigration.collectedDeviceId
         rawOutm.collectedHouseholdId = inMigration.collectedHouseholdId
         rawOutm.collectedMemberId = inMigration.collectedMemberId
+        rawOutm.collectedStart = inMigration.collectedStart
+        rawOutm.collectedEnd = inMigration.collectedEnd
         rawOutm.collectedDate = inMigration.collectedDate
         //rawOutm.uploadedDate = inMigration.uploadedDate
 

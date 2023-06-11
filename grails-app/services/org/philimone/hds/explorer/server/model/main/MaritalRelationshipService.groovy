@@ -506,6 +506,8 @@ class MaritalRelationshipService {
         maritalRelationship.collectedDeviceId = mr.collectedDeviceId
         maritalRelationship.collectedHouseholdId = mr.collectedHouseholdId
         maritalRelationship.collectedMemberId = mr.collectedMemberId
+        maritalRelationship.collectedStart = mr.collectedStart
+        maritalRelationship.collectedEnd = mr.collectedEnd
         maritalRelationship.collectedDate = mr.collectedDate
         maritalRelationship.updatedDate = mr.uploadedDate
 

@@ -231,6 +231,8 @@ class HouseholdService {
         household.collectedId = rh.id
         household.collectedDeviceId = rh.collectedDeviceId
         household.collectedBy = userService.getUser(rh.collectedBy)
+        household.collectedStart = rh.collectedStart
+        household.collectedEnd = rh.collectedEnd
         household.collectedDate = rh.collectedDate
         household.updatedDate = rh.uploadedDate
 

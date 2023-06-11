@@ -524,6 +524,8 @@ class PregnancyOutcomeService {
         rawDeath.collectedDeviceId = rawPregnancyOutcome.collectedDeviceId
         rawDeath.collectedHouseholdId = rawPregnancyOutcome.collectedHouseholdId
         rawDeath.collectedMemberId = rawPregnancyChild.childCollectedId
+        rawDeath.collectedStart = rawPregnancyOutcome.collectedStart
+        rawDeath.collectedEnd = rawPregnancyOutcome.collectedEnd
         rawDeath.collectedDate = rawPregnancyOutcome.collectedDate
         rawDeath.uploadedDate = rawPregnancyOutcome.uploadedDate
 
@@ -561,6 +563,8 @@ class PregnancyOutcomeService {
         pregnancyOutcome.collectedDeviceId = po.collectedDeviceId
         pregnancyOutcome.collectedHouseholdId = po.collectedHouseholdId
         pregnancyOutcome.collectedMemberId = po.collectedMemberId
+        pregnancyOutcome.collectedStart = po.collectedStart
+        pregnancyOutcome.collectedEnd = po.collectedEnd
         pregnancyOutcome.collectedDate = po.collectedDate
         pregnancyOutcome.updatedDate = po.uploadedDate
 

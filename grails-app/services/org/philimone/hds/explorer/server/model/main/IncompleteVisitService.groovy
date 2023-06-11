@@ -156,6 +156,8 @@ class IncompleteVisitService {
         incompleteVisit.collectedDeviceId = riv.collectedDeviceId
         incompleteVisit.collectedHouseholdId = riv.collectedHouseholdId
         incompleteVisit.collectedMemberId = riv.collectedMemberId
+        incompleteVisit.collectedStart = riv.collectedStart
+        incompleteVisit.collectedEnd = riv.collectedEnd
         incompleteVisit.collectedDate = riv.collectedDate
         incompleteVisit.updatedDate = riv.uploadedDate
 

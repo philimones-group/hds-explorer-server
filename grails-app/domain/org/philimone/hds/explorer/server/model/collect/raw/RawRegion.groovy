@@ -19,6 +19,8 @@ class RawRegion {
 
     String collectedBy //fieldWorkerId
     String collectedDeviceId
+    LocalDateTime collectedStart
+    LocalDateTime collectedEnd
     LocalDateTime collectedDate //visitDate / creationDate
     LocalDateTime uploadedDate  //submissionDate
 
@@ -38,6 +40,8 @@ class RawRegion {
 
         collectedBy blank: true
         collectedDeviceId nullable: true
+        collectedStart nullable:true
+        collectedEnd nullable:true
         collectedDate nullable: true
         uploadedDate nullable: true
 
@@ -59,6 +63,8 @@ class RawRegion {
 
         collectedBy column: "collected_by", index: "idx_collected_by"
         collectedDeviceId column: "collected_device_id", index: "idx_cdeviceid"
+        collectedStart column: "collected_start"
+        collectedEnd column: "collected_end"
         collectedDate column: "collected_date"
         uploadedDate column: "uploaded_date"
 
@@ -67,3 +73,4 @@ class RawRegion {
         processedStatus column: "processed", enumType: "identity"
     }
 }
+

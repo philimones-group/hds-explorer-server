@@ -49,6 +49,23 @@ class RawImportApiService implements DataBinder {
             params.uploadedDate = LocalDateTime.now()
         }
 
+        /* start and end variables */
+        if (xmlNode.start.size() > 0) {
+            params.collectedStart = StringUtil.toLocalDateTimePrecise(xmlNode.start.text())
+
+            if (params.collectedStart==null) {
+                errors << errorMessageService.getRawMessage("validation.field.raw.parsing.localdatetime.error", [xmlNode?.start.text(), "collectedStart"])
+            }
+        }
+
+        if (xmlNode.end.size() > 0) {
+            params.collectedEnd = StringUtil.toLocalDateTimePrecise(xmlNode.end.text())
+
+            if (params.collectedEnd==null) {
+                errors << errorMessageService.getRawMessage("validation.field.raw.parsing.localdatetime.error", [xmlNode?.end.text(), "collectedEnd"])
+            }
+        }
+
         def rawRegion = new RawRegion(params)
         rawRegion.id = params.id
 
@@ -86,6 +103,23 @@ class RawImportApiService implements DataBinder {
             }
         } else {
             params.uploadedDate = LocalDateTime.now()
+        }
+
+        /* start and end variables */
+        if (xmlNode.start.size() > 0) {
+            params.collectedStart = StringUtil.toLocalDateTimePrecise(xmlNode.start.text())
+
+            if (params.collectedStart==null) {
+                errors << errorMessageService.getRawMessage("validation.field.raw.parsing.localdatetime.error", [xmlNode?.start.text(), "collectedStart"])
+            }
+        }
+
+        if (xmlNode.end.size() > 0) {
+            params.collectedEnd = StringUtil.toLocalDateTimePrecise(xmlNode.end.text())
+
+            if (params.collectedEnd==null) {
+                errors << errorMessageService.getRawMessage("validation.field.raw.parsing.localdatetime.error", [xmlNode?.end.text(), "collectedEnd"])
+            }
         }
 
         //println("new-id = "+params.id)
@@ -128,6 +162,23 @@ class RawImportApiService implements DataBinder {
             }
         } else {
             params.uploadedDate = LocalDateTime.now()
+        }
+
+        /* start and end variables */
+        if (xmlNode.start.size() > 0) {
+            params.collectedStart = StringUtil.toLocalDateTimePrecise(xmlNode.start.text())
+
+            if (params.collectedStart==null) {
+                errors << errorMessageService.getRawMessage("validation.field.raw.parsing.localdatetime.error", [xmlNode?.start.text(), "collectedStart"])
+            }
+        }
+
+        if (xmlNode.end.size() > 0) {
+            params.collectedEnd = StringUtil.toLocalDateTimePrecise(xmlNode.end.text())
+
+            if (params.collectedEnd==null) {
+                errors << errorMessageService.getRawMessage("validation.field.raw.parsing.localdatetime.error", [xmlNode?.end.text(), "collectedEnd"])
+            }
         }
 
         println("new-id = "+params.id)
@@ -194,6 +245,23 @@ class RawImportApiService implements DataBinder {
             params.uploadedDate = LocalDateTime.now()
         }
 
+        /* start and end variables */
+        if (xmlNode.start.size() > 0) {
+            params.collectedStart = StringUtil.toLocalDateTimePrecise(xmlNode.start.text())
+
+            if (params.collectedStart==null) {
+                errors << errorMessageService.getRawMessage("validation.field.raw.parsing.localdatetime.error", [xmlNode?.start.text(), "collectedStart"])
+            }
+        }
+
+        if (xmlNode.end.size() > 0) {
+            params.collectedEnd = StringUtil.toLocalDateTimePrecise(xmlNode.end.text())
+
+            if (params.collectedEnd==null) {
+                errors << errorMessageService.getRawMessage("validation.field.raw.parsing.localdatetime.error", [xmlNode?.end.text(), "collectedEnd"])
+            }
+        }
+
         def rawMember = new RawMember(params)
         rawMember.id = params.id
 
@@ -238,6 +306,23 @@ class RawImportApiService implements DataBinder {
             }
         } else {
             params.uploadedDate = LocalDateTime.now()
+        }
+
+        /* start and end variables */
+        if (xmlNode.start.size() > 0) {
+            params.collectedStart = StringUtil.toLocalDateTimePrecise(xmlNode.start.text())
+
+            if (params.collectedStart==null) {
+                errors << errorMessageService.getRawMessage("validation.field.raw.parsing.localdatetime.error", [xmlNode?.start.text(), "collectedStart"])
+            }
+        }
+
+        if (xmlNode.end.size() > 0) {
+            params.collectedEnd = StringUtil.toLocalDateTimePrecise(xmlNode.end.text())
+
+            if (params.collectedEnd==null) {
+                errors << errorMessageService.getRawMessage("validation.field.raw.parsing.localdatetime.error", [xmlNode?.end.text(), "collectedEnd"])
+            }
         }
 
         def rawVisit = new RawVisit(params)
@@ -294,6 +379,23 @@ class RawImportApiService implements DataBinder {
             params.uploadedDate = LocalDateTime.now()
         }
 
+        /* start and end variables */
+        if (xmlNode.start.size() > 0) {
+            params.collectedStart = StringUtil.toLocalDateTimePrecise(xmlNode.start.text())
+
+            if (params.collectedStart==null) {
+                errors << errorMessageService.getRawMessage("validation.field.raw.parsing.localdatetime.error", [xmlNode?.start.text(), "collectedStart"])
+            }
+        }
+
+        if (xmlNode.end.size() > 0) {
+            params.collectedEnd = StringUtil.toLocalDateTimePrecise(xmlNode.end.text())
+
+            if (params.collectedEnd==null) {
+                errors << errorMessageService.getRawMessage("validation.field.raw.parsing.localdatetime.error", [xmlNode?.end.text(), "collectedEnd"])
+            }
+        }
+
         def rawMemberEnu = new RawMemberEnu(params)
         rawMemberEnu.id = params.id
 
@@ -348,6 +450,23 @@ class RawImportApiService implements DataBinder {
             params.uploadedDate = LocalDateTime.now()
         }
 
+        /* start and end variables */
+        if (xmlNode.start.size() > 0) {
+            params.collectedStart = StringUtil.toLocalDateTimePrecise(xmlNode.start.text())
+
+            if (params.collectedStart==null) {
+                errors << errorMessageService.getRawMessage("validation.field.raw.parsing.localdatetime.error", [xmlNode?.start.text(), "collectedStart"])
+            }
+        }
+
+        if (xmlNode.end.size() > 0) {
+            params.collectedEnd = StringUtil.toLocalDateTimePrecise(xmlNode.end.text())
+
+            if (params.collectedEnd==null) {
+                errors << errorMessageService.getRawMessage("validation.field.raw.parsing.localdatetime.error", [xmlNode?.end.text(), "collectedEnd"])
+            }
+        }
+
         def rawExternalInMigration = new RawExternalInMigration(params)
         rawExternalInMigration.id = params.id
 
@@ -394,6 +513,23 @@ class RawImportApiService implements DataBinder {
             params.uploadedDate = LocalDateTime.now()
         }
 
+        /* start and end variables */
+        if (xmlNode.start.size() > 0) {
+            params.collectedStart = StringUtil.toLocalDateTimePrecise(xmlNode.start.text())
+
+            if (params.collectedStart==null) {
+                errors << errorMessageService.getRawMessage("validation.field.raw.parsing.localdatetime.error", [xmlNode?.start.text(), "collectedStart"])
+            }
+        }
+
+        if (xmlNode.end.size() > 0) {
+            params.collectedEnd = StringUtil.toLocalDateTimePrecise(xmlNode.end.text())
+
+            if (params.collectedEnd==null) {
+                errors << errorMessageService.getRawMessage("validation.field.raw.parsing.localdatetime.error", [xmlNode?.end.text(), "collectedEnd"])
+            }
+        }
+
         def rawInMigration = new RawInMigration(params)
         rawInMigration.id = params.id
 
@@ -438,6 +574,23 @@ class RawImportApiService implements DataBinder {
             }
         } else {
             params.uploadedDate = LocalDateTime.now()
+        }
+
+        /* start and end variables */
+        if (xmlNode.start.size() > 0) {
+            params.collectedStart = StringUtil.toLocalDateTimePrecise(xmlNode.start.text())
+
+            if (params.collectedStart==null) {
+                errors << errorMessageService.getRawMessage("validation.field.raw.parsing.localdatetime.error", [xmlNode?.start.text(), "collectedStart"])
+            }
+        }
+
+        if (xmlNode.end.size() > 0) {
+            params.collectedEnd = StringUtil.toLocalDateTimePrecise(xmlNode.end.text())
+
+            if (params.collectedEnd==null) {
+                errors << errorMessageService.getRawMessage("validation.field.raw.parsing.localdatetime.error", [xmlNode?.end.text(), "collectedEnd"])
+            }
         }
 
         def rawOutMigration = new RawOutMigration(params)
@@ -559,6 +712,23 @@ class RawImportApiService implements DataBinder {
             params.uploadedDate = LocalDateTime.now()
         }
 
+        /* start and end variables */
+        if (xmlNode.start.size() > 0) {
+            params.collectedStart = StringUtil.toLocalDateTimePrecise(xmlNode.start.text())
+
+            if (params.collectedStart==null) {
+                errors << errorMessageService.getRawMessage("validation.field.raw.parsing.localdatetime.error", [xmlNode?.start.text(), "collectedStart"])
+            }
+        }
+
+        if (xmlNode.end.size() > 0) {
+            params.collectedEnd = StringUtil.toLocalDateTimePrecise(xmlNode.end.text())
+
+            if (params.collectedEnd==null) {
+                errors << errorMessageService.getRawMessage("validation.field.raw.parsing.localdatetime.error", [xmlNode?.end.text(), "collectedEnd"])
+            }
+        }
+
         def rawMaritalRelationship = new RawMaritalRelationship(params)
         rawMaritalRelationship.id = params.id
 
@@ -632,6 +802,23 @@ class RawImportApiService implements DataBinder {
             params.uploadedDate = LocalDateTime.now()
         }
 
+        /* start and end variables */
+        if (xmlNode.start.size() > 0) {
+            params.collectedStart = StringUtil.toLocalDateTimePrecise(xmlNode.start.text())
+
+            if (params.collectedStart==null) {
+                errors << errorMessageService.getRawMessage("validation.field.raw.parsing.localdatetime.error", [xmlNode?.start.text(), "collectedStart"])
+            }
+        }
+
+        if (xmlNode.end.size() > 0) {
+            params.collectedEnd = StringUtil.toLocalDateTimePrecise(xmlNode.end.text())
+
+            if (params.collectedEnd==null) {
+                errors << errorMessageService.getRawMessage("validation.field.raw.parsing.localdatetime.error", [xmlNode?.end.text(), "collectedEnd"])
+            }
+        }
+
         def rawPregnancyRegistration = new RawPregnancyRegistration(params)
         rawPregnancyRegistration.id = params.id
 
@@ -701,6 +888,23 @@ class RawImportApiService implements DataBinder {
             }
         } else {
             params.uploadedDate = LocalDateTime.now()
+        }
+
+        /* start and end variables */
+        if (xmlNode.start.size() > 0) {
+            params.collectedStart = StringUtil.toLocalDateTimePrecise(xmlNode.start.text())
+
+            if (params.collectedStart==null) {
+                errors << errorMessageService.getRawMessage("validation.field.raw.parsing.localdatetime.error", [xmlNode?.start.text(), "collectedStart"])
+            }
+        }
+
+        if (xmlNode.end.size() > 0) {
+            params.collectedEnd = StringUtil.toLocalDateTimePrecise(xmlNode.end.text())
+
+            if (params.collectedEnd==null) {
+                errors << errorMessageService.getRawMessage("validation.field.raw.parsing.localdatetime.error", [xmlNode?.end.text(), "collectedEnd"])
+            }
         }
 
         def rawInstance = new RawPregnancyOutcome(params)
@@ -782,6 +986,23 @@ class RawImportApiService implements DataBinder {
             params.uploadedDate = LocalDateTime.now()
         }
 
+        /* start and end variables */
+        if (xmlNode.start.size() > 0) {
+            params.collectedStart = StringUtil.toLocalDateTimePrecise(xmlNode.start.text())
+
+            if (params.collectedStart==null) {
+                errors << errorMessageService.getRawMessage("validation.field.raw.parsing.localdatetime.error", [xmlNode?.start.text(), "collectedStart"])
+            }
+        }
+
+        if (xmlNode.end.size() > 0) {
+            params.collectedEnd = StringUtil.toLocalDateTimePrecise(xmlNode.end.text())
+
+            if (params.collectedEnd==null) {
+                errors << errorMessageService.getRawMessage("validation.field.raw.parsing.localdatetime.error", [xmlNode?.end.text(), "collectedEnd"])
+            }
+        }
+
         def rawDeath = new RawDeath(params)
         rawDeath.id = params.id
 
@@ -861,6 +1082,23 @@ class RawImportApiService implements DataBinder {
             params.uploadedDate = LocalDateTime.now()
         }
 
+        /* start and end variables */
+        if (xmlNode.start.size() > 0) {
+            params.collectedStart = StringUtil.toLocalDateTimePrecise(xmlNode.start.text())
+
+            if (params.collectedStart==null) {
+                errors << errorMessageService.getRawMessage("validation.field.raw.parsing.localdatetime.error", [xmlNode?.start.text(), "collectedStart"])
+            }
+        }
+
+        if (xmlNode.end.size() > 0) {
+            params.collectedEnd = StringUtil.toLocalDateTimePrecise(xmlNode.end.text())
+
+            if (params.collectedEnd==null) {
+                errors << errorMessageService.getRawMessage("validation.field.raw.parsing.localdatetime.error", [xmlNode?.end.text(), "collectedEnd"])
+            }
+        }
+
         def rawInstance = new RawChangeHead(params)
         rawInstance.id = params.id
 
@@ -908,6 +1146,23 @@ class RawImportApiService implements DataBinder {
             params.uploadedDate = LocalDateTime.now()
         }
 
+        /* start and end variables */
+        if (xmlNode.start.size() > 0) {
+            params.collectedStart = StringUtil.toLocalDateTimePrecise(xmlNode.start.text())
+
+            if (params.collectedStart==null) {
+                errors << errorMessageService.getRawMessage("validation.field.raw.parsing.localdatetime.error", [xmlNode?.start.text(), "collectedStart"])
+            }
+        }
+
+        if (xmlNode.end.size() > 0) {
+            params.collectedEnd = StringUtil.toLocalDateTimePrecise(xmlNode.end.text())
+
+            if (params.collectedEnd==null) {
+                errors << errorMessageService.getRawMessage("validation.field.raw.parsing.localdatetime.error", [xmlNode?.end.text(), "collectedEnd"])
+            }
+        }
+
         def rawIncompleteVisit = new RawIncompleteVisit(params)
         rawIncompleteVisit.id = params.id
 
@@ -945,6 +1200,23 @@ class RawImportApiService implements DataBinder {
             params.uploadedDate = LocalDateTime.now()
         }
 
+        /* start and end variables */
+        if (xmlNode.start.size() > 0) {
+            params.collectedStart = StringUtil.toLocalDateTimePrecise(xmlNode.start.text())
+
+            if (params.collectedStart==null) {
+                errors << errorMessageService.getRawMessage("validation.field.raw.parsing.localdatetime.error", [xmlNode?.start.text(), "collectedStart"])
+            }
+        }
+
+        if (xmlNode.end.size() > 0) {
+            params.collectedEnd = StringUtil.toLocalDateTimePrecise(xmlNode.end.text())
+
+            if (params.collectedEnd==null) {
+                errors << errorMessageService.getRawMessage("validation.field.raw.parsing.localdatetime.error", [xmlNode?.end.text(), "collectedEnd"])
+            }
+        }
+
         return new RawParseResult<RawRegion>(new RawRegion(params), errors)
 
     }
@@ -977,6 +1249,23 @@ class RawImportApiService implements DataBinder {
             }
         } else {
             params.uploadedDate = LocalDateTime.now()
+        }
+
+        /* start and end variables */
+        if (xmlNode.start.size() > 0) {
+            params.collectedStart = StringUtil.toLocalDateTimePrecise(xmlNode.start.text())
+
+            if (params.collectedStart==null) {
+                errors << errorMessageService.getRawMessage("validation.field.raw.parsing.localdatetime.error", [xmlNode?.start.text(), "collectedStart"])
+            }
+        }
+
+        if (xmlNode.end.size() > 0) {
+            params.collectedEnd = StringUtil.toLocalDateTimePrecise(xmlNode.end.text())
+
+            if (params.collectedEnd==null) {
+                errors << errorMessageService.getRawMessage("validation.field.raw.parsing.localdatetime.error", [xmlNode?.end.text(), "collectedEnd"])
+            }
         }
 
         return new RawParseResult<RawHousehold>(new RawHousehold(params), errors)
@@ -1020,6 +1309,23 @@ class RawImportApiService implements DataBinder {
             }
         } else {
             params.uploadedDate = LocalDateTime.now()
+        }
+
+        /* start and end variables */
+        if (xmlNode.start.size() > 0) {
+            params.collectedStart = StringUtil.toLocalDateTimePrecise(xmlNode.start.text())
+
+            if (params.collectedStart==null) {
+                errors << errorMessageService.getRawMessage("validation.field.raw.parsing.localdatetime.error", [xmlNode?.start.text(), "collectedStart"])
+            }
+        }
+
+        if (xmlNode.end.size() > 0) {
+            params.collectedEnd = StringUtil.toLocalDateTimePrecise(xmlNode.end.text())
+
+            if (params.collectedEnd==null) {
+                errors << errorMessageService.getRawMessage("validation.field.raw.parsing.localdatetime.error", [xmlNode?.end.text(), "collectedEnd"])
+            }
         }
 
         return new RawParseResult<RawMember>(new RawMember(params), errors)

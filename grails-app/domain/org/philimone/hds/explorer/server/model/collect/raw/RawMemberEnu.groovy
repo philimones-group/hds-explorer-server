@@ -34,6 +34,8 @@ class RawMemberEnu {
     String collectedDeviceId
     String collectedHouseholdId
     String collectedMemberId
+    LocalDateTime collectedStart
+    LocalDateTime collectedEnd
     LocalDateTime collectedDate //visitDate / creationDate
     LocalDateTime uploadedDate
 
@@ -70,6 +72,8 @@ class RawMemberEnu {
         collectedDeviceId nullable:true
         collectedHouseholdId nullable:true
         collectedMemberId nullable:true
+        collectedStart nullable:true
+        collectedEnd nullable:true
         collectedDate nullable: true
         uploadedDate nullable: true
 
@@ -122,4 +126,5 @@ class RawMemberEnu {
         processedStatus column: "processed", enumType: "identity"
     }
 }
+
 

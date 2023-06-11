@@ -281,6 +281,8 @@ class MemberService {
         member.collectedDeviceId = rm.collectedDeviceId
         member.collectedHouseholdId = rm.collectedHouseholdId
         member.collectedMemberId = rm.collectedMemberId
+        member.collectedStart = rm.collectedStart
+        member.collectedEnd = rm.collectedEnd
         member.collectedDate = rm.collectedDate
         member.updatedDate = rm.uploadedDate
 

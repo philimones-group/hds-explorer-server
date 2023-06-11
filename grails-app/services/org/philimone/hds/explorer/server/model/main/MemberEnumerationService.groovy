@@ -157,6 +157,8 @@ class MemberEnumerationService {
         enumeration.eventDate = rawMemberEnu.residencyStartDate
         enumeration.collectedId = rawMemberEnu.id
         enumeration.collectedBy = userService.getUser(rawMemberEnu.collectedBy)
+        enumeration.collectedStart = rawMemberEnu.collectedStart
+        enumeration.collectedEnd = rawMemberEnu.collectedEnd
         enumeration.collectedDate = rawMemberEnu.collectedDate
         enumeration.collectedDeviceId = rawMemberEnu.collectedDeviceId
         enumeration.collectedHouseholdId = rawMemberEnu.collectedHouseholdId

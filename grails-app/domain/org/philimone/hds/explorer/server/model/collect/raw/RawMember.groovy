@@ -28,6 +28,8 @@ class RawMember {
     String collectedDeviceId
     String collectedHouseholdId
     String collectedMemberId
+    LocalDateTime collectedStart
+    LocalDateTime collectedEnd
     LocalDateTime collectedDate
     LocalDateTime uploadedDate
 
@@ -56,6 +58,8 @@ class RawMember {
         collectedDeviceId nullable:true
         collectedHouseholdId nullable:true
         collectedMemberId nullable:true
+        collectedStart nullable:true
+        collectedEnd nullable:true
         collectedDate nullable: true
         uploadedDate nullable: true
 
@@ -93,4 +97,5 @@ class RawMember {
         processedStatus column: "processed", enumType: "identity"
     }
 }
+
 

@@ -31,6 +31,8 @@ class RawVisit {
     String collectedDeviceId
     String collectedHouseholdId
     String collectedMemberId
+    LocalDateTime collectedStart
+    LocalDateTime collectedEnd
     LocalDateTime collectedDate //visitDate / creationDate
     LocalDateTime uploadedDate  //submissionDate
 
@@ -65,6 +67,8 @@ class RawVisit {
         collectedDeviceId nullable:true
         collectedHouseholdId nullable:true
         collectedMemberId nullable:true
+        collectedStart nullable:true
+        collectedEnd nullable:true
         collectedDate nullable: true
         uploadedDate nullable: true
 
@@ -101,6 +105,8 @@ class RawVisit {
         collectedDeviceId column: "collected_device_id", index: "idx_cdeviceid"
         collectedHouseholdId column: "collected_household_id", index: "idx_chouseid"
         collectedMemberId column: "collected_member_id", index: "idx_cmemberid"
+        collectedStart column: "collected_start"
+        collectedEnd column: "collected_end"
         collectedDate column: "collected_date"
         uploadedDate column: "uploaded_date"
 
@@ -109,4 +115,5 @@ class RawVisit {
         processedStatus column: "processed", enumType: "identity"
     }
 }
+
 
