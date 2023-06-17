@@ -1,0 +1,191 @@
+/*
+
+HOW TO CREATE A CSS3 DROPDOWN MENU [TUTORIAL]
+
+"How to create a CSS3 Dropdown Menu [Tutorial]" was specially made for DesignModo by our friend Valeriu Timbuc.
+
+Links:
+http://vtimbuc.net/
+https://twitter.com/vtimbuc
+http://designmodo.com
+http://vladimirkudinov.com
+
+*/
+
+/* Reset */
+.hmenu,
+.hmenu ul,
+.hmenu li,
+.hmenu a {
+	margin: 0;
+	padding: 0;
+	border: none;
+	outline: none;
+}
+
+/* Navbar */
+/* customizing bootstrap nav bar */
+.hnavbar {
+	height: fit-content;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	background-color: #424649;
+	border: 0px;
+	margin: 0px auto;
+}
+.hnavbar-header {
+	float: left;
+	width: fit-content;
+	height: fit-content;
+	/*background-color: #B0BED9;*/
+}
+
+.hnavbar-header-logo{
+	float: left;
+	width: fit-content;
+	margin-left: 0px;
+	margin-right: 10px;
+	padding-left: 25px;
+	padding-top: 10px;
+	padding-bottom: 10px;
+}
+
+.hnavbar-header-menu{
+	float: right;
+	margin-left: 0px;
+	margin-right: 10px;
+}
+
+/* Menu */
+.hmenu {
+	z-index: 1000;
+	height: 40px;
+	width: fit-content;
+
+	background: #4c4e5a;
+	background: -webkit-linear-gradient(top, #4c4e5a 0%,#2c2d33 100%);
+	background: -moz-linear-gradient(top, #4c4e5a 0%,#2c2d33 100%);
+	background: -o-linear-gradient(top, #4c4e5a 0%,#2c2d33 100%);
+	background: -ms-linear-gradient(top, #4c4e5a 0%,#2c2d33 100%);
+	background: linear-gradient(top, #4c4e5a 0%,#2c2d33 100%);
+
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+	border-radius: 5px;
+}
+
+.hmenu li {
+	position: relative;
+	list-style: none;
+	float: left;
+	display: block;
+	height: 40px;
+}
+
+/* Links */
+
+.hmenu li a {
+	display: block;
+	padding: 0 14px;
+	margin: 6px 0;
+	line-height: 28px;
+	text-decoration: none;
+	
+	border-left: 1px solid #393942;
+	border-right: 1px solid #4f5058;
+
+	font-family: sans-serif;
+	font-weight: normal;
+	font-size: 17px;
+
+	color: #f3f3f3;
+	text-shadow: 1px 1px 1px rgba(0,0,0,.6);
+
+	-webkit-transition: color .2s ease-in-out;
+	-moz-transition: color .2s ease-in-out;
+	-o-transition: color .2s ease-in-out;
+	-ms-transition: color .2s ease-in-out;
+	transition: color .2s ease-in-out;
+}
+
+.hmenu li:first-child a { border-left: none; }
+.hmenu li:last-child a{ border-right: none; }
+
+.hmenu li:hover > a { color: #8fde62; }
+
+/* Sub Menu */
+
+.hmenu ul {
+	width: fit-content;
+	position: absolute;
+	top: 40px;
+	left: 0;
+
+	opacity: 0;
+	
+	background: #1f2024;
+
+	-webkit-border-radius: 0 0 5px 5px;
+	-moz-border-radius: 0 0 5px 5px;
+	border-radius: 0 0 5px 5px;
+
+	-webkit-transition: opacity .25s ease .1s;
+	-moz-transition: opacity .25s ease .1s;
+	-o-transition: opacity .25s ease .1s;
+	-ms-transition: opacity .25s ease .1s;
+	transition: opacity .25s ease .1s;
+}
+
+.hmenu li:hover > ul { opacity: 1; }
+
+.hmenu ul li {
+	width: fit-content;
+	height: 0;
+	overflow: hidden;
+	padding: 0;
+
+	-webkit-transition: height .25s ease .1s;
+	-moz-transition: height .25s ease .1s;
+	-o-transition: height .25s ease .1s;
+	-ms-transition: height .25s ease .1s;
+	transition: height .25s ease .1s;
+}
+
+.hmenu li:hover > ul li {
+	height: 36px;
+	overflow: visible;
+	padding: 0;
+}
+
+.hmenu ul li a {
+	width: fit-content;
+	padding: 4px 40px 4px 40px;
+	margin: 0;
+
+	border: none;
+	border-bottom: 1px solid #353539;
+
+	white-space: nowrap;
+}
+
+.hmenu ul li:last-child a { border: none; }
+
+.hmenu-caret {
+	display: inline-block;
+	width: 0;
+	height: 0;
+	margin-left: 2px;
+	vertical-align: middle;
+	border-top: 4px dashed;
+	border-top: 4px solid \9;
+	border-right: 4px solid transparent;
+	border-left: 4px solid transparent;
+}
+
+/* Icons */
+
+.hmenu a.documents { background: url(../images/menu/docs.png) no-repeat 6px center; }
+.hmenu a.messages { background: url(../images/menu/bubble.png) no-repeat 6px center; }
+.hmenu a.signout { background: url(../images/menu/arrow.png) no-repeat 6px center; }
+.hmenu a.arrow { background: url(../images/menu/arrow.png) no-repeat 6px center; }

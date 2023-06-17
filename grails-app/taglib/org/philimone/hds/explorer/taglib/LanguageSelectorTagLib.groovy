@@ -34,15 +34,17 @@ class LanguageSelectorTagLib {
     def selectMenu = {
         Locale requestLocale = RequestContextUtils.getLocale(request)
 
-        out << '<li>'
+
 
         locales.each { Locale locale ->
             def link = "${request.forwardURI}?lang=${locale.language}"
             def label = StringUtil.capitalize(locale.getDisplayLanguage(locale))
+            out << '<li>'
             out << "<a href=\"${link}\" ${requestLocale.language == locale.language ? 'style="background-color: #4e8908;"' : ''}>${label}</a>"
+            out << '</li>' + "\n"
         }
 
-        out << '</li>'
+
     }
 
 

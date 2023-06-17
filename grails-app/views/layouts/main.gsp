@@ -5,78 +5,75 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <title><g:message code="default.application.name"/></title>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
-    <asset:link rel="icon" href="favicon.ico" type="image/x-ico" />
+    <asset:link rel="icon" href="hds.ico" type="image/x-ico" />
 
+    <asset:stylesheet src="menu.css" />
     <asset:stylesheet src="application.css"/>
     <asset:javascript src="application.js"/>
-
-    <style type="text/css" media="screen">
-        #headerLeft{
-            float: left;
-            margin-left: 0px;
-            margin-right: 10px;
-        }
-
-    </style>
 
     <g:layoutHead/>
 </head>
 <body>
 
-    <div class="navbar navbar-default navbar-static-top" role="navigation">
-        <div class="container">
-            <div class="navbar-header">
-                <div id="headerLeft">
-                    <asset:image src="hds_explorer_logo.png" width="283" height="70" />
-                </div>
-            </div>
+    <div class="hnavbar">
 
-            <bi:menuBar>
-
-                <sec:ifLoggedIn>
-                    <!-- <g:message code="login.as.label"/>: <b><bi:showLoggedUser/></b> (<g:link controller="logout"><g:message code="login.logout.label"/></g:link>) -->
-
-                    <bi:menu label="${g.message(code: 'login.logout.label')}"  link="${createLink(controller: 'logout')}"  style="active"/>
-
-                </sec:ifLoggedIn>
-                <sec:ifNotLoggedIn>
-                    <bi:menu label="${g.message(code: 'login.button.label')}"  link="${createLink(controller: 'login', action: 'auth')}"  style="active" />
-                </sec:ifNotLoggedIn>
-
-                <bi:menu label="${g.message(code: 'default.menu.home.label')}"  link="${createLink(uri: '/')}" />
-                <bi:menu label="${g.message(code: 'default.menu.users.label')}" link="${createLink(controller: 'user', action: 'index')}" />
-
-                <bi:dropmenu label="${g.message(code: 'default.menu.updates.label')} ">
-                    <bi:menu label="${g.message(code: 'default.menu.updates.forms.label')}" link="${createLink(controller: 'form', action: 'index')}" />
-                    <bi:menu label="${g.message(code: 'default.menu.updates.rounds.label')}" link="${createLink(controller: 'round', action: 'index')}" />
-                    <bi:menu label="${g.message(code: 'default.menu.updates.regions.label')}" link="${createLink(controller: 'region', action: 'index')}" />
-                    <bi:menu label="${g.message(code: 'default.menu.updates.households.label')}" link="${createLink(controller: 'household', action: 'index')}" />
-                    <bi:menu label="${g.message(code: 'default.menu.updates.members.label')}" link="${createLink(controller: 'member', action: 'index')}"/>
-                </bi:dropmenu>
-                <bi:dropmenu label="${g.message(code: 'default.menu.lists.label')}">
-                    <bi:menu label="${g.message(code: 'default.menu.lists.trackinglists.label')}" link="${createLink(controller: 'trackingList', action: 'add')}" />
-                    <bi:menu label="${g.message(code: 'default.menu.updates.datasets.label')}" link="${createLink(controller: 'dataset', action: 'add')}" />
-                </bi:dropmenu>
-                <bi:dropmenu label="${g.message(code: 'default.menu.sync.label')}">
-                    <bi:menu label="${g.message(code: 'default.menu.sync.syncdss.label')}" link="${createLink(controller: 'eventSync', action: 'index')}" />
-                    <!--<bi:menu label="${g.message(code: 'default.menu.sync.import_xls')}" link="#" />-->
-                    <bi:menu label="${g.message(code: 'default.menu.sync.export.label')}"  link="${createLink(controller: 'syncFiles', action: 'index')}" />
-                </bi:dropmenu>
-                <bi:dropmenu label="${g.message(code: "default.menu.settings.label")}">
-                    <bi:menu label="${g.message(code: 'default.menu.settings.modules.label')}" link="${createLink(controller: 'module', action: 'index')}" />
-                    <bi:menu label="${g.message(code: 'default.menu.settings.coreformsext.label')}" link="${createLink(controller: 'coreFormExtension', action: 'index')}" />
-                    <bi:menu label="${g.message(code: 'default.menu.settings.hierarchylevels.label')}" link="${createLink(controller: 'applicationParam', action: 'hierarchyLevels')}" />
-                    <sec:ifAllGranted roles="${org.philimone.hds.explorer.server.model.authentication.Role.ROLE_ADMINISTRATOR}">
-                        <bi:menu label="${g.message(code: 'default.menu.settings.system.label')}" link="${createLink(controller: 'settings', action: 'parameters')}" />
-                    </sec:ifAllGranted>
-                </bi:dropmenu>
-
-                <bi:dropmenu label="${g.message(code: 'default.language.select')}">
-                    <language:selectMenu />
-                </bi:dropmenu>
-            </bi:menuBar>
+    <div class="hnavbar-header">
+        <div class="hnavbar-header-logo">
+            <asset:image src="hds_explorer_logo.png" width="283" height="70" />
         </div>
     </div>
+
+    <div class="hnavbar-header-menu">
+        <hds:menuBar>
+
+            <sec:ifLoggedIn>
+                <!-- <g:message code="login.as.label"/>: <b><bi:showLoggedUser/></b> (<g:link controller="logout"><g:message code="login.logout.label"/></g:link>) -->
+
+                <hds:menu label="${g.message(code: 'login.logout.label')}"  link="${createLink(controller: 'logout')}"  background="true"/>
+
+            </sec:ifLoggedIn>
+            <sec:ifNotLoggedIn>
+                <hds:menu label="${g.message(code: 'login.button.label')}"  link="${createLink(controller: 'login', action: 'auth')}"  background="true" />
+            </sec:ifNotLoggedIn>
+
+            <!--<hds:menu label="${g.message(code: 'default.menu.home.label')}"  link="${createLink(uri: '/')}" />-->
+            <hds:menu label="${g.message(code: 'default.menu.dashboard.label')}"  link="${createLink(controller: 'dashboard', action: 'index')}" />
+            <hds:menu label="${g.message(code: 'default.menu.users.label')}" link="${createLink(controller: 'user', action: 'index')}" />
+
+            <hds:dropmenu label="${g.message(code: 'default.menu.updates.label')} ">
+                <hds:menu label="${g.message(code: 'default.menu.updates.forms.label')}" link="${createLink(controller: 'form', action: 'index')}" class="arrow" />
+                <hds:menu label="${g.message(code: 'default.menu.updates.rounds.label')}" link="${createLink(controller: 'round', action: 'index')}" class="arrow" />
+                <hds:menu label="${g.message(code: 'default.menu.updates.regions.label')}" link="${createLink(controller: 'region', action: 'index')}" class="arrow" />
+                <hds:menu label="${g.message(code: 'default.menu.updates.households.label')}" link="${createLink(controller: 'household', action: 'index')}" class="arrow" />
+                <hds:menu label="${g.message(code: 'default.menu.updates.members.label')}" link="${createLink(controller: 'member', action: 'index')}" class="arrow"/>
+            </hds:dropmenu>
+            <hds:dropmenu label="${g.message(code: 'default.menu.lists.label')}">
+                <hds:menu label="${g.message(code: 'default.menu.lists.trackinglists.label')}" link="${createLink(controller: 'trackingList', action: 'add')}" class="arrow" />
+                <hds:menu label="${g.message(code: 'default.menu.updates.datasets.label')}" link="${createLink(controller: 'dataset', action: 'add')}" class="arrow" />
+            </hds:dropmenu>
+            <hds:dropmenu label="${g.message(code: 'default.menu.sync.label')}">
+                <hds:menu label="${g.message(code: 'default.menu.sync.syncdss.label')}" link="${createLink(controller: 'eventSync', action: 'index')}" class="arrow" />
+                <!--<hds:menu label="${g.message(code: 'default.menu.sync.import_xls')}" link="#" />-->
+                <hds:menu label="${g.message(code: 'default.menu.sync.export.label')}"  link="${createLink(controller: 'syncFiles', action: 'index')}" class="arrow" />
+            </hds:dropmenu>
+            <hds:dropmenu label="${g.message(code: "default.menu.settings.label")}">
+                <hds:menu label="${g.message(code: 'default.menu.settings.modules.label')}" link="${createLink(controller: 'module', action: 'index')}" class="arrow" />
+                <hds:menu label="${g.message(code: 'default.menu.settings.coreformsext.label')}" link="${createLink(controller: 'coreFormExtension', action: 'index')}" class="arrow" />
+                <hds:menu label="${g.message(code: 'default.menu.settings.hierarchylevels.label')}" link="${createLink(controller: 'applicationParam', action: 'hierarchyLevels')}" class="arrow" />
+                <sec:ifAllGranted roles="${org.philimone.hds.explorer.server.model.authentication.Role.ROLE_ADMINISTRATOR}">
+                    <hds:menu label="${g.message(code: 'default.menu.settings.system.label')}" link="${createLink(controller: 'settings', action: 'parameters')}" class="arrow" />
+                </sec:ifAllGranted>
+            </hds:dropmenu>
+
+            <hds:dropmenu label="${g.message(code: 'default.language.select')}">
+                <hds:selectLanguageMenu class="arrow" />
+            </hds:dropmenu>
+        </hds:menuBar>
+    </div>
+
+    <div style="clear: both;"></div>
+
+</div>
 
     <g:layoutBody/>
 

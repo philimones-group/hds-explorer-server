@@ -3,6 +3,7 @@
 <head>
     <meta name="layout" content="main"/>
     <title><g:message code="default.application.name"/></title>
+
 </head>
 <body>
 
@@ -13,7 +14,7 @@
         </div>
     </div>
 
-    <div id="content" role="main">
+    <div id="scontent" role="main" style="background-color: #ffffff">
         <section class="row colset-2-its">
             <h1><g:message code="default.main.welcome.title" /></h1>
             <br>
