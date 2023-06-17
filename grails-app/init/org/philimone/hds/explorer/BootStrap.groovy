@@ -104,7 +104,7 @@ class BootStrap {
             for (String url in [
                     '/', '/**/favicon.ico',
                     '/**/js/**', '/**/css/**', '/**/images/**',
-                    '/login', '/login.*', '/login/*', '/index', '/index.gsp',
+                    '/login', '/login.*', '/login/*', '/index', '/index.gsp', '/index.html',
                     '/logout', '/logout.*', '/logout/*', '/error**', '/shutdown',
 
                     '/**/assets/**',
@@ -145,6 +145,7 @@ class BootStrap {
             new SecurityMap(url: "/member/showHousehold/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
 
             new SecurityMap(url: "/settings/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
+            new SecurityMap(url: "/dashboard/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
             //new SecurityMap(url: "/reports/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
             new SecurityMap(url: "/logReport/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
 
