@@ -10,3 +10,27 @@ out/
 .project
 .settings
 .classpath
+
+# Ignore dashboard react config/editor/build
+src/main/webapp/main-dashboard/logs
+src/main/webapp/main-dashboard/*.log
+src/main/webapp/main-dashboard/npm-debug.log*
+src/main/webapp/main-dashboard/yarn-debug.log*
+src/main/webapp/main-dashboard/yarn-error.log*
+src/main/webapp/main-dashboard/pnpm-debug.log*
+src/main/webapp/main-dashboard/lerna-debug.log*
+
+src/main/webapp/main-dashboard/node_modules
+src/main/webapp/main-dashboard/dist
+src/main/webapp/main-dashboard/dist-ssr
+src/main/webapp/main-dashboard/*.local
+
+src/main/webapp/main-dashboard/.vscode/*
+src/main/webapp/main-dashboard/!.vscode/extensions.json
+src/main/webapp/main-dashboard/.idea
+src/main/webapp/main-dashboard/.DS_Store
+src/main/webapp/main-dashboard/*.suo
+src/main/webapp/main-dashboard/*.ntvs*
+src/main/webapp/main-dashboard/*.njsproj
+src/main/webapp/main-dashboard/*.sln
+src/main/webapp/main-dashboard/*.sw?
