@@ -7,7 +7,7 @@
 //
 //= require jquery-3.6.0.min
 //= require bootstrap
-//= require_tree .
+// //= require_tree . //this line was including all javascript files inside that directory
 //= require_self
 
 if (typeof jQuery !== 'undefined') {

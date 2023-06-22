@@ -59,7 +59,7 @@ http://vladimirkudinov.com
 
 /* Menu */
 .hmenu {
-	z-index: 1000;
+	z-index: 99999;
 	height: 40px;
 	width: fit-content;
 
@@ -76,6 +76,7 @@ http://vladimirkudinov.com
 }
 
 .hmenu li {
+	z-index: 99999;
 	position: relative;
 	list-style: none;
 	float: left;
@@ -117,6 +118,7 @@ http://vladimirkudinov.com
 /* Sub Menu */
 
 .hmenu ul {
+	z-index: 99999;
 	width: fit-content;
 	position: absolute;
 	top: 40px;
@@ -140,6 +142,7 @@ http://vladimirkudinov.com
 .hmenu li:hover > ul { opacity: 1; }
 
 .hmenu ul li {
+	z-index: 99999;
 	width: fit-content;
 	height: 0;
 	overflow: hidden;
