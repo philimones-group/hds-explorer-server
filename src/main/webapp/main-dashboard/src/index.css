@@ -1,0 +1,89 @@
+/*FONTS*/
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
+
+/*TAILWIND SETUP*/
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/** ADDITIONAL CSS*/
+body{
+    font-family:'Roboto', sans-serif;
+    color: #344771;
+    @apply bg-main overflow-x-hidden
+}
+
+.sidebar-item{
+    @apply flex text-[15px] text-white py-3 px-4 space-x-4 items-center rounded-sm mb-4 cursor-pointer hover:bg-sidebar-hover transition ease-in-out duration-200
+}
+
+.sidebar-item-last{
+    @apply mt-[45px] text-sm text-center text-white font-semibold py-3  rounded-sm bg-sidebar-clicked shadow-2xl hover:bg-sidebar-clicked cursor-pointer
+}
+
+.sidebar-icon{
+    @apply text-2xl font-thin
+}
+
+.sidebar-collapsed-icon{
+    @apply text-3xl
+}
+
+.grid-rows-size{
+    grid-template-rows: 100px 50% 50%;
+}
+
+.nav-chart{
+    @apply shadow-2xl bg-main rounded-md border
+}
+
+
+
+/**APP LAYOUT*/
+
+/* Enable this styles only if sidebar is not hidden */
+ .sidebar-expand{
+    grid-template-columns: 270px repeat(4, 1fr);
+}
+.sidebar-collapse{
+    grid-template-columns: 87px repeat(4, 1fr);
+}
+
+
+
+/*Removing scrollbar*/
+
+/*Chrome*/
+html::-webkit-scrollbar{
+    display: none;
+}
+/*FireFox*/
+html{
+    scrollbar-width: none;
+}
+
+/*FORM STYLE*/
+.input-container{
+    @apply w-full flex flex-col space-y-2 justify-start
+}
+.input-style{
+    @apply w-full p-2 rounded-md bg-gray-300 border-none focus:bg-white
+}
+
+.button{
+    @apply text-sm text-center text-white font-semibold py-3  rounded-md shadow-2xl hover:brightness-90 cursor-pointer
+}
+
+/*TABLE*/
+
+tbody tr, td{
+    @apply border-y border-slate-400 p-4 text-left
+}
+
+th{
+    @apply p-4 text-left text-title font-semibold
+}
+
+tr{
+    @apply hover:bg-gray-300 transition duration-200 ease-in-out
+}

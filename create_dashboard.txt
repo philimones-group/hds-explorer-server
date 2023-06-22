@@ -1,0 +1,24 @@
+HDS-Explorer Dashboard is designed using ReactJS under Grails Framework
+
+cd src/main/webapp
+
+npx create-react-app main-dashboard
+
+Dashboard was designed by https://github.com/Edmilson-Filimone, the original draft was under https://github.com/Edmilson-Filimone/hds-dashboard,
+Was integrated in HDS-Explorer by paulphilimone, the project will receive futher updates under HDS-Explorer Server repository
+
+
+1. To build the react dashboard you must go to the project directory
+-----------------------------------------------------------------
+
+cd src/main/webapp/main-dashboard
+
+2. Execute the script
+---------------------
+
+sh build-dashboard.sh
+
+This will generate two bundle files: index-bundle-dashboard.js and index-bundle-dashboard.css,
+these files will be automatically copied to grails-app/assets directory to be integrated with grails,
+after that you can commit the changes of the output to the main grails project, we could have used webpack but we didnt have the time to configure it
+
