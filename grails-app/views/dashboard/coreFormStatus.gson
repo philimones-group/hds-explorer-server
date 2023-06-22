@@ -1,0 +1,7 @@
+import org.philimone.hds.explorer.server.model.json.dashboard.CoreFormStatus
+
+model {
+    Map<String, CoreFormStatus> coreFormStatusMap
+}
+
+json coreFormStatusMap

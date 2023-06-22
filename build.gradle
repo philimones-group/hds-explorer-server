@@ -11,6 +11,7 @@ buildscript {
         classpath "com.bertramlabs.plugins:asset-pipeline-gradle:3.4.7"
         
         classpath 'org.grails.plugins:database-migration:4.1.0'
+        classpath "org.grails.plugins:views-gradle:2.3.2"
     }
 }
 
@@ -24,6 +25,7 @@ apply plugin:"org.grails.grails-web"
 apply plugin:"com.github.erdi.webdriver-binaries"
 apply plugin:"asset-pipeline"
 apply plugin:"org.grails.grails-gsp"
+apply plugin:"org.grails.plugins.views-json"
 
 repositories {
     mavenLocal()
@@ -73,6 +75,8 @@ dependencies {
     implementation "org.hibernate:hibernate-core:5.6.11.Final"
     implementation "org.hibernate:hibernate-ehcache"
     implementation "org.grails.plugins:gsp"
+    implementation "org.grails.plugins:views-json"
+    implementation "org.grails.plugins:views-json-templates"
     
     profile "org.grails.profiles:web"
     runtimeOnly "org.glassfish.web:el-impl:2.2.1-b05"

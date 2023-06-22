@@ -9,7 +9,7 @@ class UrlMappings {
             }
         }
 
-        "/"(view:"/index")
+        "/"(controller: "dashboard", action: "index")
         "/login/$action?"(controller: "login")
         "/logout/$action?"(controller: "logout")
         "/logout/index"(controller: "logout")

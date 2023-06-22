@@ -102,7 +102,7 @@ class BootStrap {
             }
 
             for (String url in [
-                    '/', '/**/favicon.ico',
+                    /*'/',*/ '/**/favicon.ico',
                     '/**/js/**', '/**/css/**', '/**/images/**',
                     '/login', '/login.*', '/login/*', '/index', '/index.gsp', '/index.html',
                     '/logout', '/logout.*', '/logout/*', '/error**', '/shutdown',
@@ -115,7 +115,7 @@ class BootStrap {
                 new SecurityMap(url: url, configAttribute: 'permitAll').save()
             }
 
-            //new SecurityMap(url: "/index", configAttribute: "IS_AUTHENTICATED_FULLY").save(flush: true)
+            new SecurityMap(url: "/", configAttribute: "IS_AUTHENTICATED_FULLY").save(flush: true)
 
             new SecurityMap(url: "/user/*/**", configAttribute: "${Role.ROLE_ADMINISTRATOR}").save(flush: true)
 

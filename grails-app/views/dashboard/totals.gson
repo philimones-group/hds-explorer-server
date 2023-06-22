@@ -1,0 +1,22 @@
+import org.philimone.hds.explorer.server.model.json.dashboard.Totals
+
+model {
+    Totals totals
+}
+
+json {
+  households totals.households
+  individuals totals.individuals
+
+  residents totals.residents
+  residents_male totals.residents_male
+  residents_female totals.residents_female
+
+  outmigrations totals.outmigrations
+  outmigrations_male totals.outmigrations_male
+  outmigrations_female totals.outmigrations_female
+
+  deaths totals.deaths
+  deaths_male totals.deaths_male
+  deaths_female totals.deaths_female
+}

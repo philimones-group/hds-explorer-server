@@ -1,0 +1,8 @@
+import org.philimone.hds.explorer.server.model.json.dashboard.FieldworkerStatus
+import org.philimone.hds.explorer.server.model.json.dashboard.PyramidBar
+
+model {
+    List<FieldworkerStatus> statusList
+}
+
+json statusList

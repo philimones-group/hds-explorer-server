@@ -1,0 +1,7 @@
+import org.philimone.hds.explorer.server.model.json.dashboard.PyramidBar
+
+model {
+    List<PyramidBar> pyramidBars
+}
+
+json pyramidBars
