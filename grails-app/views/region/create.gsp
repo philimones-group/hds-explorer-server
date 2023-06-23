@@ -11,7 +11,7 @@
 
             var levelNamesMap = JSON.parse("${hierarchyLevelsJson}");
 
-            $(window).load(
+            $(window).on('load',
                 function () {
                     //alert("testing jquery");
 

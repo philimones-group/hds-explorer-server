@@ -29,7 +29,7 @@
 
 			<g:form controller="form" action="index" method="post" >
 
-				<div class="nav">
+				<div class="nav2">
 					<fieldset class="form">
 						<div class="fieldcontain ">
 							<fieldset class="buttons">

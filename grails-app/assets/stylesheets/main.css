@@ -14,7 +14,7 @@ html {
     background-color: #ddd;
     background-image: -moz-linear-gradient(center top, #aaa, #ddd);
     background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #aaa), color-stop(1, #ddd));
-    background-image: linear-gradient(top, #aaa, #ddd);
+    background-image: linear-gradient(to bottom, #aaa, #ddd);
     filter: progid:DXImageTransform.Microsoft.gradient(startColorStr = '#aaaaaa', EndColorStr = '#dddddd');
     background-repeat: no-repeat;
     height: 100%;
@@ -83,13 +83,25 @@ img {
     border: none;
 }
 
+.footer img {
+    height: 80px;
+    margin-right: 25px;
+    margin-bottom: 15px;
+    clear: bottom;
+}
+
+.footer strong a {
+    color: white;
+    text-decoration: none;
+    font-size: 1.1rem;
+}
+
 .footer {
     background: #424649;
     color: #ffffff;
     clear: both;
-    font-size: 0.8em;
-    margin-top: 1.5em;
-    padding: 1em;
+    font-size: 1em;
+    padding: 2em 0;
     min-height: 1em;
 }
 
@@ -138,6 +150,12 @@ img {
     border-radius: 0.3em;
 }
 
+.nav li.dropdown-item a {
+    -webkit-border-radius: 0;
+    -moz-border-radius: 0;
+    border-radius: 0;
+}
+
 .nav a:active, .nav a:visited {
     color: #666666;
 }
@@ -155,7 +173,7 @@ img {
     text-decoration: underline;
 }
 
-.nav a.home, .nav a.list, .nav a.create, .nav a.search, .nav a.import, .nav a.export {
+.nav a.home, .nav a.list, .nav a.create {
     background-position: 0.7em center;
     background-repeat: no-repeat;
     text-indent: 25px;
@@ -173,19 +191,7 @@ img {
     background-image: url(../images/skin/database_add.png);
 }
 
-.nav a.search {
-    background-image: url(../images/skin/database_search.png);
-}
-
-.nav a.import {
-    background-image: url(../images/skin/database_import.png);
-}
-
-.nav a.export {
-    background-image: url(../images/skin/database_export.png);
-}
-
-.nav li.dropdown.open ul.dropdown-menu {
+.nav li.dropdown.show ul.dropdown-menu {
     background-color: #424649;
 }
 
@@ -229,7 +235,7 @@ fieldset,
 label {
     cursor: pointer;
     display: inline-block;
-    margin: 0 0.25em 0 0;
+    margin: 0 0.5em 0 0;
 }
 
 input, select, textarea {
@@ -310,10 +316,8 @@ fieldset.embedded legend {
 
 .errors,
 .message {
-    font-size: 0.8em;
-    line-height: 2;
-    margin: 1em 2em;
-    padding: 0.25em;
+    margin: 1em 0;
+    padding: 0.5em;
 }
 
 .message {
@@ -381,7 +385,7 @@ input:invalid:focus, select:invalid:focus, textarea:invalid:focus {
 /* TABLES */
 
 table {
-    border-top: 1px solid #DFDFDF;
+    border: 1px solid #DFDFDF;
     border-collapse: collapse;
     width: 100%;
     margin-bottom: 1em;

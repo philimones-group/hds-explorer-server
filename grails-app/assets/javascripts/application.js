@@ -7,15 +7,5 @@
 //
 //= require jquery-3.6.0.min
 //= require bootstrap
-// //= require_tree . //this line was including all javascript files inside that directory
+//= require popper.min
 //= require_self
-
-if (typeof jQuery !== 'undefined') {
-    (function($) {
-        $(document).ajaxStart(function() {
-            $('#spinner').fadeIn();
-        }).ajaxStop(function() {
-            $('#spinner').fadeOut();
-        });
-    })(jQuery);
-}

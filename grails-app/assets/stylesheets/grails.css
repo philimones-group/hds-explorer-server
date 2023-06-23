@@ -29,12 +29,9 @@ pre {
 /* customizing bootstrap nav bar */
 .navbar {
     margin-bottom: 0px;
-    padding-right: 110px;
 }
-.navbar .container {
-    margin: 10px;
-}
-.navbar-default a {
+
+.navbar-dark a {
     color: #ffffff !important;
     font-size: 18px !important;
     text-decoration: none;
@@ -43,7 +40,7 @@ pre {
     width: 40px;
 
 }
-.navbar-default, .navbar-static-top {
+.navbar-dark, .navbar-static-top {
     background-color: #424649;
     border: 0px;
 }
@@ -51,7 +48,7 @@ a.navbar-brand {
     color: white !important;
     font-size: 19px !important;
 }
-.navbar-default .navbar-nav>.active>a, .navbar-default .navbar-nav>.active>a:hover, .navbar-default .navbar-nav>.active>a:focus {
+.navbar-dark .navbar-nav>.active>a, .navbar-dark .navbar-nav>.active>a:hover, .navbar-dark .navbar-nav>.active>a:focus {
     background-color: transparent;
     color: white;
 }
@@ -65,11 +62,29 @@ a.navbar-brand {
 .navbar-nav>li>a {
     color: #c0d3db;
 }
-.navbar-default .navbar-toggle .icon-bar {
+.navbar-dark .navbar-toggler .icon-bar {
     background-color: white;
 }
-.navbar-default .navbar-toggle:hover, .navbar-default .navbar-toggle:focus {
+.navbar-dark .navbar-toggle:hover, .navbar-dark .navbar-toggle:focus {
     background-color: #2559a7;
+}
+
+.navbar-toggler {
+    position: relative;
+    float: right;
+    padding: 9px 10px;
+    margin-top: 8px;
+    margin-right: 15px;
+    margin-bottom: 8px;
+    background-color: transparent;
+    background-image: none;
+    border: 1px solid transparent;
+    border-radius: 4px;
+}
+
+.nav .dropdown a.dropdown-toggle {
+    padding-top: 25px;
+    padding-bottom: 25px;
 }
 
 @media (min-width: 768px) {
@@ -118,11 +133,11 @@ a.navbar-brand {
 }
 
 .svg #band {
-    background-image: url(../images/grails-cupsonly-logo-white.svg);
+    background-image: url(../img/grails-cupsonly-logo-white.svg);
 }
 
 .no-svg #band {
-    background-image: url(../images/hds_explorer_logo.png);
+    background-image: url(../img/groovy-logo-white.png);
 }
 
 @media (max-width: 1010px) {
@@ -504,22 +519,6 @@ h8 {
     color: #db4800
 }
 
-.row {
-    position: relative;
-    max-width: 1400px;
-    margin: 0 auto;
-    padding: 0 5%
-}
-
-.row:before, .row:after {
-    content: " ";
-    display: table
-}
-
-.row:after {
-    clear: both
-}
-
 .band {
     background: #4298b8;
     height: 400px;
@@ -541,16 +540,9 @@ h8 {
 }
 
 #content {
-    background: white
-}
-
-#content .row:before, #content .row:after {
-    content: " ";
-    display: table
-}
-
-#content .row:after {
-    clear: both
+    margin: 2em 0;
+    padding: 1em 0;
+    background: white;
 }
 
 #content .row > h1 {
@@ -559,10 +551,11 @@ h8 {
     font-weight: 200;
     text-align: center;
     margin: 0;
-    padding: 20px 0
+    padding: 20px 0;
+    width: 100%;
 }
 
-#content hr.row, #content hr.divider {
+#content hr.divider {
     border: 0 none;
     border-top: 1px solid #EEE;
     margin: 0 5%;
