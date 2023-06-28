@@ -6,6 +6,8 @@
 		<meta name="layout" content="main">
 		<g:set var="entityName" value="${message(code: 'trackingList.label', default: 'TrackingList')}" />
 		<title><g:message code="default.list.label" args="[entityName]" /></title>
+
+		<dt:defaultResources/>
 	</head>
 	<body>
 		<a href="#list-trackingList" class="skip" tabindex="-1"><g:message code="default.link.skip.label" default="Skip to content&hellip;"/></a>
@@ -22,8 +24,8 @@
 			<g:if test="${flash.message}">
 				<div class="message" role="status">${flash.message}</div>
 			</g:if>
-			<table>
-			<thead>
+			<dt:table id="listTable">
+				<thead>
 					<tr>
 					
 						<g:sortableColumn property="code" title="${message(code: 'trackingList.code.label', default: 'Code')}" />
@@ -59,10 +61,9 @@
 					</tr>
 				</g:each>
 				</tbody>
-			</table>
-			<div class="pagination">
-				<g:paginate total="${trackingListInstanceCount ?: 0}" />
-			</div>
+			</dt:table>
+
+			<dt:loadDatatable name="listTable" />
 		</div>
 	</body>
 </html>

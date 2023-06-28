@@ -99,7 +99,7 @@
 
 				<g:if test="${errorLogs}">
 
-					<table id="reportsTable" class="display nowrap compact cell-border" style="width:100%" cellpadding="0">
+					<dt:table id="reportsTable">
 						<thead>
 						<tr>
 
@@ -140,7 +140,7 @@
 
 						</g:each>
 						</tbody>
-					</table>
+					</dt:table>
 
 				</g:if>
 			

@@ -3,6 +3,8 @@
 <head>
 	<meta name="layout" content="main">
 	<title><g:message code="default.menu.sync.label" /></title>
+
+	<dt:defaultResources/>
 </head>
 <body>
 
@@ -18,7 +20,7 @@
 	<g:if test="${flash.message}">
 		<div class="message" role="status">${flash.message}</div>
 	</g:if>
-	<table>
+	<dt:table id="processesTable">
 		<thead>
 		<tr>
 
@@ -37,7 +39,7 @@
 
 				<td><g:link controller="logReport" action="show" id="${logReport.id}">${fieldValue(bean: logReport, field: "reportId")}</g:link></td>
 
-				<td><g:message code="${logReport.description}" default="${logReport.description}" /></td>
+				<td style="text-align: left;"><g:message code="${logReport.description}" default="${logReport.description}" /></td>
 
 				<td><bi:formatDate date="${logReport.start}" format="yyyy-MM-dd HH:mm" /></td>
 
@@ -59,13 +61,17 @@
 			</tr>
 		</g:each>
 		</tbody>
-	</table>
+	</dt:table>
 
 	<fieldset class="buttons">
 		<g:form controller="syncFiles" action="exportAll" >
 			<g:submitButton name="create" class="save" value="${message(code: 'syncFiles.executealltasks.label')}" />
 		</g:form>
 	</fieldset>
+
+	<dt:loadDatatable name="processesTable" nodetails="true" />
 </div>
+
+
 </body>
 </html>

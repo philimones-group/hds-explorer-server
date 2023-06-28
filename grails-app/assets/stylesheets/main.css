@@ -79,6 +79,16 @@ img {
     padding: 0 0.25em;
 }
 
+.whitebox_panel {
+    background-color: #fff;
+    padding: 1.5em;
+    box-shadow: 3px 3px 20px rgba(0,0,0,.3);
+    border-radius: 7px;
+    margin-left: 20px;
+    margin-right: 20px;
+    margin-bottom: 20px;
+}
+
 .scaffold-list h1 {
     border: none;
 }

@@ -7,8 +7,7 @@
 		<g:set var="entityName" value="${message(code: 'form.label', default: 'Form')}" />
 		<title><g:message code="default.show.label" args="[entityName]" /></title>
 
-        <asset:javascript src="application.js"/>
-        <asset:javascript src="bootstrap.js"/>
+        <dt:defaultResources/>
 	</head>
 	<body>
     <g:javascript>
@@ -219,7 +218,7 @@
             <br>
 
             <div class="nav2">
-                <table>
+                <dt:table id="listMapping">
                     <thead>
                     <tr>
 
@@ -264,9 +263,10 @@
                         </tr>
                     </g:each>
                     </tbody>
-                </table>
+                </dt:table>
             </div>
 
+            <dt:loadDatatable name="listMapping" />
 		</div>
 	</body>
 </html>

@@ -6,6 +6,8 @@
 		<meta name="layout" content="main">
 		<g:set var="entityName" value="${message(code: 'dataset.label', default: 'Dataset')}" />
 		<title><g:message code="dataset.list.label" args="[entityName]" /></title>
+
+		<dt:defaultResources />
 	</head>
 	<body>
 		<a href="#list-dataset" class="skip" tabindex="-1"><g:message code="default.link.skip.label" default="Skip to content&hellip;"/></a>
@@ -20,8 +22,8 @@
 			<g:if test="${flash.message}">
 				<div class="message" role="status">${flash.message}</div>
 			</g:if>
-			<table>
-			<thead>
+			<dt:table id="listTable">
+			    <thead>
 					<tr>
 					
 						<g:sortableColumn property="name" title="${message(code: 'dataset.name.label', default: 'Name')}" />
@@ -61,10 +63,9 @@
 					</tr>
 				</g:each>
 				</tbody>
-			</table>
-			<div class="pagination">
-				<g:paginate total="${dataSetInstanceCount ?: 0}" />
-			</div>
+			</dt:table>
+
+			<dt:loadDatatable name="listTable" />
 		</div>
 	</body>
 </html>

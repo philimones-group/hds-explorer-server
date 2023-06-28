@@ -160,7 +160,7 @@
             </fieldset>
 
             <div class="nav2">
-                <table id="mappingTable" class="display nowrap compact cell-border" style="width:100%" cellpadding="0">
+                <dt:table id="mappingTable">
                     <thead>
                     <tr>
 
@@ -202,7 +202,7 @@
                         </tr>
                     </g:each>
                     </tbody>
-                </table>
+                </dt:table>
             </div>
 
 		</div>

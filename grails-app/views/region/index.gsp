@@ -22,7 +22,7 @@
                 <div class="message" role="status">${flash.message}</div>
             </g:if>
 
-            <table id="regionTable" class="display nowrap compact cell-border" style="width:99%" cellpadding="0">
+            <dt:table id="regionTable">
                 <thead>
                 <tr>
                     <th><g:message code="region.code.label" /></th>
@@ -61,11 +61,7 @@
                     </tr>
                 </g:each>
                 </tbody>
-            </table>
-
-            <div class="pagination">
-                <g:paginate total="${regionCount ?: 0}" />
-            </div>
+            </dt:table>
         </div>
 
     <dt:loadDatatable name="regionTable" />

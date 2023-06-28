@@ -21,7 +21,7 @@
 				<li><g:link class="list" controller="user" action="index"><g:message code="default.menu.users.label" args="" /></g:link></li>
 			</ul>
 		</div>
-		<div id="list-form" class="content scaffold-list" role="main">
+		<dtdiv id="list-form" class="content scaffold-list" role="main">
 			<h1><g:message code="form.list.label" args="[entityName]" /></h1>
 			<g:if test="${flash.message}">
 				<div class="message" role="status">${flash.message}</div>
@@ -41,11 +41,12 @@
 					</fieldset>
 				</div>
 
+			</g:form>
 
 			<br>
 
-			<table id="formsTable" class="display nowrap compact cell-border" style="width:99%" cellpadding="0">
-			<thead>
+			<dt:table id="formsTable">
+				<thead>
 					<tr>
 					
 						<g:sortableColumn property="formId" title="${message(code: 'form.formId.label', default: 'Form Id')}" />
@@ -89,15 +90,8 @@
 					</tr>
 				</g:each>
 				</tbody>
-			</table>
+			</dt:table>
 
-			<!--
-			<div class="pagination">
-				<g:paginate total="${formCount}" id="${currentModule}"  />
-			</div>
-			-->
-
-			</g:form>
 		</div>
 
 		<dt:loadDatatable name="formsTable" />

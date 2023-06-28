@@ -6,6 +6,7 @@
         <title><g:message code="default.list.label" args="[entityName]" /></title>
 
         <dt:defaultResources />
+
     </head>
     <body>
         <a href="#list-user" class="skip" tabindex="-1"><g:message code="default.link.skip.label" default="Skip to content&hellip;"/></a>
@@ -21,7 +22,9 @@
                 <div class="message" role="status">${flash.message}</div>
             </g:if>
 
-            <table id="usersTable" class="display nowrap compact cell-border" style="width:99%" cellpadding="0">
+            <br>
+
+            <dt:table id="usersTable">
                 <thead>
                 <tr>
                     <th><g:message code="user.code.label" default="Code"/></th>
@@ -60,7 +63,7 @@
                     </tr>
                 </g:each>
                 </tbody>
-            </table>
+            </dt:table>
 
         </div>
 

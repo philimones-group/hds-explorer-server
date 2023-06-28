@@ -29,7 +29,7 @@
                 </fieldset>
                 <br>
 
-                <table id="formsTable" class="display nowrap compact cell-border" style="width:99%" cellpadding="0">
+                <dt:table id="formsTable">
                     <thead>
                     <tr>
                         <th></th>
@@ -59,11 +59,7 @@
                         </tr>
                     </g:each>
                     </tbody>
-                </table>
-
-                <div class="pagination">
-                    <g:paginate total="${applicationParamCount ?: 0}" />
-                </div>
+                </dt:table>
 
             </g:form>
 

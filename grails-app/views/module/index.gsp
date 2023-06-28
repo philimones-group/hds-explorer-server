@@ -22,11 +22,10 @@
                 <div class="message" role="status">${flash.message}</div>
             </g:if>
 
-            <bi:tableList id="modulesTable" class="module" collection="${moduleList}" columns="code, name, description, createdBy, createdDate, updatedBy, updatedDate" />
-
-            <div class="pagination">
-                <g:paginate total="${moduleCount ?: 0}" />
+            <div class="whitebox_panel">
+                <bi:tableList id="modulesTable" class="module" collection="${moduleList}" columns="code, name, description, createdBy, createdDate, updatedBy, updatedDate" />
             </div>
+
         </div>
 
         <dt:loadDatatable name="modulesTable" />

@@ -13,6 +13,14 @@ class DatatablesUITagLib {
 
     }
 
+    def table = { attrs, body ->
+        out << "\t\t\t<div class=\"whitebox_panel\">\n"
+        out << "\t\t\t\t<table id=\"${attrs.id}\" class=\"display nowrap compact cell-border\">\n"
+        out << "\t\t\t\t\t" + body() + "\n"
+        out << "\t\t\t\t</table>\n"
+        out << "\t\t\t</div>\n"
+    }
+
     def loadDatatable = { attrs, body ->
 
         out << "<script type=\"text/javascript\">\n"
@@ -21,6 +29,12 @@ class DatatablesUITagLib {
         out << "            \"columnDefs\": [\n"
         out << "                {\"className\": \"dt-center\", \"targets\": \"_all\"}\n"
         out << "            ],\n"
+        if (attrs.nodetails != null && attrs.nodetails=="true") {
+            out << "            \"dom\": 'rt',"
+        }
+        if (attrs.pageLength != null){
+            out << "            \"pageLength\": ${attrs.pageLength}, \n"
+        }
         out << "            \"language\": {\n" +
                "                \"emptyTable\": \"${g.message(code: 'default.datatables.ui.emptyTable')}\",\n" +
                "                \"info\": \"${g.message(code: 'default.datatables.ui.info')}\",\n" +

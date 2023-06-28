@@ -21,12 +21,11 @@
                 <div class="message" role="status">${flash.message}</div>
             </g:if>
 
-            <bi:tableList id="roundsTable" class="round" collection="${roundList}" columns="roundNumber, startDate, endDate, description, createdBy, createdDate, updatedBy, updatedDate"
-                          linkAction="show" linkColumn="roundNumber" linkId="id"/>
-
-            <div class="pagination">
-                <g:paginate total="${roundCount ?: 0}" />
+            <div class="whitebox_panel">
+                <bi:tableList id="roundsTable" class="round" collection="${roundList}" columns="roundNumber, startDate, endDate, description, createdBy, createdDate, updatedBy, updatedDate"
+                              linkAction="show" linkColumn="roundNumber" linkId="id"/>
             </div>
+
         </div>
 
         <dt:loadDatatable name="roundsTable" />

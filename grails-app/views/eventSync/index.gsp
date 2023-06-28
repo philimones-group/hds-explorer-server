@@ -3,6 +3,8 @@
 	<head>
 		<meta name="layout" content="main">
 		<title><g:message code="default.menu.sync.label" /></title>
+
+		<dt:defaultResources/>
 	</head>
 	<body>
 
@@ -14,12 +16,13 @@
 		</div>
 		<div id="list-user" class="content scaffold-list" role="main">
 			<h1><g:message code="logreport.sync.syncdss" /></h1>
-			<br>
+
 			<g:if test="${flash.message}">
 				<div class="message" role="status">${flash.message}</div>
 			</g:if>
-			<table>
-			<thead>
+
+			<dt:table id="logTable">
+				<thead>
 					<tr>
 						<th><g:message code="" default="Id" /></th>
 						<th><g:message code="logreport.description.label" default="Process Description" /></th>
@@ -35,7 +38,7 @@
 
 						<td><g:link controller="eventSync" action="showSyncReport" id="${logReport.id}">${fieldValue(bean: logReport, field: "reportId")}</g:link></td>
 
-						<td><g:message code="${logReport.description}" default="${logReport.description}" /></td>
+						<td style="text-align: left"><g:message code="${logReport.description}" default="${logReport.description}" /></td>
 
 						<td><bi:formatDate date="${logReport.start}" format="yyyy-MM-dd HH:mm:ss" /></td>
 
@@ -52,15 +55,14 @@
 					</tr>
 				</g:each>
 				</tbody>
-			</table>
+			</dt:table>
 
 			<!-- Status of Data Transfer -->
-			<br>
 
 			<div id="list-user" class="content scaffold-list" role="main">
 				<h1><g:message code="syncdss.sync.status.label" /></h1>
-				<br>
-				<table>
+
+				<dt:table id="statusTable">
 					<thead>
 					<tr>
 						<th colspan="1" scope="colgroup"></th>
@@ -96,11 +98,16 @@
 						</tr>
 					</g:each>
 					</tbody>
-				</table>
+				</dt:table>
 
 			<fieldset class="buttons">
 
 			</fieldset>
+
+			<dt:loadDatatable name="logTable" nodetails="true"/>
+
+			<dt:loadDatatable name="statusTable" pageLength="20" nodetails="true" />
+
 		</div>
 	</body>
 </html>

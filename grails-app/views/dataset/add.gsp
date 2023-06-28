@@ -7,8 +7,7 @@
 		<g:set var="entityName" value="${message(code: 'dataset.label', default: 'Dataset')}" />
 		<title><g:message code="dataset.add.label" args="[entityName]" /></title>
 
-		<asset:javascript src="application.js"/>
-		<asset:javascript src="bootstrap.js"/>
+		<dt:defaultResources/>
 	</head>
 	<body>
 	<g:javascript>
@@ -139,7 +138,7 @@
 			<br>
 
 			<div class="nav2">
-				<table>
+				<dt:table id="listTable">
 					<thead>
 					<tr>
 
@@ -172,12 +171,10 @@
 						</tr>
 					</g:each>
 					</tbody>
-				</table>
-				<div class="pagination">
-					<g:paginate total="${dataSetInstanceCount ?: 0}" />
-				</div>
+				</dt:table>
 			</div>
 
+			<dt:loadDatatable name="listTable" />
 		</div>
 	</body>
 </html>

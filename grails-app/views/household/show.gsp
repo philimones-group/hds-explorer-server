@@ -43,7 +43,7 @@
             </g:if>
 
 
-            <table id="memberTable" class="display nowrap compact cell-border" style="width:99%" cellpadding="0">
+            <dt:table id="memberTable">
                 <thead>
                 <tr>
                     <g:sortableColumn property="code" title="${message(code: 'member.code.label')}" />
@@ -68,7 +68,7 @@
                     </tr>
                 </g:each>
                 </tbody>
-            </table>
+            </dt:table>
 
             <dt:loadDatatable name="memberTable" />
         </div>

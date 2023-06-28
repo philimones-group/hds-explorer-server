@@ -21,11 +21,8 @@
                 <div class="message" role="status">${flash.message}</div>
             </g:if>
 
-            <bi:tableList id="householdTable" class="household" collection="${householdList}" columns="code, name, headCode, headName, collectedDate, createdDate"
-                          linkAction="show" linkColumn="code" linkId="id" />
-
-            <div class="pagination">
-                <g:paginate total="${householdCount ?: 0}" />
+            <div class="whitebox_panel">
+                <bi:tableList id="householdTable" class="household" collection="${householdList}" columns="code, name, headCode, headName, collectedDate, createdDate" linkAction="show" linkColumn="code" linkId="id" />
             </div>
         </div>
 

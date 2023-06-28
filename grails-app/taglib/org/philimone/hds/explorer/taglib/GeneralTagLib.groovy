@@ -177,7 +177,7 @@ class GeneralTagLib {
         println "col objs: " + collectionObjs?.size()
         println "col: ${strcolumns}, ${columns}"
 
-        out << "            <table id=\"${id}\" class=\"display nowrap compact cell-border\" style=\"width:99%\" cellpadding=\"0\">\n"
+        out << "            <table id=\"${id}\" class=\"display nowrap compact cell-border\">\n"
         out << "                <thead>\n"
         out << "                <tr>\n"
 
