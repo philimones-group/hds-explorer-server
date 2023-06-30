@@ -10,13 +10,14 @@ import { useState, useEffect } from "react"
 import ChartContainer from "../components/ChartContainer"
 import ChartBar from "../components/ChartBar"
 import { Table } from "../components/Table"
-import { dataB } from "../../public/mockData"
+import { dataB, religionData, educationData } from "../../public/mockData"
 import ChartPie from "../components/ChartPie"
+import DonutChart from "../components/DonutChart"
 import CardMain from "../components/CardMain"
 import ChartPyramid from "../components/ChartPyramid"
 import LineChartContainer from "../components/LineChartContainer"
-import React from "react"
 import 'whatwg-fetch'
+import Loading from "../components/Loading"
 
 function Home({baseUrl, i18n}) {
   //State to control expand card area
@@ -38,6 +39,13 @@ function Home({baseUrl, i18n}) {
   const [formData11, setFormData11] = useState(null)
   const [formData12, setFormData12] = useState(null)
   const [formData13, setFormData13] = useState(null)
+  const [loadingPyramid, setLoadingPyramid] = useState(false)
+  const [loadingFieldWorker, setLoadingFieldWorker] = useState(true)
+  const [religionStatus, setReligionStatus] = useState(null)
+  const [educationStatus, setEducationStatus] = useState(null)
+  const [loadingReligion, setLoadingReligion] = useState(true)
+  const [loadingEducation, setLoadingEducation] = useState(true)
+
 
   //console.info(baseUrl + " - new mode running")
 
@@ -53,6 +61,7 @@ function Home({baseUrl, i18n}) {
 
   //get fetched data - pyramid bars
   const fetchDataPyramidBars = async () => {
+    setLoadingPyramid(true)
     const response = await fetch(baseUrl + "/dashboard/populationPyramid")
     if (!response.ok) {
         console.error('Error fetching population pyramid data');
@@ -81,6 +90,26 @@ function Home({baseUrl, i18n}) {
     }
   }
 
+  //get fetched data - religions status
+  const fetchDataReligionStatus = async () => {
+    const response = await fetch(baseUrl + "/dashboard/religions")
+    if (!response.ok) {
+        console.error('Error fetching population coreform status data');
+    } else {
+        return response.json()
+    }
+  }
+
+  //get fetched data - educations status
+  const fetchDataEducationStatus = async () => {
+    const response = await fetch(baseUrl + "/dashboard/educations")
+    if (!response.ok) {
+        console.error('Error fetching population coreform status data');
+    } else {
+        return response.json()
+    }
+  }
+
   useEffect(() => {
     fetchDataTotals()
         .then((result) => {
@@ -98,6 +127,7 @@ function Home({baseUrl, i18n}) {
             const formattedData = JSON.parse(JSON.stringify(result));
             //console.info(formattedData)
             setPyramidBars(formattedData)
+            setLoadingPyramid(false)
         })
         .catch((error) => {
             console.log(error.message)
@@ -111,6 +141,7 @@ function Home({baseUrl, i18n}) {
             const formattedData = JSON.parse(JSON.stringify(result));
             //console.info(formattedData)
             setFieldworkerStatus(formattedData)
+            setLoadingFieldWorker(false)
         })
         .catch((error) => {
             console.log(error.message)
@@ -131,6 +162,7 @@ function Home({baseUrl, i18n}) {
         })
   }, [])
 
+
   const retrieveCoreFormsFromJson = (result) => {
       setFormData1(result["RawRegion"]);
       setFormData2(result["RawHousehold"]);
@@ -147,6 +179,34 @@ function Home({baseUrl, i18n}) {
       setFormData13(result["RawIncompleteVisit"]);
   }
 
+    useEffect(() => {
+    fetchDataReligionStatus()
+        .then((result) => {
+            // Remove quotes from keys
+            const formattedData = JSON.parse(JSON.stringify(result));
+            //console.info(formattedData)
+            setReligionStatus(formattedData)
+            setLoadingReligion(false)
+        })
+        .catch((error) => {
+            console.log(error.message)
+        })
+  }, [])
+
+    useEffect(() => {
+    fetchDataEducationStatus()
+        .then((result) => {
+            // Remove quotes from keys
+            const formattedData = JSON.parse(JSON.stringify(result));
+            //console.info(formattedData)
+            setEducationStatus(formattedData)
+            setLoadingEducation(false)
+        })
+        .catch((error) => {
+            console.log(error.message)
+        })
+  }, [])
+
   return (
       <section className="px-5">
           <div className="cards block-1">
@@ -159,8 +219,19 @@ function Home({baseUrl, i18n}) {
                   <CardMain i18n={i18n} label={i18n['dashboard.totalDeaths']} value={totals?.deaths} icon={<RiUserUnfollowFill className="text-[25px] font-thin text- "/>} iconBg={'bg-rose-800'} genderStatus={true} maleCount={totals?.deaths_male} femaleCount={totals?.deaths_female} />
               </section>
               <section className="w-full flex flex-wrap xl:flex-nowrap gap-6 mb-6">
-                  <ChartContainer chart={<ChartPie/>} type="pie" label={i18n['dashboard.dataCollectionStatus']}/>
-                  <ChartContainer chart={<ChartPyramid i18n={i18n} data={pyramidBars} />} type="bar" label={i18n['dashboard.populationByAgeAndGender']}/>
+                <section className="w-full h-[450px] border border-outline bg-white flex flex-col justify-between items-center px-2 pt-4 rounded-xl shadow-xl">
+                    <div className="w-full h-full items-center justify-center flex">
+                      <div className="w-full h-[320px]">
+                        <h3 className="text-title-alt font-semibold text-center pb-12">{i18n['dashboard.member.education']}</h3>
+                        {loadingEducation ? <Loading/> : <DonutChart data={educationStatus}/>}
+                      </div>
+                      <div className="w-full h-[320px]">
+                        <h3 className="text-title-alt font-semibold text-center pb-12">{i18n['dashboard.member.religion']}</h3>
+                        {loadingReligion ? <Loading/> : <DonutChart data={religionStatus}/>}
+                      </div>
+                    </div>
+                </section>
+                <ChartContainer chart={loadingPyramid ? <Loading/> : <ChartPyramid i18n={i18n} data={pyramidBars} />} type="bar" label={i18n['dashboard.populationByAgeAndGender']}/>
               </section>
           </div>
           <div className="block-2">
@@ -183,8 +254,6 @@ function Home({baseUrl, i18n}) {
                       <Card i18n={i18n} label={i18n['dashboard.birthRegistration']} data={formData11} balance={23} icon={<BiChild className="text-[42px] font-thin "/>} iconBg={'bg-white'} iconColor={'text-emerald-400'}/>
                       <Card i18n={i18n} label={i18n['dashboard.changeHeadHousehold']} data={formData12} balance={23} icon={<AiOutlineUserSwitch className="text-[42px] font-thin "/>} iconBg={'bg-white'} iconColor={'text-blue-400'}/>
                       <Card i18n={i18n} label={i18n['dashboard.incompleteVisit']} data={formData13} balance={23} icon={<AiOutlineUserSwitch className="text-[42px] font-thin "/>} iconBg={'bg-white'} iconColor={'text-blue-400'}/>
-                      <span className="placeholder w-[300px]"></span>
-                      <span className="placeholder w-[300px]"></span>
                   </section>
               </div>
               <button className="flex justify-center items-center my-2 mx-auto w-[50px] h-[30px] border border-outline rounded-sm bg-white shadow-xl" title={expandCardArea ? i18n['dashboard.collapse'] : i18n['dashboard.expand']} onClick={() => setExpandCardArea(!expandCardArea)}>
@@ -204,8 +273,8 @@ function Home({baseUrl, i18n}) {
                 {/*<LineChartContainer/> */}
                 </section>
                 {/*Table*/}
-                <section className="overflow-auto my-6">
-                  <Table i18n={i18n} dataList={fieldworkerStatus}/>
+                <section className="overflow-auto flex flex-col items-center my-6 min-h-[450px] bg-white">
+                    {loadingFieldWorker? <Loading/> : <Table i18n={i18n} dataList={fieldworkerStatus}/>}
                 </section>
           </div>
       </section>

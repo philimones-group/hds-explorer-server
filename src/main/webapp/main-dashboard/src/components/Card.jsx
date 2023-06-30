@@ -1,6 +1,7 @@
 /* eslint-disable react/prop-types */
 import {BsArrowRepeat} from 'react-icons/bs'
 import {AiOutlineCheck, AiOutlineClose} from 'react-icons/ai'
+import '../assets/extra.css'
 
 function Card({i18n, label, data, icon, iconBg, iconColor}) {
 
@@ -22,7 +23,7 @@ function Card({i18n, label, data, icon, iconBg, iconColor}) {
           <span className={`relative flex justify-center items-center w-[65px] h-[65px] text-[28px] rounded-full shadow-xl border ${iconBg} ${iconColor}`}>{icon}</span>
           <div>
             <span className='block text-right text-card-label text-[15px]'>{label}</span>
-            <span className='block text-right text-card-value text-2xl'>{formatNumber(data?.formCollected)}</span>
+            <span className='block text-right text-card-value text-2xl'>{!data? <span className='loader'></span> : formatNumber(data?.formCollected)}</span>
           </div>
         </li>
         <li className='border-t pt-4 text-[15px] flex justify-between items-center text-sub-title'>

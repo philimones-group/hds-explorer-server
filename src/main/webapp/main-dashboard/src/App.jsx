@@ -1,10 +1,7 @@
 import {useEffect, useState} from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import Navbar from "./components/Navbar";
 import Sidebar from "./components/Sidebar";
 import Home from "./pages/Home";
-import Playground from "./pages/Playground";
-
 
 function App() {
   //collapse sidebar function that will be passed and triggered in child component, basically readjust the grid layout on main page (parent)
@@ -14,6 +11,21 @@ function App() {
   const changeLayout = (collapseState) => {
     setCollapse(collapseState)
   }
+
+  //get app base url
+
+function getBaseUrl() {
+  let url = window.location.href; //it supposes to be $ANY_URL/dashboard/* -
+  let last_index = url.lastIndexOf("/dashboard")
+  last_index = last_index == -1 ? url.lastIndexOf("/") : last_index
+
+  url = url.substring(0, last_index)
+
+  console.info("url final: "+url)
+
+  return url
+}
+
 
   //get i18n messages from grails
   const fetchI18nMessages = async () => {
@@ -49,18 +61,5 @@ function App() {
     </>
   );
 }
-
-function getBaseUrl() {
-  var url = window.location.href; //it supposes to be $ANY_URL/dashboard/* -
-  var last_index = url.lastIndexOf("/dashboard")
-  last_index = last_index == -1 ? url.lastIndexOf("/") : last_index
-
-  url = url.substring(0, last_index)
-
-  console.info("url final: "+url)
-
-  return url
-}
-
 
 export default App;

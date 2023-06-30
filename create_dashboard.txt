@@ -13,7 +13,12 @@ Was integrated in HDS-Explorer by paulphilimone, the project will receive futher
 
 cd src/main/webapp/main-dashboard
 
-2. Execute the script
+2. Install all react modules (only run this command if is the first time you run build)
+------------------------------------------------------------------------------------
+
+npm install
+
+3. Execute the script
 ---------------------
 
 sh build-dashboard.sh

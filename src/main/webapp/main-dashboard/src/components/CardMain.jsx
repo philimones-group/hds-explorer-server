@@ -1,4 +1,5 @@
 import { BsGenderFemale, BsGenderMale } from "react-icons/bs"
+import '../assets/extra.css'
 
 /* eslint-disable react/prop-types */
 function CardMain({i18n, label, value ,icon, iconBg, genderStatus, maleCount, femaleCount}) {
@@ -23,7 +24,7 @@ function CardMain({i18n, label, value ,icon, iconBg, genderStatus, maleCount, fe
           <span className={`relative -top-8 flex justify-center items-center w-[65px] h-[65px] rounded-xl shadow-2xl ${iconBg} text-white`}>{icon}</span>
           <div>
             <span className='block text-right text-[15px] text-title-alt font-light'>{label}</span>
-            <span className='block text-right text-2xl text-title-alt font-bold'>{formatNumber(value)}</span>
+            <span className='block text-right text-2xl text-title-alt font-bold'>{!value? <span className='loader'></span> : formatNumber(value)}</span>
           </div>
         </li>
         <li className='border-t pt-4 text-[15px] flex gap-1 items-center'>

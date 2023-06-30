@@ -10,7 +10,7 @@ export function Table({i18n, dataList}){
     }
 
     return (
-        <section className="overflow-auto bg-white shadow-xl border border-outline">
+        <section className="overflow-auto w-full bg-white shadow-xl border border-outline">
             <table className="w-full table-auto border-collapse my-10 text-sm">
                 <thead>
                     <tr>

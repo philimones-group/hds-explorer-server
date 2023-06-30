@@ -1,3 +1,99 @@
+/*Pie Chart mock*/
+
+export const pieData = [
+  { name: 'Data A', value: 400 },
+  { name: 'Data B', value: 300 },
+  { name: 'Data C', value: 300 },
+  { name: 'Data D', value: 300 },
+];
+
+
+export const religionData =
+ [
+    {
+      "name": "christian catholic",
+      "total": 45
+    },
+    {
+      "name": "christian orthodox",
+      "total": 32
+    },
+    {
+      "name": "christian protestant",
+      "total": 20
+    },
+    {
+      "name": "muslim",
+      "total": 15
+    },
+    {
+      "name": "jewish",
+      "total": 5
+    },
+    {
+      "name": "hindu",
+      "total": 10
+    },
+    {
+      "name": "buddhist",
+      "total": 14
+    },
+    {
+      "name": "traditional faith",
+      "total": 2
+    },
+    {
+      "name": "atheist",
+      "total": 7
+    },
+    {
+      "name": "no religion",
+      "total": 2
+    },
+    {
+      "name": "other",
+      "total": 1
+    },
+    {
+      "name": "unknown",
+      "total": 1
+    }
+  ]
+
+
+export const educationData =
+[
+    {
+      "name": "primary education",
+      "total": 90
+    },
+    {
+      "name": "secondary education",
+      "total": 80
+    },
+    {
+      "name": "bachelors degree",
+      "total": 40
+    },
+    {
+      "name": "masters degree",
+      "total": 20
+    },
+    {
+      "name": "doctorate degree",
+      "total": 5
+    },
+    {
+      "name": "other",
+      "total": 10
+    },
+    {
+      "name": "unknown",
+      "total": 15
+    }
+  ]
+
+
 /* Bar chart and Pie chart mock data */
 export const data = [
   {
