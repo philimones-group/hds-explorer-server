@@ -165,7 +165,7 @@ class RawImportApiController {
     }
 
     def members = {
-
+        /* NOT NEEDED AT ALL
         if (request.format != "xml") {
             def message = message(code: 'validation.field.raw.xml.invalid.error')
             render text: message, status:  HttpStatus.BAD_REQUEST // Only XML expected
@@ -198,11 +198,12 @@ class RawImportApiController {
         if (resultSave.postExecution){ //execute creation
             def result = rawExecutionService.createMember(resultSave)
 
-            if (result.status== RawExecutionResult.Status.ERROR){
+            if (result?.status== RawExecutionResult.Status.ERROR){
                 render text: errorMessageService.getRawMessagesText(result.errorMessages), status: HttpStatus.BAD_REQUEST
                 return
             }
         }
+        */
 
         render text: "OK", status: HttpStatus.OK
     }
@@ -423,7 +424,7 @@ class RawImportApiController {
     }
 
     def headrelationships = {
-
+        /* NOT NEEDED
         if (request.format != "xml") {
             def message = message(code: 'validation.field.raw.xml.invalid.error')
             render text: message, status:  HttpStatus.BAD_REQUEST // Only XML expected
@@ -460,7 +461,7 @@ class RawImportApiController {
                 render text: errorMessageService.getRawMessagesText(result.errorMessages), status: HttpStatus.BAD_REQUEST
                 return
             }
-        }
+        }*/
 
         render text: "OK", status: HttpStatus.OK
     }

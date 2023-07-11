@@ -150,7 +150,7 @@ class RawEditExecutionService {
         } else {
             //Domain not found -> Can't update Member, Member with code=? was not found in the database
 
-            errors << errorMessageService.getRawMessage("rawEditDomain.member.not.found.label", [rawDomainInstance.memberCode])
+            errors << errorMessageService.getRawMessage("rawEditDomain.member.not.found.label", [rawDomainInstance.code])
         }
 
 

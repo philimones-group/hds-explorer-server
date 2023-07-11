@@ -281,79 +281,79 @@ class RawBatchExecutionService {
 
     def markDomainAsError(RawDomainObj domainObj){
 
-        if (domainObj.domainInstance.instanceOf(RawRegion)) {
+        if (domainObj.domainInstance instanceof RawRegion) {
             def obj = (RawRegion) domainObj.domainInstance
             obj.processedStatus = ProcessedStatus.ERROR
             obj.save(flush:true)
         }
 
-        if (domainObj.domainInstance.instanceOf(RawHousehold)) {
+        if (domainObj.domainInstance instanceof RawHousehold) {
             def obj = (RawHousehold) domainObj.domainInstance
             obj.processedStatus = ProcessedStatus.ERROR
             obj.save(flush:true)
         }
 
-        if (domainObj.domainInstance.instanceOf(RawVisit)) {
+        if (domainObj.domainInstance instanceof RawVisit) {
             def obj = (RawVisit) domainObj.domainInstance
             obj.processedStatus = ProcessedStatus.ERROR
             obj.save(flush:true)
         }
 
-        if (domainObj.domainInstance.instanceOf(RawMemberEnu)) {
+        if (domainObj.domainInstance instanceof RawMemberEnu) {
             def obj = (RawMemberEnu) domainObj.domainInstance
             obj.processedStatus = ProcessedStatus.ERROR
             obj.save(flush:true)
         }
 
-        if (domainObj.domainInstance.instanceOf(RawDeath)) {
+        if (domainObj.domainInstance instanceof RawDeath) {
             def obj = (RawDeath) domainObj.domainInstance
             obj.processedStatus = ProcessedStatus.ERROR
             obj.save(flush:true)
         }
 
-        if (domainObj.domainInstance.instanceOf(RawOutMigration)) {
+        if (domainObj.domainInstance instanceof RawOutMigration) {
             def obj = (RawOutMigration) domainObj.domainInstance
             obj.processedStatus = ProcessedStatus.ERROR
             obj.save(flush:true)
         }
 
-        if (domainObj.domainInstance.instanceOf(RawInMigration)) {
+        if (domainObj.domainInstance instanceof RawInMigration) {
             def obj = (RawInMigration) domainObj.domainInstance
             obj.processedStatus = ProcessedStatus.ERROR
             obj.save(flush:true)
         }
 
-        if (domainObj.domainInstance.instanceOf(RawExternalInMigration)) {
+        if (domainObj.domainInstance instanceof RawExternalInMigration) {
             def obj = (RawExternalInMigration) domainObj.domainInstance
             obj.processedStatus = ProcessedStatus.ERROR
             obj.save(flush:true)
         }
 
-        if (domainObj.domainInstance.instanceOf(RawPregnancyRegistration)) {
+        if (domainObj.domainInstance instanceof RawPregnancyRegistration) {
             def obj = (RawPregnancyRegistration) domainObj.domainInstance
             obj.processedStatus = ProcessedStatus.ERROR
             obj.save(flush:true)
         }
 
-        if (domainObj.domainInstance.instanceOf(RawPregnancyOutcome)) {
+        if (domainObj.domainInstance instanceof RawPregnancyOutcome) {
             def obj = (RawPregnancyOutcome) domainObj.domainInstance
             obj.processedStatus = ProcessedStatus.ERROR
             obj.save(flush:true)
         }
 
-        if (domainObj.domainInstance.instanceOf(RawMaritalRelationship)) {
+        if (domainObj.domainInstance instanceof RawMaritalRelationship) {
             def obj = (RawMaritalRelationship) domainObj.domainInstance
             obj.processedStatus = ProcessedStatus.ERROR
             obj.save(flush:true)
         }
 
-        if (domainObj.domainInstance.instanceOf(RawChangeHead)) {
+        if (domainObj.domainInstance instanceof RawChangeHead) {
             def obj = (RawChangeHead) domainObj.domainInstance
             obj.processedStatus = ProcessedStatus.ERROR
             obj.save(flush:true)
         }
 
-        if (domainObj.domainInstance.instanceOf(RawIncompleteVisit)) {
+        if (domainObj.domainInstance instanceof RawIncompleteVisit) {
             def obj = (RawIncompleteVisit) domainObj.domainInstance
             obj.processedStatus = ProcessedStatus.ERROR
             obj.save(flush:true)
@@ -1175,7 +1175,7 @@ class RawBatchExecutionService {
 
 
         def devents = RawEvent.executeQuery("select e from RawEvent e where e.eventType in (:list) and ((e.entityCode=:code) or e.childCodes like :searchcodes) order by e.keyDate asc",
-                [list: [RawEventType.EVENT_MEMBER_ENU, RawEventType.EVENT_EXTERNAL_INMIGRATION_ENTRY, RawEventType.EVENT_PREGNANCY_OUTCOME], code:memberCode, searchcodes: "%${memberCode}%"], )
+                [list: [RawEventType.EVENT_MEMBER_ENU, RawEventType.EVENT_EXTERNAL_INMIGRATION_ENTRY, RawEventType.EVENT_PREGNANCY_OUTCOME], code:opt1.code, searchcodes: "%${opt1.code}%"], )
         def devent = !devents.empty ? devents.first() : null
 
         return devent
@@ -1250,7 +1250,7 @@ class RawBatchExecutionService {
         list.collate(200).each { batch ->
             RawIncompleteVisit.withTransaction {
                 batch.each {
-                    new RawEvent(keyDate: it.collectedDate.atStartOfDay(), eventType: RawEventType.EVENT_INCOMPLETE_VISIT, eventId: it.id, entityCode: it.visitCode).save()
+                    new RawEvent(keyDate: it.collectedDate, eventType: RawEventType.EVENT_INCOMPLETE_VISIT, eventId: it.id, entityCode: it.visitCode).save()
                 }
             }
         }

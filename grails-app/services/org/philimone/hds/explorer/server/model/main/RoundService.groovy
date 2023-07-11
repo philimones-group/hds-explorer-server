@@ -178,12 +178,12 @@ println "domain errors: ${errors}"
 
             if (roundsStarts.size() > 0) { //we have overlapping dates with startDate
                 def rounds = roundsStarts.collect { it.roundNumber }
-                errors << errorMessageService.getRawMessage(RawEntity.ROUND, "validation.field.round.startdate.overlaps.error", [StringUtil.format(round.startDate), rounds+""], ["startDate"])
+                errors << errorMessageService.getRawMessage(RawEntity.ROUND, "validation.field.round.startdate.overlaps.error", [StringUtil.format(round.startDate), ""+rounds+""], ["startDate"])
             }
 
             if (roundsEnds.size() > 0) { //we have overlapping dates with endDate
                 def rounds = roundsEnds.collect { it.roundNumber }
-                errors << errorMessageService.getRawMessage(RawEntity.ROUND, "validation.field.round.enddate.overlaps.error", [StringUtil.format(round.endDate), rounds+""], ["endDate"])
+                errors << errorMessageService.getRawMessage(RawEntity.ROUND, "validation.field.round.enddate.overlaps.error", [StringUtil.format(round.endDate), ""+rounds+""], ["endDate"])
             }
         }
 

@@ -51,7 +51,7 @@ enum LogReportCode {
     }
 
     /* Finding Enum by code */
-    private static final Map<String, LogReportCode> MAP = new HashMap<>()
+    private static final Map<Integer, LogReportCode> MAP = new HashMap<>()
 
     static {
         for (LogReportCode e: values()) {

@@ -152,22 +152,6 @@ class UserService {
         return pe.isPasswordValid(user.password, newPassword, null)
     }
 
-    String encodePassword(String password) {
-        springSecurityService.encodePassword(password, "8")
-    }
-
-    List<String> getAuthoritiesText(User user){
-        def list = new ArrayList<String>()
-
-        if (user != null){
-            user.authorities.each {
-                list << generalUtilitiesService.getMessage(it.name, "")
-            }
-        }
-
-        return list
-    }
-
     User get(Serializable id){
         User.get(id)
     }

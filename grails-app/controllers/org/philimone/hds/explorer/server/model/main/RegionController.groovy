@@ -54,7 +54,7 @@ class RegionController {
         def modules = moduleService.findAllByCodes(params.list("modules"))
 
         if (RegionLevel.getFrom(params.hierarchyLevel) != RegionLevel.HIERARCHY_1 && params.parent == null){
-            def errorMessages = [new RawMessage(message(code: "region.parent.level.nullable.label", default: "Parent region missing"), ["parent"])]
+            def errorMessages = [new RawMessage(""+message(code: "region.parent.level.nullable.label", default: "Parent region missing"), ["parent"])]
 
             respond region, view:'create', model: [errorMessages: errorMessages, hierarchyLevel: params.hierarchyLevel, modules: modules]
             return

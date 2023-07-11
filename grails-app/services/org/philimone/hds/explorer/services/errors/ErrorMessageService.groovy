@@ -137,7 +137,7 @@ class ErrorMessageService {
         new RawMessage(msg, null)
     }
 
-    ArrayList<RawMessage> addPrefixToMessages(ArrayList<RawMessage> rawMessages, String prefixMessageCode, List<String> prefixArgs){
+    ArrayList<RawMessage> addPrefixToMessages(List<RawMessage> rawMessages, String prefixMessageCode, List<String> prefixArgs){
         rawMessages.each { rawMessage ->
             def prefixMsg = messageSource.getMessage(prefixMessageCode, prefixArgs!=null ? prefixArgs.toArray() : null, new Locale(Codes.SYSTEM_LANGUAGE))
             rawMessage.text = prefixMsg + " -> " + rawMessage.text
@@ -146,7 +146,7 @@ class ErrorMessageService {
         return rawMessages
     }
 
-    ArrayList<RawMessage> addPrefixToMessages(ArrayList<RawMessage> rawMessages, String prefixMessageCode){
+    ArrayList<RawMessage> addPrefixToMessages(List<RawMessage> rawMessages, String prefixMessageCode){
         return addPrefixToMessages(rawMessages, prefixMessageCode, null)
     }
 }

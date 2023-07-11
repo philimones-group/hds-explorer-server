@@ -24,7 +24,7 @@ class FormMapping {
     }
 
     String toString(){
-        def ntableName = tableName?.replace("[","").replace("]","")
+        def ntableName = tableName?.replace("[","")?.replace("]","")
         "${getRepeatGroupAsConstant()}${ntableName}.${columnName}:${getRepeatGroup()}${formVariableName}->${columnFormat==null ? 'None': columnFormat.getValue(columnFormatValue) }"
     }
 

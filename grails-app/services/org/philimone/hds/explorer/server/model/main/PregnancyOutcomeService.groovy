@@ -132,13 +132,13 @@ class PregnancyOutcomeService {
 
             //concatenate all errors
             def allErrors = new ArrayList<RawMessage>()
-            if (resultMember.status == RawExecutionResult.Status.ERROR) {
+            if (resultMember?.status == RawExecutionResult.Status.ERROR) {
                 allErrors += errorMessageService.addPrefixToMessages(resultMember.errorMessages, "validation.field.pregnancy.child.prefix.msg.error", [rawChild.id])
             }
-            if (resultResidency.status == RawExecutionResult.Status.ERROR) {
+            if (resultResidency?.status == RawExecutionResult.Status.ERROR) {
                 allErrors += errorMessageService.addPrefixToMessages(resultResidency.errorMessages, "validation.field.pregnancy.child.prefix.msg.error", [rawChild.id])
             }
-            if (resultHeadRelationship == RawExecutionResult.Status.ERROR) {
+            if (resultHeadRelationship?.status == RawExecutionResult.Status.ERROR) {
                 allErrors += errorMessageService.addPrefixToMessages(resultHeadRelationship.errorMessages, "validation.field.pregnancy.child.prefix.msg.error", [rawChild.id])
             }
             if (resultDeath?.status == RawExecutionResult.Status.ERROR)  {
@@ -232,7 +232,7 @@ class PregnancyOutcomeService {
         def isBlankNumberOfOutcomes = StringUtil.isBlankInteger(pregnancyOutcome.numberOfOutcomes)
 
         def isBlankBirthPlace = StringUtil.isBlank(pregnancyOutcome.birthPlace)
-        def isBlankBirthPlaceOther = StringUtil.isBlankDate(pregnancyOutcome.birthPlaceOther)
+        def isBlankBirthPlaceOther = StringUtil.isBlank(pregnancyOutcome.birthPlaceOther)
 
         def isBlankVisitCode = StringUtil.isBlank(pregnancyOutcome.visitCode)
 
@@ -518,7 +518,7 @@ class PregnancyOutcomeService {
         rawDeath.memberCode = rawPregnancyChild.childCode
         rawDeath.deathDate = rawPregnancyOutcome.outcomeDate
         rawDeath.deathCause = rawPregnancyChild.outcomeType
-        rawDeath.deathPlace = rawPregnancyOutcome?.birthPlace.equals("OTHER") ? rawPregnancyOutcome.birthPlaceOther : rawPregnancyOutcome.birthPlace
+        rawDeath.deathPlace = rawPregnancyOutcome?.birthPlace?.equals("OTHER") ? rawPregnancyOutcome.birthPlaceOther : rawPregnancyOutcome.birthPlace
 
         rawDeath.collectedBy = rawPregnancyOutcome.collectedBy
         rawDeath.collectedDeviceId = rawPregnancyOutcome.collectedDeviceId

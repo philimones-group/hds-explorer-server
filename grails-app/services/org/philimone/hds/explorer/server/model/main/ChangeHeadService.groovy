@@ -371,7 +371,7 @@ class ChangeHeadService {
 
                 def rawHeadRelationship = createRawHeadRelationship(rawChangeHeadRelationship)
                 def currentRelationship = headRelationshipService.getCurrentHeadRelationship(rawHeadRelationship.memberCode) //get fake current head relationship for this member (close it)
-                currentRelationship.endType = HeadRelationshipEndType.CHANGE_OF_HEAD_OF_HOUSEHOLD.code
+                currentRelationship.endType = HeadRelationshipEndType.CHANGE_OF_HEAD_OF_HOUSEHOLD
                 currentRelationship.endDate = eventDate
 
                 //ignore head of households (its unusual to have relationshipType=HEAD here)

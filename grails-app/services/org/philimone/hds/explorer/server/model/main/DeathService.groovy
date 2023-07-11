@@ -363,7 +363,7 @@ class DeathService {
 
                 def rawHeadRelationship = createRawHeadRelationship(rawDeathRelationship)
                 def currentRelationship = headRelationshipService.getCurrentHeadRelationship(rawHeadRelationship.memberCode) //get fake current head relationship for this member (close it)
-                currentRelationship.endType = HeadRelationshipEndType.DEATH_OF_HEAD_OF_HOUSEHOLD.code
+                currentRelationship.endType = HeadRelationshipEndType.DEATH_OF_HEAD_OF_HOUSEHOLD
                 currentRelationship.endDate = rawDeath.deathDate
 
                 //ignore head of households (its unusual to have relationshipType=HEAD here)

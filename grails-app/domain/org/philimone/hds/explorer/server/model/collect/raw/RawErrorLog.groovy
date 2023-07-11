@@ -38,17 +38,18 @@ class RawErrorLog {
      */
     LocalDateTime createdDate = LocalDateTime.now()
 
-    void setMessages(ArrayList<RawMessage> messages){
+    void setMessages(List<RawMessage> messages){
         Gson gson = new Gson()
         this.message = gson.toJson(messages)
     }
 
-    ArrayList<RawMessage> getMessages(){
+    List<RawMessage> getMessages(){
         def list = new ArrayList<RawMessage>()
         if (message==null || message.isEmpty()) return list
 
         Gson gson = new Gson()
-        return gson.fromJson(this.message, new ArrayList<RawMessage>().getClass())
+        def arrayList = new ArrayList<RawMessage>()
+        return gson.fromJson(this.message, arrayList.getClass() as Class<List<RawMessage>>)
     }
 
     String getMessageText(){
@@ -71,6 +72,8 @@ class RawErrorLog {
 
         return msg
     }
+
+    static transients = ['messages', 'setMessages', 'getMessages', 'getMessageText', 'getCollapsedMessage']
 
     static constraints = {
         uuid unique: true, nullable: false, maxSize: 32

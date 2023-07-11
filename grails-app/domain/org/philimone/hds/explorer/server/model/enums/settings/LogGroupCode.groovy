@@ -21,7 +21,7 @@ enum LogGroupCode {
     }
 
     /* Finding Enum by code */
-    private static final Map<String, LogGroupCode> MAP = new HashMap<>()
+    private static final Map<Integer, LogGroupCode> MAP = new HashMap<>()
 
     static {
         for (LogGroupCode e: values()) {

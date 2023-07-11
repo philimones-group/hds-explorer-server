@@ -169,7 +169,7 @@ println "mod ${modules}"
             //saving
             def saveResult = trackingListService.save(null, validationResult)
 
-            if (saveResult?.errors != null && saveResult?.errors.size()>0){
+            if (saveResult?.errors != null && saveResult?.errors?.size()>0){
                 render text: errorMessageService.getRawMessagesText(saveResult.errors), status: BAD_REQUEST
                 return
             }

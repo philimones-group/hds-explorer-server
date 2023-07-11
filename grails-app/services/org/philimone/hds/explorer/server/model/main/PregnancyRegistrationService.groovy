@@ -78,11 +78,11 @@ class PregnancyRegistrationService {
 
             errors = errorMessageService.getRawMessages(RawEntity.PREGNANCY_REGISTRATION, pregnancyRegistration)
 
-            RawExecutionResult<Member> obj = RawExecutionResult.newErrorResult(RawEntity.PREGNANCY_REGISTRATION, errors)
+            RawExecutionResult<PregnancyRegistration> obj = RawExecutionResult.newErrorResult(RawEntity.PREGNANCY_REGISTRATION, errors)
             return obj
         }
 
-        RawExecutionResult<Member> obj = RawExecutionResult.newSuccessResult(RawEntity.PREGNANCY_REGISTRATION, pregnancyRegistration)
+        RawExecutionResult<PregnancyRegistration> obj = RawExecutionResult.newSuccessResult(RawEntity.PREGNANCY_REGISTRATION, pregnancyRegistration)
         return obj
     }
 

@@ -448,7 +448,7 @@ class ResidencyService {
             //must not be closed
             //P1. Check If endType is empty or NA
             if ( !(currentResidency.endType == null || currentResidency.endType == ResidencyEndType.NOT_APPLICABLE) ){
-                errors << errorMessageService.getRawMessage(RawEntity.RESIDENCY, "validation.field.residency.closed.already.error", [currentResidency.id, currentResidency.endType], ["previous.endType"])
+                errors << errorMessageService.getRawMessage(RawEntity.RESIDENCY, "validation.field.residency.closed.already.error", [currentResidency.id, currentResidency.endType.code], ["previous.endType"])
             }
 
             //C6. Check If endDate is before or equal to startDate
