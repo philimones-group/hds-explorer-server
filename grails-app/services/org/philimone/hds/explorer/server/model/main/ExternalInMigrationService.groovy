@@ -232,12 +232,12 @@ class ExternalInMigrationService {
         }
 
         //C8. Check loop on memberCode equals to fatherCode
-        if (!isBlankCode && !isBlankFatherCode && externalInMigration.memberCode.equalsIgnoreCase(externalInMigration.memberFatherCode)) {
+        if (!isBlankMemberCode && !isBlankFatherCode && externalInMigration.memberCode.equalsIgnoreCase(externalInMigration.memberFatherCode)) {
             errors << errorMessageService.getRawMessage(RawEntity.EXTERNAL_INMIGRATION, "validation.field.inmigration.member.code.loop.father.error", [externalInMigration.memberCode], ["fatherCode"])
         }
 
         //C8. Check loop on memberCode equals to motherCode
-        if (!isBlankCode && !isBlankMotherCode && externalInMigration.memberCode.equalsIgnoreCase(externalInMigration.memberMotherCode)) {
+        if (!isBlankMemberCode && !isBlankMotherCode && externalInMigration.memberCode.equalsIgnoreCase(externalInMigration.memberMotherCode)) {
             errors << errorMessageService.getRawMessage(RawEntity.EXTERNAL_INMIGRATION, "validation.field.inmigration.member.code.loop.mother.error", [externalInMigration.memberCode], ["motherCode"])
         }
 
@@ -365,6 +365,8 @@ class ExternalInMigrationService {
                 motherCode: externalInMigration.memberMotherCode,
                 fatherCode: externalInMigration.memberFatherCode,
                 householdCode: externalInMigration.destinationCode,
+                education: externalInMigration.education,
+                religion: externalInMigration.religion,
                 collectedId: externalInMigration.collectedMemberId,
                 collectedBy: externalInMigration.collectedBy,
                 collectedDate: externalInMigration.collectedDate,
@@ -388,6 +390,9 @@ class ExternalInMigrationService {
         rawInMig.migrationReason = rawExternalInMigration.migrationReason
 
         rawInMig.headRelationshipType = rawExternalInMigration.headRelationshipType
+
+        rawInMig.education = rawExternalInMigration.education
+        rawInMig.religion = rawExternalInMigration.religion
 
         rawInMig.collectedBy = rawExternalInMigration.collectedBy
         rawInMig.collectedDeviceId = rawExternalInMigration.collectedDeviceId

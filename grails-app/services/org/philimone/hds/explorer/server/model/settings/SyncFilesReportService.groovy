@@ -8,10 +8,12 @@ class SyncFilesReportService {
 
     def update(SyncEntity entity, int totalRecords) {
 
-        def report = SyncFilesReport.findOrCreateByName(entity)
+        def currentReport = SyncFilesReport.findByCode(entity.code)
+        if (currentReport != null) {
+            currentReport.delete(flush: true)
+        }
 
-        report.records = totalRecords
-
+        def report = SyncFilesReport.findOrCreateByNameAndRecords(entity, totalRecords)
         report.save(flush:true)
     }
 

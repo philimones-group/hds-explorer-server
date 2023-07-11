@@ -19,6 +19,9 @@ class RawExternalInMigration {
     String memberMotherCode
     String memberFatherCode
 
+    String education
+    String religion
+
     String headRelationshipType
 
     String migrationType = InMigrationType.EXTERNAL.code
@@ -55,6 +58,9 @@ class RawExternalInMigration {
         memberDob nullable: true
         memberMotherCode blank: true, nullable: true
         memberFatherCode blank: true, nullable: true
+
+        education blank: true, nullable: true
+        religion blank: true, nullable: true
 
         migrationType nullable: false, blank: false
         extMigrationType nullable: false, blank: false
@@ -97,6 +103,9 @@ class RawExternalInMigration {
         memberDob column: "member_dob"
         memberMotherCode column: "member_mother_code", index: "idx_member_mother_code"
         memberFatherCode column: "member_father_code", index: "idx_member_father_code"
+
+        education column: "education"
+        religion column: "religion"
 
         headRelationshipType column: "head_relationship_type"
 

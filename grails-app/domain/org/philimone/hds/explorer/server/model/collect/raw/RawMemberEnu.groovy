@@ -23,6 +23,9 @@ class RawMemberEnu {
     String fatherCode
     String fatherName
 
+    String education
+    String religion
+
     String householdCode
     String householdName
     String headRelationshipType
@@ -60,6 +63,9 @@ class RawMemberEnu {
         motherName blank: true, nullable: true
         fatherCode blank: false
         fatherName blank: true, nullable: true
+
+        education blank: true, nullable: true
+        religion blank: true, nullable: true
 
         householdCode blank: false
         householdName blank: true, nullable: true
@@ -104,6 +110,9 @@ class RawMemberEnu {
 
         fatherCode column: 'father_code', index: "idx_father_code"
         fatherName column: 'father_name'
+
+        education column: "education"
+        religion column: "religion"
 
         householdCode column: 'household_code', index: "idx_household_code"
         householdName column: 'household_name'

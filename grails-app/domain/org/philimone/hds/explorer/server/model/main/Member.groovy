@@ -67,6 +67,9 @@ class Member extends CollectableEntity {
     String spouseName
     //String spouseType /*Will no longer be used for the sake of maritalStatus*/
 
+    String education
+    String religion
+
     /**
      * Current Household where the Individual is living
      */
@@ -160,6 +163,9 @@ class Member extends CollectableEntity {
         fatherCode blank: true, nullable: true
         fatherName blank: true, nullable: true
 
+        education blank: true, nullable: true
+        religion blank: true, nullable: true
+
         household nullable: true
         householdCode blank: true, nullable: true
         householdName blank: true, nullable: true
@@ -216,6 +222,9 @@ class Member extends CollectableEntity {
         father column: 'father_id'
         fatherCode column: 'father_code', index: "idx_father_code"
         fatherName column: 'father_name'
+
+        education column: "education"
+        religion column: "religion"
 
         household column: 'household_id'
         householdCode column: 'household_code', index: "idx_household_code"

@@ -63,6 +63,9 @@ class InMigration extends CollectableEntity {
      */
     String migrationReason
 
+    String education
+    String religion
+
     /*
      * Household Visit used to capture the InMigration
      */
@@ -89,6 +92,9 @@ class InMigration extends CollectableEntity {
         migrationDate nullable: false
         migrationReason nullable: true, blank: true
 
+        education nullable: true
+        religion nullable: true
+
         visit nullable: false
         visitCode blank: false, nullable: false
     }
@@ -114,6 +120,9 @@ class InMigration extends CollectableEntity {
 
         migrationDate   column: "migration_date"
         migrationReason column: "migration_reason"
+
+        education column: "education"
+        religion column: "religion"
 
         visit column: "visit_id"
         visitCode column: "visit_code", index: "idx_visit_code"

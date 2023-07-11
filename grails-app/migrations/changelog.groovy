@@ -6,4 +6,5 @@ databaseChangeLog = {
     include file: 'add-unique-flag-to-collected_id.groovy'
     include file: 'add-start-n-end-variables-to-domains.groovy'
     include file: 'alter-enumeration-event_date-dbcolumn_name.groovy'
+    include file: 'add-education-n-religiom-cols-to-domains.groovy'
 }

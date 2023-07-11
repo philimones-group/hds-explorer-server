@@ -11,6 +11,8 @@ import org.philimone.hds.explorer.server.model.enums.settings.LogReportCode
 import org.philimone.hds.explorer.server.model.logs.LogReport
 import org.philimone.hds.explorer.server.model.logs.LogReportFile
 import org.philimone.hds.explorer.server.model.enums.LogStatus
+import org.philimone.hds.explorer.server.model.main.CoreFormColumnMap
+import org.philimone.hds.explorer.server.model.main.CoreFormColumnOptions
 import org.philimone.hds.explorer.server.model.main.CoreFormExtension
 import org.philimone.hds.explorer.server.model.main.Dataset
 import org.philimone.hds.explorer.server.model.main.Death
@@ -64,6 +66,7 @@ class SyncFilesService {
         generateModulesXML(logReportId)
         generateFormsXML(logReportId)
         generateCoreFormsXML(logReportId)
+        generateCoreFormsOptionsXML(logReportId)
         generateUsersXML(logReportId)
     }
 
@@ -703,6 +706,121 @@ class SyncFilesService {
 
             //Save number of records
             syncFilesReportService.update(SyncEntity.CORE_FORMS_EXT, count)
+
+        } catch (Exception ex) {
+            ex.printStackTrace()
+            processed = 0
+            errors = 1
+            output.println(ex.toString())
+
+            logStatusValue = LogStatus.ERROR
+        }
+
+        LogReport.withTransaction {
+            LogReport logReport = LogReport.findByReportId(logReportId)
+            LogReportFile reportFile = new LogReportFile(creationDate: LocalDateTime.now(), fileName: log.logFileName, logReport: logReport)
+            reportFile.keyTimestamp = logReport.keyTimestamp
+            reportFile.start = start
+            reportFile.end = LocalDateTime.now()
+            reportFile.creationDate = LocalDateTime.now()
+            reportFile.processedCount = processed
+            reportFile.errorsCount = errors
+
+            logReport.end = LocalDateTime.now()
+            logReport.status = logStatusValue
+            logReport.addToLogFiles(reportFile)
+            logReport.save()
+
+            //println("errors: ${logReport.errors}")
+        }
+
+        output.close();
+
+    }
+
+    def generateCoreFormsOptionsXML(LogReportCode logReportId) { //read forms
+
+        LogOutput log = generalUtilitiesService.getOutput(SystemPath.getLogsPath(), "generate-exp-cforms_options-xml");
+        PrintStream output = log.output
+        if (output == null) return;
+
+        def start = LocalDateTime.now();
+        int processed = 0
+        int errors = 0
+        def logStatusValue = LogStatus.FINISHED
+
+        try {
+            //read forms
+            def resultOptions = new HashMap<String, List<CoreFormColumnOptions>>() //CONTINUE THIS LATER
+
+            CoreFormColumnOptions.withTransaction {
+                def formMap = CoreFormColumnMap.list()
+
+                formMap.each {
+
+                    if (it.enabled) {
+                        //it.formName
+                        //it.columnName
+                        def list = CoreFormColumnOptions.findAllByColumnName(it.columnName, [sort:"id", order:"asc"])
+
+                        def allList = resultOptions.get(it.formName)
+                        if (allList != null) {
+                            allList.addAll(list)
+                        } else {
+                            resultOptions.put(it.formName, list)
+                        }
+
+                    }
+
+                }
+
+            }
+
+            DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+
+            // root elements
+            Document doc = docBuilder.newDocument();
+
+            Element rootElement = doc.createElement(SyncEntity.CORE_FORMS_OPTIONS.filename); //form,column,optionValue,optionLabel,optionCode
+            doc.appendChild(rootElement);
+
+            int count = 0;
+            resultOptions.each { String formName, List<CoreFormColumnOptions> list ->
+                count++;
+
+
+                list.each { options ->
+                    Element element = createCoreFormOptions(doc, formName, options);
+                    rootElement.appendChild(element);
+                }
+
+            }
+
+            // write the content into xml file
+            TransformerFactory transformerFactory = TransformerFactory.newInstance();
+            Transformer transformer = transformerFactory.newTransformer();
+            DOMSource source = new DOMSource(doc);
+            StreamResult result = new StreamResult(new File(SystemPath.getGeneratedFilesPath() + "/${SyncEntity.CORE_FORMS_OPTIONS.xmlFilename}"));
+
+            // Output to console for testing
+            // StreamResult result = new StreamResult(System.out);
+            transformer.transform(source, result);
+
+            System.out.println("File saved! - ${SyncEntity.CORE_FORMS_OPTIONS.xmlFilename}");
+            output.println("File saved! - ${SyncEntity.CORE_FORMS_OPTIONS.xmlFilename}");
+
+            //zip file
+            ZipMaker zipMaker = new ZipMaker(SystemPath.getGeneratedFilesPath() + "/${SyncEntity.CORE_FORMS_OPTIONS.zipFilename}")
+            zipMaker.addFile(SystemPath.getGeneratedFilesPath() + "/${SyncEntity.CORE_FORMS_OPTIONS.xmlFilename}")
+            def b = zipMaker.makeZip()
+
+            println "creating zip - ${SyncEntity.CORE_FORMS_OPTIONS.zipFilename} - success=" + b
+
+            processed = 1
+
+            //Save number of records
+            syncFilesReportService.update(SyncEntity.CORE_FORMS_OPTIONS, count)
 
         } catch (Exception ex) {
             ex.printStackTrace()
@@ -2062,6 +2180,20 @@ class SyncFilesService {
         return element;
     }
 
+    private Element createCoreFormOptions(Document doc, String formName, CoreFormColumnOptions options) {
+        Element element = doc.createElement("coreformoption");
+
+        //group is disabled
+        element.appendChild(createAttributeNonNull(doc, "formName", formName))
+        element.appendChild(createAttributeNonNull(doc, "columnName", options.columnName))
+        element.appendChild(createAttributeNonNull(doc, "optionValue", options.optionValue))
+        element.appendChild(createAttributeNonNull(doc, "optionLabel", "${options.optionLabel}"))
+        element.appendChild(createAttributeNonNull(doc, "optionLabelCode", "" + options.optionLabelCode+""))
+
+
+        return element;
+    }
+
     private Element createAppParameter(Document doc, ApplicationParam appParam) {
         Element element = doc.createElement("applicationParam");
 
@@ -2358,6 +2490,10 @@ class SyncFilesService {
                 ((m.maritalStatus==null) ?                              "<maritalStatus />" : "<maritalStatus>${m.maritalStatus.code}</maritalStatus>") +
                 ((m.spouseCode==null || m.spouseCode.isEmpty()) ?       "<spouseCode />" : "<spouseCode>${m.spouseCode}</spouseCode>") +
                 ((m.spouseName==null || m.spouseName.isEmpty()) ?       "<spouseName />" : "<spouseName>${m.spouseName}</spouseName>") +
+
+                ((m.education==null || m.education.isEmpty()) ?       "<education />" : "<education>${m.education}</education>") +
+                ((m.religion==null || m.religion.isEmpty()) ?       "<religion />" : "<religion>${m.religion}</religion>") +
+
                 /*((m.spouseType==null || m.spouseType.isEmpty()) ?       "<spouseType />" : "<spouseType>${m.spouseType}</spouseType>") + */
                 ((m.householdCode==null || m.householdCode.isEmpty()) ? "<householdCode />" : "<householdCode>${m.householdCode}</householdCode>") +
                 ((m.householdName==null || m.householdName.isEmpty()) ? "<householdName />" : "<householdName>${m.householdName}</householdName>") +

@@ -18,6 +18,8 @@ class Enumeration extends CollectableEntity {
     Member member
     String memberCode
     LocalDate eventDate
+    String education
+    String religion
 
     static constraints = {
         id maxSize: 32
@@ -29,6 +31,8 @@ class Enumeration extends CollectableEntity {
         member unique: true, nullable: false
         memberCode unique: true, nullable: false
         eventDate nullable: false
+        education nullable: true
+        religion nullable: true
     }
 
     static mapping = {
@@ -43,5 +47,7 @@ class Enumeration extends CollectableEntity {
         member column: "member_id"
         memberCode column: "member_code"
         eventDate column: "event_date"
+        education column: "education"
+        religion column: "religion"
     }
 }

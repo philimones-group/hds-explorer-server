@@ -65,6 +65,10 @@ class GeneralUtilitiesService {
         getMessage(messageCode, null, defaultMessage, new Locale(Codes.SYSTEM_LANGUAGE))
     }
 
+    def String getMessage(String messageCode) {
+        getMessage(messageCode, null, null, new Locale(Codes.SYSTEM_LANGUAGE))
+    }
+
     def String userFullName() {
         return currentUser().toString()
     }

@@ -20,6 +20,9 @@ class RawMember {
     String fatherCode
     String fatherName
 
+    String education
+    String religion
+
     String householdCode
 
     String modules
@@ -49,6 +52,9 @@ class RawMember {
         motherName blank: false
         fatherCode blank: false
         fatherName blank: false
+
+        education blank: true, nullable: true
+        religion blank: true, nullable: true
 
         householdCode blank: false
 
@@ -83,6 +89,9 @@ class RawMember {
 
         fatherCode column: 'father_code', index: "idx_father_code"
         fatherName column: 'father_name'
+
+        education column: "education"
+        religion column: "religion"
 
         householdCode column: 'household_code', index: "idx_household_code"
 

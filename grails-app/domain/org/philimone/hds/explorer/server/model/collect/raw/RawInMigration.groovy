@@ -11,6 +11,10 @@ class RawInMigration {
 
     String visitCode
     String memberCode
+
+    String education
+    String religion
+
     String headRelationshipType
     String migrationType
     String extMigrationType
@@ -37,7 +41,12 @@ class RawInMigration {
     static constraints = {
         id maxSize: 32
 
+        visitCode blank: false, nullable: false
         memberCode blank: false, nullable: false
+
+        education blank: true, nullable: true
+        religion blank: true, nullable: true
+
         migrationType nullable: false, blank: false
         extMigrationType nullable: true, blank: true
         originCode nullable: true, blank: true
@@ -45,7 +54,6 @@ class RawInMigration {
         destinationCode nullable: false, blank: false
         migrationDate nullable: false
         migrationReason nullable: true, blank: true
-        visitCode blank: false, nullable: false
 
         collectedBy blank: true
         collectedDeviceId nullable:true
@@ -68,6 +76,10 @@ class RawInMigration {
 
         visitCode column: "visit_code", index: "idx_visit_code"
         memberCode column: "member_code", index: "idx_member_code"
+
+        education column: "education"
+        religion column: "religion"
+
         headRelationshipType column: "head_relationship_type"
         migrationType       column: "migration_type"
         extMigrationType column: "ext_migration_type"

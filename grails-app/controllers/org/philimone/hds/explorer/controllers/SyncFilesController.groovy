@@ -50,6 +50,11 @@ class SyncFilesController {
         render file: file
     }
 
+    def coreformsoptions = {
+        def file = new File(SystemPath.getGeneratedFilesPath() + File.separator + SyncEntity.CORE_FORMS_OPTIONS.xmlFilename)
+        render file: file
+    }
+
     def users = {
         def file = new File(SystemPath.getGeneratedFilesPath() + File.separator + "users.xml")
         render file: file
@@ -171,6 +176,15 @@ class SyncFilesController {
 
     def coreformsZip = {
         def file = new File(SystemPath.getGeneratedFilesPath() + File.separator + SyncEntity.CORE_FORMS_EXT.zipFilename)
+        //render file: file, fileName: "forms.zip"
+
+        response.setContentLengthLong(file.size())
+        response.setContentType("application/zip")
+        response.outputStream << file.bytes
+    }
+
+    def coreformsoptionsZip = {
+        def file = new File(SystemPath.getGeneratedFilesPath() + File.separator + SyncEntity.CORE_FORMS_OPTIONS.zipFilename)
         //render file: file, fileName: "forms.zip"
 
         response.setContentLengthLong(file.size())

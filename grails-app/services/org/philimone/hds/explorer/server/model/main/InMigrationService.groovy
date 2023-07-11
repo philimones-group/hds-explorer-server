@@ -445,6 +445,9 @@ class InMigrationService {
         inmigration.migrationDate = rin.migrationDate
         inmigration.migrationReason = rin.migrationReason
 
+        inmigration.education = rin.education
+        inmigration.religion = rin.religion
+
         //set collected by info
         inmigration.collectedId = rin.id
         inmigration.collectedBy = userService.getUser(rin.collectedBy)

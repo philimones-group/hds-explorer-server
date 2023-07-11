@@ -7,16 +7,19 @@ import org.philimone.hds.explorer.server.model.authentication.SecurityMap
 import org.philimone.hds.explorer.server.model.authentication.User
 import org.philimone.hds.explorer.io.SystemPath
 import org.philimone.hds.explorer.server.model.enums.CoreForm
-
+import org.philimone.hds.explorer.server.model.enums.EducationType
 import org.philimone.hds.explorer.server.model.enums.Gender
 import org.philimone.hds.explorer.server.model.enums.MaritalStatus
 import org.philimone.hds.explorer.server.model.enums.RegionLevel
+import org.philimone.hds.explorer.server.model.enums.ReligionType
 import org.philimone.hds.explorer.server.model.enums.settings.LogGroupCode
 import org.philimone.hds.explorer.server.model.enums.settings.LogReportCode
 import org.philimone.hds.explorer.server.model.json.JConstant
 import org.philimone.hds.explorer.server.model.logs.LogGroup
 import org.philimone.hds.explorer.server.model.logs.LogReport
 import org.philimone.hds.explorer.server.model.enums.LogStatus
+import org.philimone.hds.explorer.server.model.main.CoreFormColumnMap
+import org.philimone.hds.explorer.server.model.main.CoreFormColumnOptions
 import org.philimone.hds.explorer.server.model.main.CoreFormExtension
 import org.philimone.hds.explorer.server.model.main.MappingFormatType
 import org.philimone.hds.explorer.server.model.main.Member
@@ -157,6 +160,7 @@ class BootStrap {
             new SecurityMap(url: "/api/export/modules/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER},${Role.ROLE_FIELD_WORKER}").save(flush: true)
             new SecurityMap(url: "/api/export/forms/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER},${Role.ROLE_FIELD_WORKER}").save(flush: true)
             new SecurityMap(url: "/api/export/coreforms/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER},${Role.ROLE_FIELD_WORKER}").save(flush: true)
+            new SecurityMap(url: "/api/export/coreformsoptions/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER},${Role.ROLE_FIELD_WORKER}").save(flush: true)
             new SecurityMap(url: "/api/export/users/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER},${Role.ROLE_FIELD_WORKER}").save(flush: true)
             new SecurityMap(url: "/api/export/trackinglists/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER},${Role.ROLE_FIELD_WORKER}").save(flush: true)
             new SecurityMap(url: "/api/export/residencies/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER},${Role.ROLE_FIELD_WORKER}").save(flush: true)
@@ -436,6 +440,7 @@ class BootStrap {
 
 
         insertCoreFormsExtensions()
+        insertCoreFormsCustomColumns()
     }
 
     def insertCoreFormsExtensions(){
@@ -462,6 +467,47 @@ class BootStrap {
             }
         }
 
+    }
+
+    def insertCoreFormsCustomColumns() {
+        def svc = generalUtilitiesService
+
+        if (CoreFormColumnMap.count()==0) {
+            new CoreFormColumnMap(formName: "rawMemberEnu", columnName: "education", enabled: true).save(flush: true)
+            new CoreFormColumnMap(formName: "rawMemberEnu", columnName: "religion", enabled: true).save(flush: true)
+
+            new CoreFormColumnMap(formName: "rawExternalInMigration", columnName: "education", enabled: true).save(flush: true)
+            new CoreFormColumnMap(formName: "rawExternalInMigration", columnName: "religion", enabled: true).save(flush: true)
+
+            new CoreFormColumnMap(formName: "rawInMigration", columnName: "education", enabled: true).save(flush: true)
+            new CoreFormColumnMap(formName: "rawInMigration", columnName: "religion", enabled: true).save(flush: true)
+        }
+
+        if (CoreFormColumnOptions.count()==0) {
+            //Education
+            new CoreFormColumnOptions(columnName: "education", ordinal: 1, optionValue: EducationType.NO_EDUCATION.code,        optionLabel: svc.getMessage(EducationType.NO_EDUCATION.name), optionLabelCode: EducationType.NO_EDUCATION.name).save(flush: true)
+            new CoreFormColumnOptions(columnName: "education", ordinal: 2, optionValue: EducationType.PRIMARY_EDUCATION.code,   optionLabel: svc.getMessage(EducationType.PRIMARY_EDUCATION.name), optionLabelCode: EducationType.PRIMARY_EDUCATION.name).save(flush: true)
+            new CoreFormColumnOptions(columnName: "education", ordinal: 3, optionValue: EducationType.SECONDARY_EDUCATION.code, optionLabel: svc.getMessage(EducationType.SECONDARY_EDUCATION.name), optionLabelCode: EducationType.SECONDARY_EDUCATION.name).save(flush: true)
+            new CoreFormColumnOptions(columnName: "education", ordinal: 4, optionValue: EducationType.BACHELORS_DEGRE.code,     optionLabel: svc.getMessage(EducationType.BACHELORS_DEGRE.name), optionLabelCode: EducationType.BACHELORS_DEGRE.name).save(flush: true)
+            new CoreFormColumnOptions(columnName: "education", ordinal: 5, optionValue: EducationType.MASTERS_DEGRE.code,       optionLabel: svc.getMessage(EducationType.MASTERS_DEGRE.name), optionLabelCode: EducationType.MASTERS_DEGRE.name).save(flush: true)
+            new CoreFormColumnOptions(columnName: "education", ordinal: 6, optionValue: EducationType.DOCTORATE_DEGRE.code,     optionLabel: svc.getMessage(EducationType.DOCTORATE_DEGRE.name), optionLabelCode: EducationType.DOCTORATE_DEGRE.name).save(flush: true)
+            new CoreFormColumnOptions(columnName: "education", ordinal: 7, optionValue: EducationType.OTHER.code,               optionLabel: svc.getMessage(EducationType.OTHER.name), optionLabelCode: EducationType.OTHER.name).save(flush: true)
+            new CoreFormColumnOptions(columnName: "education", ordinal: 8, optionValue: EducationType.UNKNOWN.code,             optionLabel: svc.getMessage(EducationType.UNKNOWN.name), optionLabelCode: EducationType.UNKNOWN.name).save(flush: true)
+
+            //Religion
+            new CoreFormColumnOptions(columnName: "religion", ordinal: 1, optionValue: ReligionType.CHRISTIAN_CATHOLIC.code,   optionLabel: svc.getMessage(ReligionType.CHRISTIAN_CATHOLIC.name), optionLabelCode: ReligionType.CHRISTIAN_CATHOLIC.name).save(flush: true)
+            new CoreFormColumnOptions(columnName: "religion", ordinal: 2, optionValue: ReligionType.CHRISTIAN_ORTHODOX.code,   optionLabel: svc.getMessage(ReligionType.CHRISTIAN_ORTHODOX.name), optionLabelCode: ReligionType.CHRISTIAN_ORTHODOX.name).save(flush: true)
+            new CoreFormColumnOptions(columnName: "religion", ordinal: 3, optionValue: ReligionType.CHRISTIAN_PROTESTANT.code, optionLabel: svc.getMessage(ReligionType.CHRISTIAN_PROTESTANT.name), optionLabelCode: ReligionType.CHRISTIAN_PROTESTANT.name).save(flush: true)
+            new CoreFormColumnOptions(columnName: "religion", ordinal: 4, optionValue: ReligionType.MUSLIM.code,               optionLabel: svc.getMessage(ReligionType.MUSLIM.name), optionLabelCode: ReligionType.MUSLIM.name).save(flush: true)
+            new CoreFormColumnOptions(columnName: "religion", ordinal: 5, optionValue: ReligionType.JEWISH.code,               optionLabel: svc.getMessage(ReligionType.JEWISH.name), optionLabelCode: ReligionType.JEWISH.name).save(flush: true)
+            new CoreFormColumnOptions(columnName: "religion", ordinal: 6, optionValue: ReligionType.HINDU.code,                optionLabel: svc.getMessage(ReligionType.HINDU.name), optionLabelCode: ReligionType.HINDU.name).save(flush: true)
+            new CoreFormColumnOptions(columnName: "religion", ordinal: 7, optionValue: ReligionType.BUDHIST.code,              optionLabel: svc.getMessage(ReligionType.BUDHIST.name), optionLabelCode: ReligionType.BUDHIST.name).save(flush: true)
+            new CoreFormColumnOptions(columnName: "religion", ordinal: 8, optionValue: ReligionType.TRADITIONAL_FAITH.code,    optionLabel: svc.getMessage(ReligionType.TRADITIONAL_FAITH.name), optionLabelCode: ReligionType.TRADITIONAL_FAITH.name).save(flush: true)
+            new CoreFormColumnOptions(columnName: "religion", ordinal: 9, optionValue: ReligionType.ATHEIST.code,              optionLabel: svc.getMessage(ReligionType.ATHEIST.name), optionLabelCode: ReligionType.ATHEIST.name).save(flush: true)
+            new CoreFormColumnOptions(columnName: "religion", ordinal: 10, optionValue: ReligionType.NO_RELIGION.code,          optionLabel: svc.getMessage(ReligionType.NO_RELIGION.name), optionLabelCode: ReligionType.NO_RELIGION.name).save(flush: true)
+            new CoreFormColumnOptions(columnName: "religion", ordinal: 11, optionValue: ReligionType.OTHER.code,                optionLabel: svc.getMessage(ReligionType.OTHER.name), optionLabelCode: ReligionType.OTHER.name).save(flush: true)
+            new CoreFormColumnOptions(columnName: "religion", ordinal: 12, optionValue: ReligionType.UNKNOWN.code,              optionLabel: svc.getMessage(ReligionType.UNKNOWN.name), optionLabelCode: ReligionType.UNKNOWN.name).save(flush: true)
+        }
     }
 
     def retrieveAndPopulateStaticConstants(){

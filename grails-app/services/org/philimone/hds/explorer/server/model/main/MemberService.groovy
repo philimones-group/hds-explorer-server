@@ -254,6 +254,9 @@ class MemberService {
 
         member.maritalStatus = MaritalStatus.SINGLE
 
+        member.education = rm.education
+        member.religion = rm.religion
+
         if (household != null) {
             member.household = household
             member.householdCode = household.code
