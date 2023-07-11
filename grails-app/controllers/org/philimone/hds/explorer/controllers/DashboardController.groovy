@@ -34,6 +34,16 @@ class DashboardController {
         [coreFormStatusMap : coreFormStatusMap]
     }
 
+    def educations = {
+        def list = dashboardService.retrieveEducationRates()
+        [educationList : list]
+    }
+
+    def religions = {
+        def list = dashboardService.retrieveReligionRates()
+        [religionList : list]
+    }
+
     def language = {
         Locale currentLocale = localeResolver.resolveLocale(request)
         String language = currentLocale.language

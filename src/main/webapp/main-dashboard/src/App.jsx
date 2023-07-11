@@ -13,18 +13,17 @@ function App() {
   }
 
   //get app base url
+  function getBaseUrl() {
+    let url = window.location.href; //it supposes to be $ANY_URL/dashboard/* -
+    let last_index = url.lastIndexOf("/dashboard")
+    last_index = last_index == -1 ? url.lastIndexOf("/") : last_index
 
-function getBaseUrl() {
-  let url = window.location.href; //it supposes to be $ANY_URL/dashboard/* -
-  let last_index = url.lastIndexOf("/dashboard")
-  last_index = last_index == -1 ? url.lastIndexOf("/") : last_index
+    url = url.substring(0, last_index)
 
-  url = url.substring(0, last_index)
+    //console.info("url final: "+url)
 
-  console.info("url final: "+url)
-
-  return url
-}
+    return url
+  }
 
 
   //get i18n messages from grails

@@ -16,7 +16,7 @@ const DonutChart = ({ data }) => {
         },
       },
 
-    responsive: [{breakpoint: 300, options: {chart: {width: 250},}}]
+    responsive: [{breakpoint: 300, options: {chart: {width: 250, height: '450px'},}}]
     },
 
     legend: {

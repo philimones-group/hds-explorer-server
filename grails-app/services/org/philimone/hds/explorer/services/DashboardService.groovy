@@ -9,8 +9,10 @@ import org.philimone.hds.explorer.server.model.enums.temporal.OutMigrationType
 import org.philimone.hds.explorer.server.model.enums.temporal.ResidencyEndType
 import org.philimone.hds.explorer.server.model.json.dashboard.CoreFormStatus
 import org.philimone.hds.explorer.server.model.json.dashboard.FieldworkerStatus
+import org.philimone.hds.explorer.server.model.json.dashboard.PieStatus
 import org.philimone.hds.explorer.server.model.json.dashboard.PyramidBar
 import org.philimone.hds.explorer.server.model.json.dashboard.Totals
+import org.philimone.hds.explorer.server.model.main.CoreFormColumnOptions
 import org.philimone.hds.explorer.server.model.main.Death
 import org.philimone.hds.explorer.server.model.main.Household
 import org.philimone.hds.explorer.server.model.main.Member
@@ -201,4 +203,38 @@ class DashboardService {
     //Last 30 days
     //Last 3 months
     //This Round
+
+    List<PieStatus> retrieveEducationRates() {
+        def list = new ArrayList<PieStatus>()
+
+        def educationOpts = CoreFormColumnOptions.findAllByColumnName("education", [sort:"ordinal", order: "asc"])
+
+        def totalMembers = Member.count() - 1
+
+        educationOpts.each { opt ->
+            def count = Member.countByEducation(opt.optionValue)
+
+            def status = new PieStatus(id: opt.ordinal, name: opt.optionLabel, total: Math.round(count*100D / totalMembers*1D))
+            list.add(status)
+        }
+
+        return list
+    }
+
+    List<PieStatus> retrieveReligionRates() {
+        def list = new ArrayList<PieStatus>()
+
+        def religionOpts = CoreFormColumnOptions.findAllByColumnName("religion", [sort:"ordinal", order: "asc"])
+
+        def totalMembers = Member.count() - 1
+
+        religionOpts.each { opt ->
+            def count = Member.countByReligion(opt.optionValue)
+
+            def status = new PieStatus(id: opt.ordinal, name: opt.optionLabel, total: Math.round(count*100D / totalMembers*1D))
+            list.add(status)
+        }
+
+        return list
+    }
 }

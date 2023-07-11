@@ -1,0 +1,9 @@
+import org.philimone.hds.explorer.server.model.json.dashboard.FieldworkerStatus
+import org.philimone.hds.explorer.server.model.json.dashboard.PieStatus
+import org.philimone.hds.explorer.server.model.json.dashboard.PyramidBar
+
+model {
+    List<PieStatus> religionList
+}
+
+json religionList

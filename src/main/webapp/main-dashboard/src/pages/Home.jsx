@@ -26,6 +26,8 @@ function Home({baseUrl, i18n}) {
   const [pyramidBars, setPyramidBars] = useState(null)
   const [fieldworkerStatus, setFieldworkerStatus] = useState(null)
   const [coreFormStatus, setCoreFormStatus] = useState(null)
+  const [religionStatus, setReligionStatus] = useState(null)
+  const [educationStatus, setEducationStatus] = useState(null)
   const [formData1, setFormData1] = useState(null) //region
   const [formData2, setFormData2] = useState(null) //household
   const [formData3, setFormData3] = useState(null) //visit
@@ -41,8 +43,6 @@ function Home({baseUrl, i18n}) {
   const [formData13, setFormData13] = useState(null)
   const [loadingPyramid, setLoadingPyramid] = useState(false)
   const [loadingFieldWorker, setLoadingFieldWorker] = useState(true)
-  const [religionStatus, setReligionStatus] = useState(null)
-  const [educationStatus, setEducationStatus] = useState(null)
   const [loadingReligion, setLoadingReligion] = useState(true)
   const [loadingEducation, setLoadingEducation] = useState(true)
 
