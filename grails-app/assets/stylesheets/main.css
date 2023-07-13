@@ -363,7 +363,50 @@ fieldset.embedded legend {
     background: transparent url(../images/skin/information.png) 0.5em 50% no-repeat;
     text-indent: 2.2em;
 }
+/* XERRORS */
+.xerrors,
+.xmessage {
+    margin: 1em 0;
+    padding: 0.5em;
+}
 
+.xmessage {
+    background: #f3f3ff;
+    border: 1px solid #b2d1ff;
+    color: #006dba;
+    -moz-box-shadow: 0 0 0.25em #b2d1ff;
+    -webkit-box-shadow: 0 0 0.25em #b2d1ff;
+    box-shadow: 0 0 0.25em #b2d1ff;
+    margin-left: 20px;
+    margin-right: 20px;
+}
+
+.xerrors {
+    background: #fff3f3;
+    border: 1px solid #ffaaaa;
+    color: #cc0000;
+    -moz-box-shadow: 0 0 0.25em #ff8888;
+    -webkit-box-shadow: 0 0 0.25em #ff8888;
+    box-shadow: 0 0 0.25em #ff8888;
+    margin-left: 20px;
+    margin-right: 20px;
+}
+
+.xerrors ul,
+.xmessage {
+    padding: 0;
+}
+
+.xerrors li {
+    list-style: none;
+    background: transparent url(../images/skin/exclamation.png) 0.5em 50% no-repeat;
+    text-indent: 2.2em;
+}
+
+.xmessage {
+    background: transparent url(../images/skin/information.png) 0.5em 50% no-repeat;
+    text-indent: 2.2em;
+}
 /* form fields with errors */
 
 .error input, .error select, .error textarea {
@@ -578,6 +621,28 @@ th:hover, tr:hover {
 }
 
 .buttons .save {
+    background-image: url(../images/skin/database_save.png);
+}
+
+/* used on tabulator row menu */
+.xdelete, .xedit, .xsave {
+    background-position: 0.0em center;
+    background-repeat: no-repeat;
+    padding-left: 23px;
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+}
+
+.xdelete {
+    background-image: url(../images/skin/database_delete.png);
+}
+
+.xedit {
+    background-image: url(../images/skin/database_edit.png);
+}
+
+.xsave {
     background-image: url(../images/skin/database_save.png);
 }
 

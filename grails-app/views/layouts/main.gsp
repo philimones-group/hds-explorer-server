@@ -59,6 +59,7 @@
             <hds:dropmenu label="${g.message(code: "default.menu.settings.label")}">
                 <hds:menu label="${g.message(code: 'default.menu.settings.modules.label')}" link="${createLink(controller: 'module', action: 'index')}" class="arrow" />
                 <hds:menu label="${g.message(code: 'default.menu.settings.coreformsext.label')}" link="${createLink(controller: 'coreFormExtension', action: 'index')}" class="arrow" />
+                <hds:menu label="${g.message(code: 'default.menu.settings.coreformoptions.label')}" link="${createLink(controller: 'settings', action: 'customOptions')}" class="arrow" />
                 <hds:menu label="${g.message(code: 'default.menu.settings.hierarchylevels.label')}" link="${createLink(controller: 'applicationParam', action: 'hierarchyLevels')}" class="arrow" />
                 <sec:ifAllGranted roles="${org.philimone.hds.explorer.server.model.authentication.Role.ROLE_ADMINISTRATOR}">
                     <hds:menu label="${g.message(code: 'default.menu.settings.system.label')}" link="${createLink(controller: 'settings', action: 'parameters')}" class="arrow" />

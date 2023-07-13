@@ -25,6 +25,8 @@ import java.time.LocalDate
 @Transactional
 class DashboardService {
 
+    def generalUtilitiesService
+
     static pyramidGroups = [
              new PyramidBar(id: 1, minAge: 0, maxAge: 4, ageRange: "0-4"),
              new PyramidBar(id: 2, minAge: 5, maxAge: 9, ageRange: "5-9"),
@@ -213,8 +215,10 @@ class DashboardService {
 
         educationOpts.each { opt ->
             def count = Member.countByEducation(opt.optionValue)
+            def label = generalUtilitiesService.getMessageWeb(opt.optionLabelCode)
+            label = label==null ? opt.optionLabel : label
 
-            def status = new PieStatus(id: opt.ordinal, name: opt.optionLabel, total: Math.round(count*100D / totalMembers*1D))
+            def status = new PieStatus(id: opt.ordinal, name: label, total: Math.round(count*100D / totalMembers*1D))
             list.add(status)
         }
 
@@ -230,8 +234,10 @@ class DashboardService {
 
         religionOpts.each { opt ->
             def count = Member.countByReligion(opt.optionValue)
+            def label = generalUtilitiesService.getMessageWeb(opt.optionLabelCode)
+            label = label==null ? opt.optionLabel : label
 
-            def status = new PieStatus(id: opt.ordinal, name: opt.optionLabel, total: Math.round(count*100D / totalMembers*1D))
+            def status = new PieStatus(id: opt.ordinal, name: label, total: Math.round(count*100D / totalMembers*1D))
             list.add(status)
         }
 

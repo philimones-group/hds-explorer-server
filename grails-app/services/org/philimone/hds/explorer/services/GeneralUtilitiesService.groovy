@@ -69,6 +69,11 @@ class GeneralUtilitiesService {
         getMessage(messageCode, null, null, new Locale(Codes.SYSTEM_LANGUAGE))
     }
 
+    def String getMessageWeb(String messageCode) {
+        def locale = LocaleContextHolder.getLocale();
+        return getMessage(messageCode, null, null, locale)
+    }
+
     def String userFullName() {
         return currentUser().toString()
     }
