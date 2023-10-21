@@ -15,8 +15,8 @@ class DatasetController {
     def tableList = ["Household","Member","Region","User"]
 
     def index(Integer max) {
-        params.max = Math.min(max ?: 10, 100)
-        respond Dataset.list(params), model:[dataSetInstanceCount: Dataset.count()]
+        //params.max = Math.min(max ?: 10, 100)
+        respond Dataset.list(), model:[dataSetInstanceCount: Dataset.count()]
     }
 
     def show(String id) {
@@ -36,7 +36,7 @@ class DatasetController {
 
         def max = 9
 
-        params.max = Math.min(max ?: 10, 100)
+        //params.max = Math.min(max ?: 10, 100)
         respond new Dataset(params), model: [tableList:  tableList, dataSetInstanceList: Dataset.list(params)]
     }
 
@@ -159,7 +159,11 @@ class DatasetController {
 
             def modules = Module.getAll(params.list("allmodules.id"))
             datasetService.updateModules(dataSetInstance, modules)
-            dataSetInstance.save(flush:true)
+
+            if (dataSetInstance.save(flush:true)){
+                //updated the dataset zip file
+                datasetService.createZipFile(dataSetInstance)
+            }
 
         } catch (ValidationException e) {
             respond dataSetInstance.errors, view:'edit', model: [modules: moduleService.findAllByCodes(dataSetInstance.modules)]

@@ -3,18 +3,24 @@ package org.philimone.hds.explorer.server.model.settings
 import grails.gorm.transactions.Transactional
 import org.philimone.hds.explorer.server.model.enums.SyncEntity
 
+import java.time.LocalDateTime
+
 @Transactional
 class SyncFilesReportService {
 
     def update(SyncEntity entity, int totalRecords) {
 
         def currentReport = SyncFilesReport.findByCode(entity.code)
-        if (currentReport != null) {
-            currentReport.delete(flush: true)
+        if (currentReport == null) {
+            currentReport = new SyncFilesReport()
+            currentReport.code = entity.code
         }
 
-        def report = SyncFilesReport.findOrCreateByNameAndRecords(entity, totalRecords)
-        report.save(flush:true)
+        currentReport.name = entity
+        currentReport.records = totalRecords
+        currentReport.syncDate = LocalDateTime.now()
+
+        currentReport.save(flush:true)
     }
 
     def SyncFilesReport get(String code){

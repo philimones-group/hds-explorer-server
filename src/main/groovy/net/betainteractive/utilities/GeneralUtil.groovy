@@ -8,6 +8,7 @@ import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.Period
+import java.time.ZoneId
 import java.time.temporal.ChronoUnit
 import java.time.temporal.TemporalUnit
 
@@ -113,6 +114,20 @@ class GeneralUtil {
         //return sdf.parse("${y}-${m}-${d} ${hour}:${min}:${sec}")
 
         return LocalDateTime.of(y, m, d, hour, min, sec)
+    }
+
+    static toDate(LocalDateTime localDateTime) {
+        ZoneId zoneId = ZoneId.systemDefault();
+        // Convert LocalDateTime to Date
+        Date date = Date.from(localDateTime.atZone(zoneId).toInstant());
+        return date;
+    }
+
+    static toDateFrom(LocalDate localDate) {
+        ZoneId zoneId = ZoneId.systemDefault();
+        // Convert LocalDateTime to Date
+        Date date = Date.from(localDate.atStartOfDay(zoneId).toInstant());
+        return date;
     }
 
     static LocalDate addDaysToDate(LocalDate date, int days){
