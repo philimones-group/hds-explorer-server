@@ -25,6 +25,9 @@ class DatatablesUITagLib {
     }
 
     def loadDatatable = { attrs, body ->
+        def linkColumn = attrs.linkColumn
+        def linkAction = attrs.linkAction
+        def linkId = attrs.linkId
 
         out << "<script type=\"text/javascript\">\n"
         out << "    \$(document).ready(function () {\n"
@@ -32,6 +35,7 @@ class DatatablesUITagLib {
         out << "            \"columnDefs\": [\n"
         out << "                {\"className\": \"dt-center\", \"targets\": \"_all\"}\n"
         out << "            ],\n"
+        out << "            \"deferRender\": true,\n"
 
         if (attrs.data != null && !attrs.data.isEmpty()) {
             out << "            \"processing\": true,\n"
@@ -40,7 +44,7 @@ class DatatablesUITagLib {
             out << "            \"ajax\": {\n"
             out << "                url: \"${attrs.data}\",\n"
             out << "                type: \"POST\",\n"
-            out << "                dataSrc: ''\n"
+            //out << "                dataSrc: ''\n"
             out << "            },\n"
 
             out << "            \"columns\": [\n"
@@ -50,11 +54,22 @@ class DatatablesUITagLib {
                 def cols = colstxt.split(",")
 
                 cols.eachWithIndex { col, i ->
+                    /*if (linkColumn != null && col.equals(linkColumn)){
+                        //its a column that contains a link
+                        out << "                  { data: '${col}', render: function(data, type, row) {\n"
+                        out << "                      return '<a href=\"${g.createLink(action: linkAction)}/' + row.${linkId} + '\">' + row.${col} + '</a>';\n"
+                        out << "                  }}"
+                        out << "${i+1==cols.length ? '' : ','}\n"
+                    } else {
+                        out << "                  { data: '${col}' }${i+1==cols.length ? '' : ','}\n"
+                    }*/
+
                     out << "                  { data: '${col}' }${i+1==cols.length ? '' : ','}\n"
+
                 }
             }
 
-            out << "              ],"
+            out << "              ],\n"
         }
 
         if (attrs.nodetails != null && attrs.nodetails=="true") {
@@ -84,7 +99,7 @@ class DatatablesUITagLib {
                "            }\n"
 
         if (attrs.nosort != null && attrs.nosort=="true"){
-            println "nosort"
+            //println "nosort"
             out << "            , \"bSort\": false"
         }
 

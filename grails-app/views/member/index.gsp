@@ -22,11 +22,10 @@
             </g:if>
 
             <div class="whitebox_panel">
-                <bi:tableList id="memberTable" class="member" collection="${memberList}" columns="code, name, gender, dob, householdCode, collectedDate, createdDate" messageColumns="gender"
-                              linkAction="showHousehold" linkColumn="householdCode" linkId="householdCode"/>
+                <bi:tableList id="memberTable" class="member" columns="code, name, gender, dob, householdCode, collectedDate, createdDate" messageColumns="gender" linkAction="showHousehold" linkColumn="householdCode" linkId="householdCode"/>
             </div>
 
-            <dt:loadDatatable name="memberTable" />
+            <dt:loadDatatable name="memberTable" data="${createLink(controller: 'member', action: 'memberList')}" columns="code, name, gender, dob, householdCode, collectedDate, createdDate" />
         </div>
     </body>
 </html>

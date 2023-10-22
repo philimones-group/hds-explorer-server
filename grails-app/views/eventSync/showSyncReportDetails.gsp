@@ -96,53 +96,27 @@
 					</li>
 				</g:if>
 
+				<dt:table id="reportsTable">
+					<thead>
+					<tr>
 
-				<g:if test="${errorLogs}">
+						<td><g:message code="logreport.sync.error.event" /> </td>
 
-					<dt:table id="reportsTable">
-						<thead>
-						<tr>
+						<td><g:message code="logreport.sync.error.uuid" /> </td>
 
-							<td><g:message code="logreport.sync.error.event" /> </td>
+						<td><g:message code="logreport.sync.error.column" /> </td>
 
-							<td><g:message code="logreport.sync.error.uuid" /> </td>
+						<td><g:message code="logreport.sync.error.code" /> </td>
 
-							<td><g:message code="logreport.sync.error.column" /> </td>
+						<td><g:message code="logreport.sync.error.creationDate" /> </td>
 
-							<td><g:message code="logreport.sync.error.code" /> </td>
+						<td><g:message code="logreport.sync.error.errorMessage" /> </td>
 
-							<td><g:message code="logreport.sync.error.creationDate" /> </td>
-
-							<td><g:message code="logreport.sync.error.errorMessage" /> </td>
-
-						</tr>
-						</thead>
-						<tbody>
-						<g:each in="${errorLogs}" status="i" var="errorLogInstance">
-
-							<tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
-
-								<td><g:link controller="rawDomain" action="editDomain" id="${errorLogInstance.uuid}"><g:message code="${errorLogInstance.entity.name}" /> </g:link></td>
-
-								<td>${errorLogInstance.uuid}</td>
-
-								<td>${errorLogInstance.columnName}</td>
-
-								<td>${errorLogInstance.code}</td>
-
-								<td><bi:formatDate date="${errorLogInstance.createdDate}" format="yyyy-MM-dd HH:mm:ss" /></td>
-
-								<td style="word-wrap: break-word;">
-									${errorLogInstance.collapsedMessage}
-								</td>
-
-							</tr>
-
-						</g:each>
-						</tbody>
-					</dt:table>
-
-				</g:if>
+					</tr>
+					</thead>
+					<tbody>
+					</tbody>
+				</dt:table>
 			
 			</ol>
 			<g:form url="#" method="DELETE">
@@ -152,7 +126,7 @@
 			</g:form>
 		</div>
 
-		<dt:loadDatatable name="reportsTable" nosort="true" />
+		<dt:loadDatatable name="reportsTable" nosort="true" data="${createLink(controller: 'eventSync', action: 'errorLogList', id: logReportFileInstance.id)}" columns="event, uuid, column, code, creationDate, errorMessage" />
 
 	</body>
 </html>

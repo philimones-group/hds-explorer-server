@@ -1,11 +1,14 @@
 package org.philimone.hds.explorer.controllers
 
+import net.betainteractive.utilities.StringUtil
+import grails.converters.JSON
 import org.philimone.hds.explorer.server.model.collect.raw.RawErrorLog
 import org.philimone.hds.explorer.server.model.enums.LogStatus
 import org.philimone.hds.explorer.server.model.enums.settings.LogGroupCode
 import org.philimone.hds.explorer.server.model.enums.settings.LogReportCode
 import org.philimone.hds.explorer.server.model.logs.LogReport
 import org.philimone.hds.explorer.server.model.logs.LogReportFile
+import org.philimone.hds.explorer.server.model.main.Household
 
 import java.time.LocalDateTime
 
@@ -79,11 +82,11 @@ class EventSyncController {
         def logReportFile = LogReportFile.get(params.id)
 
         //get error logs
-        def errorLogs = RawErrorLog.findAllByLogReportFile(logReportFile, [sort: "createdDate", order: "asc"])
+        //def errorLogs = RawErrorLog.findAllByLogReportFile(logReportFile, [sort: "createdDate", order: "asc"])
 
-        println "${logReportFile}, ${errorLogs.size()}"
+        //println "${logReportFile}, ${errorLogs.size()}"
 
-        render view:"showSyncReportDetails", model: [logReportFileInstance: logReportFile, errorLogsCount: errorLogs.size(), errorLogs: errorLogs]
+        render view:"showSyncReportDetails", model: [logReportFileInstance: logReportFile /*, errorLogsCount: errorLogs.size(), errorLogs: errorLogs*/]
     }
 
     def editRawDomain = {
@@ -105,5 +108,93 @@ class EventSyncController {
             render "${message(code: "default.file.not.found")} - ${logReportFile.fileName}"
         }
 
+    }
+
+    def errorLogList = {
+        //convert datatables params to gorm params
+        def jqdtParams = [:]
+        params.each { key, value ->
+            def keyFields = key.replace(']','').split(/\[/)
+            def table = jqdtParams
+            for (int f = 0; f < keyFields.size() - 1; f++) {
+                def keyField = keyFields[f]
+                if (!table.containsKey(keyField))
+                    table[keyField] = [:]
+                table = table[keyField]
+            }
+            table[keyFields[-1]] = value
+        }
+
+        def params_search = jqdtParams.search?.value
+        def columnsList = jqdtParams.columns.collect { k, v -> v.data }
+        def orderList = jqdtParams.order.collect { k, v -> [columnsList[v.column as Integer], v.dir] }
+        def logReportFileInstance = LogReportFile.get(params.id)
+
+        //event, uuid, column, code, creationDate, errorMessage
+
+        println(params)
+        //println()
+        println "errorLog file $logReportFileInstance"
+        //println()
+        //println "errorLog orderList $orderList"
+
+
+        //FILTERS - if not null will filter
+        def search_filter = (params_search != null && !"${params_search}".empty) ? "%${params_search}%" : null
+        def filterer = {
+            eq ('logReportFile', logReportFileInstance)
+            or {
+                //if (search_filter) ilike 'entity.name', search_filter
+                if (search_filter) ilike 'uuid', search_filter
+                if (search_filter) ilike 'columnName', search_filter
+                if (search_filter) ilike 'message', search_filter
+            }
+            //def errorLogs = RawErrorLog.findAllByLogReportFile(logReportFile, [sort: "createdDate", order: "asc"])
+        }
+
+        //ORDERS
+        def orderer = RawErrorLog.withCriteria {
+            filterer.delegate = delegate
+            filterer()
+            orderList.each { oi ->
+                switch (oi[0]) {
+                    case 'creationDate': order 'createdDate', oi[1]; break
+                }
+            }
+            maxResults (jqdtParams.length as Integer)
+            firstResult (jqdtParams.start as Integer)
+        }
+
+
+        //Display records
+        def errorLogs = orderer.collect { errorLog ->
+
+            ['event':        "<a href='${createLink(controller: 'rawDomain', action: 'editDomain', id: errorLog.uuid)}'>${message(code: errorLog.entity.name)}</a>",
+             'uuid':         errorLog.uuid,
+             'column':       errorLog.columnName,
+             'code':         errorLog.code,
+             'creationDate': StringUtil.format(errorLog.createdDate),
+             'errorMessage': "<td style=\"word-wrap: break-word;\">${errorLog.collapsedMessage}</td>"
+            ]
+        }
+
+
+        //FINAL PARAMETERS
+        def recordsTotal = RawErrorLog.count()
+        def errorLogCriteria = RawErrorLog.createCriteria()
+        def recordsFiltered = errorLogCriteria.count {
+            filterer.delegate = delegate
+            filterer()
+        }
+
+
+        println "errorLog recordsTotal $recordsTotal"
+        println "errorLog recordsFiltered $recordsFiltered"
+        println "errorLogs ${errorLogs.size()}"
+
+
+        def result = [draw: jqdtParams.draw, recordsTotal: recordsTotal, recordsFiltered: recordsFiltered, data: errorLogs]
+
+        render result as JSON
     }
 }
