@@ -10,8 +10,8 @@ class FormMappingController {
     static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
 
     def index(Integer max) {
-        params.max = Math.min(max ?: 10, 100)
-        respond formMappingService.list(params), model:[formMappingCount: formMappingService.count()]
+        //params.max = Math.min(max ?: 10, 100)
+        respond formMappingService.list(), model:[formMappingCount: formMappingService.count()]
     }
 
     def show(String id) {

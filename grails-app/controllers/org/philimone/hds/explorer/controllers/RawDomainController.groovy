@@ -171,8 +171,6 @@ class RawDomainController {
         }
 
         params.visitDate = StringUtil.toLocalDateFromDate(params.getDate('visitDate'))
-        params.collectedDate = StringUtil.toLocalDateTime(params.getDate('collectedDate'))
-        params.uploadedDate = StringUtil.toLocalDateTime(params.getDate('uploadedDate'))
 
         try {
             bindData(rawVisit, params)
@@ -204,9 +202,6 @@ class RawDomainController {
         if (params.reset){
             reset = params.reset
         }
-
-        params.collectedDate = StringUtil.toLocalDateTime(params.getDate('collectedDate'))
-        params.uploadedDate = StringUtil.toLocalDateTime(params.getDate('uploadedDate'))
 
         try {
             bindData(rawIncompleteVisit, params)
@@ -241,8 +236,6 @@ class RawDomainController {
 
         params.dob = StringUtil.toLocalDateFromDate(params.getDate('dob'))
         params.residencyStartDate = StringUtil.toLocalDateFromDate(params.getDate('residencyStartDate'))
-        params.collectedDate = StringUtil.toLocalDateTime(params.getDate('collectedDate'))
-        params.uploadedDate = StringUtil.toLocalDateTime(params.getDate('uploadedDate'))
 
         try {
             bindData(rawMemberEnu, params)
@@ -276,8 +269,6 @@ class RawDomainController {
         }
 
         params.deathDate = StringUtil.toLocalDateFromDate(params.getDate('deathDate'))
-        params.collectedDate = StringUtil.toLocalDateTime(params.getDate('collectedDate'))
-        params.uploadedDate = StringUtil.toLocalDateTime(params.getDate('uploadedDate'))
 
         try {
             bindData(rawDeath, params)
@@ -311,8 +302,6 @@ class RawDomainController {
         }
 
         params.migrationDate = StringUtil.toLocalDateFromDate(params.getDate('migrationDate'))
-        params.collectedDate = StringUtil.toLocalDateTime(params.getDate('collectedDate'))
-        params.uploadedDate = StringUtil.toLocalDateTime(params.getDate('uploadedDate'))
 
         try {
             bindData(rawOutMigration, params)
@@ -346,8 +335,6 @@ class RawDomainController {
         }
 
         params.migrationDate = StringUtil.toLocalDateFromDate(params.getDate('migrationDate'))
-        params.collectedDate = StringUtil.toLocalDateTime(params.getDate('collectedDate'))
-        params.uploadedDate = StringUtil.toLocalDateTime(params.getDate('uploadedDate'))
 
         try {
             bindData(rawInMigration, params)
@@ -382,8 +369,6 @@ class RawDomainController {
 
         params.memberDob = StringUtil.toLocalDateFromDate(params.getDate('memberDob'))
         params.migrationDate = StringUtil.toLocalDateFromDate(params.getDate('migrationDate'))
-        params.collectedDate = StringUtil.toLocalDateTime(params.getDate('collectedDate'))
-        params.uploadedDate = StringUtil.toLocalDateTime(params.getDate('uploadedDate'))
 
         try {
             bindData(rawExternalInMigration, params)
@@ -420,8 +405,6 @@ class RawDomainController {
         params.eddDate = StringUtil.toLocalDateFromDate(params.getDate('eddDate'))
         params.lmpDate = StringUtil.toLocalDateFromDate(params.getDate('lmpDate'))
         params.expectedDeliveryDate = StringUtil.toLocalDateFromDate(params.getDate('expectedDeliveryDate'))
-        params.collectedDate = StringUtil.toLocalDateTime(params.getDate('collectedDate'))
-        params.uploadedDate = StringUtil.toLocalDateTime(params.getDate('uploadedDate'))
 
         try {
             bindData(rawPregnancyRegistration, params)
@@ -455,8 +438,6 @@ class RawDomainController {
         }
 
         params.outcomeDate = StringUtil.toLocalDateFromDate(params.getDate('outcomeDate'))
-        params.collectedDate = StringUtil.toLocalDateTime(params.getDate('collectedDate'))
-        params.uploadedDate = StringUtil.toLocalDateTime(params.getDate('uploadedDate'))
 
         try {
             bindData(rawPregnancyOutcome, params)
@@ -491,8 +472,6 @@ class RawDomainController {
 
         params.startDate = StringUtil.toLocalDateFromDate(params.getDate('startDate'))
         params.endDate = StringUtil.toLocalDateFromDate(params.getDate('endDate'))
-        params.collectedDate = StringUtil.toLocalDateTime(params.getDate('collectedDate'))
-        params.uploadedDate = StringUtil.toLocalDateTime(params.getDate('uploadedDate'))
 
         try {
             bindData(rawMaritalRelationship, params)
@@ -526,8 +505,6 @@ class RawDomainController {
         }
 
         params.eventDate = StringUtil.toLocalDateFromDate(params.getDate('eventDate'))
-        params.collectedDate = StringUtil.toLocalDateTime(params.getDate('collectedDate'))
-        params.uploadedDate = StringUtil.toLocalDateTime(params.getDate('uploadedDate'))
 
         try {
             bindData(rawChangeHead, params)

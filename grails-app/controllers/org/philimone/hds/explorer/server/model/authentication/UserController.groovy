@@ -14,9 +14,11 @@ class UserController {
     static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
 
     def index(Integer max) {
-        params.max = Math.min(max ?: 10, 100)
+        //params.max = Math.min(max ?: 10, 100)
 
-        respond userService.list(params), model:[userCount: userService.count()] //userService.list(params), [userList: userService.list(params)]
+        def list = userService.list(params)
+        println "list users = ${list.size()}"
+        respond list, model:[userCount: userService.count()] //userService.list(params), [userList: userService.list(params)]
     }
 
     def show(String id) {

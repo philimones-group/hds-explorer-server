@@ -22,7 +22,7 @@ class TrackingListController {
     def tableList = ["Household","Member","Region","User"]
 
     def index(Integer max) {
-        params.max = Math.min(max ?: 10, 100)
+        //params.max = Math.min(max ?: 10, 100)
         respond TrackingList.list(params), model:[trackingListInstanceCount: TrackingList.count()]
     }
 

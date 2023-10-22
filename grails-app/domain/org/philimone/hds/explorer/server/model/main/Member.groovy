@@ -259,5 +259,5 @@ class Member extends CollectableEntity {
 
     def static ALL_COLUMNS = ['code', 'name', 'gender', 'dob', 'age', 'ageAtDeath', 'motherCode', 'motherName', 'fatherCode', 'fatherName', 'maritalStatus', 'spouseCode', 'spouseName', 'spouseType',
                               'householdCode', 'householdName', 'isHouseholdHead', 'isSecHouseholdHead', 'startType', 'startDate', 'endType', 'endDate', 'entryHousehold', 'entryType', 'entryDate',
-                              'headRelationshipType', 'gpsAccuracy', 'gpsAltitude', 'gpsLatitude', 'gpsLongitude']
+                              'headRelationshipType', 'gpsAccuracy', 'gpsAltitude', 'gpsLatitude', 'gpsLongitude', 'collectedId']
 }

@@ -15,7 +15,7 @@ class RoundController {
     static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
 
     def index(Integer max) {
-        params.max = Math.min(max ?: 10, 100)
+        //params.max = Math.min(max ?: 10, 100)
         respond roundService.list(params), model:[roundCount: roundService.count()]
     }
 

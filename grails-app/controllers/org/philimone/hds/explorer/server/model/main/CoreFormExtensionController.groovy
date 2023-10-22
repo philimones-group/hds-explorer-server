@@ -13,7 +13,7 @@ class CoreFormExtensionController {
     static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
 
     def index(Integer max) {
-        params.max = Math.min(max ?: 25, 100)
+        //params.max = Math.min(max ?: 25, 100)
         respond coreFormExtensionService.list(params), model:[coreFormExtensionCount: coreFormExtensionService.count()]
     }
 
