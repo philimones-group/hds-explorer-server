@@ -22,6 +22,8 @@ class RawPregnancyOutcome {
 
     String modules
 
+    byte[] extensionForm
+
     String collectedBy //fieldWorkerId
     String collectedDeviceId
     String collectedHouseholdId
@@ -52,6 +54,8 @@ class RawPregnancyOutcome {
 
         visitCode nullable: false, blank: false
 
+        extensionForm nullable: true
+
         collectedBy blank: true
         collectedDeviceId nullable:true
         collectedHouseholdId nullable:true
@@ -80,6 +84,8 @@ class RawPregnancyOutcome {
         birthPlaceOther column: "birthplace_other"
         visitCode column: "visit_code", index: "idx_visit_code"
         modules column: "modules"
+
+        extensionForm column: "extension_form", sqlType: "mediumblob"
 
         collectedBy column: "collected_by", index: "idx_collected_by"
         collectedDeviceId column: "collected_device_id", index: "idx_cdeviceid"

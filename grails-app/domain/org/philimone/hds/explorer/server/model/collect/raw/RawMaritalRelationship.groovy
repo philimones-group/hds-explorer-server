@@ -16,6 +16,8 @@ class RawMaritalRelationship {
     String endStatus
     LocalDate endDate
 
+    byte[] extensionForm
+
     String collectedBy //fieldWorkerId
     String collectedDeviceId
     String collectedHouseholdId
@@ -41,6 +43,8 @@ class RawMaritalRelationship {
         endStatus nullable: true, blank:true, enumType: "identity"
         endDate nullable: true
 
+        extensionForm nullable: true
+
         collectedBy blank: true
         collectedDeviceId nullable:true
         collectedHouseholdId nullable:true
@@ -64,6 +68,8 @@ class RawMaritalRelationship {
         startDate column: "start_date"
         endStatus column: "end_status"
         endDate column: "end_date"
+
+        extensionForm column: "extension_form", sqlType: "mediumblob"
 
         collectedBy column: "collected_by", index: "idx_collected_by"
         collectedDeviceId column: "collected_device_id", index: "idx_cdeviceid"

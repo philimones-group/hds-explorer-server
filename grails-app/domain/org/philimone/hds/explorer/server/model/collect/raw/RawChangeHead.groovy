@@ -16,6 +16,8 @@ class RawChangeHead {
     LocalDate eventDate
     String reason
 
+    byte[] extensionForm
+
     String collectedBy //fieldWorkerId
     String collectedDeviceId
     String collectedHouseholdId
@@ -40,6 +42,8 @@ class RawChangeHead {
         newHeadCode nullable: false, blank:false
         eventDate nullable: false
 
+        extensionForm nullable: true
+
         collectedBy blank: true
         collectedDeviceId nullable:true
         collectedHouseholdId nullable:true
@@ -63,6 +67,8 @@ class RawChangeHead {
         newHeadCode column: "new_head_code", index: "idx_new_headcode"
         eventDate column: "event_date"
         reason column: "reason"
+
+        extensionForm column: "extension_form", sqlType: "mediumblob"
 
         collectedBy column: "collected_by", index: "idx_coll_by"
         collectedDeviceId column: "collected_device_id", index: "idx_cdeviceid"

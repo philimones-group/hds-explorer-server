@@ -15,6 +15,8 @@ class RawDeath {
     String deathCause
     String deathPlace
 
+    byte[] extensionForm
+
     String collectedBy //fieldWorkerId
     String collectedDeviceId
     String collectedHouseholdId
@@ -38,6 +40,8 @@ class RawDeath {
         deathCause nullable: true, blank: true
         deathPlace nullable: true, blank: true
         visitCode nullable: false, blank: false
+
+        extensionForm nullable: true
 
         collectedBy blank: true
         collectedDeviceId nullable:true
@@ -63,6 +67,8 @@ class RawDeath {
         deathDate column: "death_date"
         deathCause column: "death_cause"
         deathPlace column: "death_place"
+
+        extensionForm column: "extension_form", sqlType: "mediumblob"
 
         collectedBy column: "collected_by", index: "idx_collby"
         collectedDeviceId column: "collected_device_id", index: "idx_cdeviceid"

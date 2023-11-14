@@ -7,4 +7,5 @@ databaseChangeLog = {
     include file: 'add-start-n-end-variables-to-domains.groovy'
     include file: 'alter-enumeration-event_date-dbcolumn_name.groovy'
     include file: 'add-education-n-religiom-cols-to-domains.groovy'
+    include file: 'alter-rawdomains-add-extensionform-blob.groovy'
 }

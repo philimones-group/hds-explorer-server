@@ -22,9 +22,10 @@ class RawHousehold {
     String gpsAlt
     String gpsAcc
 
+    Boolean preRegistered
     String modules
 
-    Boolean preRegistered
+    byte[] extensionForm
 
     String collectedBy //fieldWorkerId
     String collectedDeviceId
@@ -52,9 +53,10 @@ class RawHousehold {
         gpsLat blank: true, nullable: true
         gpsAcc blank: true, nullable: true
 
+        preRegistered nullable: false
         modules nullable: true
 
-        preRegistered nullable: false
+        extensionForm nullable: true
 
         collectedBy blank: true
         collectedDeviceId nullable:true
@@ -85,8 +87,9 @@ class RawHousehold {
         gpsAcc column: "gps_accuracy"
 
         preRegistered column: "pre_registered"
-
         modules column: "modules"
+
+        extensionForm column: "extension_form", sqlType: "mediumblob"
 
         collectedBy column: "collected_by", index: "idx_collected_by"
         collectedDeviceId column: "collected_device_id", index: "idx_cdeviceid"

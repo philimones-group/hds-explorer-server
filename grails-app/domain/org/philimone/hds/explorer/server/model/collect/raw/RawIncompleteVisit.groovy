@@ -15,6 +15,8 @@ class RawIncompleteVisit {
     String reason
     String reasonOther
 
+    byte[] extensionForm
+
     String collectedBy //fieldWorkerId
     String collectedDeviceId
     String collectedHouseholdId
@@ -38,6 +40,8 @@ class RawIncompleteVisit {
         reason nullable: true
         reasonOther nullable: true, blank: true
 
+        extensionForm nullable: true
+
         collectedBy blank: true
         collectedDeviceId nullable:true
         collectedHouseholdId nullable:true
@@ -60,6 +64,8 @@ class RawIncompleteVisit {
         memberCode column: "member_code", index: "idx_member_code"
         reason column: "visit_reason", enumType: "identity"
         reasonOther column: "other_visit_reason"
+
+        extensionForm column: "extension_form", sqlType: "mediumblob"
 
         collectedBy column: "collected_by", index: "idx_collected_by"
         collectedDeviceId column: "collected_device_id", index: "idx_cdeviceid"

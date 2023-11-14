@@ -33,6 +33,8 @@ class RawMemberEnu {
 
     String modules
 
+    byte[] extensionForm
+
     String collectedBy //fieldWorkerId
     String collectedDeviceId
     String collectedHouseholdId
@@ -73,6 +75,8 @@ class RawMemberEnu {
         residencyStartDate blank: false
 
         modules nullable: true
+
+        extensionForm nullable: true
 
         collectedBy blank: true
         collectedDeviceId nullable:true
@@ -120,6 +124,8 @@ class RawMemberEnu {
         residencyStartDate column: 'residency_start_date'
 
         modules column: "modules"
+
+        extensionForm column: "extension_form", sqlType: "mediumblob"
 
         collectedBy column: 'collected_by', index: "idx_collected_by"
         collectedDate column: 'collected_date'

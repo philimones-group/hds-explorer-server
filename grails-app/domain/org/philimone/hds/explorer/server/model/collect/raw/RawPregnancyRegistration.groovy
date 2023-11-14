@@ -26,6 +26,8 @@ class RawPregnancyRegistration {
     String status
     String visitCode
 
+    byte[] extensionForm
+
     String collectedBy
     String collectedDeviceId
     String collectedHouseholdId
@@ -57,6 +59,8 @@ class RawPregnancyRegistration {
         status nullable: false
         visitCode blank: false
 
+        extensionForm nullable: true
+
         collectedBy blank: true
         collectedDeviceId nullable:true
         collectedHouseholdId nullable:true
@@ -87,6 +91,8 @@ class RawPregnancyRegistration {
         status column: "status"
 
         visitCode column: "visit_code", index: "idx_visit_code"
+
+        extensionForm column: "extension_form", sqlType: "mediumblob"
 
         collectedBy column: "collected_by", index: "idx_collected_by"
         collectedDeviceId column: "collected_device_id", index: "idx_cdeviceid"

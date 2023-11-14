@@ -17,6 +17,8 @@ class RawRegion {
 
     String modules
 
+    byte[] extensionForm
+
     String collectedBy //fieldWorkerId
     String collectedDeviceId
     LocalDateTime collectedStart
@@ -37,6 +39,8 @@ class RawRegion {
         parentCode blank: true, nullable: true /* will be hierarchy1 */
 
         modules nullable: true
+
+        extensionForm nullable: true
 
         collectedBy blank: true
         collectedDeviceId nullable: true
@@ -60,6 +64,8 @@ class RawRegion {
         parentCode column: "parent_code", index: "idx_parent_code"
 
         modules column: "modules"
+
+        extensionForm column: "extension_form", sqlType: "mediumblob"
 
         collectedBy column: "collected_by", index: "idx_collected_by"
         collectedDeviceId column: "collected_device_id", index: "idx_cdeviceid"

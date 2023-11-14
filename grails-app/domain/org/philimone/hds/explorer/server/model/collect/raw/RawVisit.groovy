@@ -27,6 +27,8 @@ class RawVisit {
     String gpsAlt
     String gpsAcc
 
+    byte[] extensionForm
+
     String collectedBy //fieldWorkerId
     String collectedDeviceId
     String collectedHouseholdId
@@ -62,6 +64,8 @@ class RawVisit {
         gpsAlt nullable: true
         gpsLat nullable: true
         gpsLon nullable: true
+
+        extensionForm nullable: true
 
         collectedBy blank: true
         collectedDeviceId nullable:true
@@ -100,6 +104,8 @@ class RawVisit {
         gpsAlt column: "gps_altitude"
         gpsLat column: "gps_latitude"
         gpsLon column: "gps_longitude"
+
+        extensionForm column: "extension_form", sqlType: "mediumblob"
 
         collectedBy column: "collected_by", index: "idx_collected_by"
         collectedDeviceId column: "collected_device_id", index: "idx_cdeviceid"

@@ -2,30 +2,31 @@ package org.philimone.hds.explorer.server.model.enums
 
 enum RawEntity {
 
-    REGION ("syncdss.sync.region.label"),
-    HOUSEHOLD ("syncdss.sync.households.label"),
-    MEMBER ("syncdss.sync.members.label"),
-    MEMBER_ENUMERATION ("syncdss.sync.memberenu.label"),
-    RESIDENCY ("syncdss.sync.residency.label"),
-    HEAD_RELATIONSHIP ("syncdss.sync.headrelationship.label"),
-    MARITAL_RELATIONSHIP ("syncdss.sync.maritalreg.label"),
-    ROUND ("syncdss.sync.round.label"),
-    VISIT ("syncdss.sync.visit.label"),
-    IN_MIGRATION ("syncdss.sync.inmigration.label"),
-    OUT_MIGRATION ("syncdss.sync.outmigration.label"),
-    PREGNANCY_REGISTRATION ("syncdss.sync.pregnancyreg.label"),
-    PREGNANCY_OUTCOME ("syncdss.sync.pregnancyoutcome.label"),
-    PREGNANCY_CHILD ("syncdss.sync.pregnancychild.label"),
-    EXTERNAL_INMIGRATION ("syncdss.sync.externalinmigration.label"),
-    DEATH ("syncdss.sync.death.label"),
-    CHANGE_HEAD_OF_HOUSEHOLD ("syncdss.sync.changehead.label"),
-    INCOMPLETE_VISIT ("syncdss.sync.incompletevisit.label")
+    REGION ("syncdss.sync.region.label", "rawRegion"),
+    HOUSEHOLD ("syncdss.sync.households.label", "rawHousehold"),
+    MEMBER ("syncdss.sync.members.label", "rawMember"),
+    MEMBER_ENUMERATION ("syncdss.sync.memberenu.label", "rawMemberEnu"),
+    RESIDENCY ("syncdss.sync.residency.label", "rawResidency"),
+    HEAD_RELATIONSHIP ("syncdss.sync.headrelationship.label", "rawHeadRelationship"),
+    MARITAL_RELATIONSHIP ("syncdss.sync.maritalreg.label", "rawMaritalRelationship"),
+    ROUND ("syncdss.sync.round.label", "rawRound"),
+    VISIT ("syncdss.sync.visit.label", "rawVisit"),
+    IN_MIGRATION ("syncdss.sync.inmigration.label", "rawInMigration"),
+    OUT_MIGRATION ("syncdss.sync.outmigration.label", "rawOutMigration"),
+    PREGNANCY_REGISTRATION ("syncdss.sync.pregnancyreg.label", "rawPregnancyRegistration"),
+    PREGNANCY_OUTCOME ("syncdss.sync.pregnancyoutcome.label", "rawPregnancyOutcome"),
+    PREGNANCY_CHILD ("syncdss.sync.pregnancychild.label", "rawPregnancyChild"),
+    EXTERNAL_INMIGRATION ("syncdss.sync.externalinmigration.label", "rawExternalInMigration"),
+    DEATH ("syncdss.sync.death.label", "rawDeath"),
+    CHANGE_HEAD_OF_HOUSEHOLD ("syncdss.sync.changehead.label", "rawChangeHead"),
+    INCOMPLETE_VISIT ("syncdss.sync.incompletevisit.label", "rawIncompleteVisit")
 
     final String name
+    final String tag
 
-    RawEntity(String name){
-
+    RawEntity(String name, String tag){
         this.name = name
+        this.tag = tag
     }
 
     String getId(){

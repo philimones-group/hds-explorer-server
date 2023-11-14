@@ -35,6 +35,8 @@ class RawExternalInMigration {
 
     String modules
 
+    byte[] extensionForm
+
     String collectedBy //fieldWorkerId
     String collectedDeviceId
     String collectedHouseholdId
@@ -73,6 +75,8 @@ class RawExternalInMigration {
         visitCode blank: false, nullable: false
 
         modules nullable: true
+
+        extensionForm nullable: true
 
         collectedBy blank: true
         collectedDeviceId nullable:true
@@ -119,6 +123,8 @@ class RawExternalInMigration {
         migrationReason column: "migration_reason"
 
         modules column: "modules"
+
+        extensionForm column: "extension_form", sqlType: "mediumblob"
 
         collectedBy column: "collected_by", index: "idx_collected_by"
         collectedDeviceId column: "collected_device_id", index: "idx_cdeviceid"

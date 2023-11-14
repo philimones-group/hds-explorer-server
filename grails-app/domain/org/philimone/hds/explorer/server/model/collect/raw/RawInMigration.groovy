@@ -24,6 +24,8 @@ class RawInMigration {
     LocalDate migrationDate
     String migrationReason
 
+    byte[] extensionForm
+
     String collectedBy //fieldWorkerId
     String collectedDeviceId
     String collectedHouseholdId
@@ -54,6 +56,8 @@ class RawInMigration {
         destinationCode nullable: false, blank: false
         migrationDate nullable: false
         migrationReason nullable: true, blank: true
+
+        extensionForm nullable: true
 
         collectedBy blank: true
         collectedDeviceId nullable:true
@@ -88,6 +92,8 @@ class RawInMigration {
         destinationCode      column: "destination_code", index: "idx_destination_code"
         migrationDate   column: "migration_date"
         migrationReason column: "migration_reason"
+
+        extensionForm column: "extension_form", sqlType: "mediumblob"
 
         collectedBy column: "collected_by", index: "idx_collected_by"
         collectedDeviceId column: "collected_device_id", index: "idx_cdeviceid"
