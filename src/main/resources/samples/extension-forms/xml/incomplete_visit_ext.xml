@@ -11,7 +11,7 @@
           <text id="/incomplete_visit_ext/start:label">
             <value>-</value>
           </text>
-          <text id="/incomplete_visit_ext/core_form_uuid:label">
+          <text id="/incomplete_visit_ext/collected_id:label">
             <value>Id do Formulário Mãe</value>
           </text>
           <text id="/incomplete_visit_ext/custom_quest2:label">
@@ -43,7 +43,7 @@
           <text id="/incomplete_visit_ext/start:label">
             <value>-</value>
           </text>
-          <text id="/incomplete_visit_ext/core_form_uuid:label">
+          <text id="/incomplete_visit_ext/collected_id:label">
             <value>Core Form Id</value>
           </text>
           <text id="/incomplete_visit_ext/custom_quest2:label">
@@ -74,7 +74,7 @@
           <start/>
           <end/>
           <deviceid/>
-          <core_form_uuid/>
+          <collected_id/>
           <visit_code/>
           <household_code/>
           <member_code/>
@@ -90,7 +90,7 @@
       <bind jr:preload="timestamp" jr:preloadParams="start" nodeset="/incomplete_visit_ext/start" required="true()" type="dateTime"/>
       <bind jr:preload="timestamp" jr:preloadParams="end" nodeset="/incomplete_visit_ext/end" required="true()" type="dateTime"/>
       <bind jr:preload="property" jr:preloadParams="deviceid" nodeset="/incomplete_visit_ext/deviceid" required="true()" type="string"/>
-      <bind nodeset="/incomplete_visit_ext/core_form_uuid" readonly="true()" required="true()" type="string"/>
+      <bind nodeset="/incomplete_visit_ext/collected_id" readonly="true()" required="true()" type="string"/>
       <bind nodeset="/incomplete_visit_ext/visit_code" readonly="true()" required="true()" type="string"/>
       <bind nodeset="/incomplete_visit_ext/household_code" readonly="true()" required="true()" type="string"/>
       <bind nodeset="/incomplete_visit_ext/member_code" readonly="true()" required="true()" type="string"/>
@@ -102,8 +102,8 @@
     </model>
   </h:head>
   <h:body>
-    <input ref="/incomplete_visit_ext/core_form_uuid">
-      <label ref="jr:itext('/incomplete_visit_ext/core_form_uuid:label')"/>
+    <input ref="/incomplete_visit_ext/collected_id">
+      <label ref="jr:itext('/incomplete_visit_ext/collected_id:label')"/>
     </input>
     <input ref="/incomplete_visit_ext/visit_code">
       <label ref="jr:itext('/incomplete_visit_ext/visit_code:label')"/>

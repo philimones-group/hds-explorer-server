@@ -448,7 +448,13 @@ class BootStrap {
     def insertCoreFormsExtensions(){
         def svc = coreFormExtensionService
 
+        def map = new LinkedHashMap<CoreForm, Boolean[]>()
+        CoreFormExtension.list().each {
+            map.put(it.coreForm, new Boolean[]{ it.required, it.enabled})
+            it.delete(flush: true)
+        }
 
+        def core0 = new CoreFormExtension(formName: CoreForm.REGION_FORM.name, coreForm: CoreForm.REGION_FORM, formId: CoreForm.REGION_FORM.code, extFormId: "region_ext", required: true, enabled: false, columnsMapping: svc.getColumnMapping(CoreForm.REGION_FORM))
         def core1 = new CoreFormExtension(formName: CoreForm.HOUSEHOLD_FORM.name, coreForm: CoreForm.HOUSEHOLD_FORM, formId: CoreForm.HOUSEHOLD_FORM.code, extFormId: "household_ext", required: true, enabled: false, columnsMapping: svc.getColumnMapping(CoreForm.HOUSEHOLD_FORM))
         def core2 = new CoreFormExtension(formName: CoreForm.VISIT_FORM.name, coreForm: CoreForm.VISIT_FORM, formId: CoreForm.VISIT_FORM.code, extFormId: "visit_ext", required: true, enabled: false, columnsMapping: svc.getColumnMapping(CoreForm.VISIT_FORM))
         def core3 = new CoreFormExtension(formName: CoreForm.MEMBER_ENU_FORM.name, coreForm: CoreForm.MEMBER_ENU_FORM, formId: CoreForm.MEMBER_ENU_FORM.code, extFormId: "member_ext", required: true, enabled: false, columnsMapping: svc.getColumnMapping(CoreForm.MEMBER_ENU_FORM))
@@ -461,10 +467,16 @@ class BootStrap {
         def core10 = new CoreFormExtension(formName: CoreForm.CHANGE_HEAD_FORM.name, coreForm: CoreForm.CHANGE_HEAD_FORM, formId: CoreForm.CHANGE_HEAD_FORM.code, extFormId: "change_head_ext", required: true, enabled: false, columnsMapping: svc.getColumnMapping(CoreForm.CHANGE_HEAD_FORM))
         def core11 = new CoreFormExtension(formName: CoreForm.INCOMPLETE_VISIT_FORM.name, coreForm: CoreForm.INCOMPLETE_VISIT_FORM, formId: CoreForm.INCOMPLETE_VISIT_FORM.code, extFormId: "incomplete_visit_ext", required: true, enabled: false, columnsMapping: svc.getColumnMapping(CoreForm.INCOMPLETE_VISIT_FORM))
 
-        def cores = [core1, core2, core3, core4, core5, core6, core6, core7, core8, core9, core10, core11] as List<CoreFormExtension>
+        def cores = [core0, core1, core2, core3, core4, core5, core6, core6, core7, core8, core9, core10, core11] as List<CoreFormExtension>
 
         for (CoreFormExtension core : cores){
             if (CoreFormExtension.countByFormId(core.formId)==0){
+                if (map.containsKey(core.coreForm)){
+                    def mapItem = map.get(core.coreForm)
+                    core.required = mapItem[0]
+                    core.enabled = mapItem[1]
+                }
+
                 core.save(flush:true)
             }
         }

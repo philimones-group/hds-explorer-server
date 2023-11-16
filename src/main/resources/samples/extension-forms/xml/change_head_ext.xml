@@ -8,7 +8,7 @@
           <text id="/change_head_ext/custom_quest2:label">
             <value>Custom Question 2</value>
           </text>
-          <text id="/change_head_ext/core_form_uuid:label">
+          <text id="/change_head_ext/collected_id:label">
             <value>Id do Formulário Mãe</value>
           </text>
           <text id="/change_head_ext/end:label">
@@ -46,7 +46,7 @@
           <text id="/change_head_ext/custom_quest2:label">
             <value>Custom Question 2</value>
           </text>
-          <text id="/change_head_ext/core_form_uuid:label">
+          <text id="/change_head_ext/collected_id:label">
             <value>Core Form Id</value>
           </text>
           <text id="/change_head_ext/end:label">
@@ -86,7 +86,7 @@
           <start/>
           <end/>
           <deviceid/>
-          <core_form_uuid/>
+          <collected_id/>
           <visit_code/>
           <household_code/>
           <old_head_code/>
@@ -104,7 +104,7 @@
       <bind jr:preload="timestamp" jr:preloadParams="start" nodeset="/change_head_ext/start" required="true()" type="dateTime"/>
       <bind jr:preload="timestamp" jr:preloadParams="end" nodeset="/change_head_ext/end" required="true()" type="dateTime"/>
       <bind jr:preload="property" jr:preloadParams="deviceid" nodeset="/change_head_ext/deviceid" required="true()" type="string"/>
-      <bind nodeset="/change_head_ext/core_form_uuid" readonly="true()" required="true()" type="string"/>
+      <bind nodeset="/change_head_ext/collected_id" readonly="true()" required="true()" type="string"/>
       <bind nodeset="/change_head_ext/visit_code" readonly="true()" required="true()" type="string"/>
       <bind nodeset="/change_head_ext/household_code" readonly="true()" required="true()" type="string"/>
       <bind nodeset="/change_head_ext/old_head_code" readonly="true()" required="true()" type="string"/>
@@ -118,8 +118,8 @@
     </model>
   </h:head>
   <h:body>
-    <input ref="/change_head_ext/core_form_uuid">
-      <label ref="jr:itext('/change_head_ext/core_form_uuid:label')"/>
+    <input ref="/change_head_ext/collected_id">
+      <label ref="jr:itext('/change_head_ext/collected_id:label')"/>
     </input>
     <input ref="/change_head_ext/visit_code">
       <label ref="jr:itext('/change_head_ext/visit_code:label')"/>

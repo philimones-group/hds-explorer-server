@@ -32,7 +32,7 @@
           <text id="/member_ext/custom_quest1:label">
             <value>Custom Question 1</value>
           </text>
-          <text id="/member_ext/core_form_uuid:label">
+          <text id="/member_ext/collected_id:label">
             <value>Id do Formulário Mãe</value>
           </text>
         </translation>
@@ -64,7 +64,7 @@
           <text id="/member_ext/custom_quest1:label">
             <value>Custom Question 1</value>
           </text>
-          <text id="/member_ext/core_form_uuid:label">
+          <text id="/member_ext/collected_id:label">
             <value>Core Form Id</value>
           </text>
         </translation>
@@ -74,7 +74,7 @@
           <start/>
           <end/>
           <deviceid/>
-          <core_form_uuid/>
+          <collected_id/>
           <visit_code/>
           <household_code/>
           <member_code/>
@@ -90,7 +90,7 @@
       <bind jr:preload="timestamp" jr:preloadParams="start" nodeset="/member_ext/start" required="true()" type="dateTime"/>
       <bind jr:preload="timestamp" jr:preloadParams="end" nodeset="/member_ext/end" required="true()" type="dateTime"/>
       <bind jr:preload="property" jr:preloadParams="deviceid" nodeset="/member_ext/deviceid" required="true()" type="string"/>
-      <bind nodeset="/member_ext/core_form_uuid" readonly="true()" required="true()" type="string"/>
+      <bind nodeset="/member_ext/collected_id" readonly="true()" required="true()" type="string"/>
       <bind nodeset="/member_ext/visit_code" readonly="true()" required="true()" type="string"/>
       <bind nodeset="/member_ext/household_code" readonly="true()" required="true()" type="string"/>
       <bind nodeset="/member_ext/member_code" readonly="true()" required="true()" type="string"/>
@@ -102,8 +102,8 @@
     </model>
   </h:head>
   <h:body>
-    <input ref="/member_ext/core_form_uuid">
-      <label ref="jr:itext('/member_ext/core_form_uuid:label')"/>
+    <input ref="/member_ext/collected_id">
+      <label ref="jr:itext('/member_ext/collected_id:label')"/>
     </input>
     <input ref="/member_ext/visit_code">
       <label ref="jr:itext('/member_ext/visit_code:label')"/>

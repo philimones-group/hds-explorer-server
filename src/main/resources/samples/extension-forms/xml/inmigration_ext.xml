@@ -8,7 +8,7 @@
           <text id="/inmigration_ext/migration_type:label">
             <value>Tipo de Imigração</value>
           </text>
-          <text id="/inmigration_ext/core_form_uuid:label">
+          <text id="/inmigration_ext/collected_id:label">
             <value>Id do Formulário Mãe</value>
           </text>
           <text id="/inmigration_ext/ext_migration_type/REENTRY:label">
@@ -58,7 +58,7 @@
           <text id="/inmigration_ext/migration_type:label">
             <value>-</value>
           </text>
-          <text id="/inmigration_ext/core_form_uuid:label">
+          <text id="/inmigration_ext/collected_id:label">
             <value>-</value>
           </text>
           <text id="/inmigration_ext/member_name:label">
@@ -102,7 +102,7 @@
           <text id="/inmigration_ext/migration_type:label">
             <value>Migration Type</value>
           </text>
-          <text id="/inmigration_ext/core_form_uuid:label">
+          <text id="/inmigration_ext/collected_id:label">
             <value>Core Form Id</value>
           </text>
           <text id="/inmigration_ext/ext_migration_type/REENTRY:label">
@@ -151,7 +151,7 @@
           <start/>
           <end/>
           <deviceid/>
-          <core_form_uuid/>
+          <collected_id/>
           <visit_code/>
           <member_code/>
           <member_name/>
@@ -168,7 +168,7 @@
       <bind jr:preload="timestamp" jr:preloadParams="start" nodeset="/inmigration_ext/start" required="true()" type="dateTime"/>
       <bind jr:preload="timestamp" jr:preloadParams="end" nodeset="/inmigration_ext/end" required="true()" type="dateTime"/>
       <bind jr:preload="property" jr:preloadParams="deviceid" nodeset="/inmigration_ext/deviceid" required="true()" type="string"/>
-      <bind nodeset="/inmigration_ext/core_form_uuid" readonly="true()" required="true()" type="string"/>
+      <bind nodeset="/inmigration_ext/collected_id" readonly="true()" required="true()" type="string"/>
       <bind nodeset="/inmigration_ext/visit_code" readonly="true()" required="true()" type="string"/>
       <bind nodeset="/inmigration_ext/member_code" readonly="true()" required="true()" type="string"/>
       <bind nodeset="/inmigration_ext/member_name" readonly="true()" required="true()" type="string"/>
@@ -181,8 +181,8 @@
     </model>
   </h:head>
   <h:body>
-    <input ref="/inmigration_ext/core_form_uuid">
-      <label ref="jr:itext('/inmigration_ext/core_form_uuid:label')"/>
+    <input ref="/inmigration_ext/collected_id">
+      <label ref="jr:itext('/inmigration_ext/collected_id:label')"/>
     </input>
     <input ref="/inmigration_ext/visit_code">
       <label ref="jr:itext('/inmigration_ext/visit_code:label')"/>

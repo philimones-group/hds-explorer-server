@@ -41,6 +41,7 @@ class CoreFormExtensionService {
     }
 
     String getColumnMapping(CoreForm form) {
+        if (form == CoreForm.REGION_FORM) return getRegionMapping();
         if (form == CoreForm.HOUSEHOLD_FORM) return getHouseholdMapping();
         if (form == CoreForm.VISIT_FORM) return getVisitMapping();
         if (form == CoreForm.MEMBER_ENU_FORM) return getMemberEnuMapping();
@@ -56,26 +57,38 @@ class CoreFormExtensionService {
         return ""
     }
 
+    String getRegionMapping(){
+        def columnsMap = new LinkedHashMap()
+
+        columnsMap.put("core_form_id", CoreForm.REGION_FORM.code)
+        columnsMap.put("collected_id", "#id")
+        columnsMap.put("parent_code", "#parentCode")
+        columnsMap.put("parent_name", "#parentName")
+        columnsMap.put("region_code", "#regionCode")
+        columnsMap.put("region_name", "#regionName")
+
+        return mapToString(columnsMap)
+    }
+
     String getHouseholdMapping(){
-        def columnsMap = [:]
+        def columnsMap = new LinkedHashMap()
 
         columnsMap.put("core_form_id", CoreForm.HOUSEHOLD_FORM.code)
-        columnsMap.put("core_form_uuid", "#id")
+        columnsMap.put("collected_id", "#id")
         columnsMap.put("household_code", "#householdCode")
         columnsMap.put("household_name", "#householdName")
         columnsMap.put("visit_code", "#visitCode")
         columnsMap.put("head_code", "#headCode")
         columnsMap.put("head_name", "#headName")
 
-
         return mapToString(columnsMap)
     }
 
     String getVisitMapping(){
-        def columnsMap = [:]
+        def columnsMap = new LinkedHashMap()
 
         columnsMap.put("core_form_id", CoreForm.VISIT_FORM.code)
-        columnsMap.put("core_form_uuid", "#id")
+        columnsMap.put("collected_id", "#id")
         columnsMap.put("household_code", "#householdCode")
         columnsMap.put("visit_code", "#code")
         columnsMap.put("round_number", "#roundNumber")
@@ -85,10 +98,10 @@ class CoreFormExtensionService {
     }
 
     String getMemberEnuMapping(){
-        def columnsMap = [:]
+        def columnsMap = new LinkedHashMap()
 
         columnsMap.put("core_form_id", CoreForm.MEMBER_ENU_FORM.code)
-        columnsMap.put("core_form_uuid", "#id")
+        columnsMap.put("collected_id", "#id")
         columnsMap.put("household_code", "#householdCode")
         columnsMap.put("visit_code", "#visitCode")
         columnsMap.put("member_code", "#code")
@@ -99,10 +112,10 @@ class CoreFormExtensionService {
     }
 
     String getMaritalRelationshipMapping() {
-        def columnsMap = [:]
+        def columnsMap = new LinkedHashMap()
 
         columnsMap.put("core_form_id", CoreForm.MARITAL_RELATIONSHIP_FORM.code)
-        columnsMap.put("core_form_uuid", "#id")
+        columnsMap.put("collected_id", "#id")
         columnsMap.put("visit_code", "#visitCode")
         columnsMap.put("member_a", "#memberA")
         columnsMap.put("member_b", "#memberB")
@@ -113,10 +126,10 @@ class CoreFormExtensionService {
     }
 
     String getInmigrationMapping() {
-        def columnsMap = [:]
+        def columnsMap = new LinkedHashMap()
 
         columnsMap.put("core_form_id", CoreForm.INMIGRATION_FORM.code)
-        columnsMap.put("core_form_uuid", "#id")
+        columnsMap.put("collected_id", "#id")
         columnsMap.put("visit_code", "#visitCode")
         columnsMap.put("member_code", "#memberCode")
         columnsMap.put("member_name", "#memberName")
@@ -128,10 +141,10 @@ class CoreFormExtensionService {
     }
 
     String getOutmigrationMapping() {
-        def columnsMap = [:]
+        def columnsMap = new LinkedHashMap()
 
         columnsMap.put("core_form_id", CoreForm.OUTMIGRATION_FORM.code)
-        columnsMap.put("core_form_uuid", "#id")
+        columnsMap.put("collected_id", "#id")
         columnsMap.put("visit_code", "#visitCode")
         columnsMap.put("member_code", "#memberCode")
         columnsMap.put("member_name", "#memberName")
@@ -142,10 +155,10 @@ class CoreFormExtensionService {
     }
 
     String getPregRegistrationMapping() {
-        def columnsMap = [:]
+        def columnsMap = new LinkedHashMap()
 
         columnsMap.put("core_form_id", CoreForm.PREGNANCY_REGISTRATION_FORM.code)
-        columnsMap.put("core_form_uuid", "#id")
+        columnsMap.put("collected_id", "#id")
         columnsMap.put("visit_code", "#visitCode")
         columnsMap.put("mother_code", "#motherCode")
         columnsMap.put("mother_name", "#motherName")
@@ -157,10 +170,10 @@ class CoreFormExtensionService {
     }
 
     String getPregOutcomeMapping() {
-        def columnsMap = [:]
+        def columnsMap = new LinkedHashMap()
 
         columnsMap.put("core_form_id", CoreForm.PREGNANCY_OUTCOME_FORM.code)
-        columnsMap.put("core_form_uuid", "#id")
+        columnsMap.put("collected_id", "#id")
         columnsMap.put("visit_code", "#visitCode")
         columnsMap.put("mother_code", "#motherCode")
         columnsMap.put("mother_name", "#motherName")
@@ -178,10 +191,10 @@ class CoreFormExtensionService {
     }
 
     String getDeathMapping() {
-        def columnsMap = [:]
+        def columnsMap = new LinkedHashMap()
 
         columnsMap.put("core_form_id", CoreForm.DEATH_FORM.code)
-        columnsMap.put("core_form_uuid", "#id")
+        columnsMap.put("collected_id", "#id")
         columnsMap.put("visit_code", "#visitCode")
         columnsMap.put("member_code", "#memberCode")
         columnsMap.put("member_name", "#memberName")
@@ -191,10 +204,10 @@ class CoreFormExtensionService {
     }
 
     String getChangeHeadMapping() {
-        def columnsMap = [:]
+        def columnsMap = new LinkedHashMap()
 
         columnsMap.put("core_form_id", CoreForm.CHANGE_HEAD_FORM.code)
-        columnsMap.put("core_form_uuid", "#id")
+        columnsMap.put("collected_id", "#id")
         columnsMap.put("household_code", "#householdCode")
         columnsMap.put("visit_code", "#visitCode")
         columnsMap.put("old_head_code", "#oldHeadCode")
@@ -202,16 +215,14 @@ class CoreFormExtensionService {
         columnsMap.put("new_head_code", "#newHeadCode")
         columnsMap.put("new_head_name", "#newHeadName")
 
-
-
         return mapToString(columnsMap)
     }
 
     String getIncVisitMapping() {
-        def columnsMap = [:]
+        def columnsMap = new LinkedHashMap()
 
         columnsMap.put("core_form_id", CoreForm.INCOMPLETE_VISIT_FORM.code)
-        columnsMap.put("core_form_uuid", "#id")
+        columnsMap.put("collected_id", "#id")
         columnsMap.put("household_code", "#householdCode")
         columnsMap.put("visit_code", "#visitCode")
         columnsMap.put("member_code", "#memberCode")

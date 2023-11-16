@@ -22,12 +22,11 @@ class CoreFormExtensionController {
         def mape = params.list("enabled").get(0)
 
         def formsEnabled = new LinkedHashMap<String, Boolean>()
-        def formsRequired = ["household_ext":false,  "visit_ext":false, "member_ext":false, "marital_relationship_ext":false,
+        def formsRequired = ["region_ext":false, "household_ext":false,  "visit_ext":false, "member_ext":false, "marital_relationship_ext":false,
                      "inmigration_ext":false, "outmigration_ext":false, "pregnancy_registration_ext":false, "pregnancy_outcome_ext":false,
                      "death_ext":false, "change_head_ext":false, "incomplete_visit_ext":false
         ]
         formsEnabled.putAll(formsRequired)
-
 
         mapr.each { r ->
             //println "requiredx: ${r}, ${r.key} -> ${r.value}"
@@ -35,7 +34,6 @@ class CoreFormExtensionController {
             if (formsRequired.containsKey(r.key)){
                 formsRequired.put(r.key, r.value.equals("on"))
             }
-
         }
 
         mape.each { e ->

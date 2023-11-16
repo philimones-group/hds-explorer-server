@@ -17,7 +17,7 @@
           <text id="/pregnancy_outcome_ext/custom_quest1:label">
             <value>Custom Question 1</value>
           </text>
-          <text id="/pregnancy_outcome_ext/core_form_uuid:label">
+          <text id="/pregnancy_outcome_ext/collected_id:label">
             <value>Id do Formulário Mãe</value>
           </text>
           <text id="/pregnancy_outcome_ext/childs/child_gender:label">
@@ -88,7 +88,7 @@
           <text id="/pregnancy_outcome_ext/custom_quest1:label">
             <value>-</value>
           </text>
-          <text id="/pregnancy_outcome_ext/core_form_uuid:label">
+          <text id="/pregnancy_outcome_ext/collected_id:label">
             <value>-</value>
           </text>
           <text id="/pregnancy_outcome_ext/childs/child_gender:label">
@@ -159,7 +159,7 @@
           <text id="/pregnancy_outcome_ext/custom_quest1:label">
             <value>Custom Question 1</value>
           </text>
-          <text id="/pregnancy_outcome_ext/core_form_uuid:label">
+          <text id="/pregnancy_outcome_ext/collected_id:label">
             <value>Core Form Id</value>
           </text>
           <text id="/pregnancy_outcome_ext/childs/child_gender:label">
@@ -223,7 +223,7 @@
           <start/>
           <end/>
           <deviceid/>
-          <core_form_uuid/>
+          <collected_id/>
           <visit_code/>
           <pregnancy_code/>
           <mother_code/>
@@ -247,7 +247,7 @@
       <bind jr:preload="timestamp" jr:preloadParams="start" nodeset="/pregnancy_outcome_ext/start" required="true()" type="dateTime"/>
       <bind jr:preload="timestamp" jr:preloadParams="end" nodeset="/pregnancy_outcome_ext/end" required="true()" type="dateTime"/>
       <bind jr:preload="property" jr:preloadParams="deviceid" nodeset="/pregnancy_outcome_ext/deviceid" required="true()" type="string"/>
-      <bind nodeset="/pregnancy_outcome_ext/core_form_uuid" readonly="true()" required="true()" type="string"/>
+      <bind nodeset="/pregnancy_outcome_ext/collected_id" readonly="true()" required="true()" type="string"/>
       <bind nodeset="/pregnancy_outcome_ext/visit_code" readonly="true()" required="true()" type="string"/>
       <bind nodeset="/pregnancy_outcome_ext/pregnancy_code" readonly="true()" required="true()" type="string"/>
       <bind nodeset="/pregnancy_outcome_ext/mother_code" readonly="true()" required="true()" type="string"/>
@@ -266,8 +266,8 @@
     </model>
   </h:head>
   <h:body>
-    <input ref="/pregnancy_outcome_ext/core_form_uuid">
-      <label ref="jr:itext('/pregnancy_outcome_ext/core_form_uuid:label')"/>
+    <input ref="/pregnancy_outcome_ext/collected_id">
+      <label ref="jr:itext('/pregnancy_outcome_ext/collected_id:label')"/>
     </input>
     <input ref="/pregnancy_outcome_ext/visit_code">
       <label ref="jr:itext('/pregnancy_outcome_ext/visit_code:label')"/>

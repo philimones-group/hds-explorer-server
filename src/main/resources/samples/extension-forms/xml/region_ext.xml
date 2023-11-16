@@ -1,0 +1,127 @@
+<?xml version="1.0"?>
+<h:html xmlns="http://www.w3.org/2002/xforms" xmlns:ev="http://www.w3.org/2001/xml-events" xmlns:h="http://www.w3.org/1999/xhtml" xmlns:jr="http://openrosa.org/javarosa" xmlns:orx="http://openrosa.org/xforms" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <h:head>
+    <h:title>HDS Region Registration Extension</h:title>
+    <model>
+      <itext>
+        <translation lang="Portuguese">
+          <text id="/region_ext/parent_name:label">
+            <value>Nome da Região Mãe</value>
+          </text>
+          <text id="/region_ext/collected_id:label">
+            <value>Id do Formulário Mãe</value>
+          </text>
+          <text id="/region_ext/region_code:label">
+            <value>Código da Região</value>
+          </text>
+          <text id="/region_ext/deviceid:label">
+            <value>-</value>
+          </text>
+          <text id="/region_ext/custom_quest1:label">
+            <value>Custom Question 1</value>
+          </text>
+          <text id="/region_ext/region_name:label">
+            <value>Nome da Região</value>
+          </text>
+          <text id="/region_ext/start:label">
+            <value>-</value>
+          </text>
+          <text id="/region_ext/end:label">
+            <value>-</value>
+          </text>
+          <text id="/region_ext/custom_quest2:label">
+            <value>Custom Question 2</value>
+          </text>
+          <text id="/region_ext/parent_code:label">
+            <value>Código da Região Mãe</value>
+          </text>
+        </translation>
+        <translation default="true()" lang="English">
+          <text id="/region_ext/parent_name:label">
+            <value>Region Parent Name</value>
+          </text>
+          <text id="/region_ext/collected_id:label">
+            <value>Core Form Id</value>
+          </text>
+          <text id="/region_ext/region_code:label">
+            <value>Region Code</value>
+          </text>
+          <text id="/region_ext/deviceid:label">
+            <value>-</value>
+          </text>
+          <text id="/region_ext/custom_quest1:label">
+            <value>Custom Question 1</value>
+          </text>
+          <text id="/region_ext/region_name:label">
+            <value>Region Name</value>
+          </text>
+          <text id="/region_ext/start:label">
+            <value>-</value>
+          </text>
+          <text id="/region_ext/end:label">
+            <value>-</value>
+          </text>
+          <text id="/region_ext/custom_quest2:label">
+            <value>Custom Question 2</value>
+          </text>
+          <text id="/region_ext/parent_code:label">
+            <value>Region Parent Code</value>
+          </text>
+        </translation>
+      </itext>
+      <instance>
+        <region_ext id="region_ext" version="1">
+          <start/>
+          <end/>
+          <deviceid/>
+          <collected_id/>
+          <parent_code/>
+          <parent_name/>
+          <region_code/>
+          <region_name/>
+          <custom_quest1/>
+          <custom_quest2/>
+          <meta>
+            <instanceID/>
+            <instanceName/>
+          </meta>
+        </region_ext>
+      </instance>
+      <bind jr:preload="timestamp" jr:preloadParams="start" nodeset="/region_ext/start" required="true()" type="dateTime"/>
+      <bind jr:preload="timestamp" jr:preloadParams="end" nodeset="/region_ext/end" required="true()" type="dateTime"/>
+      <bind jr:preload="property" jr:preloadParams="deviceid" nodeset="/region_ext/deviceid" required="true()" type="string"/>
+      <bind nodeset="/region_ext/collected_id" readonly="true()" required="true()" type="string"/>
+      <bind nodeset="/region_ext/parent_code" readonly="true()" required="true()" type="string"/>
+      <bind nodeset="/region_ext/parent_name" readonly="true()" required="true()" type="string"/>
+      <bind nodeset="/region_ext/region_code" readonly="true()" type="string"/>
+      <bind nodeset="/region_ext/region_name" readonly="true()" type="string"/>
+      <bind nodeset="/region_ext/custom_quest1" type="string"/>
+      <bind nodeset="/region_ext/custom_quest2" type="string"/>
+      <bind calculate="concat('uuid:', uuid())" nodeset="/region_ext/meta/instanceID" readonly="true()" type="string"/>
+      <bind calculate="concat(&quot;HDS_&quot;, /region_ext/region_code ,&quot;_&quot;,&quot;Region_Extension&quot;)" nodeset="/region_ext/meta/instanceName" type="string"/>
+    </model>
+  </h:head>
+  <h:body>
+    <input ref="/region_ext/collected_id">
+      <label ref="jr:itext('/region_ext/collected_id:label')"/>
+    </input>
+    <input ref="/region_ext/parent_code">
+      <label ref="jr:itext('/region_ext/parent_code:label')"/>
+    </input>
+    <input ref="/region_ext/parent_name">
+      <label ref="jr:itext('/region_ext/parent_name:label')"/>
+    </input>
+    <input ref="/region_ext/region_code">
+      <label ref="jr:itext('/region_ext/region_code:label')"/>
+    </input>
+    <input ref="/region_ext/region_name">
+      <label ref="jr:itext('/region_ext/region_name:label')"/>
+    </input>
+    <input ref="/region_ext/custom_quest1">
+      <label ref="jr:itext('/region_ext/custom_quest1:label')"/>
+    </input>
+    <input ref="/region_ext/custom_quest2">
+      <label ref="jr:itext('/region_ext/custom_quest2:label')"/>
+    </input>
+  </h:body>
+</h:html>

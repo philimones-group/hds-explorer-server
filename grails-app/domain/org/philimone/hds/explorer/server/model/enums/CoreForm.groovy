@@ -2,7 +2,7 @@ package org.philimone.hds.explorer.server.model.enums
 
 enum CoreForm {
 
-
+    REGION_FORM ("rawRegion", "coreFormExtension.region.label"),
     HOUSEHOLD_FORM ("rawHousehold", "coreFormExtension.household.label"),
     VISIT_FORM ("rawVisit", "coreFormExtension.visit.label"),
     MEMBER_ENU_FORM ("rawMemberEnu", "coreFormExtension.memberenu.label"),

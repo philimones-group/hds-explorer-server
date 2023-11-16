@@ -20,7 +20,7 @@
           <text id="/marital_relationship_ext/deviceid:label">
             <value>-</value>
           </text>
-          <text id="/marital_relationship_ext/core_form_uuid:label">
+          <text id="/marital_relationship_ext/collected_id:label">
             <value>Id do Formulário Mãe</value>
           </text>
           <text id="/marital_relationship_ext/visit_code:label">
@@ -55,7 +55,7 @@
           <text id="/marital_relationship_ext/deviceid:label">
             <value>-</value>
           </text>
-          <text id="/marital_relationship_ext/core_form_uuid:label">
+          <text id="/marital_relationship_ext/collected_id:label">
             <value>Core Form Id</value>
           </text>
           <text id="/marital_relationship_ext/visit_code:label">
@@ -80,7 +80,7 @@
           <start/>
           <end/>
           <deviceid/>
-          <core_form_uuid/>
+          <collected_id/>
           <visit_code/>
           <member_a/>
           <member_a_name/>
@@ -97,7 +97,7 @@
       <bind jr:preload="timestamp" jr:preloadParams="start" nodeset="/marital_relationship_ext/start" required="true()" type="dateTime"/>
       <bind jr:preload="timestamp" jr:preloadParams="end" nodeset="/marital_relationship_ext/end" required="true()" type="dateTime"/>
       <bind jr:preload="property" jr:preloadParams="deviceid" nodeset="/marital_relationship_ext/deviceid" required="true()" type="string"/>
-      <bind nodeset="/marital_relationship_ext/core_form_uuid" readonly="true()" required="true()" type="string"/>
+      <bind nodeset="/marital_relationship_ext/collected_id" readonly="true()" required="true()" type="string"/>
       <bind nodeset="/marital_relationship_ext/visit_code" readonly="true()" required="true()" type="string"/>
       <bind nodeset="/marital_relationship_ext/member_a" readonly="true()" required="true()" type="string"/>
       <bind nodeset="/marital_relationship_ext/member_a_name" readonly="true()" required="true()" type="string"/>
@@ -110,8 +110,8 @@
     </model>
   </h:head>
   <h:body>
-    <input ref="/marital_relationship_ext/core_form_uuid">
-      <label ref="jr:itext('/marital_relationship_ext/core_form_uuid:label')"/>
+    <input ref="/marital_relationship_ext/collected_id">
+      <label ref="jr:itext('/marital_relationship_ext/collected_id:label')"/>
     </input>
     <input ref="/marital_relationship_ext/visit_code">
       <label ref="jr:itext('/marital_relationship_ext/visit_code:label')"/>

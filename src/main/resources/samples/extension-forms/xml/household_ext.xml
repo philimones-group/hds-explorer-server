@@ -8,7 +8,7 @@
           <text id="/household_ext/head_name:label">
             <value>Nome do Chefe de Agregado</value>
           </text>
-          <text id="/household_ext/core_form_uuid:label">
+          <text id="/household_ext/collected_id:label">
             <value>Id do Formulário Mãe</value>
           </text>
           <text id="/household_ext/household_code:label">
@@ -40,7 +40,7 @@
           <text id="/household_ext/head_name:label">
             <value>Head of Household Name</value>
           </text>
-          <text id="/household_ext/core_form_uuid:label">
+          <text id="/household_ext/collected_id:label">
             <value>Core Form Id</value>
           </text>
           <text id="/household_ext/household_code:label">
@@ -74,7 +74,7 @@
           <start/>
           <end/>
           <deviceid/>
-          <core_form_uuid/>
+          <collected_id/>
           <household_code/>
           <household_name/>
           <head_code/>
@@ -90,7 +90,7 @@
       <bind jr:preload="timestamp" jr:preloadParams="start" nodeset="/household_ext/start" required="true()" type="dateTime"/>
       <bind jr:preload="timestamp" jr:preloadParams="end" nodeset="/household_ext/end" required="true()" type="dateTime"/>
       <bind jr:preload="property" jr:preloadParams="deviceid" nodeset="/household_ext/deviceid" required="true()" type="string"/>
-      <bind nodeset="/household_ext/core_form_uuid" readonly="true()" required="true()" type="string"/>
+      <bind nodeset="/household_ext/collected_id" readonly="true()" required="true()" type="string"/>
       <bind nodeset="/household_ext/household_code" readonly="true()" required="true()" type="string"/>
       <bind nodeset="/household_ext/household_name" readonly="true()" required="true()" type="string"/>
       <bind nodeset="/household_ext/head_code" readonly="true()" type="string"/>
@@ -102,8 +102,8 @@
     </model>
   </h:head>
   <h:body>
-    <input ref="/household_ext/core_form_uuid">
-      <label ref="jr:itext('/household_ext/core_form_uuid:label')"/>
+    <input ref="/household_ext/collected_id">
+      <label ref="jr:itext('/household_ext/collected_id:label')"/>
     </input>
     <input ref="/household_ext/household_code">
       <label ref="jr:itext('/household_ext/household_code:label')"/>
