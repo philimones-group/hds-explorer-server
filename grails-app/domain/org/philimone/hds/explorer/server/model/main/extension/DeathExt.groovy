@@ -1,0 +1,26 @@
+package org.philimone.hds.explorer.server.model.main.extension
+
+class DeathExt {
+
+    String collected_id
+    String visit_code
+    String member_code
+    String member_name
+
+    static constraints = {
+        collected_id unique: true, nullable: false
+        visit_code nullable: false
+        member_code nullable: false
+        member_name nullable: false
+    }
+
+    static mapping = {
+        table 'death_ext'
+
+        collected_id column: 'collected_id'
+        visit_code column: 'visit_code', index: 'idx_visit_code'
+        member_code column: 'member_code', index: 'idx_member_code'
+        member_name column: 'member_name'
+    }
+
+}
