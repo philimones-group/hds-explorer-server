@@ -119,6 +119,9 @@ dependencies {
     
     implementation 'org.liquibase:liquibase-core:4.19.0'
 
+    //odk javarosa to read xforms instances
+    implementation 'org.getodk:javarosa:4.2.0'
+
     //load local libraries
     implementation fileTree(dir: 'lib', include: '*.jar')
 }

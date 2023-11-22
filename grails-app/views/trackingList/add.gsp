@@ -8,48 +8,6 @@
 		<asset:javascript src="application.js"/>
 		<asset:javascript src="bootstrap.js"/>
 
-        <style>
-
-        .rerrors {
-            font-size: 1em;
-            line-height: 2;
-            margin: 1em 2em;
-            padding: 0.25em;
-        }
-
-        .rerrors {
-            background: #d6e7d0;
-            border: 2px solid #ffaaaa;
-            color: #cc0000;
-            -moz-box-shadow: 0 0 0.25em #ff8888;
-            -webkit-box-shadow: 0 0 0.25em #ff8888;
-            box-shadow: 0 0 0.25em #ff8888;
-        }
-
-        .rerrors_div {
-            color: #666666;
-            border-bottom: 1px solid #CCCCCC;
-            margin: 0.8em 1.3em 0.3em;
-        }
-
-        .rerrors_title {
-            color: #666666;
-            border-bottom: 1px solid #CCCCCC;
-            padding: 0 0.3em;
-        }
-
-        .rerrors ul {
-            padding: 1em;
-        }
-
-        .errors li {
-            list-style: none;
-            background: transparent url(../images/skin/exclamation.png) 0.5em 50% no-repeat;
-            text-indent: 2.2em;
-            padding: 0 0.25em;
-        }
-
-        </style>
 	</head>
 	<body>
 	<g:javascript>

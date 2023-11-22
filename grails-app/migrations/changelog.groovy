@@ -9,4 +9,5 @@ databaseChangeLog = {
     include file: 'add-education-n-religiom-cols-to-domains.groovy'
     include file: 'alter-rawdomains-add-extensionform-blob.groovy'
     include file: 'alter-add-extension-tables.groovy'
+    include file: 'add-ext_form_definition-to-core-form-extension.groovy'
 }

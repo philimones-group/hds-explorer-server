@@ -2,7 +2,9 @@ package org.philimone.hds.explorer.server.model.main
 
 import com.sun.org.apache.xpath.internal.operations.Bool
 import grails.validation.ValidationException
+import net.betainteractive.io.odk.util.XFormReader
 import org.philimone.hds.explorer.io.SystemPath
+import org.springframework.web.multipart.MultipartFile
 
 import static org.springframework.http.HttpStatus.*
 
@@ -58,6 +60,34 @@ class CoreFormExtensionController {
         redirect action: "index"
     }
 
+    def updateFormsTable = {
+        def value = params.name as String
+
+        //println params
+        //println value
+
+        if (value != null) {
+
+            def spt = value.split(":")
+            def names = spt[0].split("\\.")
+            def name_var = names[0]
+            def name_form = names[1]
+            def checked = Boolean.parseBoolean(spt[1])
+
+            def formExt = CoreFormExtension.findByExtFormId(name_form)
+
+            if ("required".equalsIgnoreCase(name_var)) {
+                formExt.required = checked
+            } else if ("enabled".equalsIgnoreCase(name_var)) {
+                formExt.enabled = checked
+            }
+
+            formExt.save(flush: true)
+        }
+
+        render "OK"
+    }
+
     def downloadFormXLS = {
 
         def coreFormExt = CoreFormExtension.get(params.id)
@@ -67,88 +97,56 @@ class CoreFormExtensionController {
 
     }
 
-    /*
-    def show(Long id) {
-        respond coreFormExtensionService.get(id)
+    def downloadFormDef = {
+        def coreFormExt = CoreFormExtension.get(params.id)
+        def filename = coreFormExt.extFormId + ".xml"
+        def file = coreFormExtensionService.getFormXLS(coreFormExt)
+        render file: coreFormExt.extFormDefinition, fileName: filename, contentType:"application/xml"
     }
 
-    def create() {
-        respond new CoreFormExtension(params)
-    }
+    def uploadFormDef = {
+        //println "uploaded "+fileName+ ", formID=${params.formId}"
 
-    def save(CoreFormExtension coreFormExtension) {
+        def formId = params.formId as String
+        def file = request.getFile('fileUpload') as MultipartFile
+        def fileName = file?.originalFilename
+        def xmlBytes = file?.getBytes()
+
+        //get form id, and compare to the coreext form id
+        def xmlFormId = XFormReader.getFormId(xmlBytes)
+
+        println "${xmlFormId}, ${formId}"
+
+        if (xmlFormId == null) {
+            def errorMessages = [g.message(code: "coreFormExtension.uploadForm.xmlform.error", args: [fileName])]
+            render view: "index", model:[coreFormExtensionList: coreFormExtensionService.list(params), coreFormExtensionCount: coreFormExtensionService.count(), errorMessages : errorMessages]
+            return
+        }
+
+        if (formId == null) {
+            def errorMessages = [g.message(code: "coreFormExtension.uploadForm.formid.error", args: [])]
+            render view: "index", model:[coreFormExtensionList: coreFormExtensionService.list(params), coreFormExtensionCount: coreFormExtensionService.count(), errorMessages : errorMessages]
+            return
+        }
+
+        if (!formId.equals(xmlFormId)) {
+            def errorMessages = [g.message(code: "coreFormExtension.uploadForm.form.not.match.error", args: [xmlFormId, formId])]
+            render view: "index", model:[coreFormExtensionList: coreFormExtensionService.list(params), coreFormExtensionCount: coreFormExtensionService.count(), errorMessages : errorMessages]
+            return
+        }
+
+        def coreFormExtension = CoreFormExtension.findByExtFormId(formId)
         if (coreFormExtension == null) {
-            notFound()
+            def errorMessages = [g.message(code: "coreFormExtension.uploadForm.coreext.not.found.error", args: [formId])]
+            render view: "index", model:[coreFormExtensionList: coreFormExtensionService.list(params), coreFormExtensionCount: coreFormExtensionService.count(), errorMessages : errorMessages]
             return
         }
 
-        try {
-            coreFormExtensionService.save(coreFormExtension)
-        } catch (ValidationException e) {
-            respond coreFormExtension.errors, view:'create'
-            return
-        }
+        coreFormExtension.extFormDefinition = xmlBytes
+        coreFormExtension.save(flush:true)
+        flash.message = g.message(code: "coreFormExtension.uploadForm.success.label", args: [fileName, formId])
 
-        request.withFormat {
-            form multipartForm {
-                flash.message = message(code: 'default.created.message', args: [message(code: 'coreFormExtension.label', default: 'CoreFormExtension'), coreFormExtension.id])
-                redirect coreFormExtension
-            }
-            '*' { respond coreFormExtension, [status: CREATED] }
-        }
+        render view: "index", model:[coreFormExtensionList: coreFormExtensionService.list(params), coreFormExtensionCount: coreFormExtensionService.count()]
     }
 
-    def edit(Long id) {
-        respond coreFormExtensionService.get(id)
-    }
-
-    def update(CoreFormExtension coreFormExtension) {
-        if (coreFormExtension == null) {
-            notFound()
-            return
-        }
-
-        try {
-            coreFormExtensionService.save(coreFormExtension)
-        } catch (ValidationException e) {
-            respond coreFormExtension.errors, view:'edit'
-            return
-        }
-
-        request.withFormat {
-            form multipartForm {
-                flash.message = message(code: 'default.updated.message', args: [message(code: 'coreFormExtension.label', default: 'CoreFormExtension'), coreFormExtension.id])
-                redirect coreFormExtension
-            }
-            '*'{ respond coreFormExtension, [status: OK] }
-        }
-    }
-
-    def delete(Long id) {
-        if (id == null) {
-            notFound()
-            return
-        }
-
-        coreFormExtensionService.delete(id)
-
-        request.withFormat {
-            form multipartForm {
-                flash.message = message(code: 'default.deleted.message', args: [message(code: 'coreFormExtension.label', default: 'CoreFormExtension'), id])
-                redirect action:"index", method:"GET"
-            }
-            '*'{ render status: NO_CONTENT }
-        }
-    }
-
-    protected void notFound() {
-        request.withFormat {
-            form multipartForm {
-                flash.message = message(code: 'default.not.found.message', args: [message(code: 'coreFormExtension.label', default: 'CoreFormExtension'), params.id])
-                redirect action: "index", method: "GET"
-            }
-            '*'{ render status: NOT_FOUND }
-        }
-    }
-    */
 }

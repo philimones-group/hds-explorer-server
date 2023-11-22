@@ -449,10 +449,10 @@ class BootStrap {
         def svc = coreFormExtensionService
 
         def map = new LinkedHashMap<CoreForm, Boolean[]>()
-        CoreFormExtension.list().each {
+        /*CoreFormExtension.list().each {
             map.put(it.coreForm, new Boolean[]{ it.required, it.enabled})
             it.delete(flush: true)
-        }
+        }*/
 
         def core0 = new CoreFormExtension(formName: CoreForm.REGION_FORM.name, coreForm: CoreForm.REGION_FORM, formId: CoreForm.REGION_FORM.code, extFormId: "region_ext", required: true, enabled: false, columnsMapping: svc.getColumnMapping(CoreForm.REGION_FORM))
         def core1 = new CoreFormExtension(formName: CoreForm.HOUSEHOLD_FORM.name, coreForm: CoreForm.HOUSEHOLD_FORM, formId: CoreForm.HOUSEHOLD_FORM.code, extFormId: "household_ext", required: true, enabled: false, columnsMapping: svc.getColumnMapping(CoreForm.HOUSEHOLD_FORM))

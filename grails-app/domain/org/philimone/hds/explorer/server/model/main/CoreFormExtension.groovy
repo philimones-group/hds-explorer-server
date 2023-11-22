@@ -9,10 +9,10 @@ class CoreFormExtension {
     String formName
     String formId
     String extFormId
+    byte[] extFormDefinition /* ODK Form Definition (The XML XFORM Definition file)*/
     boolean required = false /*Collection REQUIRED OR OPTIONAL*/
     boolean enabled = false
     String columnsMapping
-
     CoreForm coreForm
 
     transient def addMapping(Map<String, String> colsMap){
@@ -30,6 +30,7 @@ class CoreFormExtension {
         formName nullable: false, blank: false
         formId unique: true
         extFormId nullable: false, blank: false
+        extFormDefinition nullable: true
         required nullable: false
         enabled nullable: false
 
@@ -44,6 +45,7 @@ class CoreFormExtension {
         formName column: "form_name"
         formId column: "form_id"
         extFormId column: "ext_form_id"
+        extFormDefinition column: "ext_form_definition", sqlType: "mediumblob"
         required column: "collection_required"
         enabled column: "enabled"
 
