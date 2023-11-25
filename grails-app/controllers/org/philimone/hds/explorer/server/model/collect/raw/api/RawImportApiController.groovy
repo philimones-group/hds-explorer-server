@@ -1,7 +1,9 @@
 package org.philimone.hds.explorer.server.model.collect.raw.api
 
-import groovy.util.slurpersupport.NodeChild
+import groovy.xml.XmlSlurper
+import groovy.xml.slurpersupport.NodeChild
 import org.philimone.hds.explorer.server.model.collect.raw.*
+import org.philimone.hds.explorer.server.model.enums.RawEntity
 import org.philimone.hds.explorer.server.model.main.collect.raw.RawExecutionResult
 import org.philimone.hds.explorer.server.model.main.collect.raw.RawParseResult
 import org.springframework.http.HttpStatus
@@ -44,9 +46,13 @@ class RawImportApiController {
         }
 
         RawParseResult<RawRegion> parseResult = null
+        String xmlContent = request.reader?.text
+        String extensionXml = rawImportApiService.getExtensionXmlText(xmlContent, RawEntity.REGION)
 
         try {
-            def node = request.getXML() as NodeChild
+            def node = new XmlSlurper().parseText(xmlContent) as NodeChild
+            node = node.children().first() as NodeChild //RawDomain
+
             parseResult = rawImportApiService.parseRegion(node)
         } catch(Exception ex) {
             def msg = errorMessageService.getRawMessagesText(ex)
@@ -59,6 +65,8 @@ class RawImportApiController {
         }
 
         def rawInstance = parseResult.domainInstance
+        rawInstance.extensionForm = extensionXml?.getBytes()
+
         def resultSave = rawInstance.save(flush: true)
 
         if (rawInstance.hasErrors()){
@@ -89,7 +97,9 @@ class RawImportApiController {
         RawParseResult<RawHousehold> parseResult = null
 
         try {
-            def node = request.getXML() as NodeChild
+            def node = new XmlSlurper().parseText(xmlContent) as NodeChild
+            node = node.children().first() as NodeChild //RawDomain
+
             parseResult = rawImportApiService.parsePreHousehold(node)
         } catch(Exception ex) {
             def msg = errorMessageService.getRawMessagesText(ex)
@@ -102,6 +112,7 @@ class RawImportApiController {
         }
 
         def rawInstance = parseResult.domainInstance
+
         def resultSave = rawInstance.save(flush: true)
 
         if (rawInstance.hasErrors()){
@@ -130,9 +141,13 @@ class RawImportApiController {
         }
 
         RawParseResult<RawHousehold> parseResult = null
+        String xmlContent = request.reader?.text
+        String extensionXml = rawImportApiService.getExtensionXmlText(xmlContent, RawEntity.HOUSEHOLD)
 
         try {
-            def node = request.getXML() as NodeChild
+            def node = new XmlSlurper().parseText(xmlContent) as NodeChild
+            node = node.children().first() as NodeChild //RawDomain
+
             parseResult = rawImportApiService.parseHousehold(node)
         } catch(Exception ex) {
             def msg = errorMessageService.getRawMessagesText(ex)
@@ -145,6 +160,8 @@ class RawImportApiController {
         }
 
         def rawInstance = parseResult.domainInstance
+        rawInstance.extensionForm = extensionXml?.getBytes()
+
         def resultSave = rawInstance.save(flush: true)
 
         if (rawInstance.hasErrors()){
@@ -175,7 +192,9 @@ class RawImportApiController {
         RawParseResult<RawMember> parseResult = null
 
         try {
-            def node = request.getXML() as NodeChild
+            def node = new XmlSlurper().parseText(xmlContent) as NodeChild //request.XML as NodeChild
+        node = node.children().first() as NodeChild //RawDomain
+
             parseResult = rawImportApiService.parseMember(node)
         } catch(Exception ex) {
             def msg = errorMessageService.getRawMessagesText(ex)
@@ -188,6 +207,8 @@ class RawImportApiController {
         }
 
         def rawInstance = parseResult.domainInstance
+        rawInstance.extensionForm = extensionXml?.getBytes()
+
         def resultSave = rawInstance.save(flush: true)
 
         if (rawInstance.hasErrors()){
@@ -217,9 +238,13 @@ class RawImportApiController {
         }
 
         RawParseResult<RawVisit> parseResult = null
+        String xmlContent = request.reader?.text
+        String extensionXml = rawImportApiService.getExtensionXmlText(xmlContent, RawEntity.VISIT)
 
         try {
-            def node = request.getXML() as NodeChild
+            def node = new XmlSlurper().parseText(xmlContent) as NodeChild
+            node = node.children().first() as NodeChild //RawDomain
+
             parseResult = rawImportApiService.parseVisit(node)
         } catch(Exception ex) {
             def msg = errorMessageService.getRawMessagesText(ex)
@@ -232,6 +257,8 @@ class RawImportApiController {
         }
 
         def rawInstance = parseResult.domainInstance
+        rawInstance.extensionForm = extensionXml?.getBytes()
+
         def resultSave = rawInstance.save(flush: true)
 
         if (rawInstance.hasErrors()){
@@ -260,9 +287,13 @@ class RawImportApiController {
         }
 
         RawParseResult<RawMemberEnu> parseResult = null
+        String xmlContent = request.reader?.text
+        String extensionXml = rawImportApiService.getExtensionXmlText(xmlContent, RawEntity.MEMBER_ENUMERATION)
 
         try {
-            def node = request.getXML() as NodeChild
+            def node = new XmlSlurper().parseText(xmlContent) as NodeChild
+            node = node.children().first() as NodeChild //RawDomain
+
             parseResult = rawImportApiService.parseMemberEnu(node)
         } catch(Exception ex) {
             def msg = errorMessageService.getRawMessagesText(ex)
@@ -275,6 +306,8 @@ class RawImportApiController {
         }
 
         def rawInstance = parseResult.domainInstance
+        rawInstance.extensionForm = extensionXml?.getBytes()
+
         def resultSave = rawInstance.save(flush: true)
 
         if (rawInstance.hasErrors()){
@@ -303,9 +336,13 @@ class RawImportApiController {
         }
 
         RawParseResult<RawExternalInMigration> parseResult = null
+        String xmlContent = request.reader?.text
+        String extensionXml = rawImportApiService.getExtensionXmlText(xmlContent, RawEntity.EXTERNAL_INMIGRATION)
 
         try {
-            def node = request.getXML() as NodeChild
+            def node = new XmlSlurper().parseText(xmlContent) as NodeChild
+            node = node.children().first() as NodeChild //RawDomain
+
             parseResult = rawImportApiService.parseExternalInMigration(node)
         } catch(Exception ex) {
             def msg = errorMessageService.getRawMessagesText(ex)
@@ -318,6 +355,8 @@ class RawImportApiController {
         }
 
         def rawInstance = parseResult.domainInstance
+        rawInstance.extensionForm = extensionXml?.getBytes()
+
         def resultSave = rawInstance.save(flush: true)
 
         if (rawInstance.hasErrors()){
@@ -346,9 +385,13 @@ class RawImportApiController {
         }
 
         RawParseResult<RawInMigration> parseResult = null
+        String xmlContent = request.reader?.text
+        String extensionXml = rawImportApiService.getExtensionXmlText(xmlContent, RawEntity.IN_MIGRATION)
 
         try {
-            def node = request.getXML() as NodeChild
+            def node = new XmlSlurper().parseText(xmlContent) as NodeChild
+            node = node.children().first() as NodeChild //RawDomain
+
             parseResult = rawImportApiService.parseInMigration(node)
         } catch(Exception ex) {
             def msg = errorMessageService.getRawMessagesText(ex)
@@ -361,6 +404,8 @@ class RawImportApiController {
         }
 
         def rawInstance = parseResult.domainInstance
+        rawInstance.extensionForm = extensionXml?.getBytes()
+
         def resultSave = rawInstance.save(flush: true)
 
         if (rawInstance.hasErrors()){
@@ -389,9 +434,13 @@ class RawImportApiController {
         }
 
         RawParseResult<RawOutMigration> parseResult = null
+        String xmlContent = request.reader?.text
+        String extensionXml = rawImportApiService.getExtensionXmlText(xmlContent, RawEntity.OUT_MIGRATION)
 
         try {
-            def node = request.getXML() as NodeChild
+            def node = new XmlSlurper().parseText(xmlContent) as NodeChild
+            node = node.children().first() as NodeChild //RawDomain
+
             parseResult = rawImportApiService.parseOutMigration(node)
         } catch(Exception ex) {
             def msg = errorMessageService.getRawMessagesText(ex)
@@ -404,6 +453,8 @@ class RawImportApiController {
         }
 
         def rawInstance = parseResult.domainInstance
+        rawInstance.extensionForm = extensionXml?.getBytes()
+
         def resultSave = rawInstance.save(flush: true)
 
         if (rawInstance.hasErrors()){
@@ -434,7 +485,9 @@ class RawImportApiController {
         RawParseResult<RawHeadRelationship> parseResult = null
 
         try {
-            def node = request.getXML() as NodeChild
+            def node = new XmlSlurper().parseText(xmlContent) as NodeChild //request.XML as NodeChild
+        node = node.children().first() as NodeChild //RawDomain
+
             parseResult = rawImportApiService.parseHeadRelationship(node)
         } catch(Exception ex) {
             def msg = errorMessageService.getRawMessagesText(ex)
@@ -447,6 +500,8 @@ class RawImportApiController {
         }
 
         def rawInstance = parseResult.domainInstance
+        rawInstance.extensionForm = extensionXml?.getBytes()
+
         def resultSave = rawInstance.save(flush: true)
 
         if (rawInstance.hasErrors()){
@@ -475,9 +530,13 @@ class RawImportApiController {
         }
 
         RawParseResult<RawMaritalRelationship> parseResult = null
+        String xmlContent = request.reader?.text
+        String extensionXml = rawImportApiService.getExtensionXmlText(xmlContent, RawEntity.MARITAL_RELATIONSHIP)
 
         try {
-            def node = request.getXML() as NodeChild
+            def node = new XmlSlurper().parseText(xmlContent) as NodeChild
+            node = node.children().first() as NodeChild //RawDomain
+
             parseResult = rawImportApiService.parseMaritalRelationship(node)
         } catch(Exception ex) {
             def msg = errorMessageService.getRawMessagesText(ex)
@@ -490,6 +549,8 @@ class RawImportApiController {
         }
 
         def rawInstance = parseResult.domainInstance
+        rawInstance.extensionForm = extensionXml?.getBytes()
+
         def resultSave = rawInstance.save(flush: true)
 
         if (rawInstance.hasErrors()){
@@ -518,9 +579,13 @@ class RawImportApiController {
         }
 
         RawParseResult<RawPregnancyRegistration> parseResult = null
+        String xmlContent = request.reader?.text
+        String extensionXml = rawImportApiService.getExtensionXmlText(xmlContent, RawEntity.PREGNANCY_REGISTRATION)
 
         try {
-            def node = request.getXML() as NodeChild
+            def node = new XmlSlurper().parseText(xmlContent) as NodeChild
+            node = node.children().first() as NodeChild //RawDomain
+
             parseResult = rawImportApiService.parsePregnancyRegistration(node)
         } catch(Exception ex) {
             def msg = errorMessageService.getRawMessagesText(ex)
@@ -533,6 +598,8 @@ class RawImportApiController {
         }
 
         def rawInstance = parseResult.domainInstance
+        rawInstance.extensionForm = extensionXml?.getBytes()
+
         def resultSave = rawInstance.save(flush: true)
 
         if (rawInstance.hasErrors()){
@@ -561,9 +628,13 @@ class RawImportApiController {
         }
 
         RawParseResult<RawPregnancyOutcome> parseResult = null
+        String xmlContent = request.reader?.text
+        String extensionXml = rawImportApiService.getExtensionXmlText(xmlContent, RawEntity.PREGNANCY_OUTCOME)
 
         try {
-            def node = request.getXML() as NodeChild
+            def node = new XmlSlurper().parseText(xmlContent) as NodeChild
+            node = node.children().first() as NodeChild //RawDomain
+
             parseResult = rawImportApiService.parsePregnancyOutcome(node)
         } catch(Exception ex) {
             def msg = errorMessageService.getRawMessagesText(ex)
@@ -576,6 +647,8 @@ class RawImportApiController {
         }
 
         def rawInstance = parseResult.domainInstance
+        rawInstance.extensionForm = extensionXml?.getBytes()
+
         def resultSave = rawInstance.save(flush: true)
 
         if (rawInstance.hasErrors()){
@@ -604,9 +677,13 @@ class RawImportApiController {
         }
 
         RawParseResult<RawDeath> parseResult = null
+        String xmlContent = request.reader?.text
+        String extensionXml = rawImportApiService.getExtensionXmlText(xmlContent, RawEntity.DEATH)
 
         try {
-            def node = request.getXML() as NodeChild
+            def node = new XmlSlurper().parseText(xmlContent) as NodeChild
+            node = node.children().first() as NodeChild //RawDomain
+
             parseResult = rawImportApiService.parseDeath(node)
         } catch(Exception ex) {
             def msg = errorMessageService.getRawMessagesText(ex)
@@ -619,6 +696,8 @@ class RawImportApiController {
         }
 
         def rawInstance = parseResult.domainInstance
+        rawInstance.extensionForm = extensionXml?.getBytes()
+
         def resultSave = rawInstance.save(flush: true)
 
         if (rawInstance.hasErrors()){
@@ -647,9 +726,13 @@ class RawImportApiController {
         }
 
         RawParseResult<RawChangeHead> parseResult = null
+        String xmlContent = request.reader?.text
+        String extensionXml = rawImportApiService.getExtensionXmlText(xmlContent, RawEntity.CHANGE_HEAD_OF_HOUSEHOLD)
 
         try {
-            def node = request.getXML() as NodeChild
+            def node = new XmlSlurper().parseText(xmlContent) as NodeChild
+            node = node.children().first() as NodeChild //RawDomain
+
             parseResult = rawImportApiService.parseChangeHead(node)
         } catch(Exception ex) {
             def msg = errorMessageService.getRawMessagesText(ex)
@@ -662,6 +745,8 @@ class RawImportApiController {
         }
 
         def rawInstance = parseResult.domainInstance
+        rawInstance.extensionForm = extensionXml?.getBytes()
+
         def resultSave = rawInstance.save(flush: true)
 
         if (rawInstance.hasErrors()){
@@ -690,9 +775,13 @@ class RawImportApiController {
         }
 
         RawParseResult<RawIncompleteVisit> parseResult = null
+        String xmlContent = request.reader?.text
+        String extensionXml = rawImportApiService.getExtensionXmlText(xmlContent, RawEntity.INCOMPLETE_VISIT)
 
         try {
-            def node = request.getXML() as NodeChild
+            def node = new XmlSlurper().parseText(xmlContent) as NodeChild
+            node = node.children().first() as NodeChild //RawDomain
+
             parseResult = rawImportApiService.parseIncompleteVisit(node)
         } catch(Exception ex) {
             def msg = errorMessageService.getRawMessagesText(ex)
@@ -705,6 +794,8 @@ class RawImportApiController {
         }
 
         def rawInstance = parseResult.domainInstance
+        rawInstance.extensionForm = extensionXml?.getBytes()
+
         def resultSave = rawInstance.save(flush: true)
 
         if (rawInstance.hasErrors()){
@@ -732,9 +823,13 @@ class RawImportApiController {
         }
 
         RawParseResult<RawRegion> parseResult = null
+        String xmlContent = request.reader?.text
+        //String extensionXml = rawImportApiService.getExtensionXmlText(xmlContent, RawEntity.REGION)
 
         try {
-            def node = request.getXML() as NodeChild
+            def node = new XmlSlurper().parseText(xmlContent) as NodeChild
+            node = node.children().first() as NodeChild //RawDomain
+
             parseResult = rawImportApiService.parseEditRegion(node)
         } catch(Exception ex) {
             def msg = errorMessageService.getRawMessagesText(ex)
@@ -747,6 +842,7 @@ class RawImportApiController {
         }
 
         def rawInstance = parseResult.domainInstance
+        //rawInstance.extensionForm = extensionXml?.getBytes()
 
         //execute creation update
         def result = rawEditExecutionService.updateRegion(rawInstance)
@@ -755,7 +851,6 @@ class RawImportApiController {
             render text: errorMessageService.getRawMessagesText(result.errorMessages), status: HttpStatus.BAD_REQUEST
             return
         }
-
 
         render text: "OK", status: HttpStatus.OK
     }
@@ -768,9 +863,13 @@ class RawImportApiController {
         }
 
         RawParseResult<RawHousehold> parseResult = null
+        String xmlContent = request.reader?.text
+        //String extensionXml = rawImportApiService.getExtensionXmlText(xmlContent, RawEntity.REGION)
 
         try {
-            def node = request.getXML() as NodeChild
+            def node = new XmlSlurper().parseText(xmlContent) as NodeChild
+            node = node.children().first() as NodeChild //RawDomain
+
             parseResult = rawImportApiService.parseEditHousehold(node)
         } catch(Exception ex) {
             def msg = errorMessageService.getRawMessagesText(ex)
@@ -783,6 +882,7 @@ class RawImportApiController {
         }
 
         def rawInstance = parseResult.domainInstance
+        //rawInstance.extensionForm = extensionXml?.getBytes()
 
         //execute creation update
         def result = rawEditExecutionService.updateHousehold(rawInstance)
@@ -791,7 +891,6 @@ class RawImportApiController {
             render text: errorMessageService.getRawMessagesText(result.errorMessages), status: HttpStatus.BAD_REQUEST
             return
         }
-
 
         render text: "OK", status: HttpStatus.OK
     }
@@ -805,9 +904,13 @@ class RawImportApiController {
         }
 
         RawParseResult<RawMember> parseResult = null
+        String xmlContent = request.reader?.text
+        //String extensionXml = rawImportApiService.getExtensionXmlText(xmlContent, RawEntity.REGION)
 
         try {
-            def node = request.getXML() as NodeChild
+            def node = new XmlSlurper().parseText(xmlContent) as NodeChild
+            node = node.children().first() as NodeChild //RawDomain
+
             parseResult = rawImportApiService.parseEditMember(node)
         } catch(Exception ex) {
             def msg = errorMessageService.getRawMessagesText(ex)
@@ -820,6 +923,7 @@ class RawImportApiController {
         }
 
         def rawInstance = parseResult.domainInstance
+        //rawInstance.extensionForm = extensionXml?.getBytes()
 
         //execute creation update
         def result = rawEditExecutionService.updateMember(rawInstance)
@@ -828,7 +932,6 @@ class RawImportApiController {
             render text: errorMessageService.getRawMessagesText(result.errorMessages), status: HttpStatus.BAD_REQUEST
             return
         }
-
 
         render text: "OK", status: HttpStatus.OK
     }

@@ -2,17 +2,20 @@ package org.philimone.hds.explorer.server.model.collect.raw.api
 
 import grails.gorm.transactions.Transactional
 import grails.web.databinding.DataBinder
-import groovy.util.slurpersupport.NodeChild
-import groovy.util.slurpersupport.Node
+import groovy.xml.slurpersupport.NodeChild
+import groovy.xml.slurpersupport.Node
 import net.betainteractive.utilities.StringUtil
 import org.philimone.hds.explorer.server.model.collect.raw.*
 import org.philimone.hds.explorer.server.model.enums.MaritalEndStatus
 import org.philimone.hds.explorer.server.model.enums.MaritalStartStatus
 import org.philimone.hds.explorer.server.model.enums.ProcessedStatus
+import org.philimone.hds.explorer.server.model.enums.RawEntity
 import org.philimone.hds.explorer.server.model.main.collect.raw.RawMessage
 import org.philimone.hds.explorer.server.model.main.collect.raw.RawParseResult
 
 import java.time.LocalDateTime
+import java.util.regex.Matcher
+import java.util.regex.Pattern
 
 @Transactional
 class RawImportApiService implements DataBinder {
@@ -1330,5 +1333,23 @@ class RawImportApiService implements DataBinder {
 
         return new RawParseResult<RawMember>(new RawMember(params), errors)
 
+    }
+
+    String getExtensionXmlText(String xmlContent, RawEntity rawEntity) {
+        //contains main tag + <data> tag + <rawDomain> tag + <extension> tag
+        //replace main tag
+        xmlContent = xmlContent.replaceAll("<\\?xml[^\\?]*\\?>", "")
+        //replace data tag
+        xmlContent = xmlContent.replace("<data>", "")?.replaceAll("</data>", "")
+
+        //replace extension tag
+        def regex = "<${rawEntity.tag}>.*?/${rawEntity.tag}>"
+        Pattern pattern = Pattern.compile(regex, Pattern.DOTALL);
+        // Use a Matcher to find and replace the matched pattern
+        Matcher matcher = pattern.matcher(xmlContent);
+        if (matcher.find()) {
+            xmlContent = matcher.replaceFirst("");
+        }
+        return xmlContent?.trim()
     }
 }
