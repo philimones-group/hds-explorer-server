@@ -16,6 +16,11 @@ class DatatablesUITagLib {
 
     }
 
+    def tabulatorResources = {
+        out << "        " + asset.stylesheet(src: "tabulator_site.min.css") + "\n"
+        out << "        " + asset.javascript(src: "tabulator.min.js") + "\n"
+    }
+
     def table = { attrs, body ->
         out << "\t\t\t<div class=\"whitebox_panel\">\n"
         out << "\t\t\t\t<table id=\"${attrs.id}\" class=\"display nowrap compact cell-border\">\n"
@@ -213,11 +218,22 @@ class DatatablesUITagLib {
                 def cedit = obj.editor != null ? "${obj.editor}" : null
                 def hzalign = obj.hzalign != null ? "${obj.hzalign}" : null
                 def vtalign = obj.vtalign != null ? "${obj.vtalign}" : null
+                def display = obj.display != null ? "${obj.display}" : null
+
                 def cedittext = StringUtil.isBlank(cedit) ? "" : ", ${cedit}"
                 def hzaligntext = StringUtil.isBlank(hzalign) ? "" : ", ${hzalign}"
                 def vtaligntext = StringUtil.isBlank(vtalign) ? "" : ", ${vtalign}"
 
-                out << "                 {title:'${clabel}', field:'${cname}'${cedittext}${hzaligntext}${vtaligntext}, headerHozAlign:'center' }${i+1==json.size() ? '' : ','}\n"
+                def displaytext = ""
+
+                //custom cell renderers
+                if (!StringUtil.isBlank(display)) {
+                    if (display.equalsIgnoreCase("enumType")) { //call object.toString()
+                        displaytext = ", formatter:function(cell, formatterParams, onRendered){ return cell.getValue()?.name; }"
+                    }
+                }
+
+                out << "                 {title:'${clabel}', field:'${cname}'${cedittext}${hzaligntext}${vtaligntext}, headerHozAlign:'center'${displaytext}}${i+1==json.size() ? '' : ','}\n"
 
                 // Do something with the values
                 //println "Name: $cname, Label: $clabel"
@@ -272,14 +288,16 @@ class DatatablesUITagLib {
         def editor = attrs.editor
         def hzalign = attrs.hzalign
         def vtalign = attrs.vtalign
+        def display = attrs.display //custom render method for the object
         //vertAlign
         def hzaligntext = "hozAlign:" + (hzalign != null ? "'${hzalign}'" : "'center'")
         def vtaligntext = vtalign != null ? "vertAlign:'${vtalign}'" : ""
         def editortext = editor != null ? "editor:'${editor}'" : ""
+        def displaytext = display != null ? "${display}" : ""
 
         //, hozAlign:"center"
 
-        out << "{\"name\": \"${name}\", \"label\": \"${label}\", \"editor\": \"${editortext}\", \"hzalign\": \"${hzaligntext}\", \"vtalign\": \"${vtaligntext}\"},"
+        out << "{\"name\": \"${name}\", \"label\": \"${label}\", \"editor\": \"${editortext}\", \"hzalign\": \"${hzaligntext}\", \"vtalign\": \"${vtaligntext}\", \"display\": \"${displaytext}\"},"
     }
 
     def toast = {attrs, body ->
