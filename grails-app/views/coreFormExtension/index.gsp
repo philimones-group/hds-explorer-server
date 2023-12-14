@@ -41,6 +41,7 @@
         </div>
         <div id="list-coreFormExtension" class="content scaffold-list" role="main">
             <h1><g:message code="default.list.label" args="[entityName]" /></h1>
+            <br>
             <g:if test="${flash.message}">
                 <div class="message" role="status">${flash.message}</div>
             </g:if>
@@ -58,7 +59,6 @@
             <dt:table id="formsTable">
                 <thead>
                 <tr>
-                    <th></th>
 
                     <th><g:message code="coreFormExtension.formName.label" /></th>
 
@@ -76,21 +76,20 @@
 
                     <th></th>
 
+                    <th></th>
+
                 </tr>
                 </thead>
                 <tbody>
                 <g:each in="${coreFormExtensionList}" status="i" var="formInstance">
                     <tr>
+                        <td class="align-middle"><g:message code="${formInstance.formName}" /></td>
 
-                        <td></td>
+                        <td class="align-middle">${formInstance.formId}</td>
 
-                        <td><g:message code="${formInstance.formName}" /></td>
+                        <td class="align-middle">${formInstance.extFormId}</td>
 
-                        <td>${formInstance.formId}</td>
-
-                        <td>${formInstance.extFormId}</td>
-
-                        <td>
+                        <td class="align-middle">
                             <g:if test="${formInstance.extFormDefinition==null}" >
                                 <b><g:message code="coreFormExtension.notuploaded.label"/></b>
                             </g:if>
@@ -99,7 +98,7 @@
                             </g:else>
                         </td>
 
-                        <td>
+                        <td class="align-middle">
                             <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#upload_${formInstance.extFormId}">
                                 <g:message code="coreFormExtension.uploadFormDefinition.button.label"/>
                             </button>
@@ -122,8 +121,8 @@
                                                 <br>
                                             </div>
                                             <div class="modal-footer">
-                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                                <g:submitButton name="create" class="btn btn-primary" value="${message(code: 'trackingList.file.uploadFormDefinition.save.label')}" />
+                                                <button type="button" class="btn btn-secondary" data-dismiss="modal"><g:message code="coreFormExtension.uploadFormDefinition.close.label" /></button>
+                                                <g:submitButton name="create" class="btn btn-primary" value="${message(code: 'coreFormExtension.uploadFormDefinition.save.label')}" />
                                             </div>
                                         </g:uploadForm>
                                     </div>
@@ -132,16 +131,52 @@
 
                         </td>
 
-                        <td><g:checkBox name="required.${formInstance.extFormId}" value="${formInstance.required}" /></td>
+                        <td class="align-middle"><g:checkBox name="required.${formInstance.extFormId}" value="${formInstance.required}" /></td>
 
-                        <td><g:checkBox name="enabled.${formInstance.extFormId}" value="${formInstance.enabled}" /></td>
+                        <td class="align-middle"><g:checkBox name="enabled.${formInstance.extFormId}" value="${formInstance.enabled}" /></td>
 
-                        <td><g:link action="downloadFormXLS" id="${formInstance.id}"><g:message code="coreFormExtension.downloadSampleXls.button.label"/></g:link></td>
+                        <td class="align-middle"><g:link action="downloadFormXLS" id="${formInstance.id}"><g:message code="coreFormExtension.downloadSampleXls.button.label"/></g:link></td>
+
+                        <td class="align-middle">
+                            <g:form controller="coreFormExtension" method="POST" >
+                                <g:hiddenField name="id" value="${formInstance.id}" />
+                                <g:if test="${formInstance?.extFormDefinition == null}" >
+                                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#div_no_formdef">
+                                        <g:message code="coreFormExtension.mapping.button.label"/>
+                                    </button>
+                                </g:if>
+                                <g:else>
+                                    <g:actionSubmit class="btn btn-primary" value="${g.message(code: 'coreFormExtension.mapping.button.label')}" action="dbMapping" name="submitButton" />
+                                </g:else>
+
+                            </g:form>
+                        </td>
 
                     </tr>
                 </g:each>
                 </tbody>
             </dt:table>
+
+        <!-- Modal -->
+            <div id="div_no_formdef" class="modal fade" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="staticBackdropLabel2"><g:message code="coreFormExtension.mapcolumns.title.label" /></h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <g:message code="coreFormExtension.mapcolumns.noformdef.label" />
+                            <br>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal"><g:message code="coreFormExtension.uploadFormDefinition.close.label" /></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
         </div>
 

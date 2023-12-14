@@ -1,9 +1,12 @@
 package org.philimone.hds.explorer.server.model.main
 
 import com.sun.org.apache.xpath.internal.operations.Bool
+import grails.converters.JSON
 import grails.validation.ValidationException
 import net.betainteractive.io.odk.util.XFormReader
 import org.philimone.hds.explorer.io.SystemPath
+import org.philimone.hds.explorer.server.model.enums.extensions.FormColumnType
+import org.philimone.hds.explorer.server.model.main.extension.CoreExtensionService
 import org.springframework.web.multipart.MultipartFile
 
 import static org.springframework.http.HttpStatus.*
@@ -11,6 +14,8 @@ import static org.springframework.http.HttpStatus.*
 class CoreFormExtensionController {
 
     CoreFormExtensionService coreFormExtensionService
+    CoreExtensionService coreExtensionService
+    def coreExtensionDatabaseService
 
     static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
 
@@ -149,4 +154,67 @@ class CoreFormExtensionController {
         render view: "index", model:[coreFormExtensionList: coreFormExtensionService.list(params), coreFormExtensionCount: coreFormExtensionService.count()]
     }
 
+    def dbMapping = {
+        def coreFormExtension = CoreFormExtension.get(params.id)
+        def hasModels = CoreFormExtensionModel.countByCoreForm(coreFormExtension) > 0
+
+        [coreFormExtension: coreFormExtension, hasExtensionModels: hasModels]
+    }
+
+    def dbColumns = {
+        def coreFormExtension = CoreFormExtension.get(params.id)
+        def models = CoreFormExtensionModel.findAllByCoreForm(coreFormExtension, [sort: "dbColumnIndex", order: "asc"])
+
+        def sqlCommands = coreExtensionDatabaseService.generateSqlCommandsFrom(models)
+        def databaseSystem = coreExtensionDatabaseService.getDatabaseSystemName()
+        def totalColumns = models.findAll { it.formColumnType != FormColumnType.REPEAT_GROUP}.size()
+
+        [coreFormExtension: coreFormExtension, databaseSystem: databaseSystem, totalColumns: totalColumns, sqlCommands: sqlCommands.join('\n')]
+    }
+
+    def dbExtension = {
+        def coreFormExtension = CoreFormExtension.get(params.id)
+
+        def colsList = coreExtensionDatabaseService.getDatabaseColumns(coreFormExtension.extFormId)
+
+        [coreFormExtension: coreFormExtension, columnsList: colsList]
+    }
+
+    def fetchDataModels = {
+        def coreFormExtension = CoreFormExtension.get(params.id)
+
+        def list = CoreFormExtensionModel.findAllByCoreForm(coreFormExtension, [sort: "dbColumnIndex", order: "asc"])
+
+        render list as JSON
+    }
+
+    def generateDatabaseModel = {
+        def coreFormExtension = CoreFormExtension.get(params.id)
+        //println "gen: ${coreFormExtension}"
+
+        if (coreFormExtension?.extFormDefinition == null) {
+            println "no form definition uploaded"
+            return
+        }
+
+        coreExtensionDatabaseService.generateDatabaseModel(coreFormExtension)
+
+        def hasModels = CoreFormExtensionModel.countByCoreForm(coreFormExtension) > 0
+
+        render view: "dbMapping", model: [coreFormExtension: coreFormExtension, hasExtensionModels: hasModels]
+    }
+
+    def executeAlterTable = {
+        def coreFormExtension = CoreFormExtension.get(params.id)
+
+        def sqlCommands = params.sqlCommands
+        def databaseSystem = params.databaseSystem
+        def totalColumns = params.totalColumns as Integer
+
+        def resultMessages = coreExtensionDatabaseService.executeSQL(sqlCommands)
+
+        flash.message = g.message(code: "coreFormExtension.columns.executed.label")
+
+        render view: "dbColumns", model: [coreFormExtension: coreFormExtension, databaseSystem: databaseSystem, totalColumns: totalColumns, sqlCommands: sqlCommands, resultMessages: resultMessages]
+    }
 }
