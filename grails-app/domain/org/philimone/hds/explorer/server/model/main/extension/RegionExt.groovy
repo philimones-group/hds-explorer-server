@@ -19,6 +19,8 @@ class RegionExt {
     static mapping = {
         table 'region_ext'
 
+        version false
+
         collected_id column: 'collected_id'
         parent_code column: 'parent_code', index: 'idx_parent_code'
         parent_name column: 'parent_name'

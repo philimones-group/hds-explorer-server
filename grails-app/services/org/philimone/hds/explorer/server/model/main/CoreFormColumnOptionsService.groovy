@@ -55,6 +55,9 @@ class CoreFormColumnOptionsService {
             return new UpdateResult(result: UpdateResult.Result.ERROR.name(), message: generalUtilitiesService.getMessageWeb("settings.coreformoptions.message.option.unique.label"))
         }
 
+        //update the record
+        CoreFormColumnOptions.executeUpdate("update CoreFormColumnOptions set " + editedColumnName + " = ?0 where id = ?1", [newValue, id])
+
         return new UpdateResult(result: UpdateResult.Result.SUCCESS.name(), message: generalUtilitiesService.getMessageWeb("settings.coreformoptions.message.updated.label"))
     }
 

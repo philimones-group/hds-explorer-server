@@ -34,7 +34,7 @@
 
             <div class="whitebox_panel">
 
-                <dt:toast id="models_toast" title="" message="Test message" />
+                <dt:toast id="models_toast" title="Info" message="Test message" />
 
                 <ol class="property-list form">
 
@@ -79,9 +79,8 @@
                           addlabel="${message(code: 'settings.coreformoptions.addlabel.label')}"
                           remlabel="${message(code: 'settings.coreformoptions.remlabel.label')}"
                           data="${g.createLink(controller: 'coreFormExtension', action: 'fetchDataModels', id: coreFormExtension?.id)}"
-                          update="${createLink(controller: 'coreFormExtension', action: 'updateCustomOptions')}"
-                          createrow="${createLink(controller: 'coreFormExtension', action: 'createCustomOptions')}"
-                          deleterow="${createLink(controller: 'coreFormExtension', action: 'deleteCustomOptions')}">
+                          update="${createLink(controller: 'coreFormExtension', action: 'updateDataModel')}"
+                          deleterow="${createLink(controller: 'coreFormExtension', action: 'deleteDataModel')}">
 
                 <dt:column name="dbColumnIndex"  label="${message(code: 'coreFormExtension.mapping.dbColumnIndex')}" />
                 <dt:column name="dbColumnTable"     label="${message(code: 'coreFormExtension.mapping.dbColumnTable')}" />

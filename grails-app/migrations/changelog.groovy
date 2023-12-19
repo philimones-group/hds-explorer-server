@@ -12,4 +12,5 @@ databaseChangeLog = {
     include file: 'add-ext_form_definition-to-core-form-extension.groovy'
     include file: 'add-table-core_form_ext_model.groovy'
     include file: 'update-household_ext-remove-constraints.groovy'
+    include file: 'update-extension_tables-remove-versioning.groovy'
 }

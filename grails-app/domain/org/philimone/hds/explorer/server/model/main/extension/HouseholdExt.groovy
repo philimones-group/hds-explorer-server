@@ -19,6 +19,8 @@ class HouseholdExt {
     static mapping = {
         table 'household_ext'
 
+        version false
+
         collected_id column: 'collected_id'
         household_code column: 'household_code', index: 'idx_household_code'
         household_name column: 'household_name'

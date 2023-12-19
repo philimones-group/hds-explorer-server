@@ -21,6 +21,8 @@ class MaritalRelationshipExt {
     static mapping = {
         table 'marital_relationship_ext'
 
+        version false
+
         collected_id column: 'collected_id'
         visit_code column: 'visit_code', index: 'idx_visit_code'
         member_a column: 'member_a'

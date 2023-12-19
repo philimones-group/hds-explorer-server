@@ -25,6 +25,8 @@ class PregnancyOutcomeExt {
     static mapping = {
         table 'pregnancy_outcome_ext'
 
+        version false
+
         collected_id column: 'collected_id'
         visit_code column: 'visit_code', index: 'idx_visit_code'
         pregnancy_code column: 'pregnancy_code', index: 'idx_pregnancy_code'

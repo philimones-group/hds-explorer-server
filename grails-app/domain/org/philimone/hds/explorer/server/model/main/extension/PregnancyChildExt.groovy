@@ -24,6 +24,8 @@ class PregnancyChildExt {
     static mapping = {
         table 'pregnancy_child_ext'
 
+        version false
+
         collected_id column: 'collected_id'
 
         outcome column: "pregnancy_outcome_ext_id"

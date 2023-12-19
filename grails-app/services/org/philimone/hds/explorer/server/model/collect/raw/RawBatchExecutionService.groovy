@@ -48,7 +48,7 @@ class RawBatchExecutionService {
         //session.clear()
 
         System.gc()
-        println "clearing up"
+        //println "clearing up"
     }
     
     /*

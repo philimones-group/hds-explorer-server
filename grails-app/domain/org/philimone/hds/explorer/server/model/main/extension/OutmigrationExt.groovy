@@ -19,6 +19,8 @@ class OutmigrationExt {
     static mapping = {
         table 'out_migration_ext'
 
+        version false
+
         collected_id column: 'collected_id'
         visit_code column: 'visit_code', index: 'idx_visit_code'
         member_code column: 'member_code', index: 'idx_member_code'

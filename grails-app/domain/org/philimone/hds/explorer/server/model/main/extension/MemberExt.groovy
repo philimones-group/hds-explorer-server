@@ -19,6 +19,8 @@ class MemberExt {
     static mapping = {
         table 'member_ext'
 
+        version false
+
         collected_id column: 'collected_id'
         visit_code column: 'visit_code', index: 'idx_visit_code'
         household_code column: 'household_code', index: 'idx_household_code'

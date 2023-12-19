@@ -71,7 +71,7 @@
 
             <div class="whitebox_panel">
 
-                <dt:toast id="options_toast" title="" message="Test message" />
+                <dt:toast id="options_toast" title="Info" message="Test message" />
 
                 <fieldset class="form-group">
                     <div class="fieldcontain required">

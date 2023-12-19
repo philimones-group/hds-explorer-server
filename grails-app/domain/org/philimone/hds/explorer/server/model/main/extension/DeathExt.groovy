@@ -17,6 +17,8 @@ class DeathExt {
     static mapping = {
         table 'death_ext'
 
+        version false
+
         collected_id column: 'collected_id'
         visit_code column: 'visit_code', index: 'idx_visit_code'
         member_code column: 'member_code', index: 'idx_member_code'
