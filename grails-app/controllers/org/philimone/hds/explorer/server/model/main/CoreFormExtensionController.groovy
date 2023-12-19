@@ -1,15 +1,11 @@
 package org.philimone.hds.explorer.server.model.main
 
-import com.sun.org.apache.xpath.internal.operations.Bool
+
 import grails.converters.JSON
-import grails.validation.ValidationException
 import net.betainteractive.io.odk.util.XFormReader
-import org.philimone.hds.explorer.io.SystemPath
 import org.philimone.hds.explorer.server.model.enums.extensions.FormColumnType
 import org.philimone.hds.explorer.server.model.main.extension.CoreExtensionService
 import org.springframework.web.multipart.MultipartFile
-
-import static org.springframework.http.HttpStatus.*
 
 class CoreFormExtensionController {
 
@@ -188,6 +184,23 @@ class CoreFormExtensionController {
         render list as JSON
     }
 
+    def updateDataModel = {
+        def data = request.JSON
+
+        def result = coreExtensionDatabaseService.updateDataModel(data.column, data.id, data.value)
+
+        render result as JSON
+    }
+
+    def deleteDataModel = {
+        def data = request.JSON
+        def id = data.id
+
+        def result = coreExtensionDatabaseService.deleteDataModel(id)
+
+        render result as JSON
+    }
+
     def generateDatabaseModel = {
         def coreFormExtension = CoreFormExtension.get(params.id)
         //println "gen: ${coreFormExtension}"
@@ -211,7 +224,7 @@ class CoreFormExtensionController {
         def databaseSystem = params.databaseSystem
         def totalColumns = params.totalColumns as Integer
 
-        def resultMessages = coreExtensionDatabaseService.executeSQL(sqlCommands)
+        def resultMessages = coreExtensionDatabaseService.executeSqlCommands(sqlCommands)
 
         flash.message = g.message(code: "coreFormExtension.columns.executed.label")
 

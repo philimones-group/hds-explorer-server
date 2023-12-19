@@ -5,7 +5,6 @@ import net.betainteractive.io.odk.util.XFormReader
 import net.betainteractive.utilities.StringUtil
 import org.javarosa.core.model.DataType
 import org.javarosa.core.model.FormDef
-import org.javarosa.core.model.SelectChoice
 import org.javarosa.core.model.data.GeoPointData
 import org.javarosa.core.model.data.MultipleItemsData
 import org.javarosa.core.model.instance.TreeElement
@@ -18,26 +17,48 @@ import org.philimone.hds.explorer.server.model.main.CoreFormExtension
 import org.philimone.hds.explorer.server.model.main.CoreFormExtensionModel
 import org.philimone.hds.explorer.server.model.main.Household
 
+import java.time.format.DateTimeFormatter
+
 @Transactional
 class CoreExtensionService {
 
     def coreExtensionDatabaseService
-    
-    HashMap<String, String> getInstanceMappedValues(CoreFormExtension coreFormExt, byte[] formDefBytes, byte[] instanceBytes) {
+
+    CoreExtensionDatabaseService.SqlExecutionResult insertHouseholdExtension(RawHousehold rawObj, Household finalObj) {
+
+        if (rawObj.extensionForm == null) return null
+
+        //get form extensions
+        def coreFormExt = CoreFormExtension.findByCoreForm(CoreForm.HOUSEHOLD_FORM)
+        if (!coreFormExt?.enabled || coreFormExt?.extFormDefinition == null) return null
+
+        //read xml data to map
+        def mapInstanceValues = getInstanceMappedValues(coreFormExt, coreFormExt.extFormDefinition, rawObj.extensionForm)
+
+        //insert into
+        def result = coreExtensionDatabaseService.executeSqlInsert(coreFormExt.extFormId, mapInstanceValues)
+
+
+        println "Inserting extension for (${rawObj.householdCode}) - result=${result.success}, msg: ${result.errorMessage}"
+
+        return result
+    }
+
+    LinkedHashMap<String, Object> getInstanceMappedValues(CoreFormExtension coreFormExt, byte[] formDefBytes, byte[] instanceBytes) {
         def formDef = XFormReader.getFormDefinition(formDefBytes)
         def instanceXml = XFormReader.getFormInstanceFrom(instanceBytes)
 
         //open HouseholdExt
         //get mapping models, navigate xml (attention to Repeat, CHOICE_LIST, GEOPOINT)
 
-        def mapValues = new LinkedHashMap<String, String>()
+        def mapValues = new LinkedHashMap<String, Object>()
         def repeatIndexes = new LinkedHashMap<String, Integer>()
         readElementChildren(coreFormExt, formDef, instanceXml.getRoot(), mapValues, null, 0, repeatIndexes, new String[1])
 
         return mapValues
     }
 
-    def readElementChildren(CoreFormExtension coreFormExtension, FormDef formDef, TreeElement instanceElement, Map<String, String> mapValues, String repeatGroup, int repeatLength, HashMap<String, Integer> repeatIndexes, String[] lastReadedRepeatGroup) {
+    def readElementChildren(CoreFormExtension coreFormExtension, FormDef formDef, TreeElement instanceElement, Map<String, Object> mapValues, String repeatGroup, int repeatLength, LinkedHashMap<String, Integer> repeatIndexes, String[] lastReadedRepeatGroup) {
         for (int i=0; i < instanceElement.numChildren; i++) {
             def insChildElement = instanceElement.getChildAt(i)
             def insChildRef = insChildElement.getRef()
@@ -65,16 +86,22 @@ class CoreExtensionService {
                 //process the repeat childs, get repeat model
                 def repeatModel = CoreFormExtensionModel.findByCoreFormAndFormColumnNameAndFormColumnType(coreFormExtension, formColName, FormColumnType.REPEAT_GROUP)
 
-                if (lastReadedRepeatGroup[0] != null && !repeatModel.dbColumnName.equals(lastReadedRepeatGroup[0])) {
-                    repeatIndexes.remove(lastReadedRepeatGroup[0]) //remove the counting of that repeatgroup to reset counters of inner repeat groups
+                if (lastReadedRepeatGroup[0] != null) {
+                    if (!lastReadedRepeatGroup[0].equals(repeatModel.dbColumnName)) {
+                        //root repeats should not be removed
+                        if (!lastReadedRepeatGroup[0].equals(repeatModel.formRepeatGroup)) {
+                            //if the last repeated is the parent of this repeat do not remove the last repeat
+                            repeatIndexes.remove(lastReadedRepeatGroup[0])  //remove the counting of that repeatgroup to reset counters of inner repeat groups
+                        }
+                    }
                 }
 
                 def repeatIndex = !repeatIndexes.containsKey(repeatModel.dbColumnName) ? 1 : (repeatIndexes.get(repeatModel.dbColumnName)+1)
                 repeatIndexes.put(repeatModel.dbColumnName, repeatIndex)
 
-                readElementChildren(coreFormExtension, formDef, insChildElement, mapValues, repeatModel.dbColumnName, repeatModel.formRepeatLength, repeatIndexes, lastReadedRepeatGroup)
-
                 lastReadedRepeatGroup[0] = repeatModel.dbColumnName
+
+                readElementChildren(coreFormExtension, formDef, insChildElement, mapValues, repeatModel.dbColumnName, repeatModel.formRepeatLength, repeatIndexes, lastReadedRepeatGroup)
 
                 continue
             }
@@ -114,7 +141,7 @@ class CoreExtensionService {
                     ["lat", "lng", "alt", "acc"].eachWithIndex { gpsSuffix, geoIndex ->
                         def model = CoreFormExtensionModel.findByCoreFormAndFormColumnNameAndFormColumnTypeAndFormChoiceValue(coreFormExtension, formColName, FormColumnType.GEOPOINT, gpsSuffix)
                         def finalColumnName = getFinalColumnName(model, repeatIndexes)
-                        mapValues.put(finalColumnName, "${geoData.getPart(geoIndex)}")
+                        mapValues.put(finalColumnName, new Double(geoData.getPart(geoIndex)))
                     }
                 }
 
@@ -124,6 +151,8 @@ class CoreExtensionService {
 
             //any other type
             def model = CoreFormExtensionModel.findByCoreFormAndFormColumnNameAndFormColumnType(coreFormExtension, formColName, FormColumnType.getFrom(dataType))
+
+            Object objValue = getObjectValueByType(model.dbColumnType, textValue)
 
             if (model != null) {
 
@@ -138,7 +167,6 @@ class CoreExtensionService {
                     mapValues.put(finalColumnName, textValue)
                 }
 
-
             } else {
                 throw new Exception("Error")
             }
@@ -146,7 +174,24 @@ class CoreExtensionService {
         }
     }
 
-    String getFinalColumnName(CoreFormExtensionModel modelLoop, HashMap<String, Integer> repeatIndexes) {
+    Object getObjectValueByType(DatabaseColumnType dbColumnType, String textValue) {
+        Object objValue = textValue
+
+        switch (dbColumnType) {
+            case DatabaseColumnType.BLOB:    objValue = new ByteArrayInputStream(textValue.getBytes()); break;
+            case DatabaseColumnType.BOOLEAN: objValue = Boolean.parseBoolean(textValue); break;
+            case DatabaseColumnType.DECIMAL: objValue = BigDecimal.valueOf(Double.parseDouble(textValue)); break;
+            case DatabaseColumnType.DOUBLE: objValue = Double.parseDouble(textValue); break;
+            case DatabaseColumnType.INTEGER: objValue = Integer.parseInt(textValue); break;
+            case DatabaseColumnType.DATETIME: objValue = StringUtil.toLocalDateTime(textValue, DateTimeFormatter.ISO_OFFSET_DATE_TIME); break;
+            case DatabaseColumnType.STRING: break;
+            case DatabaseColumnType.NOT_APPLICABLE: break;
+        }
+
+        return objValue;
+    }
+
+    String getFinalColumnName(CoreFormExtensionModel modelLoop, LinkedHashMap<String, Integer> repeatIndexes) {
         def finalColumnName = ""
 
         while (modelLoop != null) {

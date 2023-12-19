@@ -3,6 +3,7 @@ package org.philimone.hds.explorer.server.model.main.extension
 import grails.gorm.transactions.Transactional
 import groovy.sql.Sql
 import net.betainteractive.io.odk.util.XFormReader
+import net.betainteractive.utilities.StringUtil
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.orm.hibernate.cfg.GrailsDomainBinder
 import org.hibernate.Session
@@ -13,6 +14,8 @@ import org.javarosa.core.model.SelectChoice
 import org.javarosa.core.model.instance.TreeElement
 import org.philimone.hds.explorer.server.model.enums.extensions.DatabaseColumnType
 import org.philimone.hds.explorer.server.model.enums.extensions.FormColumnType
+import org.philimone.hds.explorer.server.model.main.CoreFormColumnOptions
+import org.philimone.hds.explorer.server.model.main.CoreFormColumnOptionsService
 import org.philimone.hds.explorer.server.model.main.CoreFormExtension
 import org.philimone.hds.explorer.server.model.main.CoreFormExtensionModel
 
@@ -24,6 +27,7 @@ class CoreExtensionDatabaseService {
 
     def sessionFactory
     def generalUtilitiesService
+    def errorMessageService
 
     def generateDatabaseModel(CoreFormExtension coreFormExtension) {
         if (coreFormExtension.extFormDefinition != null) {
@@ -37,7 +41,7 @@ class CoreExtensionDatabaseService {
         }
     }
 
-    List<String[]> executeSQL(String commandsText) {
+    List<String[]> executeSqlCommands(String commandsText) {
 
         def resultMessages = new ArrayList<String[]>()
 
@@ -56,13 +60,55 @@ class CoreExtensionDatabaseService {
                         } catch (SQLException ex){
                             resultMessages.add(new String[] { sqlcommand, ex.getMessage(), "false"})
                         }
-
                     }
+
+                    //sql.close()
                 }
             }
         }
 
         return resultMessages
+    }
+
+    SqlExecutionResult executeSqlInsert(String tableName, LinkedHashMap<String, Object> mapValues) {
+
+        SqlExecutionResult result = null
+        def index = 0
+        def columns = mapValues.keySet().join(", ")
+        def params = mapValues.keySet().collect { "?" }.join(', ') //${index++}
+        def values= mapValues.values().collect { it}
+        def sqlinsert = "insert into ${tableName}(${columns}) values (${params});" as String
+
+        //println("columns: ${columns}")
+        //println("params: ${params}")
+        //println("values: ${values}")
+
+        CoreFormExtension.withSession { Session session ->
+            session.doWork new Work() {
+                void execute(Connection connection) throws SQLException {
+                    def sql = new Sql(connection)
+                    try {
+
+                        def queryResult = sql.executeInsert(sqlinsert, values)
+
+                        println queryResult?.first()
+
+                        result = new SqlExecutionResult(success: true, errorMessage: null, command: sqlinsert)
+
+                    } catch (SQLException ex){
+                        ex.printStackTrace()
+
+                        result = new SqlExecutionResult(success: false, errorMessage: ex.getMessage(), command: sqlinsert)
+                    }
+
+                    //sql.close()
+                }
+            }
+        }
+
+        result.mappedValues = mapValues
+
+        return result
     }
 
     private int generateDatabaseModelProcessChildren(CoreFormExtension coreFormExtension, FormDef formDef, TreeElement rootElement, int columnIndex, CoreFormExtensionModel repeatGroupModel) {
@@ -144,7 +190,7 @@ class CoreExtensionDatabaseService {
                     model.dbColumnIndex = columnIndex++
                     model.dbColumnTable = coreFormExtension.extFormId
                     model.dbColumnName = "${colname}_${gpsSuffix}"
-                    model.dbColumnType = DatabaseColumnType.DECIMAL
+                    model.dbColumnType = DatabaseColumnType.DOUBLE
                     model.dbColumnSize = -1
                     model.formColumnName = forname
                     model.formColumnType = FormColumnType.GEOPOINT
@@ -328,6 +374,7 @@ class CoreExtensionDatabaseService {
             case DatabaseColumnType.BLOB:    result = "MEDIUMBLOB"; break;
             case DatabaseColumnType.BOOLEAN: result = "BIT(1)"; break;
             case DatabaseColumnType.DECIMAL: result = "DECIMAL(38,10)"; break;
+            case DatabaseColumnType.DOUBLE: result = "DOUBLE"; break;
             case DatabaseColumnType.INTEGER: result = "INT"; break;
             case DatabaseColumnType.DATETIME: result = "DATETIME"; break;
             case DatabaseColumnType.STRING: result = "VARCHAR(${model.dbColumnSize})"; break;
@@ -335,5 +382,59 @@ class CoreExtensionDatabaseService {
         }
 
         return result
+    }
+
+    UpdateResult updateDataModel(String editedColumnName, String id, String newValue) {
+
+        def model = CoreFormExtensionModel.findById(id)
+
+        //check if newValue is blank
+        if (StringUtil.isBlank(newValue)) {
+            return new UpdateResult(result: UpdateResult.Result.ERROR.name(), message: generalUtilitiesService.getMessageWeb("settings.coreformoptions.message.notblank.label"))
+        }
+
+        //check if it is renaming dbColumnName
+        if (editedColumnName.equals("dbColumnName") && !model.dbColumnName.equals(newValue) && CoreFormExtensionModel.countByDbColumnName(newValue)>0) {
+            return new UpdateResult(result: UpdateResult.Result.ERROR.name(), message: generalUtilitiesService.getMessageWeb("settings.coreformoptions.message.option.unique.label"))
+        }
+
+        Object objNewValue = newValue
+        if (editedColumnName.equals("dbColumnSize") || editedColumnName.equals("formRepeatLength")) {
+            //convert to int
+            objNewValue = Integer.parseInt(newValue)
+        }
+
+        //update the record
+        CoreFormExtensionModel.executeUpdate("update CoreFormExtensionModel set " + editedColumnName + " = ?0 where id = ?1", [objNewValue, id])
+
+        return new UpdateResult(result: UpdateResult.Result.SUCCESS.name(), message: generalUtilitiesService.getMessageWeb("settings.coreformoptions.message.updated.label"))
+    }
+
+    UpdateResult deleteDataModel(String id) {
+        def model = CoreFormExtensionModel.get(id)
+        //checks
+        model.delete(flush: true)
+
+        if (!model.hasErrors()) {
+            return new UpdateResult(result: UpdateResult.Result.SUCCESS, message: generalUtilitiesService.getMessageWeb("settings.coreformoptions.message.deleted.label"))
+        } else {
+            return new UpdateResult(result: UpdateResult.Result.ERROR.name(), message: "" + errorMessageService.formatErrors(model))
+        }
+    }
+
+    class SqlExecutionResult {
+        boolean success
+        String errorMessage
+        String command
+        Map<String, Object> mappedValues
+    }
+
+    class UpdateResult {
+        enum Result {
+            ERROR, SUCCESS
+        }
+
+        String result = Result.ERROR.name()
+        String message = ""
     }
 }

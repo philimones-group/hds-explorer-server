@@ -15,6 +15,7 @@ class HouseholdService {
     def regionService
     def userService
     def moduleService
+    def coreExtensionService
     def codeGeneratorService
     def errorMessageService
 
@@ -103,6 +104,13 @@ class HouseholdService {
             return obj
         } else {
             household = result
+
+            //--> take the extensionXml and save to ExternsionDatabase
+            def resultExtension = coreExtensionService.insertHouseholdExtension(rawHousehold, result)
+            if (resultExtension != null && !resultExtension.success) { //if null - there is no extension to process
+                //it supposed to not fail
+                println "Failed to insert extension: ${resultExtension.errorMessage}"
+            }
         }
 
         RawExecutionResult<Household> obj = RawExecutionResult.newSuccessResult(RawEntity.HOUSEHOLD, household)

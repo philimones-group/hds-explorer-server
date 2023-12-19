@@ -62,7 +62,8 @@ class CoreExtensionServiceSpec extends Specification implements ServiceUnitTest<
         def rawHousehold = new RawHousehold(householdCode: "TESTING")
         rawHousehold.extensionForm = Files.readAllBytes(Paths.get(xformInstance))
 
-        def map = service.insertHouseholdExtension(rawHousehold, null)
+        def result = service.insertHouseholdExtension(rawHousehold, null)
+        def map = result.mappedValues
 
         map.each {
             println "${it.key}: ${it.value}"
