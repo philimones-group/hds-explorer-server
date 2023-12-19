@@ -12,8 +12,8 @@ class HouseholdExt {
         collected_id unique: true, nullable: false
         household_code nullable: false
         household_name nullable: false
-        head_code nullable: false
-        head_name nullable: false
+        head_code nullable: true
+        head_name nullable: true
     }
 
     static mapping = {

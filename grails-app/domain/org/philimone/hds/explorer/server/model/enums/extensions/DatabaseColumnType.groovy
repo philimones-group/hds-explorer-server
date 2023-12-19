@@ -6,9 +6,10 @@ enum DatabaseColumnType {
     BLOB    (1), //Currently Living Here
     BOOLEAN (2),
     DECIMAL (3),
-    INTEGER (4),
-    DATETIME (5),
-    STRING (6)
+    DOUBLE (4),
+    INTEGER (5),
+    DATETIME (6),
+    STRING (7)
 
     public Integer code
     public String name

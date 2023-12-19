@@ -485,6 +485,15 @@ public class StringUtil {
         }
     }
 
+    public static LocalDateTime toLocalDateTime(String dateString, DateTimeFormatter format) {
+        try {
+            return LocalDateTime.parse(dateString, format);
+        } catch (Exception ex) {
+            //ex.printStackTrace();
+            return null;
+        }
+    }
+
     public static LocalDateTime toLocalDateTime(Date date) {
         try {
             def dateString = format(date,"yyyy-MM-dd HH:mm:ss.SSS")
