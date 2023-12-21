@@ -2,26 +2,28 @@ package org.philimone.hds.explorer.server.model.enums
 
 enum CoreForm {
 
-    REGION_FORM ("rawRegion", "coreFormExtension.region.label"),
-    HOUSEHOLD_FORM ("rawHousehold", "coreFormExtension.household.label"),
-    VISIT_FORM ("rawVisit", "coreFormExtension.visit.label"),
-    MEMBER_ENU_FORM ("rawMemberEnu", "coreFormExtension.memberenu.label"),
-    MARITAL_RELATIONSHIP_FORM ("rawMaritalRelationship", "coreFormExtension.maritalreg.label"),
-    INMIGRATION_FORM ("rawInMigration", "coreFormExtension.inmigration.label"),
-    OUTMIGRATION_FORM ("rawOutMigration", "coreFormExtension.outmigration.label"),
-    PREGNANCY_REGISTRATION_FORM ("rawPregnancyRegistration", "coreFormExtension.pregnancyreg.label"),
-    PREGNANCY_OUTCOME_FORM ("rawPregnancyOutcome", "coreFormExtension.pregnancyoutcome.label"),
-    DEATH_FORM ("rawDeath", "coreFormExtension.death.label"),
-    CHANGE_HEAD_FORM ("rawChangeHead", "coreFormExtension.changehead.label"),
-    INCOMPLETE_VISIT_FORM ("rawIncompleteVisit", "coreFormExtension.incompletevisit.label")
+    REGION_FORM ("rawRegion", "coreFormExtension.region.label", "region_ext"),
+    HOUSEHOLD_FORM ("rawHousehold", "coreFormExtension.household.label", "household_ext"),
+    VISIT_FORM ("rawVisit", "coreFormExtension.visit.label", "visit_ext"),
+    MEMBER_ENU_FORM ("rawMemberEnu", "coreFormExtension.memberenu.label", "member_ext"),
+    MARITAL_RELATIONSHIP_FORM ("rawMaritalRelationship", "coreFormExtension.maritalreg.label", "marital_relationship_ext"),
+    INMIGRATION_FORM ("rawInMigration", "coreFormExtension.inmigration.label", "inmigration_ext"),
+    OUTMIGRATION_FORM ("rawOutMigration", "coreFormExtension.outmigration.label", "outmigration_ext"),
+    PREGNANCY_REGISTRATION_FORM ("rawPregnancyRegistration", "coreFormExtension.pregnancyreg.label", "pregnancy_registration_ext"),
+    PREGNANCY_OUTCOME_FORM ("rawPregnancyOutcome", "coreFormExtension.pregnancyoutcome.label", "pregnancy_outcome_ext"),
+    DEATH_FORM ("rawDeath", "coreFormExtension.death.label", "death_ext"),
+    CHANGE_HEAD_FORM ("rawChangeHead", "coreFormExtension.changehead.label", "change_head_ext"),
+    INCOMPLETE_VISIT_FORM ("rawIncompleteVisit", "coreFormExtension.incompletevisit.label", "incomplete_visit_ext")
 
 
     String code
     String name
+    String extension
 
-    CoreForm(String code, String name){
+    CoreForm(String code, String name, String extension){
         this.code = code
         this.name = name
+        this.extension = extension
     }
 
     String getId(){

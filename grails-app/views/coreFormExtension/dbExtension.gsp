@@ -38,6 +38,8 @@
                 <tr>
                     <th></th>
 
+                    <th><g:message code="coreFormExtension.mapping.dbColumnTable" /></th>
+
                     <th><g:message code="coreFormExtension.mapping.dbColumnName" /></th>
 
                     <th><g:message code="coreFormExtension.mapping.dbColumnType" /></th>
@@ -50,6 +52,8 @@
                     <tr>
 
                         <td></td>
+
+                        <td class="align-middle">${dbColumn.table}</td>
 
                         <td class="align-middle">${dbColumn.name}</td>
 
