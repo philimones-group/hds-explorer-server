@@ -4,18 +4,18 @@ import grails.gorm.transactions.Transactional
 import groovy.sql.Sql
 import net.betainteractive.io.odk.util.XFormReader
 import net.betainteractive.utilities.StringUtil
-import org.grails.datastore.mapping.model.PersistentEntity
-import org.grails.orm.hibernate.cfg.GrailsDomainBinder
 import org.hibernate.Session
 import org.hibernate.jdbc.Work
 import org.javarosa.core.model.DataType
 import org.javarosa.core.model.FormDef
+import org.javarosa.core.model.GroupDef
+import org.javarosa.core.model.IFormElement
 import org.javarosa.core.model.SelectChoice
 import org.javarosa.core.model.instance.TreeElement
+import org.javarosa.core.model.instance.TreeReference
+import org.philimone.hds.explorer.server.model.enums.CoreForm
 import org.philimone.hds.explorer.server.model.enums.extensions.DatabaseColumnType
 import org.philimone.hds.explorer.server.model.enums.extensions.FormColumnType
-import org.philimone.hds.explorer.server.model.main.CoreFormColumnOptions
-import org.philimone.hds.explorer.server.model.main.CoreFormColumnOptionsService
 import org.philimone.hds.explorer.server.model.main.CoreFormExtension
 import org.philimone.hds.explorer.server.model.main.CoreFormExtensionModel
 
@@ -37,7 +37,9 @@ class CoreExtensionDatabaseService {
             def columnIndex = 0
 
             //iterate treeElement - match the types and create the model
-            generateDatabaseModelProcessChildren(coreFormExtension, formDef, rootElement, columnIndex, null)
+            def tableName = coreFormExtension.extFormId
+            def repeatCountCols = findRepeatCountColumns(formDef)
+            generateDatabaseModelProcessChildren(coreFormExtension, tableName, formDef, rootElement, columnIndex, null, repeatCountCols)
         }
     }
 
@@ -91,9 +93,11 @@ class CoreExtensionDatabaseService {
 
                         def queryResult = sql.executeInsert(sqlinsert, values)
 
-                        println queryResult?.first()
-
                         result = new SqlExecutionResult(success: true, errorMessage: null, command: sqlinsert)
+                        result.keys = new ArrayList<>()
+                        result.keys.addAll(queryResult.first())
+
+                        //println "result id=" + result.keys?.first() + ", type="+result.keys?.first()?.getClass()
 
                     } catch (SQLException ex){
                         ex.printStackTrace()
@@ -111,7 +115,7 @@ class CoreExtensionDatabaseService {
         return result
     }
 
-    private int generateDatabaseModelProcessChildren(CoreFormExtension coreFormExtension, FormDef formDef, TreeElement rootElement, int columnIndex, CoreFormExtensionModel repeatGroupModel) {
+    private int generateDatabaseModelProcessChildren(CoreFormExtension coreFormExtension, String tableName, FormDef formDef, TreeElement rootElement, int columnIndex, CoreFormExtensionModel repeatGroupModel, List<TreeReference> repeatCountColumns) {
         for (int i=0; i < rootElement.numChildren; i++) {
             def element = rootElement.getChildAt(i)
             def questDef = FormDef.findQuestionByRef(element.getRef(), formDef)
@@ -126,15 +130,32 @@ class CoreExtensionDatabaseService {
             if (["instanceID", "instanceName"].contains(element.getName())) continue /* ignore these variables */
 
             if (fortype == DataType.NULL.value && !repeatgroup && element.numChildren > 0) { //Its a group
-                generateDatabaseModelProcessChildren(coreFormExtension, formDef, element, columnIndex, repeatGroupModel)
+                generateDatabaseModelProcessChildren(coreFormExtension, tableName, formDef, element, columnIndex, repeatGroupModel, repeatCountColumns)
                 continue
             }
 
+            if (forname.endsWith("_count") && fortype == DataType.TEXT.value){ //check if is a jr:count variable
+                def ref = element.getRef().genericize()
+
+                //println("ref found: "+ref+" "+repeatCountColumns.contains(ref))
+
+                if (repeatCountColumns.contains(ref)) {
+                    continue
+                }
+            }
+
             if (fortype == DataType.NULL.value && repeatgroup) { //its a repeat group initiation
+
+                if (coreFormExtension.coreForm == CoreForm.PREGNANCY_OUTCOME_FORM && forname.equals("childs")) {
+
+                    columnIndex = generateDatabaseModelProcessChildren(coreFormExtension, CoreExtensionService.PREGNANCY_CHILD_EXT_TABLE, formDef, element, columnIndex, null, repeatCountColumns)
+                    continue
+                }
+
                 //create repeat datamodel
                 def model = new CoreFormExtensionModel(coreForm: coreFormExtension, extFormId: coreFormExtension.extFormId)
                 model.dbColumnIndex = columnIndex++
-                model.dbColumnTable = coreFormExtension.extFormId
+                model.dbColumnTable = tableName
                 model.dbColumnName = colname
                 model.dbColumnType = DatabaseColumnType.NOT_APPLICABLE
                 model.dbColumnSize = -1
@@ -148,7 +169,7 @@ class CoreExtensionDatabaseService {
                 model.save(flush:true)
 
                 //process the repeat childs
-                columnIndex = generateDatabaseModelProcessChildren(coreFormExtension, formDef, element, columnIndex, model)
+                columnIndex = generateDatabaseModelProcessChildren(coreFormExtension, tableName, formDef, element, columnIndex, model, repeatCountColumns)
                 continue
             }
 
@@ -164,7 +185,7 @@ class CoreExtensionDatabaseService {
 
                         def model = new CoreFormExtensionModel(coreForm: coreFormExtension, extFormId: coreFormExtension.extFormId)
                         model.dbColumnIndex = columnIndex++
-                        model.dbColumnTable = coreFormExtension.extFormId
+                        model.dbColumnTable = tableName
                         model.dbColumnName = "${colname}_${strIndex}" //rgroup_1_habitations
                         model.dbColumnType = DatabaseColumnType.STRING
                         model.dbColumnSize = maxLength
@@ -188,7 +209,7 @@ class CoreExtensionDatabaseService {
 
                     def model = new CoreFormExtensionModel(coreForm: coreFormExtension, extFormId: coreFormExtension.extFormId)
                     model.dbColumnIndex = columnIndex++
-                    model.dbColumnTable = coreFormExtension.extFormId
+                    model.dbColumnTable = tableName
                     model.dbColumnName = "${colname}_${gpsSuffix}"
                     model.dbColumnType = DatabaseColumnType.DOUBLE
                     model.dbColumnSize = -1
@@ -218,8 +239,8 @@ class CoreExtensionDatabaseService {
                 case DataType.DATE.value:    dbColumnType = DatabaseColumnType.DATETIME; break;
                 case DataType.TIME.value:    dbColumnType = DatabaseColumnType.DATETIME; break;
                 case DataType.DATE_TIME.value: dbColumnType = DatabaseColumnType.DATETIME; break;
-                case DataType.CHOICE.value: /* handled */ break;
-                case DataType.MULTIPLE_ITEMS.value: /* handled */ break;
+                case DataType.CHOICE.value: dbColumnType = DatabaseColumnType.STRING; break;
+                case DataType.MULTIPLE_ITEMS.value: dbColumnType = DatabaseColumnType.STRING; break;
                 case DataType.BOOLEAN.value: dbColumnType = DatabaseColumnType.BOOLEAN; break;
                 case DataType.GEOPOINT.value: /*dbColumnType = DatabaseColumnType.GEOPOINT;*/ break
                 case DataType.GEOTRACE.value: /* Question with location trace. */ break;
@@ -234,7 +255,7 @@ class CoreExtensionDatabaseService {
             //others types
             def model = new CoreFormExtensionModel(coreForm: coreFormExtension, extFormId: coreFormExtension.extFormId)
             model.dbColumnIndex = columnIndex++
-            model.dbColumnTable = coreFormExtension.extFormId
+            model.dbColumnTable = tableName
             model.dbColumnName = colname
             model.dbColumnType = dbColumnType
             model.dbColumnSize = dbColumnSize
@@ -261,7 +282,7 @@ class CoreExtensionDatabaseService {
                     sql.rows("select * from "+tableName, 0, 1, { metadata ->
                         int cols = metadata.getColumnCount()
                         for (int i=1; i <= cols; i++) {
-                            list.add(new JDatabaseColumn(name: metadata.getColumnName(i), type: metadata.getColumnTypeName(i), size: metadata.getColumnDisplaySize(i)+""))
+                            list.add(new JDatabaseColumn(table: tableName, name: metadata.getColumnName(i), type: metadata.getColumnTypeName(i), size: metadata.getColumnDisplaySize(i)+""))
                             //println "name: ${metadata.getColumnName(i)}, type: ${metadata.getColumnTypeName(i)}, dsize: ${metadata.getColumnDisplaySize(i)}"
                         }
                     })
@@ -422,11 +443,41 @@ class CoreExtensionDatabaseService {
         }
     }
 
+    private List<TreeReference> findRepeatCountColumns(FormDef formDef) {
+        def list = new ArrayList<TreeReference>()
+
+        if (formDef.children)
+            for (int i = 0; i < formDef.children.size(); i++) {
+                findRepeatCountColumns(formDef.children.get(i), list);
+            }
+
+        return list
+    }
+
+    private def findRepeatCountColumns(IFormElement fe, List<TreeReference> list) {
+        if (fe instanceof GroupDef) {
+            def groupDef = (GroupDef) fe;
+            def countRef = groupDef?.countReference
+
+            if (groupDef.repeat && countRef != null) {
+                def ref = countRef.reference as TreeReference
+                list.add(ref)
+            }
+        }
+
+        if (fe.children != null) {
+            for (int i = 0; i < fe.children.size(); i++) {
+                findRepeatCountColumns(fe.getChild(i), list);
+            }
+        }
+    }
+
     class SqlExecutionResult {
         boolean success
         String errorMessage
         String command
         Map<String, Object> mappedValues
+        List<Object> keys
     }
 
     class UpdateResult {
