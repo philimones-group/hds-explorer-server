@@ -11,16 +11,13 @@
           <text id="/inmigration_ext/collected_id:label">
             <value>Id do Formulário Mãe</value>
           </text>
-          <text id="/inmigration_ext/ext_migration_type/REENTRY:label">
-            <value>-</value>
-          </text>
           <text id="/inmigration_ext/member_name:label">
             <value>Nome do Membro</value>
           </text>
           <text id="/inmigration_ext/migration_type/XEN:label">
             <value>-</value>
           </text>
-          <text id="/inmigration_ext/migration_type/ENT:label">
+          <text id="/inmigration_ext/ext_migration_type/REENTRY:label">
             <value>-</value>
           </text>
           <text id="/inmigration_ext/end:label">
@@ -39,6 +36,9 @@
             <value>-</value>
           </text>
           <text id="/inmigration_ext/ext_migration_type/ENTRY:label">
+            <value>-</value>
+          </text>
+          <text id="/inmigration_ext/migration_type/ENT:label">
             <value>-</value>
           </text>
           <text id="/inmigration_ext/custom_quest2:label">
@@ -105,14 +105,14 @@
           <text id="/inmigration_ext/collected_id:label">
             <value>Core Form Id</value>
           </text>
-          <text id="/inmigration_ext/ext_migration_type/REENTRY:label">
-            <value>Return to DSS</value>
-          </text>
           <text id="/inmigration_ext/member_name:label">
             <value>Member Name</value>
           </text>
           <text id="/inmigration_ext/migration_type/XEN:label">
             <value>External InMigration</value>
+          </text>
+          <text id="/inmigration_ext/ext_migration_type/REENTRY:label">
+            <value>Return to DSS</value>
           </text>
           <text id="/inmigration_ext/migration_type/ENT:label">
             <value>Internal InMigration</value>
@@ -173,7 +173,7 @@
       <bind nodeset="/inmigration_ext/member_code" readonly="true()" required="true()" type="string"/>
       <bind nodeset="/inmigration_ext/member_name" readonly="true()" required="true()" type="string"/>
       <bind nodeset="/inmigration_ext/migration_type" readonly="true()" required="true()" type="select1"/>
-      <bind nodeset="/inmigration_ext/ext_migration_type" readonly="true()" required="true()" type="select1"/>
+      <bind nodeset="/inmigration_ext/ext_migration_type" readonly="true()" relevant=" /inmigration_ext/migration_type ='XEN'" required="true()" type="select1"/>
       <bind nodeset="/inmigration_ext/custom_quest1" type="string"/>
       <bind nodeset="/inmigration_ext/custom_quest2" type="string"/>
       <bind calculate="concat('uuid:', uuid())" nodeset="/inmigration_ext/meta/instanceID" readonly="true()" type="string"/>

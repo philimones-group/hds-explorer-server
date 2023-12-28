@@ -17,14 +17,14 @@
           <text id="/pregnancy_outcome_ext/custom_quest1:label">
             <value>Custom Question 1</value>
           </text>
-          <text id="/pregnancy_outcome_ext/collected_id:label">
-            <value>Id do Formulário Mãe</value>
-          </text>
           <text id="/pregnancy_outcome_ext/childs/child_gender:label">
             <value>Sexo da criança</value>
           </text>
           <text id="/pregnancy_outcome_ext/visit_code:label">
             <value>Código da Visita</value>
+          </text>
+          <text id="/pregnancy_outcome_ext/childs/custom_child_quest1:label">
+            <value>Child's Custom Question 1</value>
           </text>
           <text id="/pregnancy_outcome_ext/childs/child_outcome_type/SBR:label">
             <value>-</value>
@@ -47,11 +47,17 @@
           <text id="/pregnancy_outcome_ext/custom_quest2:label">
             <value>Custom Question 2</value>
           </text>
+          <text id="/pregnancy_outcome_ext/childs/custom_child_quest2:label">
+            <value>Child's Custom Question 2</value>
+          </text>
           <text id="/pregnancy_outcome_ext/childs/child_gender/M:label">
             <value>-</value>
           </text>
           <text id="/pregnancy_outcome_ext/childs/child_outcome_type/ABT:label">
             <value>-</value>
+          </text>
+          <text id="/pregnancy_outcome_ext/number_of_outcomes:label">
+            <value>Número de bebês nascidos?</value>
           </text>
           <text id="/pregnancy_outcome_ext/childs/child_outcome_type:label">
             <value>Tipo de resultado da gravidez</value>
@@ -61,6 +67,9 @@
           </text>
           <text id="/pregnancy_outcome_ext/childs/child_gender/F:label">
             <value>-</value>
+          </text>
+          <text id="/pregnancy_outcome_ext/collected_id:label">
+            <value>Id do Formulário Mãe</value>
           </text>
           <text id="/pregnancy_outcome_ext/father_name:label">
             <value>Nome do Pai</value>
@@ -88,13 +97,13 @@
           <text id="/pregnancy_outcome_ext/custom_quest1:label">
             <value>-</value>
           </text>
-          <text id="/pregnancy_outcome_ext/collected_id:label">
-            <value>-</value>
-          </text>
           <text id="/pregnancy_outcome_ext/childs/child_gender:label">
             <value>-</value>
           </text>
           <text id="/pregnancy_outcome_ext/visit_code:label">
+            <value>-</value>
+          </text>
+          <text id="/pregnancy_outcome_ext/childs/custom_child_quest1:label">
             <value>-</value>
           </text>
           <text id="/pregnancy_outcome_ext/childs/child_outcome_type/SBR:label">
@@ -118,11 +127,17 @@
           <text id="/pregnancy_outcome_ext/custom_quest2:label">
             <value>-</value>
           </text>
+          <text id="/pregnancy_outcome_ext/childs/custom_child_quest2:label">
+            <value>-</value>
+          </text>
           <text id="/pregnancy_outcome_ext/father_name:label">
             <value>-</value>
           </text>
           <text id="/pregnancy_outcome_ext/childs/child_outcome_type/ABT:label">
             <value>Aborto induzido</value>
+          </text>
+          <text id="/pregnancy_outcome_ext/number_of_outcomes:label">
+            <value>-</value>
           </text>
           <text id="/pregnancy_outcome_ext/childs/child_outcome_type:label">
             <value>-</value>
@@ -132,6 +147,9 @@
           </text>
           <text id="/pregnancy_outcome_ext/childs/child_gender/F:label">
             <value>Feminino</value>
+          </text>
+          <text id="/pregnancy_outcome_ext/collected_id:label">
+            <value>-</value>
           </text>
           <text id="/pregnancy_outcome_ext/childs/child_gender/M:label">
             <value>Masculino</value>
@@ -159,14 +177,14 @@
           <text id="/pregnancy_outcome_ext/custom_quest1:label">
             <value>Custom Question 1</value>
           </text>
-          <text id="/pregnancy_outcome_ext/collected_id:label">
-            <value>Core Form Id</value>
-          </text>
           <text id="/pregnancy_outcome_ext/childs/child_gender:label">
             <value>Child's Gender</value>
           </text>
           <text id="/pregnancy_outcome_ext/visit_code:label">
             <value>Visit Code</value>
+          </text>
+          <text id="/pregnancy_outcome_ext/childs/custom_child_quest1:label">
+            <value>Child's Custom Question 1</value>
           </text>
           <text id="/pregnancy_outcome_ext/childs/child_outcome_type/SBR:label">
             <value>Stillbirth</value>
@@ -189,11 +207,17 @@
           <text id="/pregnancy_outcome_ext/custom_quest2:label">
             <value>Custom Question 2</value>
           </text>
+          <text id="/pregnancy_outcome_ext/childs/custom_child_quest2:label">
+            <value>Child's Custom Question 2</value>
+          </text>
           <text id="/pregnancy_outcome_ext/childs/child_gender/M:label">
             <value>Male</value>
           </text>
           <text id="/pregnancy_outcome_ext/childs/child_outcome_type/ABT:label">
             <value>Abortion</value>
+          </text>
+          <text id="/pregnancy_outcome_ext/number_of_outcomes:label">
+            <value>Number of outcomes</value>
           </text>
           <text id="/pregnancy_outcome_ext/childs/child_outcome_type:label">
             <value>Outcome Type</value>
@@ -203,6 +227,9 @@
           </text>
           <text id="/pregnancy_outcome_ext/childs/child_gender/F:label">
             <value>Female</value>
+          </text>
+          <text id="/pregnancy_outcome_ext/collected_id:label">
+            <value>Core Form Id</value>
           </text>
           <text id="/pregnancy_outcome_ext/father_name:label">
             <value>Father's Name</value>
@@ -230,11 +257,15 @@
           <mother_name/>
           <father_code/>
           <father_name/>
+          <number_of_outcomes/>
+          <childs_count/>
           <childs jr:template="">
             <child_outcome_type/>
             <child_code/>
             <child_name/>
             <child_gender/>
+            <custom_child_quest1/>
+            <custom_child_quest2/>
           </childs>
           <custom_quest1/>
           <custom_quest2/>
@@ -254,11 +285,15 @@
       <bind nodeset="/pregnancy_outcome_ext/mother_name" readonly="true()" required="true()" type="string"/>
       <bind nodeset="/pregnancy_outcome_ext/father_code" readonly="true()" required="true()" type="string"/>
       <bind nodeset="/pregnancy_outcome_ext/father_name" readonly="true()" required="true()" type="string"/>
+      <bind nodeset="/pregnancy_outcome_ext/number_of_outcomes" readonly="true()" required="true()" type="int"/>
+      <bind calculate=" /pregnancy_outcome_ext/number_of_outcomes " nodeset="/pregnancy_outcome_ext/childs_count" readonly="true()" type="string"/>
       <bind nodeset="/pregnancy_outcome_ext/childs" required="true()"/>
       <bind nodeset="/pregnancy_outcome_ext/childs/child_outcome_type" readonly="true()" required="true()" type="select1"/>
       <bind nodeset="/pregnancy_outcome_ext/childs/child_code" readonly="true()" required="true()" type="string"/>
       <bind nodeset="/pregnancy_outcome_ext/childs/child_name" readonly="true()" required="true()" type="string"/>
       <bind nodeset="/pregnancy_outcome_ext/childs/child_gender" readonly="true()" required="true()" type="select1"/>
+      <bind nodeset="/pregnancy_outcome_ext/childs/custom_child_quest1" type="string"/>
+      <bind nodeset="/pregnancy_outcome_ext/childs/custom_child_quest2" type="string"/>
       <bind nodeset="/pregnancy_outcome_ext/custom_quest1" type="string"/>
       <bind nodeset="/pregnancy_outcome_ext/custom_quest2" type="string"/>
       <bind calculate="concat('uuid:', uuid())" nodeset="/pregnancy_outcome_ext/meta/instanceID" readonly="true()" type="string"/>
@@ -287,9 +322,12 @@
     <input ref="/pregnancy_outcome_ext/father_name">
       <label ref="jr:itext('/pregnancy_outcome_ext/father_name:label')"/>
     </input>
+    <input ref="/pregnancy_outcome_ext/number_of_outcomes">
+      <label ref="jr:itext('/pregnancy_outcome_ext/number_of_outcomes:label')"/>
+    </input>
     <group ref="/pregnancy_outcome_ext/childs">
       <label ref="jr:itext('/pregnancy_outcome_ext/childs:label')"/>
-      <repeat nodeset="/pregnancy_outcome_ext/childs">
+      <repeat jr:count=" /pregnancy_outcome_ext/childs_count " nodeset="/pregnancy_outcome_ext/childs">
         <select1 ref="/pregnancy_outcome_ext/childs/child_outcome_type">
           <label ref="jr:itext('/pregnancy_outcome_ext/childs/child_outcome_type:label')"/>
           <item>
@@ -326,6 +364,12 @@
             <value>F</value>
           </item>
         </select1>
+        <input ref="/pregnancy_outcome_ext/childs/custom_child_quest1">
+          <label ref="jr:itext('/pregnancy_outcome_ext/childs/custom_child_quest1:label')"/>
+        </input>
+        <input ref="/pregnancy_outcome_ext/childs/custom_child_quest2">
+          <label ref="jr:itext('/pregnancy_outcome_ext/childs/custom_child_quest2:label')"/>
+        </input>
       </repeat>
     </group>
     <input ref="/pregnancy_outcome_ext/custom_quest1">

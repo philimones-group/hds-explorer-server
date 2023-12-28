@@ -5,6 +5,7 @@ import grails.converters.JSON
 import net.betainteractive.io.odk.util.XFormReader
 import org.philimone.hds.explorer.server.model.enums.CoreForm
 import org.philimone.hds.explorer.server.model.enums.extensions.FormColumnType
+import org.philimone.hds.explorer.server.model.main.extension.CoreExtensionDatabaseService
 import org.philimone.hds.explorer.server.model.main.extension.CoreExtensionService
 import org.springframework.web.multipart.MultipartFile
 
@@ -175,7 +176,7 @@ class CoreFormExtensionController {
         def colsList = coreExtensionDatabaseService.getDatabaseColumns(coreFormExtension.extFormId)
 
         if (coreFormExtension.coreForm == CoreForm.PREGNANCY_OUTCOME_FORM) {
-            def moreCols = coreExtensionDatabaseService.getDatabaseColumns(CoreForm.PREGNANCY_OUTCOME_FORM.extension)
+            def moreCols = coreExtensionDatabaseService.getDatabaseColumns(CoreExtensionService.PREGNANCY_CHILD_EXT_TABLE)
             colsList.addAll(moreCols)
         }
 
