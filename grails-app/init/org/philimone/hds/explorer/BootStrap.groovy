@@ -478,6 +478,12 @@ class BootStrap {
                 }
 
                 core.save(flush:true)
+            } else {
+                //update some
+                def cr = CoreFormExtension.findByFormId(core.formId)
+                cr.extFormId = core.extFormId
+                cr.columnsMapping = core.columnsMapping
+                cr.save(flush:true)
             }
         }
 

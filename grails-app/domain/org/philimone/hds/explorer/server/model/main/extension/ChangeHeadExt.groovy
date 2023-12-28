@@ -21,7 +21,7 @@ class ChangeHeadExt {
     }
     
     static mapping = {
-        table 'changehead_ext'
+        table 'change_head_ext'
 
         version false
 

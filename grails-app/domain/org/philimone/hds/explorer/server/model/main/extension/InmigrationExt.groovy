@@ -15,7 +15,7 @@ class InmigrationExt {
         member_code nullable: false
         member_name nullable: false
         migration_type nullable: false
-        ext_migration_type nullable: false
+        ext_migration_type nullable: true
     }
 
     static mapping = {

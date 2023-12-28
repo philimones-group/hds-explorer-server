@@ -180,6 +180,7 @@ class CoreFormExtensionService {
         columnsMap.put("father_code", "#fatherCode")
         columnsMap.put("father_name", "#fatherName")
         columnsMap.put("pregnancy_code", "#code")
+        columnsMap.put("number_of_outcomes", "#numberOfOutcomes")
         //columnsMap.put("childs", "\$load:childs")
         columnsMap.put("childs.child_outcome_type", "\$childs.outcomeType")
         columnsMap.put("childs.child_code", "\$childs.childCode")

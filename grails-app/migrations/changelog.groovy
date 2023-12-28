@@ -13,4 +13,6 @@ databaseChangeLog = {
     include file: 'add-table-core_form_ext_model.groovy'
     include file: 'update-household_ext-remove-constraints.groovy'
     include file: 'update-extension_tables-remove-versioning.groovy'
+    include file: 'alter-nullable-extmigtype_on_in_imigration_ext.groovy'
+    include file: 'alter-tablename-change_head_ext.groovy'
 }
