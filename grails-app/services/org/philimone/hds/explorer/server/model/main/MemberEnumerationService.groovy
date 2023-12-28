@@ -27,6 +27,7 @@ class MemberEnumerationService {
     def residencyService
     def headRelationshipService
     def visitService
+    def coreExtensionService
     def codeGeneratorService
     def errorMessageService
 
@@ -176,6 +177,13 @@ class MemberEnumerationService {
         }
 
         afterNewHouseholdMember(rawMemberEnu, resultMember.domainInstance);
+
+        //--> take the extensionXml and save to Extension Table
+        def resultExtension = coreExtensionService.insertEnumerationExtension(rawMemberEnu, enumeration)
+        if (resultExtension != null && !resultExtension.success) { //if null - there is no extension to process
+            //it supposed to not fail
+            println "Failed to insert extension: ${resultExtension.errorMessage}"
+        }
 
         //SUCCESS
         RawExecutionResult<Enumeration> obj = RawExecutionResult.newSuccessResult(RawEntity.MEMBER_ENUMERATION, enumeration)

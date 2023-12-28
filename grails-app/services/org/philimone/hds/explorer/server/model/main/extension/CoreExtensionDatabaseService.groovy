@@ -75,6 +75,9 @@ class CoreExtensionDatabaseService {
     SqlExecutionResult executeSqlInsert(String tableName, LinkedHashMap<String, Object> mapValues) {
 
         SqlExecutionResult result = null
+
+        removeNonExistentColumns(tableName, mapValues)
+
         def index = 0
         def columns = mapValues.keySet().join(", ")
         def params = mapValues.keySet().collect { "?" }.join(', ') //${index++}
@@ -270,6 +273,17 @@ class CoreExtensionDatabaseService {
         }
 
         return columnIndex
+    }
+
+    def removeNonExistentColumns(String tableName, LinkedHashMap<String, Object> mapValues) {
+        def existentColumns = getDatabaseColumns(tableName).collect { it.name }
+        def cols = new ArrayList<>(mapValues.keySet())
+
+        cols.each { col ->
+            if (!existentColumns.contains(col)) {
+                mapValues.remove(col)
+            }
+        }
     }
 
     List<JDatabaseColumn> getDatabaseColumns(String tableName) {

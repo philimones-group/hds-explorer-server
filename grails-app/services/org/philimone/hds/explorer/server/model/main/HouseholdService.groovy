@@ -105,7 +105,7 @@ class HouseholdService {
         } else {
             household = result
 
-            //--> take the extensionXml and save to ExternsionDatabase
+            //--> take the extensionXml and save to Extension Table
             def resultExtension = coreExtensionService.insertHouseholdExtension(rawHousehold, result)
             if (resultExtension != null && !resultExtension.success) { //if null - there is no extension to process
                 //it supposed to not fail

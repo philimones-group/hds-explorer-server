@@ -29,6 +29,7 @@ class DeathService {
     def residencyService
     def headRelationshipService
     def maritalRelationshipService
+    def coreExtensionService
     def codeGeneratorService
     def errorMessageService
 
@@ -216,6 +217,13 @@ class DeathService {
         //2. Update Member residencyStatus, maritalStatus
 
         errors = afterDeathRegistered(death, rawDeath)
+
+        //--> take the extensionXml and save to Extension Table
+        def resultExtension = coreExtensionService.insertDeathExtension(rawDeath, result)
+        if (resultExtension != null && !resultExtension.success) { //if null - there is no extension to process
+            //it supposed to not fail
+            println "Failed to insert extension: ${resultExtension.errorMessage}"
+        }
 
         RawExecutionResult<Death> obj = RawExecutionResult.newSuccessResult(RawEntity.DEATH, death, errors)
         return obj

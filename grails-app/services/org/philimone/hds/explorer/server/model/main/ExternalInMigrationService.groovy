@@ -32,6 +32,7 @@ class ExternalInMigrationService {
     def deathService
     def inMigrationService
     def visitService
+    def coreExtensionService
     def codeGeneratorService
     def errorMessageService
 
@@ -100,6 +101,13 @@ class ExternalInMigrationService {
         }
 
         afterNewHouseholdMember(rawExternalInMigration)
+
+        //--> take the extensionXml and save to Extension Table
+        def resultExtension = coreExtensionService.insertExternalInMigrationExtension(rawExternalInMigration, resultInMigration.domainInstance)
+        if (resultExtension != null && !resultExtension.success) { //if null - there is no extension to process
+            //it supposed to not fail
+            println "Failed to insert extension: ${resultExtension.errorMessage}"
+        }
 
         //SUCCESS
         RawExecutionResult<InMigration> obj = RawExecutionResult.newSuccessResult(RawEntity.EXTERNAL_INMIGRATION, resultInMigration.domainInstance)

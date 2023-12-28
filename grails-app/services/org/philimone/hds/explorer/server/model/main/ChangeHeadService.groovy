@@ -31,6 +31,7 @@ class ChangeHeadService {
     def memberService
     def headRelationshipService
     def visitService
+    def coreExtensionService
     def userService
     def errorMessageService
 
@@ -145,79 +146,74 @@ class ChangeHeadService {
         //close previous relationship if needed
         //def closedCurrentRawHeadRelationship = createClosedRawHeadRelationship(currentHeadRelationship, HeadRelationshipEndType.CHANGE_OF_HEAD_OF_HOUSEHOLD, eventDate)
         def closedCurrentRawHeadRelationships = createClosedRawHeadRelationships(currentHeadRelationships, HeadRelationshipEndType.CHANGE_OF_HEAD_OF_HOUSEHOLD, eventDate)
-        //create new relationships
-        def newRawHeadRelationship = createRawHeadOfHousehold(changeHead) //execute this
+        //create new relationships (this includes the new Head of Household)
         def newRawHeadRelationships = createRawHeadRelationships(changeHeadRelationships) //execute this
 
-        HeadRelationship resultHeadRelationship = null
+        List<HeadRelationship> resultClosedHeadRelationships = new ArrayList<>()
+        List<HeadRelationship> resultCreatedHeadRelationships = new ArrayList<>()
 
-        //execute everything inside a transaction to be able to roolback in case of any error
-        HeadRelationship.withTransaction { status ->
+        //execute everything if any error try to restore previous states
 
-            //try to close the current head of household
-            /*
-            if (closedCurrentRawHeadRelationship != null) {
-                def result = headRelationshipService.closeHeadRelationship(closedCurrentRawHeadRelationship)
+        //try to close all relationships
+        closedCurrentRawHeadRelationships.each { closedHeadRelationship ->
+            def result = headRelationshipService.closeHeadRelationship(closedHeadRelationship)
 
-                if (result.status==RawExecutionResult.Status.ERROR) {
-                    def innerErrors = result.errorMessages
-                    errors += errorMessageService.addPrefixToMessages(innerErrors, "validation.field.changehead.prefix.msg.error", [changeHead.id])
-                }
-
-            }*/
-
-            //try to close all relationships
-            closedCurrentRawHeadRelationships.each { closedHeadRelationship ->
-                def result = headRelationshipService.closeHeadRelationship(closedHeadRelationship)
-
-                if (result.status==RawExecutionResult.Status.ERROR) {
-                    def innerErrors = result.errorMessages
-                    errors += errorMessageService.addPrefixToMessages(innerErrors, "validation.field.changehead.prefix.msg.error", [changeHead.id])
-                }
-            }
-
-            //create new Head Relationship - set new Head of Household
-            if (errors.empty) {
-                def result = headRelationshipService.createHeadRelationship(newRawHeadRelationship)
-
-                if (result.status==RawExecutionResult.Status.ERROR) {
-                    def innerErrors = result.errorMessages
-                    errors += errorMessageService.addPrefixToMessages(innerErrors, "validation.field.changehead.prefix.msg.error", [changeHead.id])
-                } else {
-                    resultHeadRelationship = result.domainInstance //result of the operation - the new head of household
-                }
-            }
-
-            //create relationships with the new head of household
-            if (errors.empty) {
-                newRawHeadRelationships.each {
-                    def result = headRelationshipService.createHeadRelationship(it)
-
-                    if (result.status==RawExecutionResult.Status.ERROR) {
-                        def innerErrors = result.errorMessages
-                        errors += errorMessageService.addPrefixToMessages(innerErrors, "validation.field.changehead.prefix.msg.error", [changeHead.id])
-                    }
-                }
-            }
-
-            //Roolback everything if an error ocurred
-            if (!errors.empty) {
-                resultHeadRelationship = null
-                status.setRollbackOnly()
+            if (result.status==RawExecutionResult.Status.ERROR) {
+                def innerErrors = result.errorMessages
+                errors += errorMessageService.addPrefixToMessages(innerErrors, "validation.field.changehead.prefix.msg.error", [changeHead.id])
+            } else {
+                resultClosedHeadRelationships.add(result.domainInstance)
             }
         }
 
+        //create relationships with the new head of household
+        if (errors.empty) {
+            newRawHeadRelationships.each {
+                def result = headRelationshipService.createHeadRelationship(it)
 
-        if (resultHeadRelationship == null || !errors.empty){
+                if (result.status==RawExecutionResult.Status.ERROR) {
+
+                    def innerErrors = result.errorMessages
+                    errors += errorMessageService.addPrefixToMessages(innerErrors, "validation.field.changehead.prefix.msg.error", [changeHead.id])
+                } else {
+                    resultCreatedHeadRelationships.add(result.domainInstance)
+                }
+            }
+        }
+        
+        //Roolback everything if an error ocurred - delete results
+        if (!errors.empty) {
+
+            //delete created headrelationships
+            HeadRelationship.deleteAll(resultCreatedHeadRelationships)
+            //unclosed closed headrelationships
+            resultClosedHeadRelationships.each {
+                it.endType = HeadRelationshipEndType.NOT_APPLICABLE
+                it.endDate = null
+                it.save(flush:true)
+            }
+
+            resultCreatedHeadRelationships.clear()
+            resultClosedHeadRelationships.clear()
+        }
+
+        if (!errors.empty){
             RawExecutionResult<HeadRelationship> obj = RawExecutionResult.newErrorResult(RawEntity.CHANGE_HEAD_OF_HOUSEHOLD, errors)
             return obj
         }
 
-        RawExecutionResult<HeadRelationship> obj = RawExecutionResult.newSuccessResult(RawEntity.CHANGE_HEAD_OF_HOUSEHOLD, resultHeadRelationship, errors)
+        //--> take the extensionXml and save to Extension Table
+        def resultExtension = coreExtensionService.insertChangeHeadExtension(changeHead, null)
+        if (resultExtension != null && !resultExtension.success) { //if null - there is no extension to process
+            //it supposed to not fail
+            println "Failed to insert extension: ${resultExtension.errorMessage}"
+        }
+
+        RawExecutionResult<HeadRelationship> obj = RawExecutionResult.newSuccessResult(RawEntity.CHANGE_HEAD_OF_HOUSEHOLD, resultCreatedHeadRelationships.first(), errors)
         return obj
     }
 
-    ArrayList<RawMessage> validate(RawChangeHead changeHead, List<RawChangeHeadRelationship> headRelationships) {
+    ArrayList<RawMessage> validate(RawChangeHead changeHead, List<RawChangeHeadRelationship> newChangeHeadRelationships) {
 
         //visitCode - must exists
         //householdCode - must exists
@@ -311,41 +307,11 @@ class ChangeHeadService {
         if (errors.empty){
 
 
-            //try to create new head relationship
-            //try to close previous head if needed
-            //try to close previous head relationships
-            //
+            //try to close previous head relationships (includes current head)
+            //try to create new head relationships (includes new head)
 
-            def newHeadCurrentRelationship = headRelationshipService.getCurrentHeadRelationship(newHead)
-            def currentHead = headRelationshipService.getCurrentHouseholdHead(household)
             def currentHeadRelationships = headRelationshipService.getCurrentHeadRelationships(oldHead, household)
             def eventDate = GeneralUtil.addDaysToDate(changeHead.eventDate, -1)  //the day of moving will be set 1 day before changing head - the last day the member was related to the current head of household
-
-            if (newHeadCurrentRelationship != null) {
-
-                return errors
-            }
-
-            if (currentHead != null) {
-
-                return errors
-            }
-
-            boolean isNewHeadOpened = newHeadCurrentRelationship.endType==HeadRelationshipEndType.NOT_APPLICABLE && newHeadCurrentRelationship.household?.id==currentHead.household?.id
-
-            def newRawHouseholdHeadRelationship = createRawHeadOfHousehold(changeHead)
-            def fakePreviousOldHeadRelationship = createFakeClosedHeadRelationship(currentHead, HeadRelationshipEndType.CHANGE_OF_HEAD_OF_HOUSEHOLD, eventDate)
-            def fakePreviousNewHeadRelationship = isNewHeadOpened ? createFakeClosedHeadRelationship(newHeadCurrentRelationship, HeadRelationshipEndType.CHANGE_OF_HEAD_OF_HOUSEHOLD, eventDate) : newHeadCurrentRelationship
-
-            //try to close the current head of household
-            if (currentHead.endType == HeadRelationshipEndType.NOT_APPLICABLE) {
-                //try to close
-
-                def rawCloseOldHeadRelationship = headRelationshipService.convertToRaw(fakePreviousOldHeadRelationship)
-
-                def innerErrors = headRelationshipService.validateCloseHeadRelationship(rawCloseOldHeadRelationship)
-                errors += errorMessageService.addPrefixToMessages(innerErrors, "validation.field.changehead.prefix.msg.error", [changeHead.id])
-            }
 
             //try to close all relationships
             currentHeadRelationships.each { headRelat ->
@@ -358,16 +324,8 @@ class ChangeHeadService {
                 }
             }
 
-            //try to create new head relationship
-            if (errors.empty) {
-                def innerErrors = headRelationshipService.validateCreateHeadRelationship(newRawHouseholdHeadRelationship, fakePreviousNewHeadRelationship, fakePreviousOldHeadRelationship)
-                errors += errorMessageService.addPrefixToMessages(innerErrors, "validation.field.changehead.prefix.msg.error", [changeHead.id])
-            }
-
             //try to create new relationships with the new head
-            headRelationships.each { rawChangeHeadRelationship ->
-
-                if (rawChangeHeadRelationship.newRelationshipType==HeadRelationshipType.HEAD_OF_HOUSEHOLD.code) return
+            newChangeHeadRelationships.each { rawChangeHeadRelationship ->
 
                 def rawHeadRelationship = createRawHeadRelationship(rawChangeHeadRelationship)
                 def currentRelationship = headRelationshipService.getCurrentHeadRelationship(rawHeadRelationship.memberCode) //get fake current head relationship for this member (close it)

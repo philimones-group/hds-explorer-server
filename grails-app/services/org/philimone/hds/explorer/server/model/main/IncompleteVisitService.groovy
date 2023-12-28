@@ -17,6 +17,7 @@ class IncompleteVisitService {
     def userService
     def codeGeneratorService
     def visitService
+    def coreExtensionService
     def errorMessageService
 
     //<editor-fold desc="Incomplete Visit Utilities Methods">
@@ -58,6 +59,13 @@ class IncompleteVisitService {
             return obj
         } else {
             incompleteVisit = result
+        }
+
+        //--> take the extensionXml and save to Extension Table
+        def resultExtension = coreExtensionService.insertIncompleteVisitExtension(rawIncompleteVisit, result)
+        if (resultExtension != null && !resultExtension.success) { //if null - there is no extension to process
+            //it supposed to not fail
+            println "Failed to insert extension: ${resultExtension.errorMessage}"
         }
 
         RawExecutionResult<IncompleteVisit> obj = RawExecutionResult.newSuccessResult(RawEntity.INCOMPLETE_VISIT, incompleteVisit)

@@ -26,6 +26,7 @@ class PregnancyRegistrationService {
     def headRelationshipService
     def deathService
     def visitService
+    def coreExtensionService
     def codeGeneratorService
     def errorMessageService
 
@@ -80,6 +81,13 @@ class PregnancyRegistrationService {
 
             RawExecutionResult<PregnancyRegistration> obj = RawExecutionResult.newErrorResult(RawEntity.PREGNANCY_REGISTRATION, errors)
             return obj
+        }
+
+        //--> take the extensionXml and save to Extension Table
+        def resultExtension = coreExtensionService.insertPregnancyRegistrationExtension(rawPregnancyRegistration, pregnancyRegistration)
+        if (resultExtension != null && !resultExtension.success) { //if null - there is no extension to process
+            //it supposed to not fail
+            println "Failed to insert extension: ${resultExtension.errorMessage}"
         }
 
         RawExecutionResult<PregnancyRegistration> obj = RawExecutionResult.newSuccessResult(RawEntity.PREGNANCY_REGISTRATION, pregnancyRegistration)

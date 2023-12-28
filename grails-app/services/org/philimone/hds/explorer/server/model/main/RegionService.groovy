@@ -15,6 +15,7 @@ class RegionService {
 
     def userService
     def codeGeneratorService
+    def coreExtensionService
     def errorMessageService
     def moduleService
 
@@ -125,6 +126,13 @@ class RegionService {
             return obj
         } else {
             region = result
+        }
+
+        //--> take the extensionXml and save to Extension Table
+        def resultExtension = coreExtensionService.insertRegionExtension(rawRegion, result)
+        if (resultExtension != null && !resultExtension.success) { //if null - there is no extension to process
+            //it supposed to not fail
+            println "Failed to insert extension: ${resultExtension.errorMessage}"
         }
 
         RawExecutionResult<Region> obj = RawExecutionResult.newSuccessResult(RawEntity.REGION, region)

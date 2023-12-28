@@ -23,6 +23,7 @@ class OutMigrationService {
     def residencyService
     def headRelationshipService
     def deathService
+    def coreExtensionService
     def codeGeneratorService
     def errorMessageService
 
@@ -111,6 +112,13 @@ class OutMigrationService {
         //2. Update Member endType, endDate
 
         errors = afterCreateOutMigration(outmigration)
+
+        //--> take the extensionXml and save to Extension Table
+        def resultExtension = coreExtensionService.insertOutMigrationExtension(rawOutMigration, result)
+        if (resultExtension != null && !resultExtension.success) { //if null - there is no extension to process
+            //it supposed to not fail
+            println "Failed to insert extension: ${resultExtension.errorMessage}"
+        }
 
         RawExecutionResult<OutMigration> obj = RawExecutionResult.newSuccessResult(RawEntity.OUT_MIGRATION, outmigration, errors)
         return obj

@@ -21,6 +21,7 @@ class MaritalRelationshipService {
     def memberService
     def userService
     def deathService
+    def coreExtensionService
     def errorMessageService
     def messageSource
 
@@ -250,6 +251,13 @@ class MaritalRelationshipService {
 
         //Update Member with start status
         errors += updatesAfterCreatingRelationship(maritalRelationship)
+
+        //--> take the extensionXml and save to Extension Table
+        def resultExtension = coreExtensionService.insertMaritalRelationshipExtension(rawMaritalRelationship, result)
+        if (resultExtension != null && !resultExtension.success) { //if null - there is no extension to process
+            //it supposed to not fail
+            println "Failed to insert extension: ${resultExtension.errorMessage}"
+        }
 
         RawExecutionResult<MaritalRelationship> obj = RawExecutionResult.newSuccessResult(RawEntity.MARITAL_RELATIONSHIP, maritalRelationship, errors)
         return obj
