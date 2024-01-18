@@ -149,7 +149,7 @@ class UserService {
 
     boolean passwordEquals(User user, String newPassword){
         def pe = springSecurityService.passwordEncoder
-        return pe.isPasswordValid(user.password, newPassword, null)
+        return pe.matches(newPassword, user.password)
     }
 
     User get(Serializable id){

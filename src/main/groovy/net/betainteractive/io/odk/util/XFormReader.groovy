@@ -34,7 +34,7 @@ class XFormReader {
     static String getFormId(byte[] xformBytes) {
         def formDef = getFormDefinition(xformBytes)
         def mainInstance = formDef?.getMainInstance()
-        return mainInstance?.root?.name
+        return mainInstance?.root?.getAttributeValue(null, "id")
     }
 
     static FormInstance getFormInstanceFrom(byte[] instanceXmlBytes) throws IOException, InvalidStructureException, XmlPullParserException, UnfullfilledRequirementsException {
