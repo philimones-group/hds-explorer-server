@@ -10,6 +10,8 @@ import org.springframework.web.servlet.i18n.SessionLocaleResolver
 class ModuleService {
 
     def generalUtilitiesService
+    def codeGeneratorService
+    def residencyService
     SessionLocaleResolver localeResolver
 
     Module get(Serializable id){
@@ -149,20 +151,17 @@ class ModuleService {
                 if (line != null && !line.trim().isEmpty()){
                     def s = line.trim() //check if ID exits
 
-                    if (s.length()==3) { //region code = TXU
+                    if (codeGeneratorService.isRegionCodeValid(s)) { //region code = TXU
                         list.get(0).add(s)
                     }
 
-                    if (s.length()==9) { //household code = TXUPF1001
+                    if (codeGeneratorService.isHouseholdCodeValid(s)) { //household code = TXUPF1001
                         list.get(1).add(s)
                     }
 
-                    if (s.length()==12) { //member code = TXUPF1001001
+                    if (codeGeneratorService.isMemberCodeValid(s)) { //member code = TXUPF1001001
                         list.get(2).add(s)
                     }
-
-
-
                 }
             }
         }
@@ -181,26 +180,15 @@ class ModuleService {
         list.get(0).each { code ->
             def entity = Region.findByCode(code)
             if (entity != null) {
-                modules.each { module ->
-                    if (entity != null) entity.addToModules(module.code)
-                }
-
-                entity.save(flush: true)
-                countr += !entity.hasErrors() ? 1 : 0
+                countr += grantOneRegionAccess(entity, modules)
             }
         }
 
         //households
         list.get(1).each { code ->
-
             def entity = Household.findByCode(code)
             if (entity != null) {
-                modules.each { module ->
-                    if (entity != null) entity.addToModules(module.code)
-                }
-
-                entity.save(flush: true)
-                counth += !entity.hasErrors() ? 1 : 0
+                counth += grantOneHouseholdAccess(entity, modules)
             }
         }
 
@@ -208,12 +196,7 @@ class ModuleService {
         list.get(2).each { code ->
             def entity = Member.findByCode(code)
             if (entity != null) {
-                modules.each { module ->
-                    if (entity != null) entity.addToModules(module.code)
-                }
-
-                entity.save(flush: true)
-                countm += !entity.hasErrors() ? 1 : 0
+                countm += grantOneMemberAccess(entity, modules)
             }
         }
 
@@ -222,6 +205,50 @@ class ModuleService {
         result[2] = countm
 
         return result
+    }
+
+    int grantOneRegionAccess(Region entity, List<Module> modules) {
+        modules.each { module ->
+            if (entity != null) entity.addToModules(module.code)
+        }
+        entity.save(flush: true)
+
+        //update module on parents of this Region
+        if (entity.parent != null) {
+            grantOneRegionAccess(entity.parent, modules)
+        }
+
+        return !entity.hasErrors() ? 1 : 0
+    }
+
+    int grantOneHouseholdAccess(Household entity, List<Module> modules) {
+        modules.each { module ->
+            if (entity != null) entity.addToModules(module.code)
+        }
+        entity.save(flush: true)
+
+        //update module on Region
+        Region parentRegion = Region.findByCode(entity.region)
+        if (parentRegion != null) {
+            grantOneRegionAccess(parentRegion, modules)
+        }
+
+        return !entity.hasErrors() ? 1 : 0
+    }
+
+    int grantOneMemberAccess(Member entity, List<Module> modules) {
+        modules.each { module ->
+            if (entity != null) entity.addToModules(module.code)
+        }
+        entity.save(flush: true)
+
+        //update module on Household
+        Household household = residencyService.getCurrentHousehold(entity)
+        if (household != null) {
+            grantOneHouseholdAccess(household, modules)
+        }
+
+        return !entity.hasErrors() ? 1 : 0
     }
 
     def grantRegionsAccess(List<Module> modules) {

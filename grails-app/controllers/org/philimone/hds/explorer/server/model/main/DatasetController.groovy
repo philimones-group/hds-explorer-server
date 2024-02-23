@@ -1,6 +1,8 @@
 package org.philimone.hds.explorer.server.model.main
 
 import grails.validation.ValidationException
+import net.betainteractive.utilities.GeneralUtil
+import net.betainteractive.utilities.StringUtil
 import org.philimone.hds.explorer.io.SystemPath
 
 import static org.springframework.http.HttpStatus.*
@@ -109,6 +111,14 @@ class DatasetController {
             respond dataSetInstance.errors, view:'add'
             return
         }*/
+
+        //check if the dataset name is valid
+        if (!datasetService.isValidDatasetName(dataSetInstance.name)){
+            def columnsMap = datasetService.getColumns(dataSetInstance.filename)
+            flash.message = message(code: "dataset.name.invalid.error.label")
+            render view: "add", model: [dataSetInstance: dataSetInstance, dataSetColumns:columnsMap.keySet(), tableList:  tableList]
+            return
+        }
 
         def modules = Module.getAll(params.list("allmodules.id"))
         modules.each {

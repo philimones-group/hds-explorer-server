@@ -19,12 +19,12 @@
 					if (mode == "0") { //CSV File mode
 						$("#panelUpload").show();
 						$("#divBreak").hide();
-						$("#divEntity").hide();
+						//$("#divEntity").hide();
 						$("#grantModeValue").val("0");
 					} else {
 						$("#panelUpload").hide();
 						$("#divBreak").show();
-						$("#divEntity").show();
+						//$("#divEntity").show();
 						$("#grantModeValue").val("1");
 					}
 				}
@@ -40,12 +40,12 @@
                     if (mode == "0") { //CSV File mode
                         $("#panelUpload").show();
 						$("#divBreak").hide();
-						$("#divEntity").hide();
+						//$("#divEntity").hide();
 						$("#grantModeValue").val("0");
                     } else {
                         $("#panelUpload").hide();
 						$("#divBreak").show();
-						$("#divEntity").show();
+						//$("#divEntity").show();
 						$("#grantModeValue").val("1");
                     }
 
@@ -61,7 +61,6 @@
 		<div class="nav" role="navigation">
 			<ul>
 				<li><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
-				<li><g:link class="list" action="index"><g:message code="module.list.label" args="[entityName]" /></g:link></li>
 				<li><g:link class="list" controller="module" action="index"><g:message code="default.menu.updates.modules.label" args="" /></g:link></li>
 				<li><g:link class="list" controller="form" action="index"><g:message code="default.menu.updates.forms.label" args="" /></g:link></li>
 				<li><g:link class="list" controller="user" action="index"><g:message code="default.menu.users.label" args="" /></g:link></li>
@@ -124,11 +123,12 @@
 						<g:hiddenField name="grantModeValue" value="${grantModeValue}" />
 						
 						<g:hiddenField name="filename" value="${modulesFilename}" />
-
+						<!--
 						<div id="divEntity" class="fieldcontain required">
 							<label for="entity"><g:message code="module.updates.list.entity.label" default="Key Column" /><span class="required-indicator">*</span></label>
-							<g:select name="entity" required="" value="${selectedEntity}" from="${entities}" class="many-to-one"/>
+							<g:select name="entity" value="${selectedEntity}" from="${entities}" class="many-to-one"/>
 						</div>
+						-->
 
 						<!-- select modules -->
 						<div class="fieldcontain false">
@@ -177,9 +177,6 @@
 					</g:each>
 					</tbody>
 				</table>
-				<div class="pagination">
-					<g:paginate total="${4}" />
-				</div>
 			</div>
 
 		</div>

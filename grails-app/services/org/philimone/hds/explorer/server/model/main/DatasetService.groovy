@@ -105,4 +105,10 @@ class DatasetService {
             dataset.addToModules(it.code)
         }
     }
+
+    boolean isValidDatasetName(String name) {
+        def a = ("" + name.charAt(0))
+        def b = a.toUpperCase()
+        return !name.contains(" ") || a.equals(b)
+    }
 }

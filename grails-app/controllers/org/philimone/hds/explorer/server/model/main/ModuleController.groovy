@@ -135,18 +135,15 @@ class ModuleController {
 
     def saveModuleMappings = {
         def grantMode = params.grantModeValue
-        def selEntity = params.entity
+        //def selEntity = params.entity
         def filename = params["filename"]
         def modules = Module.getAll(params.list("modules"))
 
         println "file ${filename}, modules: ${modules}, ${params}"
 
-
-        if (grantMode == "0") {
+        if (grantMode == "0") { //CSV List
 
             def list = moduleService.getEntitiesCodesList(filename)
-
-
             def resultList = moduleService.grantEntitiesAccess(list, modules)
 
             int countr = resultList[0];
@@ -155,22 +152,14 @@ class ModuleController {
 
             flash.message = g.message(code: "module.updates.success.csv.label", args: [countr, counth, countm])
         }
-        else if (grantMode == "1") {
+        else if (grantMode == "1") { //All Entity objects
 
-            if (ModularDomainEntity.REGION.name.equalsIgnoreCase(selEntity)) {
-                //grant access to all Regions
-                moduleService.grantRegionsAccess(modules)
-            }
+            //grant access to all Regions, Households and Members
+            moduleService.grantRegionsAccess(modules)
+            moduleService.grantHouseholdsAccess(modules)
+            moduleService.grantMembersAccess(modules)
 
-            if (ModularDomainEntity.HOUSEHOLD.name.equalsIgnoreCase(selEntity)) {
-                //grant access to all Households
-                moduleService.grantHouseholdsAccess(modules)
-            }
 
-            if (ModularDomainEntity.MEMBER.name.equalsIgnoreCase(selEntity)) {
-                //grant access to all Members
-                moduleService.grantMembersAccess(modules)
-            }
 
             flash.message = g.message(code: "module.updates.success.all.label", args: [selEntity])
         }

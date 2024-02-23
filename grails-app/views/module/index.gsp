@@ -23,7 +23,8 @@
             </g:if>
 
             <div class="whitebox_panel">
-                <bi:tableList id="modulesTable" class="module" collection="${moduleList}" columns="code, name, description, createdBy, createdDate, updatedBy, updatedDate" />
+                <bi:tableList id="modulesTable" class="module" collection="${moduleList}" columns="code, name, description, createdBy, createdDate, updatedBy, updatedDate"
+                              linkColumn="code" linkId="id" linkAction="show"/>
             </div>
 
         </div>

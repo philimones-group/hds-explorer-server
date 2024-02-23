@@ -3,7 +3,7 @@
     <head>
         <meta name="layout" content="main" />
         <g:set var="entityName" value="${message(code: 'coreFormExtension.label', default: 'CoreFormExtension')}" />
-        <title><g:message code="default.list.label" args="[entityName]" /></title>
+        <title><g:message code="coreFormExtension.list.label" args="[entityName]" /></title>
 
         <dt:defaultResources />
     </head>
@@ -40,7 +40,7 @@
             </ul>
         </div>
         <div id="list-coreFormExtension" class="content scaffold-list" role="main">
-            <h1><g:message code="default.list.label" args="[entityName]" /></h1>
+            <h1><g:message code="coreFormExtension.list.label" args="[entityName]" /></h1>
             <br>
             <g:if test="${flash.message}">
                 <div class="message" role="status">${flash.message}</div>

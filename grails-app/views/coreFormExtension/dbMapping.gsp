@@ -84,7 +84,7 @@
 
                 <dt:column name="dbColumnIndex"  label="${message(code: 'coreFormExtension.mapping.dbColumnIndex')}" />
                 <dt:column name="dbColumnTable"     label="${message(code: 'coreFormExtension.mapping.dbColumnTable')}" />
-                <dt:column name="dbColumnName" label="${message(code: 'coreFormExtension.mapping.dbColumnName')}" hzalign="left" editor="input" />
+                <dt:column name="dbColumnName" label="${message(code: 'coreFormExtension.mapping.dbColumnName')}" hzalign="left" />
                 <dt:column name="dbColumnType" label="${message(code: 'coreFormExtension.mapping.dbColumnType')}" hzalign="center" display="enumType" />
                 <dt:column name="dbColumnSize" label="${message(code: 'coreFormExtension.mapping.dbColumnSize')}" hzalign="center" editor="input" />
                 <dt:column name="formColumnName" label="${message(code: 'coreFormExtension.mapping.formColumnName')}" hzalign="left" />
