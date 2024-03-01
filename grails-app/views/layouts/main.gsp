@@ -48,7 +48,7 @@
                 <hds:menu label="${g.message(code: 'default.menu.updates.members.label')}" link="${createLink(controller: 'member', action: 'index')}" class="arrow"/>
             </hds:dropmenu>
             <hds:dropmenu label="${g.message(code: 'default.menu.lists.label')}">
-                <hds:menu label="${g.message(code: 'default.menu.lists.trackinglists.label')}" link="${createLink(controller: 'trackingList', action: 'add')}" class="arrow" />
+                <hds:menu label="${g.message(code: 'default.menu.lists.trackinglists.label')}" link="${createLink(controller: 'trackingList', action: 'index')}" class="arrow" />
                 <hds:menu label="${g.message(code: 'default.menu.updates.datasets.label')}" link="${createLink(controller: 'dataset', action: 'index')}" class="arrow" />
             </hds:dropmenu>
             <hds:dropmenu label="${g.message(code: 'default.menu.sync.label')}">

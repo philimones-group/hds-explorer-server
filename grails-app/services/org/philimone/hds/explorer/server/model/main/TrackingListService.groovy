@@ -37,14 +37,18 @@ class TrackingListService {
         def errors = new ArrayList<RawMessage>()
 
         def trackingListResult = getTrackingList(validationResult.xlsContent)
-        def trackingList = trackingListResult.instance
-        def trackingListGroups = trackingListResult.groups
+        def trackingList = trackingListResult?.instance
+        def trackingListGroups = trackingListResult?.groups
 
-        if (currentWebInstance != null) {
+        if (currentWebInstance != null && trackingList != null) {
             trackingList.filename = currentWebInstance.filename
             trackingList.name = currentWebInstance.name
             trackingList.enabled = currentWebInstance.enabled
             trackingList.modules = currentWebInstance.modules
+        }
+
+        if (trackingList == null && currentWebInstance != null) {
+            trackingList = currentWebInstance
         }
 
         if (!trackingList.validate()){
@@ -63,7 +67,7 @@ class TrackingListService {
             TrackingListGroup.executeUpdate("delete from TrackingListGroup g where g.trackingList=?0", [trackingList])
         }
 
-        trackingListGroups.each {
+        trackingListGroups?.each {
             trackingList.addToGroups(it)
         }
 
@@ -252,8 +256,9 @@ class TrackingListService {
             row_stg.createCell(enabled_index).setCellValue(trackingList.enabled ? "yes" : "no")
 
             def row_index = 1
-            trackingList.groups.each { group ->
-                group.lists.each { item ->
+            trackingList.groups.sort{it.id}.each { group ->
+
+                group.lists.sort{it.id}.each { item ->
                     def row = sheetLists.createRow(row_index++)
 
                     row.createCell(gcode_index).setCellValue(group.groupCode)
@@ -284,7 +289,18 @@ class TrackingListService {
 
     }
 
+    TrackingListValidationResult validateXls(String xlsFilename, boolean isUpdating) {
+        if (isUpdating && StringUtil.isBlank(xlsFilename)) {
+            //consider SUCESS VALIDATION - NO XLS FILE TO UPDATE, BUT OTHER FIELDS CAN BE UPDATED
+            def result = new TrackingListValidationResult(ValidationStatus.SUCCESS, [])
+            return result
+        }
+
+        return validateXls(xlsFilename)
+    }
+
     TrackingListValidationResult validateXls(String xlsFilename) {
+        //xlsFilename = xlsFilename==null ? "" : xlsFilename
 
         //OPEN FILE
         def xlsFormInput = new FileInputStream(xlsFilename)
@@ -579,6 +595,8 @@ class TrackingListService {
 
     TrackListGetResult getTrackingList(XLSContent xlsContent){
 
+        if (xlsContent == null) return null
+
         def trackingList = null as TrackingList
         def trackingListGroups = new ArrayList<TrackingListGroup>()
 
@@ -709,6 +727,13 @@ class TrackingListService {
             trackingList.addToModules(it.code)
         }
 
+    }
+
+    List<Module> findAllByCodes(Collection<? extends String> codes){
+
+        if (codes == null || codes.empty) return new ArrayList<Module>()
+
+        Module.findAllByCodeInList(codes)
     }
 
     class TrackListResult {

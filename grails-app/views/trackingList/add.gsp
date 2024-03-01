@@ -10,45 +10,7 @@
 
 	</head>
 	<body>
-	<g:javascript>
-
-        $(document).ready(function() {
-            $("#tableName").change(function() {
-
-                $.ajax({
-                    url: "${createLink(controller: "form", action: "modelVariables")}",
-                    data: "name=" + this.value,
-                    cache: false,
-                    success: function(html) {
-                        $("#tableColumn").html(html);
-                    }
-                });
-            });
-
-        });
-
-		$(window).on('load',
-			function () {
-				//alert("testing jquery");
-
-				var id = $("#tableName").val();
-				if (id != undefined){
-					$.ajax({
-                    	url: "${createLink(controller: "form", action: "modelVariables")}",
-                    	data: "name=" + id,
-                    	cache: false,
-                    	success: function(html) {
-                        	$("#tableColumn").html(html);
-                    	}
-                	});
-				}
-
-			}
-		);
-
-	</g:javascript>
-
-		<a href="#create-trackingList" class="skip" tabindex="-1"><g:message code="default.link.skip.label" default="Skip to content&hellip;"/></a>
+	    <a href="#create-trackingList" class="skip" tabindex="-1"><g:message code="default.link.skip.label" default="Skip to content&hellip;"/></a>
 		<div class="nav" role="navigation">
 			<ul>
 				<li><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
@@ -95,6 +57,7 @@
 			<g:uploadForm controller="trackingList" action="uploadFile" >
 				<fieldset class="form">
 					<div class="fieldcontain ${hasErrors(bean: trackingListInstance, field: 'filename', 'error')} " >
+						<g:hiddenField name="trackingListId" value="${trackingListInstance?.id}" />
 						<label for="filename"><g:message code="trackingList.file.label" default="Follow-up List Filename" /></label>
 						<input type="file" id="fileUpload" name="fileUpload" style="display:inline;" />
 						<g:submitButton name="create" class="button_link" value="${message(code: 'trackingList.file.upload.label')}" />

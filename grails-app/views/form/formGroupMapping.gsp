@@ -7,8 +7,9 @@
 		<g:set var="entityName" value="${message(code: 'form.label', default: 'Form')}" />
 		<title><g:message code="default.show.label" args="[entityName]" /></title>
 
-        <asset:javascript src="application.js"/>
         <asset:javascript src="bootstrap.js"/>
+        <asset:javascript src="jquery-ui.min.js"/>
+        <asset:stylesheet src="jquery-ui.min.css"/>
 
         <dt:defaultResources />
 
@@ -72,9 +73,8 @@
             <fieldset class="form">
                 <div class="col-sm-8 col-sm-offset-0">
 
-                    <div class="panel panel-primary">
-                        <div class="panel-body">
-
+                    <div class="card mb-3">
+                        <div class="card-body">
                             <ol class="property-list form">
 
                                 <g:if test="${formInstance?.formId}">
@@ -104,9 +104,8 @@
                         </div>
                     </div>
 
-                    <div class="panel panel-primary">
-                        <div class="panel-body">
-
+                    <div class="card mb-3">
+                        <div class="card-body">
                             <!-- Add new Form Mapping Variable -->
                             <g:form controller="form" action="saveFormGroupMapping" method="post" >
                                 <div class="nav2">

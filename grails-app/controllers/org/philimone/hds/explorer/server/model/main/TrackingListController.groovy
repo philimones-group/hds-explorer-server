@@ -35,7 +35,13 @@ class TrackingListController {
     }
 
     def add() {
-        respond new TrackingList(params), model: [tableList:  tableList]
+        respond new TrackingList(params)
+    }
+
+    def edit(TrackingList trackingListInstance) {
+        def modules = trackingListService.findAllByCodes(trackingListInstance.modules)
+
+        render view: "add", model: [trackingListInstance: trackingListInstance, modules: modules, isUpdating: true]
     }
 
     def uploadFile = {
@@ -43,7 +49,6 @@ class TrackingListController {
         def file = request.getFile('fileUpload')
         def fileName = file.originalFilename
         def newFile = "/tmp/tracklist-web-${GeneralUtil.generateUUID()}" //SystemPath.externalDocsPath + File.separator + fileName
-
 
         file.transferTo(new File(newFile))
 
@@ -53,7 +58,8 @@ class TrackingListController {
 
         if (validationResult.status == TrackingListService.ValidationStatus.ERROR) {
             params.filename = fileName
-            render view: "add", model: [trackingListInstance: new TrackingList(params), absoluteFilename: newFile, tableList:  tableList, errorMessages: validationResult.errorMessages]
+            def trackingListInstance = params.trackingListId ? TrackingList.get(params.trackingListId) : new TrackingList(params)
+            render view: "add", model: [trackingListInstance: trackingListInstance, absoluteFilename: newFile, errorMessages: validationResult.errorMessages]
             return
         }
 
@@ -61,10 +67,18 @@ class TrackingListController {
         params.name = validationResult.xlsContent.name
         params.filename = fileName
         params.enabled = validationResult.xlsContent.enabled
-
         def modules = Module.findAllByCodeInList(validationResult.xlsContent.modules)
 
-        render view: "add", model: [absoluteFilename: newFile, isUpdating: validationResult.isUpdating, trackingListInstance: new TrackingList(params), tableList:  tableList, modules: modules]
+        def trackingListInstance = params.trackingListId ? TrackingList.get(params.trackingListId) : new TrackingList(params)
+        trackingListInstance.code = params.code
+        trackingListInstance.name = params.name
+        trackingListInstance.filename = params.filename
+        trackingListInstance.enabled = params.enabled
+
+
+        //println "upload: selected trackinglist: ${trackingListInstance}, ${trackingListInstance?.id}, ${newFile}"
+
+        render view: "add", model: [absoluteFilename: newFile, isUpdating: validationResult.isUpdating, trackingListInstance: trackingListInstance, modules: modules]
     }
 
     def save(TrackingList trackingListInstance) {
@@ -74,12 +88,12 @@ class TrackingListController {
         }
 
         def modules = params.list("modules")
-println "mod ${modules}"
+
         //modules.each {
         //    trackingListInstance.addToModules(it)
         //}
-
-        def validationResult = trackingListService.validateXls(params.absoluteFilename)
+        boolean isUpdating = trackingListInstance.id != null
+        def validationResult = trackingListService.validateXls(params.absoluteFilename, isUpdating)
 
         if (validationResult.status == TrackingListService.ValidationStatus.ERROR) {
             render view:'add', model: [trackingListInstance: trackingListInstance, absoluteFilename: params.absoluteFilename, isUpdating: validationResult.isUpdating, tableList:  tableList, errorMessages: validationResult.errorMessages, modules: modules]
@@ -98,7 +112,11 @@ println "mod ${modules}"
 
         request.withFormat {
             form multipartForm {
-                flash.message = message(code: 'default.created.message', args: [message(code: 'trackingList.label', default: 'TrackingList'), trackingListInstance.name])
+                if (validationResult.isUpdating || isUpdating) {
+                    flash.message = message(code: 'default.updated.message', args: [message(code: 'trackingList.label', default: 'TrackingList'), trackingListInstance.name])
+                } else {
+                    flash.message = message(code: 'default.created.message', args: [message(code: 'trackingList.label', default: 'TrackingList'), trackingListInstance.name])
+                }
                 redirect trackingListInstance
             }
             '*' { respond trackingListInstance, [status: CREATED] }

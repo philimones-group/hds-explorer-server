@@ -17,7 +17,8 @@ class EventSyncController {
     def eventSyncService
 
     def index = {
-        def logReports = LogReport.executeQuery("select lr from LogReport lr where lr.group.groupId=?0 order by lr.reportId", [LogGroupCode.GROUP_SYNC_DSS_DATA_FROM_CLIENT])
+        //def logReports = LogReport.executeQuery("select lr from LogReport lr where lr.group.groupId=?0 order by lr.reportId", [LogGroupCode.GROUP_SYNC_DSS_DATA_FROM_CLIENT])
+        def logReports = LogReport.executeQuery("select lr from LogReport lr where lr.reportId=?0", [LogReportCode.REPORT_DSS_EVENTS_SYNC]) //Get only execute all events
 
         def syncProcesses = eventSyncService.mainProcessedStatus()
 
@@ -52,7 +53,7 @@ class EventSyncController {
                 @Override
                 void run() {
                     println "executing transfer from raw data to HDS - execute events"
-                    eventSyncService.executeEvents(id)
+                    //eventSyncService.executeEvents(id) - we will not execute this
                 }
             }).start();
         }
@@ -62,7 +63,7 @@ class EventSyncController {
                 @Override
                 void run() {
                     println "executing reset errors to not processed - errors events"
-                    eventSyncService.executeResetErrors(id)
+                    //eventSyncService.executeResetErrors(id) - we will not execute this
                 }
             }).start();
         }

@@ -109,8 +109,8 @@
 
 <div class="col-sm-8 col-sm-offset-0">
 
-	<div class="panel panel-primary">
-		<div class="panel-body">
+	<div class="card mb-3">
+		<div class="card-body">
 			<!-- form type -->
 			<div class="fieldcontain ${hasErrors(bean: this.form, field: 'formType', 'error')} required">
 				<label for="formType">
@@ -123,8 +123,8 @@
 		</div>
 	</div>
 
-	<div class="panel panel-primary">
-		<div class="panel-body">
+	<div class="card mb-3">
+		<div class="card-body">
 
 			<div class="fieldcontain ${hasErrors(bean: this.form, field: 'formId', 'error')} required">
 				<label for="formId">
@@ -156,9 +156,8 @@
 		</div>
 	</div>
 
-
-	<div class="panel panel-default">
-		<div class="panel-body">
+	<div class="card mb-3">
+		<div class="card-body">
 
 			<!-- form subject type -->
 			<div class="fieldcontain ${hasErrors(bean: this.form, field: 'formSubjectType', 'error')} required">
@@ -170,7 +169,6 @@
 				<g:select name="formSubjectType" required="" value="${this.form?.formSubjectType}" from="${org.philimone.hds.explorer.server.model.enums.FormSubjectType.values()}" optionKey="code" valueMessagePrefix="formSubjectType" class="many-to-one" />
 
 			</div>
-
 
 			<div id="divRegion">
 				<div class="fieldcontain ${hasErrors(bean: this.form, field: 'regionLevel', 'error')} required">
@@ -215,8 +213,8 @@
 	</div>
 
 	<div id="divMemberFilters">
-		<div class="panel panel-default">
-			<div class="panel-body">
+		<div class="card mb-3">
+			<div class="card-body">
 
 				<div class="fieldcontain ${hasErrors(bean: this.form, field: 'gender', 'error')} required">
 					<label for="gender">
@@ -246,8 +244,8 @@
 		</div>
 	</div>
 
-	<div class="panel panel-default">
-		<div class="panel-body">
+	<div class="card mb-3">
+		<div class="card-body">
 			<div class="fieldcontain ${hasErrors(bean: this.form, field: 'isFollowUpExclusive', 'error')} ">
 				<label for="isFollowUpExclusive">
 					<g:message code="form.isFollowUpForm.label" default="Is a Follow Up Only Form" />
@@ -272,8 +270,8 @@
 		</div>
 	</div>
 
-	<div class="panel panel-default">
-		<div class="panel-body">
+	<div class="card">
+		<div class="card-body">
 
 			<div class="fieldcontain ${hasErrors(bean: this.form, field: 'modules', 'error')} ">
 				<label for="modules">
