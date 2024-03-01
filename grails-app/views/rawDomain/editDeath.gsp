@@ -108,6 +108,7 @@
             <g:if test="${mode == "edit"}">
                 <g:actionSubmit class="save" value="${message(code: "rawDomain.update.reset.label")}" action="updateDeath" onclick="updateReset('true')" />
                 <g:actionSubmit class="save" value="${message(code: "rawDomain.update.label")}" action="updateDeath" />
+                <g:actionSubmit class="save" value="${message(code: "rawDomain.invalidate.label")}" action="invalidateDeath" />
             </g:if>
             <g:else>
                 <g:link class="edit" action="editDeath" id="${this.rawDeath.id}" ><g:message code="rawDomain.edit.label" /></g:link>

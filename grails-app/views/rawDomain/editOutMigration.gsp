@@ -111,6 +111,7 @@
             <g:if test="${mode == "edit"}">
                 <g:actionSubmit class="save" value="${message(code: "rawDomain.update.reset.label")}" action="updateOutMigration" onclick="updateReset('true')" />
                 <g:actionSubmit class="save" value="${message(code: "rawDomain.update.label")}" action="updateOutMigration" />
+                <g:actionSubmit class="save" value="${message(code: "rawDomain.invalidate.label")}" action="invalidateOutMigration" />
             </g:if>
             <g:else>
                 <g:link class="edit" action="editOutMigration" id="${this.rawOutMigration.id}" ><g:message code="rawDomain.edit.label" /></g:link>

@@ -9,51 +9,9 @@
 
 		<title><g:message code="default.show.label" args="[entityName]" /></title>
 
-		<style>
-		.message_collapsed {
-			background-color: #777;
-			color: white;
-			cursor: pointer;
-			padding: 18px;
-			width: 100%;
-			border: none;
-			text-align: left;
-			outline: none;
-			font-size: 15px;
-		}
-
-		.active, .message_collapsed:hover {
-			background-color: #555;
-		}
-
-		.message_content {
-			padding: 0 18px;
-			display: block;
-			overflow: hidden;
-			background-color: #f1f1f1;
-		}
-		</style>
-
 		<dt:defaultResources />
-
 	</head>
 	<body>
-	<g:javascript>
-		var coll = document.getElementsByClassName("message_colapsed");
-		var i;
-
-		for (i = 0; i < coll.length; i++) {
-			coll[i].addEventListener("click", function() {
-				this.classList.toggle("active");
-				var content = this.nextElementSibling;
-				if (content.style.display === "block") {
-					content.style.display = "none";
-				} else {
-					content.style.display = "block";
-				}
-			});
-		}
-	</g:javascript>
 
 		<a href="#show-logReport" class="skip" tabindex="-1"><g:message code="default.link.skip.label" default="Skip to content&hellip;"/></a>
 		<div class="nav" role="navigation">
@@ -61,13 +19,13 @@
 				<li><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
 			</ul>
 		</div>
+
 		<div id="show-logReport" class="content scaffold-show" role="main">
-			<h1><g:message code="logreport.show.label" args="[reportName]" /></h1>
+			<h1><g:message code="logreport.show.details.label" args="[reportName]" /></h1>
 			<g:if test="${flash.message}">
-			<div class="message" role="status">${flash.message}</div>
+				<div class="message" role="status">${flash.message}</div>
 			</g:if>
 			<ol class="property-list logReport">
-
 				<g:if test="${logReportFileInstance?.logReport.description}">
 				<li class="fieldcontain">
 					<span id="description-label" class="property-label"><g:message code="logreport.description.label" default="Description" /></span>
@@ -95,30 +53,30 @@
 						<span class="property-value" aria-labelledby="description-label">${errorLogsCount}</span>
 					</li>
 				</g:if>
-
-				<dt:table id="reportsTable">
-					<thead>
-					<tr>
-
-						<td><g:message code="logreport.sync.error.event" /> </td>
-
-						<td><g:message code="logreport.sync.error.uuid" /> </td>
-
-						<td><g:message code="logreport.sync.error.column" /> </td>
-
-						<td><g:message code="logreport.sync.error.code" /> </td>
-
-						<td><g:message code="logreport.sync.error.creationDate" /> </td>
-
-						<td><g:message code="logreport.sync.error.errorMessage" /> </td>
-
-					</tr>
-					</thead>
-					<tbody>
-					</tbody>
-				</dt:table>
-			
 			</ol>
+
+			<dt:table id="reportsTable">
+				<thead>
+				<tr>
+
+					<g:sortableColumn property="event" title="${message(code: 'logreport.sync.error.event')}" />
+
+					<g:sortableColumn property="uuid" title="${message(code: 'logreport.sync.error.uuid')}" />
+
+					<g:sortableColumn property="uuid" title="${message(code: 'logreport.sync.error.column')}" />
+
+					<g:sortableColumn property="uuid" title="${message(code: 'logreport.sync.error.code')}" />
+
+					<g:sortableColumn property="uuid" title="${message(code: 'logreport.sync.error.creationDate')}" />
+
+					<g:sortableColumn property="uuid" title="${message(code: 'logreport.sync.error.errorMessage')}" />
+				</tr>
+				</thead>
+				<tbody>
+				</tbody>
+			</dt:table>
+			
+
 			<g:form url="#" method="DELETE">
 				<fieldset class="buttons">
 					<g:actionSubmit class="delete" value="${message(code:'logreport.update.label', default:'Refresh')}" />

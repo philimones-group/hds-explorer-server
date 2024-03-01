@@ -526,4 +526,100 @@ class RawDomainController {
         respond rawChangeHead, view:"editChangeHead", model: [mode: "show"]
 
     }
+
+    def invalidateHousehold = {
+        RawHousehold rawHousehold = RawHousehold.get(params.id)
+        RawHousehold.executeUpdate("update RawHousehold r set r.processedStatus=:status where r.id=:rawId", [status: ProcessedStatus.INVALIDATED, rawId: rawHousehold.id])
+
+        flash.message = message(code: 'default.updated.message', args: [message(code: 'rawHousehold.label', default: 'Raw Household'), rawHousehold.householdCode])
+        respond rawHousehold, view:"editHousehold", model: [mode: "show"]
+    }
+
+    def invalidateVisit = {
+        RawVisit rawVisit = RawVisit.get(params.id)
+        RawVisit.executeUpdate("update RawVisit r set r.processedStatus=:status where r.id=:rawId", [status: ProcessedStatus.INVALIDATED, rawId: rawVisit.id])
+
+        flash.message = message(code: 'default.updated.message', args: [message(code: 'rawVisit.label', default: 'Raw Visit'), rawVisit.code])
+        respond rawVisit, view:"editVisit", model: [mode: "show"]
+    }
+
+    def invalidateIncompleteVisit = {
+        RawIncompleteVisit rawIncompleteVisit = RawIncompleteVisit.get(params.id)
+        RawIncompleteVisit.executeUpdate("update RawIncompleteVisit r set r.processedStatus=:status where r.id=:rawId", [status: ProcessedStatus.INVALIDATED, rawId: rawIncompleteVisit.id])
+
+        flash.message = message(code: 'default.updated.message', args: [message(code: 'rawIncompleteVisit.label', default: 'Raw Incomplete Visit'), rawIncompleteVisit.visitCode])
+        respond rawIncompleteVisit, view:"editIncompleteVisit", model: [mode: "show"]
+    }
+
+    def invalidateMemberEnu = {
+        RawMemberEnu rawMemberEnu = RawMemberEnu.get(params.id)
+        RawMemberEnu.executeUpdate("update RawMemberEnu r set r.processedStatus=:status where r.id=:rawId", [status: ProcessedStatus.INVALIDATED, rawId: rawMemberEnu.id])
+
+        flash.message = message(code: 'default.updated.message', args: [message(code: 'rawMemberEnu.label', default: 'Raw Member Enu'), rawMemberEnu.code])
+        respond rawMemberEnu, view:"editMemberEnu", model: [mode: "show"]
+    }
+
+    def invalidateDeath = {
+        RawDeath rawDeath = RawDeath.get(params.id)
+        RawDeath.executeUpdate("update RawDeath r set r.processedStatus=:status where r.id=:rawId", [status: ProcessedStatus.INVALIDATED, rawId: rawDeath.id])
+
+        flash.message = message(code: 'default.updated.message', args: [message(code: 'rawDeath.label', default: 'Raw Death'), rawDeath.memberCode])
+        respond rawDeath, view:"editDeath", model: [mode: "show"]
+    }
+
+    def invalidateOutMigration = {
+        RawOutMigration rawOutMigration = RawOutMigration.get(params.id)
+        RawOutMigration.executeUpdate("update RawOutMigration r set r.processedStatus=:status where r.id=:rawId", [status: ProcessedStatus.INVALIDATED, rawId: rawOutMigration.id])
+
+        flash.message = message(code: 'default.updated.message', args: [message(code: 'rawOutMigration.label', default: 'Raw Out Migration'), rawOutMigration.memberCode])
+        respond rawOutMigration, view:"editOutMigration", model: [mode: "show"]
+    }
+
+    def invalidateInMigration = {
+        RawInMigration rawInMigration = RawInMigration.get(params.id)
+        RawInMigration.executeUpdate("update RawInMigration r set r.processedStatus=:status where r.id=:rawId", [status: ProcessedStatus.INVALIDATED, rawId: rawInMigration.id])
+
+        flash.message = message(code: 'default.updated.message', args: [message(code: 'rawInMigration.label', default: 'Raw In Migration'), rawInMigration.memberCode])
+        respond rawInMigration, view:"editInMigration", model: [mode: "show"]
+    }
+
+    def invalidateExternalInMigration = {
+        RawExternalInMigration rawExternalInMigration = RawExternalInMigration.get(params.id)
+        RawExternalInMigration.executeUpdate("update RawExternalInMigration r set r.processedStatus=:status where r.id=:rawId", [status: ProcessedStatus.INVALIDATED, rawId: rawExternalInMigration.id])
+
+        flash.message = message(code: 'default.updated.message', args: [message(code: 'rawExternalInMigration.label', default: 'Raw External In Migration'), rawExternalInMigration.memberCode])
+        respond rawExternalInMigration, view:"editExternalInMigration", model: [mode: "show"]
+    }
+
+    def invalidatePregnancyRegistration = {
+        RawPregnancyRegistration rawPregnancyRegistration = RawPregnancyRegistration.get(params.id)
+        RawPregnancyRegistration.executeUpdate("update RawPregnancyRegistration r set r.processedStatus=:status where r.id=:rawId", [status: ProcessedStatus.INVALIDATED, rawId: rawPregnancyRegistration.id])
+
+        flash.message = message(code: 'default.updated.message', args: [message(code: 'rawPregnancyRegistration.label', default: 'Raw Pregnancy Registration'), rawPregnancyRegistration.code])
+        respond rawPregnancyRegistration, view:"editPregnancyRegistration", model: [mode: "show"]
+    }
+
+    def invalidatePregnancyOutcome = {
+        RawPregnancyOutcome rawPregnancyOutcome = RawPregnancyOutcome.get(params.id)
+        RawPregnancyOutcome.executeUpdate("update RawPregnancyOutcome r set r.processedStatus=:status where r.id=:rawId", [status: ProcessedStatus.INVALIDATED, rawId: rawPregnancyOutcome.id])
+
+        flash.message = message(code: 'default.updated.message', args: [message(code: 'rawPregnancyOutcome.label', default: 'Raw Pregnancy Outcome'), rawPregnancyOutcome.code])
+        respond rawPregnancyOutcome, view:"editPregnancyOutcome", model: [mode: "show"]
+    }
+
+    def invalidateMaritalRelationship = {
+        RawMaritalRelationship rawMaritalRelationship = RawMaritalRelationship.get(params.id)
+        RawMaritalRelationship.executeUpdate("update RawMaritalRelationship r set r.processedStatus=:status where r.id=:rawId", [status: ProcessedStatus.INVALIDATED, rawId: rawMaritalRelationship.id])
+
+        flash.message = message(code: 'default.updated.message', args: [message(code: 'rawMaritalRelationship.label', default: 'Raw Marital Relationship'), rawMaritalRelationship.memberA])
+        respond rawMaritalRelationship, view:"editMaritalRelationship", model: [mode: "show"]
+    }
+
+    def invalidateChangeHead = {
+        RawChangeHead rawChangeHead = RawChangeHead.get(params.id)
+        RawChangeHead.executeUpdate("update RawChangeHead r set r.processedStatus=:status where r.id=:rawId", [status: ProcessedStatus.INVALIDATED, rawId: rawChangeHead.id])
+
+        flash.message = message(code: 'default.updated.message', args: [message(code: 'rawChangeHead.label', default: 'Raw Change Head'), rawChangeHead.newHeadCode])
+        respond rawChangeHead, view:"editChangeHead", model: [mode: "show"]
+    }
 }

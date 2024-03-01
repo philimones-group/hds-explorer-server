@@ -21,7 +21,7 @@
 				<li><g:link class="list" controller="user" action="index"><g:message code="default.menu.users.label" args="" /></g:link></li>
 			</ul>
 		</div>
-		<dtdiv id="list-form" class="content scaffold-list" role="main">
+		<div id="list-form" class="content scaffold-list" role="main">
 			<h1><g:message code="form.list.label" args="[entityName]" /></h1>
 			<g:if test="${flash.message}">
 				<div class="message" role="status">${flash.message}</div>
