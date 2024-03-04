@@ -242,7 +242,16 @@ class CoreExtensionDatabaseService {
                 case DataType.DATE.value:    dbColumnType = DatabaseColumnType.DATETIME; break;
                 case DataType.TIME.value:    dbColumnType = DatabaseColumnType.DATETIME; break;
                 case DataType.DATE_TIME.value: dbColumnType = DatabaseColumnType.DATETIME; break;
-                case DataType.CHOICE.value: dbColumnType = DatabaseColumnType.STRING; break;
+                case DataType.CHOICE.value:
+                    dbColumnType = DatabaseColumnType.STRING;
+                    if (hasChoices) {
+                        def maxChoice = choices.max { it.value.length() }
+                        def maxLength = (int) ((Math.floor(maxChoice?.value?.length()/10)*10) + 10) //round to next 10th
+                        dbColumnSize = maxLength
+                    } else {
+                        dbColumnSize = 40
+                    }
+                    break;
                 case DataType.MULTIPLE_ITEMS.value: dbColumnType = DatabaseColumnType.STRING; break;
                 case DataType.BOOLEAN.value: dbColumnType = DatabaseColumnType.BOOLEAN; break;
                 case DataType.GEOPOINT.value: /*dbColumnType = DatabaseColumnType.GEOPOINT;*/ break
