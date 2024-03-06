@@ -56,7 +56,7 @@
 
                         <td>${fieldValue(bean: regionInstance, field: "createdBy")}</td>
 
-                        <td><bi:formatDate name="createdDate" value="${regionInstance.createdDate}" /></td>
+                        <td>${regionInstance.createdDate}</td>
 
                     </tr>
                 </g:each>

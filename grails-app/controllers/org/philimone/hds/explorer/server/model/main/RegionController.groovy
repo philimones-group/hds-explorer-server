@@ -19,7 +19,9 @@ class RegionController {
     def index(Integer max) {
         //params.max = Math.min(max ?: 10, 100)
 
-        respond regionService.list(params), model:[regionCount: regionService.count(), hierarchyLevelsMap : regionService.getRegionLevelNames()]
+        def regionList = Region.executeQuery("select r from Region r order by r.createdDate asc, r.hierarchyLevel asc")
+
+        render view: "index", model:[regionList: regionList, regionCount: regionService.count(), hierarchyLevelsMap : regionService.getRegionLevelNames()]
     }
 
     def show = {
