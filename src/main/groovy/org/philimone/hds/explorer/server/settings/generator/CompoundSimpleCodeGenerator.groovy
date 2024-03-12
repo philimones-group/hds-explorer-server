@@ -17,10 +17,10 @@ class CompoundSimpleCodeGenerator implements CodeGenerator {
     final String REGION_CODE_PATTERN = '^[A-Z0-9]{3}$'
     final String COMPOUND_CODE_PATTERN = '^[A-Z0-9]{3}[0-9]{6}$'
     final String HOUSEHOLD_CODE_PATTERN = '^[A-Z0-9]{3}[0-9]{9}$'
-    final String MEMBER_CODE_PATTERN = '^[A-Z0-9]{3}[0-9]{11}$'
+    final String MEMBER_CODE_PATTERN = '^[A-Z0-9]{3}[0-9]{12}$'
     final String VISIT_CODE_PATTERN = '^[A-Z0-9]{3}[0-9]{9}-[0-9]{3}-[0-9]{3}$' //TXU000001-000-001 - HOUSEHOLD+ROUND+ORDINAL
     final String USER_CODE_PATTERN = '^[A-Z0-9]{3}$'
-    final String PREGNANCY_CODE_PATTERN = '^[A-Z0-9]{3}[0-9]{11}-[0-9]{2}$'
+    final String PREGNANCY_CODE_PATTERN = '^[A-Z0-9]{3}[0-9]{12}-[0-9]{2}$'
 
     @Override
     String getName() {
@@ -192,10 +192,10 @@ class CompoundSimpleCodeGenerator implements CodeGenerator {
         if (StringUtil.isBlank(baseCode)) return null
 
         if (existentCodes.size()==0){
-            return "${baseCode}01" //just add 2 more characters
+            return "${baseCode}001" //just add 2 more characters
         } else {
-            for (int i=1; i <= 99; i++){
-                def code = "${baseCode}${String.format('%02d', i)}" as String
+            for (int i=1; i <= 999; i++){
+                def code = "${baseCode}${String.format('%03d', i)}" as String
                 if (!existentCodes.contains(code)){
                     return code
                 }
@@ -234,7 +234,7 @@ class CompoundSimpleCodeGenerator implements CodeGenerator {
     String generateUserCode(User user, List<String> existentCodes) {
         def regexFw = '^FW[A-Za-z]{3}$'
 
-        if (user.username.matches(regexFw)){ //ohds fieldworker
+        if (user.username?.matches(regexFw)){ //ohds fieldworker
             return user.username.toUpperCase().replaceAll("FW", "")
         }else {
             //def codes = User.list().collect{ t -> t.code}
@@ -329,7 +329,7 @@ class CompoundSimpleCodeGenerator implements CodeGenerator {
 
     @Override
     String getMemberSampleCode() {
-        return "TXU00000100101"
+        return "TXU000001001001"
     }
 
     @Override
@@ -344,6 +344,6 @@ class CompoundSimpleCodeGenerator implements CodeGenerator {
 
     @Override
     String getPregnancySampleCode() {
-        return "TXU00000100101-01"
+        return "TXU000001001001-01"
     }
 }

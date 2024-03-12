@@ -1008,15 +1008,15 @@ class RawBatchExecutionService {
     }
 
     RawMessage getHouseholdDependencyError(String householdCode, String columnName) {
-        return errorMessageService.getRawMessage(RawEntity.HOUSEHOLD, "validation.dependency.household.not.found", [householdCode, columnName], [columnName])
+        return errorMessageService.getRawMessage(RawEntity.HOUSEHOLD, "validation.dependency.household.not.found", [columnName, householdCode], [columnName])
     }
 
     RawMessage getVisitDependencyError(String visitCode, String columnName) {
-        return errorMessageService.getRawMessage(RawEntity.HOUSEHOLD, "validation.dependency.visit.not.found", [visitCode, columnName], [columnName])
+        return errorMessageService.getRawMessage(RawEntity.HOUSEHOLD, "validation.dependency.visit.not.found", [columnName, visitCode], [columnName])
     }
 
     RawMessage getMemberDependencyError(String memberCode, String columnName) {
-        return errorMessageService.getRawMessage(RawEntity.HOUSEHOLD, "validation.dependency.member.not.found", [memberCode, columnName], [columnName])
+        return errorMessageService.getRawMessage(RawEntity.HOUSEHOLD, "validation.dependency.member.not.found", [columnName, memberCode], [columnName])
     }
 
     RawDependencyStatus solveRegionDependency(String regionCode, String columnName, String logReportFileId) {

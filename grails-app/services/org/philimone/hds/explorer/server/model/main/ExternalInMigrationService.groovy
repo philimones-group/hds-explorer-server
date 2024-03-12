@@ -203,9 +203,9 @@ class ExternalInMigrationService {
             errors << errorMessageService.getRawMessage(RawEntity.EXTERNAL_INMIGRATION, "validation.field.pattern.no.matches", ["memberCode", codeGeneratorService.memberSampleCode], ["memberCode"])
         }
         //C3. Check Code Prefix Reference existence (Household Existence in memberCode)
-        if (!isBlankMemberCode && !householdService.prefixExists(externalInMigration.memberCode)){
+        /*if (!isBlankMemberCode && !householdService.prefixExists(externalInMigration.memberCode)){
             errors << errorMessageService.getRawMessage(RawEntity.EXTERNAL_INMIGRATION, "validation.field.pattern.prefix.household.reference.error", [externalInMigration.memberCode], ["memberCode"])
-        }
+        }*/
 
         //C12. Validate Gender Enum Options
         if (!isBlankMemberGender && Gender.getFrom(externalInMigration.memberGender)==null && !isReturningToStudyArea){

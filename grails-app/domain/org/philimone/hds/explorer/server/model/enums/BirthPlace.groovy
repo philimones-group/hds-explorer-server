@@ -6,6 +6,8 @@ enum BirthPlace {
     HOSPITAL ("HOSPITAL", "birthPlace.hospital"),
     TRADITIONAL_MIDWIFE ("TRADITIONAL_MIDWIFE", "birthPlace.traditional_midwife"),
     HEALTH_CENTER_CLINIC ("HEALTH_CENTER_CLINIC", "birthPlace.health_center_clinic"),
+    ON_THE_WAY ("ON_THE_WAY", "birthPlace.on_the_way"),
+    PRIVATE_MAT_HOME ("PRIVATE_MAT_HOME", "birthPlace.private_mat_home"),
     OTHER ("OTHER", "birthPlace.other")
 
     String code

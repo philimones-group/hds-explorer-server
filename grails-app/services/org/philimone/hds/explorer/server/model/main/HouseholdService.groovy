@@ -54,6 +54,7 @@ class HouseholdService {
         Household.countByCodeAndCollectedId(householdCode, collectedId) > 0
     }
 
+    /* This type of checking prefixes is bad specially because we are in a system with multiple code systems*/
     boolean prefixExists(String memberCode){
         exists(memberCode.length()>8 ? memberCode.substring(0, 9) : memberCode)
     }

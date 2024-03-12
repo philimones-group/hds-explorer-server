@@ -214,7 +214,7 @@ class DefaultCodeGenerator implements CodeGenerator {
     String generateUserCode(User user, List<String> existentCodes) {
         def regexFw = '^FW[A-Za-z]{3}$'
 
-        if (user.username.matches(regexFw)){ //ohds fieldworker
+        if (user.username?.matches(regexFw)){ //ohds fieldworker
             return user.username.toUpperCase().replaceAll("FW", "")
         }else {
             //def codes = User.list().collect{ t -> t.code}

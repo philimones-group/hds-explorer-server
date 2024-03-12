@@ -566,6 +566,8 @@ class InMigrationService {
     }
 
     private static HeadRelationship createFakeClosedHeadRelationship(HeadRelationship headRelationship, HeadRelationshipEndType endType, LocalDate endDate){
+        if (headRelationship == null) return null
+
         def fakeHeadRelationship = new HeadRelationship()
         fakeHeadRelationship.member = headRelationship.member
         fakeHeadRelationship.memberCode = headRelationship.member?.code

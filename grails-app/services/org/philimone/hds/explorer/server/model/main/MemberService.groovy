@@ -161,9 +161,9 @@ class MemberService {
             errors << errorMessageService.getRawMessage(RawEntity.MEMBER, "validation.field.pattern.no.matches", ["code", codeGeneratorService.memberSampleCode], ["code"])
         }
         //C3. Check Code Prefix Reference existence (Household Existence in memberCode)
-        if (!isBlankMemberCode && !householdService.prefixExists(member.code)){
+        /*if (!isBlankMemberCode && !householdService.prefixExists(member.code)){
             errors << errorMessageService.getRawMessage(RawEntity.MEMBER, "validation.field.pattern.prefix.household.reference.error", [member.code], ["code"])
-        }
+        }*/
 
         //C12. Validate Gender Enum Options
         if (!isBlankMemberGender && Gender.getFrom(member.gender)==null){

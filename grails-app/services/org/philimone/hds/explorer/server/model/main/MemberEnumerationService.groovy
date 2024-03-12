@@ -272,9 +272,9 @@ class MemberEnumerationService {
             errors << errorMessageService.getRawMessage(RawEntity.MEMBER_ENUMERATION, "validation.field.pattern.no.matches", ["code", codeGeneratorService.memberSampleCode], ["code"])
         }
         //C3. Check Code Prefix Reference existence (Household Existence in code)
-        if (!isBlankCode && !householdService.prefixExists(memberEnu.code)){
+        /*if (!isBlankCode && !householdService.prefixExists(memberEnu.code)){ //this can lead to issues, code schemes can be different
             errors << errorMessageService.getRawMessage(RawEntity.MEMBER_ENUMERATION, "validation.field.pattern.prefix.household.reference.error", [memberEnu.code], ["code"])
-        }
+        }*/
 
         //C12. Validate Gender Enum Options
         if (!isBlankGender && Gender.getFrom(memberEnu.gender)==null){
