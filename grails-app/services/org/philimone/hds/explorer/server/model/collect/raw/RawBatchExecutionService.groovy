@@ -74,10 +74,8 @@ class RawBatchExecutionService {
         //entity_code (household, member, visit, pregnancy code, etc)
         //event_processed (yes / no)
 
-        resetEventsToNotProcessed(logReportFileId)
-
         //Read raw domain models that are not processed and save at raw_event table, raw data will be read ordered by dateOfEvent
-        compileEvents()
+        compileEvents(logReportFileId)
 
         executeEvents(logReportFileId)
     }
@@ -156,7 +154,11 @@ class RawBatchExecutionService {
         }
     }
 
-    def compileEvents(){
+    def compileEvents(String logReportFileId){
+
+        println "compiling events"
+
+        resetEventsToNotProcessed(logReportFileId)
 
         //clear raw event
         RawEvent.withTransaction {
@@ -178,9 +180,13 @@ class RawBatchExecutionService {
         collectMaritalRelationshipEnd()
         collectChangeHoh()
 
+        println "finished compiling events"
     }
 
     def executeEvents(String logReportFileId) {
+
+        println "executing events"
+
         //read raw_events ordered by keyDate asc and eventtype asc
 
         def initialEvents = [] //as List<RawEvent> //Regions and Households
@@ -239,6 +245,8 @@ class RawBatchExecutionService {
                 logReportFile.save(flush:true)
             }
         }
+
+        println "finished executing events"
 
     }
 
@@ -1232,7 +1240,11 @@ class RawBatchExecutionService {
                 batch.each {
                     new RawEvent(keyDate: it.visitDate.atStartOfDay(), eventType: RawEventType.EVENT_VISIT, eventId: it.id, entityCode: it.code).save()
                 }
-                println "batch inserted: ${batch.size()}"
+                println "batch visit inserted: ${batch.size()}"
+
+                def session = sessionFactory.currentSession
+                session.flush()
+                session.clear()
             }
         }
 

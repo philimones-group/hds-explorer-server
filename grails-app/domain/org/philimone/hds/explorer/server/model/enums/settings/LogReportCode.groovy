@@ -24,6 +24,12 @@ enum LogReportCode {
     REPORT_DSS_EVENTS_EXECUTE_SYNC(41, "logreport"),
     REPORT_DSS_EVENTS_RESET_ERRORS(42, "logreport"),
 
+    /*LogReportCode for Data Validation and Sync Manager*/
+    REPORT_SYNC_MANAGER_EXECUTE_ALL_EVENTS (60, "logreport-sync-all"),
+    REPORT_SYNC_MANAGER_EXECUTE_COMPILE_EVENTS (61, "logreport-sync-compile"),
+    REPORT_SYNC_MANAGER_EXECUTE_EVENTS (62, "logreport-sync-events"),
+    REPORT_SYNC_MANAGER_EXECUTE_RESET_ERRORS (63, "logreport-sync-errors"),
+
 
     /*LogReportCode for events of Generating ZIP XML Files */
     REPORT_GENERATE_SETTINGS_ZIP_XML_FILES (51, "logreport"),

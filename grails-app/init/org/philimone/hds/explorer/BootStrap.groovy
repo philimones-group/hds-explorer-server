@@ -251,6 +251,7 @@ class BootStrap {
         new LogGroup(groupId: LogGroupCode.GROUP_UPLOAD_TRACKING_LISTS,     name: "TRACKLISTS", description: "").save(flush: true)
         new LogGroup(groupId: LogGroupCode.GROUP_GENERATE_FILES,            name: "GENFILES",   description: "").save(flush: true)
         new LogGroup(groupId: LogGroupCode.GROUP_SYNC_DSS_DATA_FROM_CLIENT, name: "SYNCDSS",    description: "").save(flush: true)
+        new LogGroup(groupId: LogGroupCode.GROUP_SYNC_MANAGER,              name: "SYNCMAN",    description: "").save(flush: true)
 
 
         //Inserting Log Reports
@@ -336,6 +337,35 @@ class BootStrap {
                 group: LogGroup.findByGroupId(LogGroupCode.GROUP_SYNC_DSS_DATA_FROM_CLIENT),
                 status: LogStatus.NOT_STARTED,
                 description: 'logreport.sync.syncdss.executecompiled.label'
+        ).save(flush: true)
+
+        /* Group Sync Manager */
+        new LogReport(
+                reportId: LogReportCode.REPORT_SYNC_MANAGER_EXECUTE_ALL_EVENTS,
+                group: LogGroup.findByGroupId(LogGroupCode.GROUP_SYNC_MANAGER),
+                status: LogStatus.NOT_STARTED,
+                description: 'logreport.sync.syncdss.events.label'
+        ).save(flush: true)
+
+        new LogReport(
+                reportId: LogReportCode.REPORT_SYNC_MANAGER_EXECUTE_COMPILE_EVENTS,
+                group: LogGroup.findByGroupId(LogGroupCode.GROUP_SYNC_MANAGER),
+                status: LogStatus.NOT_STARTED,
+                description: 'logreport.sync.syncdss.compile.label'
+        ).save(flush: true)
+
+        new LogReport(
+                reportId: LogReportCode.REPORT_SYNC_MANAGER_EXECUTE_EVENTS,
+                group: LogGroup.findByGroupId(LogGroupCode.GROUP_SYNC_MANAGER),
+                status: LogStatus.NOT_STARTED,
+                description: 'logreport.sync.syncdss.executecompiled.label'
+        ).save(flush: true)
+
+        new LogReport(
+                reportId: LogReportCode.REPORT_SYNC_MANAGER_EXECUTE_RESET_ERRORS,
+                group: LogGroup.findByGroupId(LogGroupCode.GROUP_SYNC_MANAGER),
+                status: LogStatus.NOT_STARTED,
+                description: 'logreport.sync.syncdss.reset.errors.label'
         ).save(flush: true)
 
         /* Group Generate Files */

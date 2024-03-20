@@ -25,6 +25,14 @@ class EventSyncController {
         render view: "index", model: [logReports : logReports, syncProcesses:syncProcesses]
     }
 
+    def advancedindex = {
+        def logReports = LogReport.executeQuery("select lr from LogReport lr where lr.group.groupId=?0 order by lr.reportId", [LogGroupCode.GROUP_SYNC_MANAGER])
+
+        def syncProcesses = eventSyncService.mainProcessedStatus()
+
+        render view: "index", model: [logReports : logReports, syncProcesses:syncProcesses]
+    }
+
     def execute = {
         LogReport logReport = null
 
@@ -38,7 +46,7 @@ class EventSyncController {
 
         def id = logReport.reportId
 
-        if (logReport.reportId== LogReportCode.REPORT_DSS_EVENTS_SYNC){
+        if (logReport.reportId==LogReportCode.REPORT_DSS_EVENTS_SYNC || logReport.reportId==LogReportCode.REPORT_SYNC_MANAGER_EXECUTE_ALL_EVENTS){
             new Thread(new Runnable() {
                 @Override
                 void run() {
@@ -48,24 +56,39 @@ class EventSyncController {
             }).start();
         }
 
-        if (logReport.reportId== LogReportCode.REPORT_DSS_EVENTS_EXECUTE_SYNC){
+        if (logReport.reportId==LogReportCode.REPORT_SYNC_MANAGER_EXECUTE_COMPILE_EVENTS){
             new Thread(new Runnable() {
                 @Override
                 void run() {
-                    println "executing transfer from raw data to HDS - execute events"
-                    //eventSyncService.executeEvents(id) - we will not execute this
+                    println "executing transfer from raw data to HDS - execute compilation of events"
+                    eventSyncService.executeCompileEvents(id) //- we will not execute this
                 }
             }).start();
         }
 
-        if (logReport.reportId== LogReportCode.REPORT_DSS_EVENTS_RESET_ERRORS){
+        if (logReport.reportId==LogReportCode.REPORT_DSS_EVENTS_EXECUTE_SYNC || logReport.reportId==LogReportCode.REPORT_SYNC_MANAGER_EXECUTE_EVENTS){
+            new Thread(new Runnable() {
+                @Override
+                void run() {
+                    println "executing transfer from raw data to HDS - execute events"
+                    eventSyncService.executeEvents(id)
+                }
+            }).start();
+        }
+
+        if (logReport.reportId==LogReportCode.REPORT_DSS_EVENTS_RESET_ERRORS || logReport.reportId==LogReportCode.REPORT_SYNC_MANAGER_EXECUTE_RESET_ERRORS){
             new Thread(new Runnable() {
                 @Override
                 void run() {
                     println "executing reset errors to not processed - errors events"
-                    //eventSyncService.executeResetErrors(id) - we will not execute this
+                    eventSyncService.executeResetErrors(id)
                 }
             }).start();
+        }
+
+        if (logReport.group.groupId==LogGroupCode.GROUP_SYNC_MANAGER) {
+            redirect action: "advancedindex"
+            return
         }
 
         redirect (action: "index")
