@@ -4,13 +4,20 @@ package org.philimone.hds.explorer.server.model.authentication
 import grails.gorm.transactions.Transactional
 import grails.web.mapping.LinkGenerator
 import net.betainteractive.utilities.StringUtil
+import org.apache.poi.ss.usermodel.Cell
+import org.apache.poi.ss.usermodel.DataFormatter
+import org.apache.poi.xssf.usermodel.XSSFSheet
+import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import org.philimone.hds.explorer.server.model.main.Module
+import org.philimone.hds.explorer.server.model.main.collect.raw.RawMessage
 import org.philimone.hds.explorer.services.GeneralUtilitiesService
+import org.philimone.hds.explorer.services.errors.ErrorMessageService
 
 @Transactional
 class UserService {
 
     def GeneralUtilitiesService generalUtilitiesService
+    def ErrorMessageService errorMessageService
     def codeGeneratorService
     def springSecurityService
     def moduleService
@@ -44,7 +51,7 @@ class UserService {
         //generate user code
         user.code = codeGeneratorService.generateUserCode(user)
 
-        user = user.save(flush: true)
+        user.save(flush: true)
         UserRole.create(user, roles, true)
 
         def module = moduleService.getDefaultModule()
@@ -73,7 +80,7 @@ class UserService {
         //generate user code
         user.code = codeGeneratorService.generateUserCode(user)
 
-        user = user.save(flush: true)
+        user.save(flush: true)
         UserRole.create(user, roles, true)
 
         def module = moduleService.getDefaultModule()
@@ -133,7 +140,7 @@ class UserService {
         //timestamp
         user.password = newPassword
 
-        user = user.save(flush: true)
+        user.save(flush: true)
 
         //send email
         if (!StringUtil.isBlank(user?.email)) { //send email with the credentials if mail address exists
@@ -150,6 +157,86 @@ class UserService {
     boolean passwordEquals(User user, String newPassword){
         def pe = springSecurityService.passwordEncoder
         return pe.matches(newPassword, user.password)
+    }
+
+    ImportUsersResult importUsers(String xlsFilename, List<Role> roles, List<Module> modules) {
+        def xlsFormInput = new FileInputStream(xlsFilename)
+        def xlsFormWorkbook = new XSSFWorkbook(xlsFormInput)
+
+        //get sheet lists and settings
+        def xlsFormSheet = null as XSSFSheet
+
+        try {
+            xlsFormSheet = xlsFormWorkbook.getSheetAt(0)
+        } catch(Exception ex) {
+            ex.printStackTrace()
+
+            def message = errorMessageService.getRawMessage("trackingList.validation.sheets.error")
+            def result = new ImportUsersResult(ValidationStatus.ERROR, [message])
+
+            return result
+        }
+
+        def errorMessages = new ArrayList<RawMessage>()
+        def createdUsers = new ArrayList<User>()
+
+        //read file
+        xlsFormSheet.rowIterator().eachWithIndex { row, index ->
+            //skip header
+            if (index == 0) return
+
+            String firstName = getStringCellValue(row.getCell(1))
+            String lastName = getStringCellValue(row.getCell(2))
+            String password = getStringCellValue(row.getCell(4))
+
+            if (StringUtil.isBlank(firstName) || StringUtil.isBlank(lastName) || StringUtil.isBlank(password)) return
+
+            User user = new User(code: "", username: "", firstName: firstName, lastName: lastName)
+            user.code = codeGeneratorService.generateUserCode(user)
+            user.username = "FW${user.code}"
+            user.password = password
+
+            println "${firstName},${lastName},${user.username},${getStringCellValue(row.getCell(4))}"
+
+            //save users
+            user.save(flush: true)
+
+            if (user.hasErrors()) {
+                println "user errors: ${user.errors}"
+                errorMessages.addAll(errorMessageService.getRawMessages(user))
+                return
+            }
+
+            UserRole.create(user, roles, true)
+
+            def module = moduleService.getDefaultModule()
+            if (modules?.empty && module!=null){
+                modules.add(module)
+            }
+
+            modules.each {
+                user.addToModules(it.code)
+            }
+            user.save()
+
+            createdUsers.add(user)
+        }
+
+        //ends if there is an error
+        if (errorMessages.size()>0) {
+            return new ImportUsersResult(ValidationStatus.ERROR, errorMessages)
+        }
+
+        def result = new ImportUsersResult(ValidationStatus.SUCCESS, errorMessages)
+        result.createdUsers.addAll(createdUsers)
+
+        return result
+    }
+
+    String getStringCellValue(Cell cell){
+        DataFormatter df = new DataFormatter();
+        String value = df.formatCellValue(cell);
+        return value==null ? "" : value
     }
 
     User get(Serializable id){
@@ -192,4 +279,16 @@ class UserService {
         user.save(flush: true)
     }
 
+    class ImportUsersResult {
+        ValidationStatus status
+        List<RawMessage> errorMessages = new ArrayList<>()
+        List<User> createdUsers = new ArrayList<>()
+
+        ImportUsersResult(ValidationStatus status, List<RawMessage> errors) {
+            this.status = status
+            this.errorMessages.addAll(errors)
+        }
+    }
+
+    enum ValidationStatus { SUCCESS, ERROR }
 }

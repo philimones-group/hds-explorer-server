@@ -1,8 +1,11 @@
 package org.philimone.hds.explorer.server.model.authentication
 
 import grails.validation.ValidationException
+import net.betainteractive.utilities.GeneralUtil
 import org.philimone.hds.explorer.server.model.main.Module
 import org.philimone.hds.explorer.server.model.main.ModuleService
+import org.philimone.hds.explorer.server.model.main.TrackingList
+import org.philimone.hds.explorer.server.model.main.TrackingListService
 
 import static org.springframework.http.HttpStatus.*
 
@@ -23,12 +26,75 @@ class UserController {
 
     def show(String id) {
         def user = userService.get(id)
-        def modules= moduleService.findAllByCodes(user.modules)
+        def modules= moduleService.findAllByCodes(user?.modules)
         respond user, model: [modules: modules]
     }
 
     def create() {
         respond new User(params)
+    }
+
+    def importusers() {
+        respond new User(params), model: [userInstance: new User(params)]
+    }
+
+    def uploadUsersFile = {
+
+        def file = request.getFile('fileUpload')
+        def fileName = file.originalFilename
+        def newFile = "/tmp/userslist-web-${GeneralUtil.generateUUID()}" //SystemPath.externalDocsPath + File.separator + fileName
+
+        file.transferTo(new File(newFile))
+
+        //read xls file
+        //validate lists first
+        //def validationResult = trackingListService.validateXls(newFile.toString())
+
+        /*
+        if (validationResult.status == TrackingListService.ValidationStatus.ERROR) {
+            params.filename = fileName
+            def trackingListInstance = params.trackingListId ? TrackingList.get(params.trackingListId) : new TrackingList(params)
+            render view: "add", model: [trackingListInstance: trackingListInstance, absoluteFilename: newFile, errorMessages: validationResult.errorMessages]
+            return
+        }*/
+
+        def modules = Module.findAllByCodeInList(params.modules)
+        def userInstance = new User(params)
+
+        //println "upload: selected trackinglist: ${trackingListInstance}, ${trackingListInstance?.id}, ${newFile}"
+
+        render view: "importusers", model: [absoluteFilename: newFile, uploadedFilename: fileName, userInstance: userInstance, modules: modules]
+    }
+
+    def saveUsers(User user) {
+        //discard this user at the end its just being used to carrie some variables
+
+        def userRoles = Role.getAll(params.list("roles.id"))
+        //params.remove("roles.id")
+
+        def userModules = Module.getAll(params.list("modules"))
+        //params.remove("modules")
+
+        //import users from xls file
+        def usersCreated = 0
+
+        def importResult = userService.importUsers(params.absoluteFilename, userRoles, userModules)
+
+        if (importResult.status == UserService.ValidationStatus.SUCCESS) {
+            usersCreated = importResult.createdUsers.size()
+        } else {
+            render view:'importusers', model: [userInstance: user, absoluteFilename: params.absoluteFilename, errorMessages: importResult.errorMessages, modules: params.list("modules")]
+            return
+        }
+
+        request.withFormat {
+            form multipartForm {
+                flash.message = message(code: 'user.file.import.success.label', args: [usersCreated])
+                redirect controler:"user", action: 'index'
+            }
+            '*' { respond user, [status: CREATED] }
+        }
+
     }
 
     def save(User user) {
