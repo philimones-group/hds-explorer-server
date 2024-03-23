@@ -82,6 +82,13 @@ class UserController {
 
         if (importResult.status == UserService.ValidationStatus.SUCCESS) {
             usersCreated = importResult.createdUsers.size()
+        } else if (importResult.status == UserService.ValidationStatus.PARTIAL) {
+            usersCreated = importResult.createdUsers.size()
+            flash.message = message(code: 'user.file.import.success.label', args: [usersCreated])
+            
+            render view:'importusers', model: [userInstance: user, absoluteFilename: params.absoluteFilename, errorMessages: importResult.errorMessages, modules: params.list("modules")]
+            return
+
         } else {
             render view:'importusers', model: [userInstance: user, absoluteFilename: params.absoluteFilename, errorMessages: importResult.errorMessages, modules: params.list("modules")]
             return

@@ -187,13 +187,14 @@ class UserService {
 
             String firstName = getStringCellValue(row.getCell(1))
             String lastName = getStringCellValue(row.getCell(2))
+            String username = getStringCellValue(row.getCell(3))
             String password = getStringCellValue(row.getCell(4))
 
             if (StringUtil.isBlank(firstName) || StringUtil.isBlank(lastName) || StringUtil.isBlank(password)) return
 
             User user = new User(code: "", username: "", firstName: firstName, lastName: lastName)
             user.code = codeGeneratorService.generateUserCode(user)
-            user.username = "FW${user.code}"
+            user.username = StringUtil.isBlank(username) ? "FW${user.code}" : username
             user.password = password
 
             println "${firstName},${lastName},${user.username},${getStringCellValue(row.getCell(4))}"
@@ -224,7 +225,9 @@ class UserService {
 
         //ends if there is an error
         if (errorMessages.size()>0) {
-            return new ImportUsersResult(ValidationStatus.ERROR, errorMessages)
+            def result = new ImportUsersResult(ValidationStatus.ERROR, errorMessages)
+            result.createdUsers.addAll(createdUsers)
+            return result
         }
 
         def result = new ImportUsersResult(ValidationStatus.SUCCESS, errorMessages)
@@ -290,5 +293,5 @@ class UserService {
         }
     }
 
-    enum ValidationStatus { SUCCESS, ERROR }
+    enum ValidationStatus { SUCCESS, ERROR, PARTIAL }
 }
