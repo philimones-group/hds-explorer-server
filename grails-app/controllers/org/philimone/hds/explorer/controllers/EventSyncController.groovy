@@ -22,7 +22,7 @@ class EventSyncController {
 
         def syncProcesses = eventSyncService.mainProcessedStatus()
 
-        render view: "index", model: [logReports : logReports, syncProcesses:syncProcesses]
+        render view: "index", model: [logReports : logReports, syncProcesses:syncProcesses, advanced: false]
     }
 
     def advancedindex = {
@@ -30,7 +30,7 @@ class EventSyncController {
 
         def syncProcesses = eventSyncService.mainProcessedStatus()
 
-        render view: "index", model: [logReports : logReports, syncProcesses:syncProcesses]
+        render view: "index", model: [logReports : logReports, syncProcesses:syncProcesses, advanced: true]
     }
 
     def execute = {
@@ -41,17 +41,27 @@ class EventSyncController {
             logReport.keyTimestamp = System.currentTimeMillis() //CREATE timestamp code
             logReport.status = LogStatus.STARTED
             logReport.start = LocalDateTime.now()
+            logReport.end = null
             logReport.save(flush: true)
         }
 
         def id = logReport.reportId
+        def executionLimit = 0
+        println "exec limit ${params.executionLimit}"
+        if (params.executionLimit) {
+            def str = params.executionLimit as String
+            if (StringUtil.isInteger(str)){
+                executionLimit = Integer.parseInt(str)
+            }
+        }
+        println "set executionLimit=${executionLimit}"
 
         if (logReport.reportId==LogReportCode.REPORT_DSS_EVENTS_SYNC || logReport.reportId==LogReportCode.REPORT_SYNC_MANAGER_EXECUTE_ALL_EVENTS){
             new Thread(new Runnable() {
                 @Override
                 void run() {
                     println "executing transfer from raw data to HDS - compile and execute"
-                    eventSyncService.executeAll(id)
+                    eventSyncService.executeAll(id, executionLimit)
                 }
             }).start();
         }
@@ -71,7 +81,7 @@ class EventSyncController {
                 @Override
                 void run() {
                     println "executing transfer from raw data to HDS - execute events"
-                    eventSyncService.executeEvents(id)
+                    eventSyncService.executeEvents(id, executionLimit)
                 }
             }).start();
         }
@@ -114,7 +124,7 @@ class EventSyncController {
     }
 
     def editRawDomain = {
-        //def errorLog = RawErrorLog.get(params.id)
+        //def errorLog = RawErrorLog.findByUuid(params.id)
         redirect controller:"rawDomain", action: "editDomain", model: [id:params.id]
     }
 
@@ -182,7 +192,7 @@ class EventSyncController {
             filterer()
             orderList.each { oi ->
                 switch (oi[0]) {
-                    case 'creationDate': order 'createdDate', oi[1]; break
+                    case 'id': order 'id', oi[1]; break
                 }
             }
             maxResults (jqdtParams.length as Integer)

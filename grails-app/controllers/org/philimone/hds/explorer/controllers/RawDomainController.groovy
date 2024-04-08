@@ -15,7 +15,7 @@ class RawDomainController {
 
         //println "id=" + params.id
 
-        def errorLog = RawErrorLog.get(params.id)
+        def errorLog = RawErrorLog.findByUuid(params.id)
         def entity = errorLog.entity
 
         if (entity == RawEntity.HOUSEHOLD){
@@ -82,51 +82,51 @@ class RawDomainController {
     }
 
     def editHousehold = {
-        respond RawHousehold.get(params.id), model: [mode: "edit", errorMessages: RawErrorLog.get(params.id)?.messages]
+        respond RawHousehold.get(params.id), model: [mode: "edit", errorMessages: RawErrorLog.findByUuid(params.id)?.messages]
     }
 
     def editVisit = {
-        respond RawVisit.get(params.id), model: [mode: "edit", errorMessages: RawErrorLog.get(params.id)?.messages]
+        respond RawVisit.get(params.id), model: [mode: "edit", errorMessages: RawErrorLog.findByUuid(params.id)?.messages]
     }
 
     def editIncompleteVisit = {
-        respond RawIncompleteVisit.get(params.id), model: [mode: "edit", errorMessages: RawErrorLog.get(params.id)?.messages]
+        respond RawIncompleteVisit.get(params.id), model: [mode: "edit", errorMessages: RawErrorLog.findByUuid(params.id)?.messages]
     }
 
     def editMemberEnu = {
-        respond RawMemberEnu.get(params.id), model: [mode: "edit", errorMessages: RawErrorLog.get(params.id)?.messages]
+        respond RawMemberEnu.get(params.id), model: [mode: "edit", errorMessages: RawErrorLog.findByUuid(params.id)?.messages]
     }
 
     def editDeath = {
-        respond RawDeath.get(params.id), model: [mode: "edit", errorMessages: RawErrorLog.get(params.id)?.messages]
+        respond RawDeath.get(params.id), model: [mode: "edit", errorMessages: RawErrorLog.findByUuid(params.id)?.messages]
     }
 
     def editOutMigration = {
-        respond RawOutMigration.get(params.id), model: [mode: "edit", errorMessages: RawErrorLog.get(params.id)?.messages]
+        respond RawOutMigration.get(params.id), model: [mode: "edit", errorMessages: RawErrorLog.findByUuid(params.id)?.messages]
     }
 
     def editInMigration = {
-        respond RawInMigration.get(params.id), model: [mode: "edit", errorMessages: RawErrorLog.get(params.id)?.messages]
+        respond RawInMigration.get(params.id), model: [mode: "edit", errorMessages: RawErrorLog.findByUuid(params.id)?.messages]
     }
 
     def editExternalInMigration = {
-        respond RawExternalInMigration.get(params.id), model: [mode: "edit", errorMessages: RawErrorLog.get(params.id)?.messages]
+        respond RawExternalInMigration.get(params.id), model: [mode: "edit", errorMessages: RawErrorLog.findByUuid(params.id)?.messages]
     }
 
     def editPregnancyRegistration = {
-        respond RawPregnancyRegistration.get(params.id), model: [mode: "edit", errorMessages: RawErrorLog.get(params.id)?.messages]
+        respond RawPregnancyRegistration.get(params.id), model: [mode: "edit", errorMessages: RawErrorLog.findByUuid(params.id)?.messages]
     }
 
     def editPregnancyOutcome = {
-        respond RawPregnancyOutcome.get(params.id), model: [mode: "edit", errorMessages: RawErrorLog.get(params.id)?.messages]
+        respond RawPregnancyOutcome.get(params.id), model: [mode: "edit", errorMessages: RawErrorLog.findByUuid(params.id)?.messages]
     }
 
     def editMaritalRelationship = {
-        respond RawMaritalRelationship.get(params.id), model: [mode: "edit", errorMessages: RawErrorLog.get(params.id)?.messages]
+        respond RawMaritalRelationship.get(params.id), model: [mode: "edit", errorMessages: RawErrorLog.findByUuid(params.id)?.messages]
     }
 
     def editChangeHead = {
-        respond RawChangeHead.get(params.id), model: [mode: "edit", errorMessages: RawErrorLog.get(params.id)?.messages]
+        respond RawChangeHead.get(params.id), model: [mode: "edit", errorMessages: RawErrorLog.findByUuid(params.id)?.messages]
     }
 
     def updateHousehold = {
@@ -151,7 +151,7 @@ class RawDomainController {
             }
 
         } catch (ValidationException e) {
-            respond rawHousehold.errors, view:'editHousehold', model: [mode: "edit", errorMessages: RawErrorLog.get(rawHousehold.id)?.messages]
+            respond rawHousehold.errors, view:'editHousehold', model: [mode: "edit", errorMessages: RawErrorLog.findByUuid(rawHousehold.id)?.messages]
             return
         }
 
@@ -184,7 +184,7 @@ class RawDomainController {
             }
 
         } catch (ValidationException e) {
-            respond rawVisit.errors, view:'editVisit', model: [mode: "edit", errorMessages: RawErrorLog.get(rawVisit.id)?.messages]
+            respond rawVisit.errors, view:'editVisit', model: [mode: "edit", errorMessages: RawErrorLog.findByUuid(rawVisit.id)?.messages]
             return
         }
 
@@ -215,7 +215,7 @@ class RawDomainController {
             }
 
         } catch (ValidationException e) {
-            respond rawIncompleteVisit.errors, view:'editIncompleteVisit', model: [mode: "edit", errorMessages: RawErrorLog.get(rawIncompleteVisit.id)?.messages]
+            respond rawIncompleteVisit.errors, view:'editIncompleteVisit', model: [mode: "edit", errorMessages: RawErrorLog.findByUuid(rawIncompleteVisit.id)?.messages]
             return
         }
 
@@ -249,7 +249,7 @@ class RawDomainController {
             }
 
         } catch (ValidationException e) {
-            respond rawMemberEnu.errors, view:'editMemberEnu', model: [mode: "edit", errorMessages: RawErrorLog.get(rawMemberEnu.id)?.messages]
+            respond rawMemberEnu.errors, view:'editMemberEnu', model: [mode: "edit", errorMessages: RawErrorLog.findByUuid(rawMemberEnu.id)?.messages]
             return
         }
 
@@ -282,7 +282,7 @@ class RawDomainController {
             }
 
         } catch (ValidationException e) {
-            respond rawDeath.errors, view:'editDeath', model: [mode: "edit", errorMessages: RawErrorLog.get(rawDeath.id)?.messages]
+            respond rawDeath.errors, view:'editDeath', model: [mode: "edit", errorMessages: RawErrorLog.findByUuid(rawDeath.id)?.messages]
             return
         }
 
@@ -315,7 +315,7 @@ class RawDomainController {
             }
 
         } catch (ValidationException e) {
-            respond rawOutMigration.errors, view:'editOutMigration', model: [mode: "edit", errorMessages: RawErrorLog.get(rawOutMigration.id)?.messages]
+            respond rawOutMigration.errors, view:'editOutMigration', model: [mode: "edit", errorMessages: RawErrorLog.findByUuid(rawOutMigration.id)?.messages]
             return
         }
 
@@ -348,7 +348,7 @@ class RawDomainController {
             }
 
         } catch (ValidationException e) {
-            respond rawInMigration.errors, view:'editInMigration', model: [mode: "edit", errorMessages: RawErrorLog.get(rawInMigration.id)?.messages]
+            respond rawInMigration.errors, view:'editInMigration', model: [mode: "edit", errorMessages: RawErrorLog.findByUuid(rawInMigration.id)?.messages]
             return
         }
 
@@ -382,7 +382,7 @@ class RawDomainController {
             }
 
         } catch (ValidationException e) {
-            respond rawExternalInMigration.errors, view:'editExternalInMigration', model: [mode: "edit", errorMessages: RawErrorLog.get(rawExternalInMigration.id)?.messages]
+            respond rawExternalInMigration.errors, view:'editExternalInMigration', model: [mode: "edit", errorMessages: RawErrorLog.findByUuid(rawExternalInMigration.id)?.messages]
             return
         }
 
@@ -418,7 +418,7 @@ class RawDomainController {
             }
 
         } catch (ValidationException e) {
-            respond rawPregnancyRegistration.errors, view:'editPregnancyRegistration', model: [mode: "edit", errorMessages: RawErrorLog.get(rawPregnancyRegistration.id)?.messages]
+            respond rawPregnancyRegistration.errors, view:'editPregnancyRegistration', model: [mode: "edit", errorMessages: RawErrorLog.findByUuid(rawPregnancyRegistration.id)?.messages]
             return
         }
 
@@ -451,7 +451,7 @@ class RawDomainController {
             }
 
         } catch (ValidationException e) {
-            respond rawPregnancyOutcome.errors, view:'editPregnancyOutcome', model: [mode: "edit", errorMessages: RawErrorLog.get(rawPregnancyOutcome.id)?.messages]
+            respond rawPregnancyOutcome.errors, view:'editPregnancyOutcome', model: [mode: "edit", errorMessages: RawErrorLog.findByUuid(rawPregnancyOutcome.id)?.messages]
             return
         }
 
@@ -485,7 +485,7 @@ class RawDomainController {
             }
 
         } catch (ValidationException e) {
-            respond rawMaritalRelationship.errors, view:'editMaritalRelationship', model: [mode: "edit", errorMessages: RawErrorLog.get(rawMaritalRelationship.id)?.messages]
+            respond rawMaritalRelationship.errors, view:'editMaritalRelationship', model: [mode: "edit", errorMessages: RawErrorLog.findByUuid(rawMaritalRelationship.id)?.messages]
             return
         }
 
@@ -518,7 +518,7 @@ class RawDomainController {
             }
 
         } catch (ValidationException e) {
-            respond rawChangeHead.errors, view:'editChangeHead', model: [mode: "edit", errorMessages: RawErrorLog.get(rawChangeHead.id)?.messages]
+            respond rawChangeHead.errors, view:'editChangeHead', model: [mode: "edit", errorMessages: RawErrorLog.findByUuid(rawChangeHead.id)?.messages]
             return
         }
 

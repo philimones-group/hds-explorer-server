@@ -503,7 +503,7 @@ class RawBatchExecutionServiceSpec extends Specification {
 
         setupAll()
 
-        rawBatchExecutionService.compileAndExecuteEvents()
+        rawBatchExecutionService.compileAndExecuteEvents("", 0)
 
         expect:
         RawEvent.count()==10

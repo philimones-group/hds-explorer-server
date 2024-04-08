@@ -6,6 +6,7 @@ import org.philimone.hds.explorer.io.SystemPath
 import org.philimone.hds.explorer.server.model.enums.LogStatus
 import org.philimone.hds.explorer.server.model.enums.ProcessedStatus
 import org.philimone.hds.explorer.server.model.enums.settings.LogReportCode
+import org.philimone.hds.explorer.server.model.enums.temporal.ExternalInMigrationType
 import org.philimone.hds.explorer.server.model.enums.temporal.InMigrationType
 import org.philimone.hds.explorer.server.model.json.SyncProcessedStatus
 import org.philimone.hds.explorer.server.model.logs.LogReport
@@ -20,7 +21,7 @@ class EventSyncService {
     def rawBatchExecutionService
     def generalUtilitiesService
 
-    def executeAll(LogReportCode logReportId) {
+    def executeAll(LogReportCode logReportId, int executionLimit) {
 
         LogOutput log = generalUtilitiesService.getOutput(SystemPath.getLogsPath(), "rawbatch-execute-all");
         PrintStream output = log.output
@@ -54,7 +55,7 @@ class EventSyncService {
 
         try {
 
-            rawBatchExecutionService.compileAndExecuteEvents(reportFileId)
+            rawBatchExecutionService.compileAndExecuteEvents(reportFileId, executionLimit)
 
         }catch (Exception ex){
             ex.printStackTrace()
@@ -143,7 +144,7 @@ class EventSyncService {
         output.close();
     }
 
-    def executeEvents(LogReportCode logReportId){
+    def executeEvents(LogReportCode logReportId, int executionLimit){
         LogOutput log = generalUtilitiesService.getOutput(SystemPath.getLogsPath(), "rawbatch-execute-events");
         PrintStream output = log.output
         if (output == null) return;
@@ -173,7 +174,7 @@ class EventSyncService {
 
         try {
 
-            rawBatchExecutionService.executeEvents(reportFileId)
+            rawBatchExecutionService.executeEvents(reportFileId, executionLimit)
 
         }catch (Exception ex){
             ex.printStackTrace()
@@ -271,26 +272,25 @@ class EventSyncService {
 
     List<SyncProcessedStatus> mainProcessedStatus() {
 
-        def list = [] as List<SyncProcessedStatus>
+        def list = new ArrayList<SyncProcessedStatus>()
 
         Household.withTransaction {
-            list = [
-                    getHouseholdStatus(),
-                    getMemberStatus(),
-                    getRegionRegStatus(),
-                    getHouseholdRegStatus(),
-                    getVisitStatus(),
-                    getMemberEnuStatus(),
-                    getMaritalRelationshipStatus(),
-                    getInMigrationStatus(),
-                    getExternalInMigrationStatus(),
-                    getOutMigrationStatus(),
-                    getPregnancyRegistrationStatus(),
-                    getPregnancyOutcomeStatus(),
-                    getDeathStatus(),
-                    getChangeHeadStatus(),
-                    getIncompleteVisitStatus()
-            ]
+            list.add(getHouseholdStatus())
+            list.add(getMemberStatus())
+            list.add(getRegionRegStatus())
+            list.add(getHouseholdRegStatus())
+            list.add(getVisitStatus())
+            list.add(getMemberEnuStatus())
+            list.add(getMaritalRelationshipStatus())
+            list.add(getInMigrationStatus())
+            list.add(getExternalInMigrationEntryStatus())
+            list.add(getExternalInMigrationReentryStatus())
+            list.add(getOutMigrationStatus())
+            list.add(getPregnancyRegistrationStatus())
+            list.add(getPregnancyOutcomeStatus())
+            list.add(getDeathStatus())
+            list.add(getChangeHeadStatus())
+            list.add(getIncompleteVisitStatus())
         }
 
         return list
@@ -416,16 +416,31 @@ class EventSyncService {
         return status
     }
 
-    SyncProcessedStatus getExternalInMigrationStatus(){
+    SyncProcessedStatus getExternalInMigrationEntryStatus(){
         SyncProcessedStatus status = new SyncProcessedStatus()
 
         //total records
-        status.name = 'syncdss.sync.externalinmigration.label'
-        status.totalRecords = InMigration.countByType(InMigrationType.EXTERNAL)
-        status.processed = RawExternalInMigration.countByProcessedStatus(ProcessedStatus.SUCCESS)
-        status.processedWithError = RawExternalInMigration.countByProcessedStatus(ProcessedStatus.ERROR)
-        status.notProcessed = RawExternalInMigration.countByProcessedStatus(ProcessedStatus.NOT_PROCESSED)
-        status.invalidated = RawExternalInMigration.countByProcessedStatus(ProcessedStatus.INVALIDATED)
+        status.name = 'syncdss.sync.externalinmigration.entry.label'
+        status.totalRecords = InMigration.countByTypeAndExtMigType(InMigrationType.EXTERNAL, ExternalInMigrationType.ENTRY)
+        status.processed = RawExternalInMigration.countByProcessedStatusAndExtMigrationType(ProcessedStatus.SUCCESS, ExternalInMigrationType.ENTRY.name())
+        status.processedWithError = RawExternalInMigration.countByProcessedStatusAndExtMigrationType(ProcessedStatus.ERROR, ExternalInMigrationType.ENTRY.name())
+        status.notProcessed = RawExternalInMigration.countByProcessedStatusAndExtMigrationType(ProcessedStatus.NOT_PROCESSED, ExternalInMigrationType.ENTRY.name())
+        status.invalidated = RawExternalInMigration.countByProcessedStatusAndExtMigrationType(ProcessedStatus.INVALIDATED, ExternalInMigrationType.ENTRY.name())
+        //status.otherCases = RawExternalInMigration.countByProcessedStatus(ProcessedStatus.)
+
+        return status
+    }
+
+    SyncProcessedStatus getExternalInMigrationReentryStatus(){
+        SyncProcessedStatus status = new SyncProcessedStatus()
+
+        //total records
+        status.name = 'syncdss.sync.externalinmigration.reentry.label'
+        status.totalRecords = InMigration.countByTypeAndExtMigType(InMigrationType.EXTERNAL, ExternalInMigrationType.REENTRY)
+        status.processed = RawExternalInMigration.countByProcessedStatusAndExtMigrationType(ProcessedStatus.SUCCESS, ExternalInMigrationType.REENTRY.name())
+        status.processedWithError = RawExternalInMigration.countByProcessedStatusAndExtMigrationType(ProcessedStatus.ERROR, ExternalInMigrationType.REENTRY.name())
+        status.notProcessed = RawExternalInMigration.countByProcessedStatusAndExtMigrationType(ProcessedStatus.NOT_PROCESSED, ExternalInMigrationType.REENTRY.name())
+        status.invalidated = RawExternalInMigration.countByProcessedStatusAndExtMigrationType(ProcessedStatus.INVALIDATED, ExternalInMigrationType.REENTRY.name())
         //status.otherCases = RawExternalInMigration.countByProcessedStatus(ProcessedStatus.)
 
         return status
