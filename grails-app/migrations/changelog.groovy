@@ -15,4 +15,7 @@ databaseChangeLog = {
     include file: 'update-extension_tables-remove-versioning.groovy'
     include file: 'alter-nullable-extmigtype_on_in_imigration_ext.groovy'
     include file: 'alter-tablename-change_head_ext.groovy'
+    include file: 'add-typedesc_to_raw_event_table.groovy'
+    include file: 'add-id-autoincrement_to_raw_error_log.groovy'
+    include file: 'add-household_code-to_raw_event.groovy'
 }

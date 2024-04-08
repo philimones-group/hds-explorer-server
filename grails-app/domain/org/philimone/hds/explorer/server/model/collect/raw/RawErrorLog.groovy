@@ -14,6 +14,7 @@ class RawErrorLog {
      */
     String uuid
 
+    //Long eventOrder
 
     LogReportFile logReportFile
 
@@ -77,6 +78,7 @@ class RawErrorLog {
 
     static constraints = {
         uuid unique: true, nullable: false, maxSize: 32
+        //eventOrder nullable: false
         logReportFile nullable: false
         entity nullable: false
         columnName blank: true, nullable: true
@@ -87,8 +89,9 @@ class RawErrorLog {
     static mapping = {
         table "_raw_error_log"
 
-        id column: "uuid", name: "uuid", generator: "assigned"
+        uuid column: "uuid", name: "uuid", generator: "assigned"
 
+        //eventOrder column: "event_order", index: "idx_event_order", generator: "identity"
         logReportFile column: "log_report_file_uuid"
 
         entity column: "entity", index: "idx_entity"

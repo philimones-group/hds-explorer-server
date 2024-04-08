@@ -601,6 +601,18 @@ public class StringUtil {
         return name;
     }
 
+    public static List<String> toList(String listText){
+        def list = new ArrayList<String>()
+
+        listText = listText.replaceAll("\\s+", "") //remove spaces
+        listText = listText.replace("[", "")
+        listText = listText.replace("]", "")
+
+        list.addAll(listText.split(","))
+
+        return list
+    }
+
     public static String capitalize(String text) {
         try {
             text = text.substring(0,1).toUpperCase() + text.toLowerCase().substring(1);

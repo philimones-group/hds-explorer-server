@@ -6,16 +6,17 @@ enum RawEventType {
     EVENT_HOUSEHOLD                    (1),
     EVENT_VISIT                        (2),
     EVENT_MEMBER_ENU                   (3),
-    EVENT_DEATH                        (4),
-    EVENT_OUTMIGRATION                 (5),
-    EVENT_INTERNAL_INMIGRATION         (6),
-    EVENT_EXTERNAL_INMIGRATION_ENTRY   (7),
-    EVENT_EXTERNAL_INMIGRATION_REENTRY (8),
-    EVENT_PREGNANCY_REGISTRATION       (9),
-    EVENT_PREGNANCY_OUTCOME            (91),
-    EVENT_MARITAL_RELATIONSHIP         (92),
-    EVENT_CHANGE_HEAD_OF_HOUSEHOLD     (93),
-    EVENT_INCOMPLETE_VISIT             (94)
+    EVENT_EXTERNAL_INMIGRATION_ENTRY   (4),
+    EVENT_INTERNAL_INMIGRATION         (5),
+    EVENT_EXTERNAL_INMIGRATION_REENTRY (6),
+    EVENT_PREGNANCY_REGISTRATION       (7),
+    EVENT_PREGNANCY_OUTCOME            (8),
+    EVENT_MARITAL_RELATIONSHIP         (9),
+    EVENT_CHANGE_HEAD_OF_HOUSEHOLD     (91),
+    EVENT_INCOMPLETE_VISIT             (92),
+    EVENT_OUTMIGRATION                 (93),
+    EVENT_DEATH                        (94)
+
 
     Integer code
 
