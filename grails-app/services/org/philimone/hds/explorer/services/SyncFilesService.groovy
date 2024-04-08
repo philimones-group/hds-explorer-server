@@ -31,6 +31,7 @@ import org.philimone.hds.explorer.server.model.main.RedcapApi
 import org.philimone.hds.explorer.server.model.main.RedcapMapping
 import org.philimone.hds.explorer.server.model.main.Region
 import org.philimone.hds.explorer.server.model.main.Residency
+import org.philimone.hds.explorer.server.model.main.ResidencyService
 import org.philimone.hds.explorer.server.model.main.Round
 import org.philimone.hds.explorer.server.model.main.Module
 import org.philimone.hds.explorer.server.model.main.TrackingList
@@ -56,10 +57,21 @@ import java.time.format.DateTimeFormatter
 @Transactional
 class SyncFilesService {
 
+    def sessionFactory
+
     def generalUtilitiesService
     def trackingListService
     def syncFilesReportService
     def moduleService
+
+    def cleanUpGorm() {
+        def session = sessionFactory.currentSession
+        session.flush()
+        session.clear()
+
+        System.gc()
+        //println "clearing up"
+    }
 
     def generateSettingsXML(LogReportCode logReportId) {
         generateAppParametersXML(logReportId)
@@ -1053,9 +1065,7 @@ class SyncFilesService {
             //Ler todas dIndividuos
             def households = []
 
-            Household.withTransaction {
-                households = Household.executeQuery("select h.id from Household h")
-            }
+            households = Household.executeQuery("select h.id from Household h")
 
             println "creating xml file ${households.size()}"
             PrintStream outputFile = new PrintStream(new FileOutputStream(SystemPath.generatedFilesPath + "/households.xml"), true)
@@ -1063,12 +1073,17 @@ class SyncFilesService {
             outputFile.print("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?><households>")
 
             int count = 0
-            Household.withTransaction {
-                households.each { id ->
+
+            households.collate(2000).each { batch ->
+                def list = Household.findAllByIdInList(batch)
+                list.each { household ->
                     count++
-                    def h = Household.get(id)
-                    outputFile.print(toXML(h))
-                    h = null
+                    outputFile.print(toXML(household))
+                    household = null
+
+                    if (count % 5000 == 0) {
+                        cleanUpGorm()
+                    }
                 }
             }
 
@@ -1136,9 +1151,8 @@ class SyncFilesService {
             //Ler todas dIndividuos
             println "reading members"
             def members = []
-            Member.withTransaction {
-                members = Member.executeQuery("select m.id from Member m")
-            }
+
+            members = Member.executeQuery("select m.id from Member m")
 
             println "creating xml file ${members.size()}"
             PrintStream outputFile = new PrintStream(new FileOutputStream(SystemPath.generatedFilesPath + "/members.xml"), true)
@@ -1146,17 +1160,24 @@ class SyncFilesService {
             outputFile.print("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?><members>")
 
             int count = 0
-            Member.withTransaction {
-                members.each { id ->
-                    count++
 
-                    def m = Member.get(id)
+            members.collate(2000).each { batch ->
+                def list = Member.findAllByIdInList(batch)
+
+                list.each { m ->
+                    count++
+                    //def m = Member.get(id)
                     outputFile.print(toXML(m))
                     m = null
-                }
 
-                //println "" + (m as XML)
+                    if (count % 5000 == 0) {
+                        cleanUpGorm()
+                    }
+                }
             }
+
+            //println "" + (m as XML)
+
             outputFile.print("</members>")
             outputFile.close()
 
@@ -1228,7 +1249,7 @@ class SyncFilesService {
             def resultResidencies = []
 
             Residency.withTransaction {
-                resultResidencies = Residency.list()
+                resultResidencies = Residency.executeQuery("select r.id from Residency r")
             }
 
             DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
@@ -1242,10 +1263,17 @@ class SyncFilesService {
 
             int count = 0;
 
-            resultResidencies.each { region ->
-                count++;
-                Element element = createResidency(doc, region);
-                rootElement.appendChild(element);
+            resultResidencies.collate(2000).each { batch ->
+                def residencies = Residency.findAllByIdInList(batch)
+                residencies.each { residency ->
+                    count++;
+                    Element element = createResidency(doc, residency);
+                    rootElement.appendChild(element);
+
+                    if (count % 5000 == 0) {
+                        cleanUpGorm()
+                    }
+                }
             }
 
             // write the content into xml file
@@ -1322,11 +1350,12 @@ class SyncFilesService {
 
         try {
             //read forms
-            def resultVisits = []
+            //get most recent visits
+            def ids = new ArrayList<String>()
+            def lastVisits = Visit.executeQuery("select v.id, max(v.visitDate) from Visit v group by v.id")
+            def resultVisits = lastVisits.collect { it[0] }
+            lastVisits.clear()
 
-            Visit.withTransaction {
-                resultVisits = Visit.list()
-            }
 
             DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
@@ -1338,11 +1367,18 @@ class SyncFilesService {
             doc.appendChild(rootElement);
 
             int count = 0;
-            resultVisits.each { Visit visit ->
-                count++;
+            resultVisits.collate(500).each { batch ->
+                def list = Visit.findAllByIdInList(batch)
+                list.each { visit ->
+                    count++;
 
-                Element element = createVisit(doc, visit);
-                rootElement.appendChild(element);
+                    Element element = createVisit(doc, visit);
+                    rootElement.appendChild(element);
+
+                    if (count % 2000 == 0) {
+                        cleanUpGorm()
+                    }
+                }
             }
 
             // write the content into xml file
@@ -1418,11 +1454,7 @@ class SyncFilesService {
 
         try {
             //Ler todos users
-            def resultHeadRelationships = []
-
-            HeadRelationship.withTransaction {
-                resultHeadRelationships = HeadRelationship.list()
-            }
+            def resultHeadRelationships = HeadRelationship.executeQuery("select h.id from HeadRelationship h")
 
             DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
@@ -1435,11 +1467,20 @@ class SyncFilesService {
 
             int count = 0;
 
-            resultHeadRelationships.each { region ->
-                count++;
-                Element element = createHeadRelationship(doc, region);
-                rootElement.appendChild(element);
+            resultHeadRelationships.collate(2000).each { batch ->
+                def list = HeadRelationship.findAllByIdInList(batch)
+                list.each { hr ->
+                    count++;
+                    Element element = createHeadRelationship(doc, hr);
+                    rootElement.appendChild(element);
+
+                    if (count % 5000 == 0) {
+                        cleanUpGorm()
+                    }
+                }
             }
+
+            cleanUpGorm()
 
             // write the content into xml file
             TransformerFactory transformerFactory = TransformerFactory.newInstance();
@@ -1515,11 +1556,7 @@ class SyncFilesService {
 
         try {
             //Ler todos users
-            def resultMaritalRelationships = []
-
-            MaritalRelationship.withTransaction {
-                resultMaritalRelationships = MaritalRelationship.list()
-            }
+            def resultMaritalRelationships = MaritalRelationship.executeQuery("select m.id from MaritalRelationship m")
 
             DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
@@ -1532,10 +1569,17 @@ class SyncFilesService {
 
             int count = 0;
 
-            resultMaritalRelationships.each { region ->
-                count++;
-                Element element = createMaritalRelationship(doc, region);
-                rootElement.appendChild(element);
+            resultMaritalRelationships.collate(500).each { batch ->
+                def list = MaritalRelationship.findAllByIdInList(batch)
+                list.each { mr ->
+                    count++;
+                    Element element = createMaritalRelationship(doc, mr);
+                    rootElement.appendChild(element);
+
+                    if (count % 2000 == 0) {
+                        cleanUpGorm()
+                    }
+                }
             }
 
             // write the content into xml file
@@ -1796,11 +1840,7 @@ class SyncFilesService {
 
         try {
             //read forms
-            def resultPregnancyRegistrations = []
-
-            PregnancyRegistration.withTransaction {
-                resultPregnancyRegistrations = PregnancyRegistration.findAll()
-            }
+            def resultPregnancyRegistrations = PregnancyRegistration.executeQuery("select p.id from PregnancyRegistration p")
 
             DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
@@ -1812,11 +1852,18 @@ class SyncFilesService {
             doc.appendChild(rootElement);
 
             int count = 0;
-            resultPregnancyRegistrations.each { PregnancyRegistration pregnancyregistration ->
-                count++;
+            resultPregnancyRegistrations.collate(500).each { batch ->
+                def list = PregnancyRegistration.findAllByIdInList(batch)
+                list.each { PregnancyRegistration pregnancyregistration ->
+                    count++;
 
-                Element element = createPregnancyRegistration(doc, pregnancyregistration);
-                rootElement.appendChild(element);
+                    Element element = createPregnancyRegistration(doc, pregnancyregistration);
+                    rootElement.appendChild(element);
+
+                    if (count % 2000 == 0) {
+                        cleanUpGorm()
+                    }
+                }
             }
 
             // write the content into xml file
@@ -1980,11 +2027,7 @@ class SyncFilesService {
 
         try {
             //read forms
-            def resultDeaths = []
-
-            Death.withTransaction {
-                resultDeaths = Death.findAll()
-            }
+            def resultDeaths = Death.executeQuery("select d.id from Death d")
 
             DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
@@ -1996,11 +2039,18 @@ class SyncFilesService {
             doc.appendChild(rootElement);
 
             int count = 0;
-            resultDeaths.each { Death death ->
-                count++;
+            resultDeaths.collate(500).each { batch ->
+                def list = Death.findAllByIdInList(batch)
+                list.each { Death death ->
+                    count++;
 
-                Element element = createDeath(doc, death);
-                rootElement.appendChild(element);
+                    Element element = createDeath(doc, death);
+                    rootElement.appendChild(element);
+
+                    if (count % 2000 == 0) {
+                        cleanUpGorm()
+                    }
+                }
             }
 
             // write the content into xml file
@@ -2210,7 +2260,7 @@ class SyncFilesService {
         element.appendChild(createAttributeNonNull(doc, "roundNumber", round.roundNumber))
         element.appendChild(createAttributeNonNull(doc, "startDate", StringUtil.format(round.startDate, "yyyy-MM-dd")))
         element.appendChild(createAttributeNonNull(doc, "endDate", StringUtil.format(round.endDate, "yyyy-MM-dd")))
-        element.appendChild(createAttributeNonNull(doc, "description", round.description))
+        element.appendChild(createAttributeNonNull(doc, "description", round.description==null ? "" : round.description))
 
         return element;
     }
