@@ -91,6 +91,19 @@ class HeadRelationshipService {
         return null
     }
 
+    HeadRelationship getCurrentActiveHouseholdHead(String householdCode){
+
+        if (!StringUtil.isBlank(householdCode)){
+            def headRelationships = HeadRelationship.executeQuery("select r from HeadRelationship r where r.household.code=?0 and r.relationshipType=?1 and r.endType=?2 order by r.startDate desc", [householdCode, HeadRelationshipType.HEAD_OF_HOUSEHOLD, HeadRelationshipEndType.NOT_APPLICABLE], [offset:0, max:1]) // limit 1
+
+            if (headRelationships != null && headRelationships.size()>0) {
+                return headRelationships.first()
+            }
+        }
+
+        return null
+    }
+
     boolean hasHeadOfHousehold(String householdCode) {
         return getCurrentHouseholdHead(householdCode) != null
     }

@@ -443,7 +443,7 @@ class InMigrationService {
         //destination - has reference if is INTERNAL if not just a description of where the member is moving to
         if (inmigration.type == InMigrationType.INTERNAL){
             inmigration.origin = origin
-            inmigration.originCode = origin.code
+            inmigration.originCode = origin?.code
         }
 
         inmigration.destination = householdService.getHousehold(rin.destinationCode)

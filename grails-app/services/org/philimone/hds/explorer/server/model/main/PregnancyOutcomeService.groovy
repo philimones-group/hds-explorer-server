@@ -77,7 +77,8 @@ class PregnancyOutcomeService {
         }
 
         def pregnancyOutcome = newPregnancyOutcomeInstance(rawPregnancyOutcome)
-        def motherResidency = residencyService.getCurrentResidency(pregnancyOutcome.mother)
+        def visit = pregnancyOutcome.visit
+        def motherResidency = householdService.getHousehold(visit.householdCode) //residencyService.getCurrentResidency(pregnancyOutcome.mother)
         def outcomeDate = pregnancyOutcome.outcomeDate
         def childPacks = new ArrayList<ChildPack>()
         def numberOfLivebirths = 0
@@ -448,7 +449,8 @@ class PregnancyOutcomeService {
         }
 
         //get mother residency
-        def motherResidency = residencyService.getCurrentResidency(memberService.getMember(motherCode))
+        def visit = visitService.getVisit(pregnancyChild?.outcome.visitCode)
+        def motherResidency= householdService.getHousehold(visit.householdCode) //residencyService.getCurrentResidency(memberService.getMember(motherCode))
 
         //Check If childCode belongs to the mother current household
         if (!isBlankChildCode && motherResidency != null && !pregnancyChild.childCode.startsWith(motherResidency.household?.code)){
@@ -477,7 +479,7 @@ class PregnancyOutcomeService {
         return errors
     }
 
-    private RawMember createNewRawMemberFrom(RawPregnancyChild pregnancyChild, Residency motherResidency, LocalDate outcomeDate){
+    private RawMember createNewRawMemberFrom(RawPregnancyChild pregnancyChild, Household motherResidency, LocalDate outcomeDate){
 
         def pregnancyOutcome = pregnancyChild.outcome
         def fatherCode = pregnancyOutcome.fatherCode
@@ -490,7 +492,7 @@ class PregnancyOutcomeService {
                 dob: outcomeDate,
                 motherCode: motherCode,
                 fatherCode: fatherCode,
-                householdCode: motherResidency.household.code,
+                householdCode: motherResidency.code,
                 modules: pregnancyOutcome.modules,
                 collectedId: pregnancyChild.childCollectedId,
                 collectedBy: pregnancyOutcome.collectedBy,
@@ -501,18 +503,18 @@ class PregnancyOutcomeService {
                 uploadedDate: pregnancyOutcome.uploadedDate)
     }
 
-    private RawResidency createNewRawResidencyFrom(RawPregnancyChild pregnancyChild, Residency motherResidency, LocalDate outcomeDate){
+    private RawResidency createNewRawResidencyFrom(RawPregnancyChild pregnancyChild, Household motherResidency, LocalDate outcomeDate){
         return new RawResidency(
                 memberCode: pregnancyChild.childCode,
-                householdCode: motherResidency.household.code,
+                householdCode: motherResidency.code,
                 startType: ResidencyStartType.BIRTH.code,
                 startDate: outcomeDate)
     }
 
-    private RawHeadRelationship createNewRawHeadRelationshipFrom(RawPregnancyChild pregnancyChild, Residency motherResidency, LocalDate outcomeDate){
+    private RawHeadRelationship createNewRawHeadRelationshipFrom(RawPregnancyChild pregnancyChild, Household motherResidency, LocalDate outcomeDate){
         return new RawHeadRelationship(
                 memberCode: pregnancyChild.childCode,
-                householdCode: motherResidency.household.code,
+                householdCode: motherResidency.code,
                 relationshipType: pregnancyChild.headRelationshipType,
                 startType: HeadRelationshipStartType.BIRTH.code,
                 startDate: outcomeDate)
