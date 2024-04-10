@@ -2,6 +2,7 @@ package org.philimone.hds.explorer.server.model.main
 
 import net.betainteractive.utilities.GeneralUtil
 import org.philimone.hds.explorer.server.model.audit.CollectableEntity
+import org.philimone.hds.explorer.server.model.enums.HouseholdStatus
 import org.philimone.hds.explorer.server.model.types.StringCollectionType
 
 /**
@@ -40,6 +41,8 @@ class Household extends CollectableEntity {
     Double cosLongitude
     Double sinLongitude
 
+    HouseholdStatus status
+
     Boolean preRegistered = false
 
     static hasMany = [modules:String]
@@ -75,6 +78,8 @@ class Household extends CollectableEntity {
         sinLatitude nullable: true
         cosLongitude nullable: true
         sinLongitude nullable: true
+
+        status nullable: true
 
         preRegistered nullable: false
 
@@ -115,6 +120,8 @@ class Household extends CollectableEntity {
         sinLatitude column: 'sin_latitude'
         cosLongitude column: 'cos_longitude'
         sinLongitude column: 'sin_longitude'
+
+        status column: 'status'
 
         preRegistered column: 'pre_registered'
 

@@ -3,6 +3,8 @@ package org.philimone.hds.explorer.server.model.main
 import grails.gorm.transactions.Transactional
 import net.betainteractive.utilities.StringUtil
 import org.philimone.hds.explorer.server.model.collect.raw.RawVisit
+import org.philimone.hds.explorer.server.model.enums.HouseholdStatus
+import org.philimone.hds.explorer.server.model.enums.NoVisitReason
 import org.philimone.hds.explorer.server.model.enums.RawEntity
 import org.philimone.hds.explorer.server.model.enums.VisitLocationItem
 import org.philimone.hds.explorer.server.model.enums.VisitReason
@@ -20,6 +22,8 @@ class VisitService {
     def coreExtensionService
     def codeGeneratorService
     def errorMessageService
+
+    static List<NoVisitReason> householdStatuses = [NoVisitReason.HOUSE_OCCUPIED, NoVisitReason.HOUSE_VACANT, NoVisitReason.HOUSE_ABANDONED, NoVisitReason.HOUSE_DESTROYED, NoVisitReason.HOUSE_NOT_FOUND]
 
     //<editor-fold desc="Visit Utilities Methods">
     boolean exists(String visitCode) {
@@ -77,6 +81,13 @@ class VisitService {
             println "Failed to insert extension: ${resultExtension.errorMessage}"
         }
 
+        //Update Household Status
+        if (!visit.visitPossible && householdStatuses.contains(visit.visitNotPossibleReason)){
+            def newStatus = HouseholdStatus.getFrom(visit.visitNotPossibleReason.code)
+            def household = visit.household
+            Household.executeUpdate("update Household h set h.status=?0 where h.id=?1", newStatus, household?.id)
+        }
+
         RawExecutionResult<Visit> obj = RawExecutionResult.newSuccessResult(RawEntity.VISIT, visit)
         return obj
     }
@@ -101,6 +112,10 @@ class VisitService {
         def household = householdService.getHousehold(rawVisit.householdCode)
         def respondentExists = respondent != null
         def householdExists = household != null
+        def visitPossible = rawVisit.visitPossible
+        def noVisitReason = rawVisit.visitNotPossibleReason
+        def respondentResident = rawVisit.respondentResident
+        def noRespondent = noVisitReason?.equals(NoVisitReason.NO_RESPONDENT.code) || noVisitReason?.equals(NoVisitReason.REFUSE) || respondentResident==Boolean.FALSE
         def visitLocation = !isBlankVisitLocation ? VisitLocationItem.getFrom(rawVisit.visitLocation) : null
         def isVisitLocationOther = visitLocation != null && visitLocation==VisitLocationItem.OTHER_PLACE
         def visitReason = VisitReason.getFrom(rawVisit.visitReason)
@@ -122,7 +137,7 @@ class VisitService {
             errors << errorMessageService.getRawMessage(RawEntity.VISIT, "validation.field.blank", ["roundNumber"], ["roundNumber"])
         }
         //C1. Check Blank Fields (visitLocation)
-        if (visitReason != VisitReason.MIGRATION && isBlankVisitLocation){
+        if (visitReason != VisitReason.MIGRATION && visitPossible && isBlankVisitLocation){
             errors << errorMessageService.getRawMessage(RawEntity.VISIT, "validation.field.blank", ["visitLocation"], ["visitLocation"])
         }
         //C1. Check Blank Fields (visitLocationOther) //Its Conditional
@@ -133,8 +148,8 @@ class VisitService {
         if (isBlankVisitReason){
             errors << errorMessageService.getRawMessage(RawEntity.VISIT, "validation.field.blank", ["visitReason"], ["visitReason"])
         }
-        //C1. Check Blank Fields (respondentCode) conditional
-        if (visitReason != VisitReason.MIGRATION && visitReason != VisitReason.NEW_HOUSEHOLD && isBlankRespondentCode){
+        //C1. Check Blank Fields (respondentCode) conditional,
+        if (visitReason != VisitReason.MIGRATION && visitReason != VisitReason.NEW_HOUSEHOLD && !noRespondent && isBlankRespondentCode){
             errors << errorMessageService.getRawMessage(RawEntity.VISIT, "validation.field.blank", ["respondentCode"], ["respondentCode"])
         }
         //C1. Check Blank Fields (hasInterpreter)
@@ -216,9 +231,14 @@ class VisitService {
         visit.visitReason = VisitReason.getFrom(rv.visitReason)
 
         visit.roundNumber = rv.roundNumber
+        visit.visitPossible = rv.visitPossible
+        visit.visitNotPossibleReason = NoVisitReason.getFrom(rv.visitNotPossibleReason)
+        visit.respondentResident = rv.respondentResident
+        visit.respondentRelationship = rv.respondentRelationship
 
         visit.respondent = respondent
         visit.respondentCode = rv.respondentCode
+        visit.respondentName = rv.respondentName
 
         visit.hasInterpreter = rv.hasInterpreter
         visit.interpreterName = rv.interpreterName

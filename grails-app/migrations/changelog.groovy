@@ -18,4 +18,5 @@ databaseChangeLog = {
     include file: 'add-typedesc_to_raw_event_table.groovy'
     include file: 'add-id-autoincrement_to_raw_error_log.groovy'
     include file: 'add-household_code-to_raw_event.groovy'
+    include file: 'add-columns_to_visit_household_member-20240409.groovy'
 }

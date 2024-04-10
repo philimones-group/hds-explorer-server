@@ -36,13 +36,8 @@ class OutMigrationService {
         def errors = new ArrayList<RawMessage>()
 
         def member = outMigration.member
-        def household = residencyService.getCurrentHousehold(member)
-
         def residency = residencyService.getCurrentResidencyAsRaw(member)
         def headRelationship = headRelationshipService.getCurrentHeadRelationshipAsRaw(member) //his relationship with the head, even if he is the head
-        def isHeadOfHousehold = headRelationship!=null ? (headRelationship.relationshipType == HeadRelationshipType.HEAD_OF_HOUSEHOLD.code) : false
-        def headRelationships = headRelationshipService.getCurrentHeadRelationships(member?.code, household?.code)
-
 
         // Closing the Residency with OutMigration
         if (residency != null && residency.endType == ResidencyEndType.NOT_APPLICABLE.code){ //must be opened
@@ -58,19 +53,6 @@ class OutMigrationService {
             headRelationship.endDate = outMigration.migrationDate
             def result = headRelationshipService.closeHeadRelationship(headRelationship)
             errors += result.errorMessages
-        }
-
-        // Closing Head Relationships with Members of the Household (dead Member as Head-Of-Household)
-        if (isHeadOfHousehold && (headRelationships != null && headRelationships.size()>0)){
-            headRelationships.each { hr ->
-                if (hr.endType == HeadRelationshipEndType.NOT_APPLICABLE){ //opened relationship
-                    def rawHr = headRelationshipService.convertToRaw(hr)
-                    rawHr.endType = outMigration.migrationType==OutMigrationType.INTERNAL ? HeadRelationshipEndType.INTERNAL_OUTMIGRATION.code : HeadRelationshipEndType.EXTERNAL_OUTMIGRATION.code
-                    rawHr.endDate = outMigration.migrationDate
-                    def result = headRelationshipService.closeHeadRelationship(rawHr)
-                    errors += result.errorMessages
-                }
-            }
         }
 
 
@@ -112,6 +94,9 @@ class OutMigrationService {
         //2. Update Member endType, endDate
 
         errors = afterCreateOutMigration(outmigration)
+
+        //Set Vacant if no members in the household
+        householdService.setHouseholdStatusVacant(outmigration.origin)
 
         //--> take the extensionXml and save to Extension Table
         def resultExtension = coreExtensionService.insertOutMigrationExtension(rawOutMigration, result)

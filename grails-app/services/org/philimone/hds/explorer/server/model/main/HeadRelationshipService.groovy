@@ -181,6 +181,7 @@ class HeadRelationshipService {
 
         def rh = new RawHeadRelationship()
 
+        rh.id = headRelationship.id
         rh.memberCode = headRelationship.member.code
         rh.householdCode = headRelationship.household.code
         rh.relationshipType = headRelationship.relationshipType.code

@@ -65,6 +65,7 @@ class DeathService {
         def headRelationship = headRelationshipService.getCurrentHeadRelationshipAsRaw(member) //his relationship with the head, even if he is the head
         def maritalRelationship = maritalRelationshipService.getCurrentMaritalRelationshipAsRaw(member)
         def isHeadOfHousehold = headRelationship!=null ? (headRelationship.relationshipType == HeadRelationshipType.HEAD_OF_HOUSEHOLD.code) : false
+        def isLastMemberOfHousehold = residencyService.hasOneResident(household)
         def headRelationships = headRelationshipService.getCurrentHeadRelationships(member, household)
 
         /*
@@ -129,6 +130,12 @@ class DeathService {
         // Closing Head Relationships with Members of the Household (dead Member as Head-Of-Household)
         if (isHeadOfHousehold && (headRelationships != null && headRelationships.size()>0)){
             headRelationships.each { hr ->
+
+                //ignore the head of household - its already closed
+                if (hr.id?.equals(headRelationship?.id)) {
+                    return
+                }
+
                 if (hr.endType == HeadRelationshipEndType.NOT_APPLICABLE){ //opened relationship
                     def rawHr = headRelationshipService.convertToRaw(hr)
                     rawHr.endType = HeadRelationshipEndType.DEATH_OF_HEAD_OF_HOUSEHOLD.code
@@ -178,7 +185,7 @@ class DeathService {
         rawHeadRelationship.memberCode = rawDthRel.newMemberCode
         rawHeadRelationship.relationshipType = rawDthRel.newRelationshipType
         rawHeadRelationship.startType = HeadRelationshipStartType.NEW_HEAD_OF_HOUSEHOLD.code
-        rawHeadRelationship.startDate = rawDeath.deathDate
+        rawHeadRelationship.startDate = rawDeath.deathDate.plusDays(1)
 
         return rawHeadRelationship
     }
@@ -217,6 +224,11 @@ class DeathService {
         //2. Update Member residencyStatus, maritalStatus
 
         errors = afterDeathRegistered(death, rawDeath)
+
+        //Set Vacant if no members in the household
+        def visit = visitService.getVisit(rawDeath.visitCode)
+        def household = visit?.household
+        householdService.setHouseholdStatusVacant(household)
 
         //--> take the extensionXml and save to Extension Table
         def resultExtension = coreExtensionService.insertDeathExtension(rawDeath, result)

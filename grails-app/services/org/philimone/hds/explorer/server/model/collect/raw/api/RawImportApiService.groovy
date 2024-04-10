@@ -1340,7 +1340,7 @@ class RawImportApiService implements DataBinder {
         //replace main tag
         xmlContent = xmlContent.replaceAll("<\\?xml[^\\?]*\\?>", "")
         //replace data tag
-        xmlContent = xmlContent.replace("<data>", "")?.replaceAll("</data>", "")
+        xmlContent = xmlContent.replace("<xdata>", "")?.replaceAll("</xdata>", "")
 
         //replace extension tag
         def regex = "<${rawEntity.tag}>.*?/${rawEntity.tag}>"

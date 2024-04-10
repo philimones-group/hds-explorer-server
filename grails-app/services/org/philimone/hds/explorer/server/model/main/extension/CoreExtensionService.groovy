@@ -61,6 +61,8 @@ class CoreExtensionService {
     CoreExtensionDatabaseService.SqlExecutionResult insertVisitExtension(RawVisit rawObj, Visit finalObj) {
         if (rawObj.extensionForm == null) return null
 
+        if (rawObj.extensionForm.length == 0) { println("empty extensionForm"); return null }
+
         //get form extensions
         def coreFormExt = CoreFormExtension.findByCoreForm(CoreForm.VISIT_FORM)
         if (!coreFormExt?.enabled || coreFormExt?.extFormDefinition == null) return null

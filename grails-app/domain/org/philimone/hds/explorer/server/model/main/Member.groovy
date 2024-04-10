@@ -5,6 +5,7 @@ import org.philimone.hds.explorer.server.model.audit.CollectableEntity
 import org.philimone.hds.explorer.server.model.enums.Gender
 import org.philimone.hds.explorer.server.model.enums.HeadRelationshipType
 import org.philimone.hds.explorer.server.model.enums.MaritalStatus
+import org.philimone.hds.explorer.server.model.enums.MemberStatus
 import org.philimone.hds.explorer.server.model.enums.temporal.ResidencyEndType
 import org.philimone.hds.explorer.server.model.enums.temporal.ResidencyStartType
 import org.philimone.hds.explorer.server.model.types.StringCollectionType
@@ -131,6 +132,8 @@ class Member extends CollectableEntity {
     Double cosLongitude
     Double sinLongitude
 
+    MemberStatus status
+
     static hasMany = [modules:String]
 
     boolean isHouseholdHead(){
@@ -193,6 +196,8 @@ class Member extends CollectableEntity {
         cosLongitude nullable: true
         sinLongitude nullable: true
 
+        status nullable: true
+
         modules nullable: true
     }
 
@@ -253,6 +258,8 @@ class Member extends CollectableEntity {
         sinLatitude column: 'sin_latitude'
         cosLongitude column: 'cos_longitude'
         sinLongitude column: 'sin_longitude'
+
+        status column: 'status'
 
         modules column: "modules", type: StringCollectionType, index: "idx_modules"
     }

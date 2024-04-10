@@ -4,6 +4,7 @@ import grails.gorm.transactions.Transactional
 import net.betainteractive.utilities.StringUtil
 import org.philimone.hds.explorer.server.model.authentication.User
 import org.philimone.hds.explorer.server.model.collect.raw.RawHousehold
+import org.philimone.hds.explorer.server.model.enums.HouseholdStatus
 import org.philimone.hds.explorer.server.model.enums.RawEntity
 import org.philimone.hds.explorer.server.model.enums.temporal.ResidencyEndType
 import org.philimone.hds.explorer.server.model.main.collect.raw.RawExecutionResult
@@ -13,6 +14,7 @@ import org.philimone.hds.explorer.server.model.main.collect.raw.RawMessage
 class HouseholdService {
 
     def regionService
+    def residencyService
     def userService
     def moduleService
     def coreExtensionService
@@ -74,6 +76,21 @@ class HouseholdService {
         def members = Residency.findAllByHouseholdAndEndType(household, ResidencyEndType.NOT_APPLICABLE).collect { it.member }
         return members
     }
+
+    def setHouseholdStatusVacant(Household household) {
+        if (!residencyService.hasResidents(household)){
+            household.status = HouseholdStatus.HOUSE_VACANT;
+            household.save(flush:true)
+
+            //println("status errors: ${household.errors}")
+            //Household.executeUpdate("update Household h set h.status=?0 where h.id=?1", [HouseholdStatus.HOUSE_VACANT, household.id])
+        }
+    }
+
+    def updateHouseholdStatus(Household household, HouseholdStatus status) {
+        Household.executeUpdate("update Household h set h.status=?0 where h.id=?1", [status, household.id])
+    }
+
 
     //</editor-fold>
 

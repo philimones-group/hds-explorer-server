@@ -13,6 +13,7 @@ import org.philimone.hds.explorer.server.model.enums.BirthPlace
 import org.philimone.hds.explorer.server.model.enums.EstimatedDateOfDeliveryType
 import org.philimone.hds.explorer.server.model.enums.Gender
 import org.philimone.hds.explorer.server.model.enums.HeadRelationshipType
+import org.philimone.hds.explorer.server.model.enums.HouseholdStatus
 import org.philimone.hds.explorer.server.model.enums.MaritalStatus
 import org.philimone.hds.explorer.server.model.enums.PregnancyOutcomeType
 import org.philimone.hds.explorer.server.model.enums.PregnancyStatus
@@ -206,6 +207,13 @@ class PregnancyOutcomeService {
         pregnancyOutcome.save()
 
         closePregnancyRegistration(pregnancyOutcome)
+
+        if (numberOfLivebirths > 0) {
+            def household = visit.household
+            if (household != null) {
+                householdService.updateHouseholdStatus(household, HouseholdStatus.HOUSE_OCCUPIED)
+            }
+        }
 
         //--> take the extensionXml and save to Extension Table
         def resultExtension = coreExtensionService.insertPregnancyOutcomeExtension(rawPregnancyOutcome, result)

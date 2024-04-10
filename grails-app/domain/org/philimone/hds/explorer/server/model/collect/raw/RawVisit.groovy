@@ -1,5 +1,6 @@
 package org.philimone.hds.explorer.server.model.collect.raw
 
+import org.philimone.hds.explorer.server.model.enums.NoVisitReason
 import org.philimone.hds.explorer.server.model.enums.ProcessedStatus
 
 import java.time.LocalDate
@@ -16,7 +17,12 @@ class RawVisit {
     String visitLocation
     String visitLocationOther
     String visitReason
+    Boolean visitPossible
+    String visitNotPossibleReason
+    Boolean respondentResident
+    String respondentRelationship
     String respondentCode
+    String respondentName
     Boolean hasInterpreter
     String interpreterName
 
@@ -54,7 +60,14 @@ class RawVisit {
         visitLocation blank: true, nullable: true
         visitLocationOther blank: true, nullable: true
         visitReason blank: true, nullable: true
+
+        visitPossible nullable: true
+        visitNotPossibleReason nullable: true
+        respondentResident nullable: true
+        respondentRelationship blank: true, nullable: true
         respondentCode blank: true, nullable: true
+        respondentName blank: true, nullable: true
+
         hasInterpreter nullable: true
         interpreterName blank: true, nullable: true
 
@@ -94,7 +107,14 @@ class RawVisit {
         visitLocationOther column: "visit_location_other"
         visitReason column: "visit_reason"
         roundNumber column: "round_number"
+
+        visitPossible column: "visit_possible"
+        visitNotPossibleReason column: "visit_not_possible_reason", enumType: "identity", index: "idx_novisit_reason"
+        respondentResident column: "respondent_resident"
+        respondentRelationship column: "respondent_relationship", index: "idx_respondent_relat"
         respondentCode column: "respondent_code", index: "idx_respondent_code"
+        respondentName column: "respondent_name"
+
         hasInterpreter column: "has_interpreter"
         interpreterName column: "interpreter_name"
 

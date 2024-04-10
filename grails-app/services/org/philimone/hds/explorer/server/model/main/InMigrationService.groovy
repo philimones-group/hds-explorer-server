@@ -9,6 +9,7 @@ import org.philimone.hds.explorer.server.model.collect.raw.RawInMigration
 import org.philimone.hds.explorer.server.model.collect.raw.RawOutMigration
 import org.philimone.hds.explorer.server.model.collect.raw.RawResidency
 import org.philimone.hds.explorer.server.model.enums.HeadRelationshipType
+import org.philimone.hds.explorer.server.model.enums.HouseholdStatus
 import org.philimone.hds.explorer.server.model.enums.RawEntity
 import org.philimone.hds.explorer.server.model.enums.temporal.ExternalInMigrationType
 import org.philimone.hds.explorer.server.model.enums.temporal.HeadRelationshipEndType
@@ -198,6 +199,11 @@ class InMigrationService {
         if (visit != null && visit.respondent == null && rawObj.memberCode?.equalsIgnoreCase(visit.respondentCode)) {
             visit.respondent = memberService.getMember(rawObj.memberCode)
             visit.save(flush:true)
+        }
+
+        def household = householdService.getHousehold(rawObj.destinationCode)
+        if (household != null) {
+            householdService.updateHouseholdStatus(household, HouseholdStatus.HOUSE_OCCUPIED)
         }
     }
 

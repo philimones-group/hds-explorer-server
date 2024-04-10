@@ -53,6 +53,16 @@ class ResidencyService {
         return null
     }
 
+    boolean hasResidents(Household household) {
+        def countResidencies = Residency.countByHouseholdAndEndType(household, ResidencyEndType.NOT_APPLICABLE)
+        return countResidencies > 0;
+    }
+
+    boolean hasOneResident(Household household) {
+        def countResidencies = Residency.countByHouseholdAndEndType(household, ResidencyEndType.NOT_APPLICABLE)
+        return countResidencies == 1;
+    }
+
     Household getCurrentHousehold(Member member){
         def residency = getCurrentResidency(member)
         return residency?.household
@@ -74,6 +84,7 @@ class ResidencyService {
 
         def rr = new RawResidency()
 
+        rr.id = residency.id
         rr.memberCode = residency.member.code
         rr.householdCode = residency.household.code
         rr.startType = residency.startType.code
@@ -192,8 +203,7 @@ class ResidencyService {
         }
 
         def residency = closeResidencyInstance(rawResidency)
-
-        def result = residency.save(flush:true)
+        residency.save(flush:true)
 
         //Validate using Gorm Validations
         if (residency.hasErrors()){
@@ -203,7 +213,7 @@ class ResidencyService {
             RawExecutionResult<Residency> obj = RawExecutionResult.newErrorResult(RawEntity.RESIDENCY, errors)
             return obj
         } else {
-            residency = result
+            //residency = result
         }
 
         //Update Member with start status
@@ -484,7 +494,7 @@ class ResidencyService {
 
         def household = householdService.getHousehold(rr.householdCode)
         def member = memberService.getMember(rr.memberCode)
-        def residency = getCurrentResidency(member, household)
+        def residency = Residency.findById(rr.id) //getCurrentResidency(member, household)
         def endType = ResidencyEndType.getFrom(rr.endType)
 
 

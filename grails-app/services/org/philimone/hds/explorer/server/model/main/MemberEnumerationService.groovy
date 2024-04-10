@@ -9,6 +9,7 @@ import org.philimone.hds.explorer.server.model.collect.raw.RawMember
 import org.philimone.hds.explorer.server.model.collect.raw.RawResidency
 import org.philimone.hds.explorer.server.model.enums.Gender
 import org.philimone.hds.explorer.server.model.enums.HeadRelationshipType
+import org.philimone.hds.explorer.server.model.enums.HouseholdStatus
 import org.philimone.hds.explorer.server.model.enums.RawEntity
 import org.philimone.hds.explorer.server.model.enums.temporal.HeadRelationshipEndType
 import org.philimone.hds.explorer.server.model.enums.temporal.HeadRelationshipStartType
@@ -196,6 +197,11 @@ class MemberEnumerationService {
         if (visit != null && visit.respondent == null && rawObj.code?.equalsIgnoreCase(visit.respondentCode)) {
             visit.respondent = member
             visit.save(flush:true)
+        }
+
+        def household = householdService.getHousehold(rawObj.householdCode)
+        if (household != null) {
+            householdService.updateHouseholdStatus(household, HouseholdStatus.HOUSE_OCCUPIED)
         }
     }
 

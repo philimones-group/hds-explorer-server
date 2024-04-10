@@ -1,6 +1,7 @@
 package org.philimone.hds.explorer.server.model.main
 
 import org.philimone.hds.explorer.server.model.audit.CollectableEntity
+import org.philimone.hds.explorer.server.model.enums.NoVisitReason
 import org.philimone.hds.explorer.server.model.enums.VisitLocationItem
 import org.philimone.hds.explorer.server.model.enums.VisitReason
 
@@ -16,13 +17,20 @@ class Visit extends CollectableEntity {
 
     LocalDate visitDate
     VisitReason visitReason
+
     VisitLocationItem visitLocation
     String visitLocationOther
 
     Integer roundNumber
 
+    Boolean visitPossible
+    NoVisitReason visitNotPossibleReason
+
     Member respondent
+    Boolean respondentResident
+    String respondentRelationship
     String respondentCode
+    String respondentName
 
     Boolean hasInterpreter
     String interpreterName
@@ -49,8 +57,14 @@ class Visit extends CollectableEntity {
 
         roundNumber min: 0
 
+        visitPossible nullable: true
+        visitNotPossibleReason nullable: true
+
         respondent nullable: true
+        respondentResident nullable: true
+        respondentRelationship blank: true, nullable: true
         respondentCode blank: true, nullable: true
+        respondentName blank: true, nullable: true
 
         hasInterpreter nullable: true
         interpreterName blank: true, nullable: true
@@ -81,8 +95,14 @@ class Visit extends CollectableEntity {
 
         roundNumber column: "round_number", index: "idx_round_number"
 
+        visitPossible column: "visit_possible"
+        visitNotPossibleReason column: "visit_not_possible_reason", enumType: "identity", index: "idx_novisit_reason"
+
         respondent column: "respondent_id"
+        respondentResident column: "respondent_resident"
+        respondentRelationship column: "respondent_relationship", index: "idx_respondent_relat"
         respondentCode column: "respondent_code", index: "idx_respondent_code"
+        respondentName column: "respondent_name"
 
         hasInterpreter column: "has_interpreter"
         interpreterName column: "interpreter_name"
