@@ -3,7 +3,6 @@ package org.philimone.hds.explorer.server.model.main
 import grails.gorm.transactions.Transactional
 import net.betainteractive.utilities.GeneralUtil
 import net.betainteractive.utilities.StringUtil
-import org.philimone.hds.explorer.server.model.collect.raw.RawChangeHeadRelationship
 import org.philimone.hds.explorer.server.model.collect.raw.RawDeath
 import org.philimone.hds.explorer.server.model.collect.raw.RawDeathRelationship
 import org.philimone.hds.explorer.server.model.collect.raw.RawHeadRelationship
@@ -116,7 +115,7 @@ class DeathService {
 
                 if ((deathA != null && deathB != null) && (deathA.deathDate == deathB.deathDate) && (maritalRelationship.endDate == deathA.deathDate)) { //both died in the same die while in sort of a relationship
                     def startStatus = MaritalStartStatus.getFrom(maritalRelationship.startStatus)
-                    def marStatus = maritalRelationshipService.convertFrom(startStatus)
+                    def marStatus = maritalRelationshipService.getMaritalStatusFromStartStatus(startStatus)
 
                     //set the maritalStatus as the same when they started the relationship, so that we preserve the last maritalStatus before they death (it cant be WID - because they died in the same date)
                     memberA.maritalStatus = marStatus

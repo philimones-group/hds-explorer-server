@@ -152,6 +152,7 @@ class BootStrap {
             new SecurityMap(url: "/settings/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
             new SecurityMap(url: "/dashboard/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
             //new SecurityMap(url: "/reports/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
+            new SecurityMap(url: "/dataReconciliation/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
             new SecurityMap(url: "/logReport/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER}").save(flush: true)
 
             //rest api access
@@ -252,6 +253,7 @@ class BootStrap {
         new LogGroup(groupId: LogGroupCode.GROUP_GENERATE_FILES,            name: "GENFILES",   description: "").save(flush: true)
         new LogGroup(groupId: LogGroupCode.GROUP_SYNC_DSS_DATA_FROM_CLIENT, name: "SYNCDSS",    description: "").save(flush: true)
         new LogGroup(groupId: LogGroupCode.GROUP_SYNC_MANAGER,              name: "SYNCMAN",    description: "").save(flush: true)
+        new LogGroup(groupId: LogGroupCode.GROUP_DATA_RECONCILIATION,       name: "DATAREC",    description: "").save(flush: true)
 
 
         //Inserting Log Reports
@@ -404,6 +406,20 @@ class BootStrap {
                 description: 'logreport.export.dss_events.zip_xml_files.label'
         ).save(flush: true)
 
+        /* Group Data Reconciliation Service */
+        new LogReport(
+                reportId: LogReportCode.REPORT_DATA_RECONCILIATION_HOUSEHOLDS_STATUSES,
+                group: LogGroup.findByGroupId(LogGroupCode.GROUP_DATA_RECONCILIATION),
+                status: LogStatus.NOT_STARTED,
+                description: 'logreport.data.reconciliation.households.statuses.label'
+        ).save(flush: true)
+
+        new LogReport(
+                reportId: LogReportCode.REPORT_DATA_RECONCILIATION_MEMBERS_STATUSES,
+                group: LogGroup.findByGroupId(LogGroupCode.GROUP_DATA_RECONCILIATION),
+                status: LogStatus.NOT_STARTED,
+                description: 'logreport.data.reconciliation.members.statuses.label'
+        ).save(flush: true)
 
         //Get defaults system paramaters from properties file
         def fmaxAge = svc.getConfigValue("${Codes.PARAMS_MIN_AGE_OF_FATHER}")

@@ -36,8 +36,11 @@ enum LogReportCode {
     REPORT_GENERATE_EXTERNAL_DATASETS_ZIP_XML_FILES (52, "logreport"),
     REPORT_GENERATE_TRACKING_LISTS_ZIP_XML_FILES (53, "logreport"),
     REPORT_GENERATE_HOUSEHOLDS_DATASETS_ZIP_XML_FILES (54, "logreport"),
-    REPORT_GENERATE_DSS_EVENTS_ZIP_XML_FILES (55, "logreport")
+    REPORT_GENERATE_DSS_EVENTS_ZIP_XML_FILES (55, "logreport"),
 
+    /*LogReportCode for events of Generating ZIP XML Files */
+    REPORT_DATA_RECONCILIATION_HOUSEHOLDS_STATUSES (70, "logreport"),
+    REPORT_DATA_RECONCILIATION_MEMBERS_STATUSES (71, "logreport")
 
     Integer code
     String name

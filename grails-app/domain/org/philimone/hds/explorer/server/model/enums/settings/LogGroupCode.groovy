@@ -7,7 +7,8 @@ enum LogGroupCode {
     GROUP_UPLOAD_TRACKING_LISTS     (3, "logreport.upload.trackinglists.basic.label"),
     GROUP_GENERATE_FILES            (4, "logreport.export.files.label"),
     GROUP_SYNC_DSS_DATA_FROM_CLIENT (5, "logreport.sync.syncdss"),
-    GROUP_SYNC_MANAGER              (6, "logreport.sync.syncdss")
+    GROUP_SYNC_MANAGER              (6, "logreport.sync.syncdss"),
+    GROUP_DATA_RECONCILIATION       (7, "logreport.data.reconciliation.label")
 
     Integer code
     String name

@@ -78,7 +78,7 @@ class MaritalRelationshipService {
         return convertToRaw(maritalRelationship)
     }*/
 
-    MaritalStatus convertFrom(MaritalStartStatus status){
+    MaritalStatus getMaritalStatusFromStartStatus(MaritalStartStatus status){
         switch (status){
             case MaritalStartStatus.MARRIED : return MaritalStatus.MARRIED
             case MaritalStartStatus.LIVING_TOGHETER : return MaritalStatus.LIVING_TOGHETER
@@ -87,7 +87,7 @@ class MaritalRelationshipService {
         return null
     }
 
-    MaritalStatus convertFrom(MaritalEndStatus status){
+    MaritalStatus getMaritalStatusFromEndStatus(MaritalEndStatus status){
         switch (status){
             //case MaritalEndStatus.NOT_APPLICABLE : return MaritalStatus.MARRIED
             case MaritalEndStatus.DIVORCED : return MaritalStatus.DIVORCED
@@ -96,6 +96,18 @@ class MaritalRelationshipService {
         }
 
         return null
+    }
+
+    MaritalStatus getMaritalStatusFrom(MaritalRelationship maritalRelationship) {
+        if (maritalRelationship != null) {
+            if (maritalRelationship.endStatus == MaritalEndStatus.NOT_APPLICABLE) {
+                return getMaritalStatusFromStartStatus(maritalRelationship.startStatus)
+            } else {
+                return getMaritalStatusFromEndStatus(maritalRelationship.endStatus)
+            }
+        }
+
+        return MaritalStatus.SINGLE
     }
 
     RawMaritalRelationship convertToRaw(MaritalRelationship maritalRelationship){
@@ -121,12 +133,12 @@ class MaritalRelationshipService {
         def memberB = maritalRelationship.memberB.refresh()
 
         //update spouse status
-        memberA.maritalStatus = convertFrom(maritalRelationship.startStatus)
+        memberA.maritalStatus = getMaritalStatusFromStartStatus(maritalRelationship.startStatus)
         memberA.spouse = memberB
         memberA.spouseCode = memberB.code
         memberA.spouseName = memberB.name
 
-        memberB.maritalStatus = convertFrom(maritalRelationship.startStatus)
+        memberB.maritalStatus = getMaritalStatusFromStartStatus(maritalRelationship.startStatus)
         memberB.spouse = memberA
         memberB.spouseCode = memberA.code
         memberB.spouseName = memberA.name
@@ -152,8 +164,8 @@ class MaritalRelationshipService {
         def errors = [] as ArrayList<RawMessage>
         def memberA = maritalRelationship.memberA.refresh()
         def memberB = maritalRelationship.memberB.refresh()
-        def endStatus = convertFrom(maritalRelationship.endStatus)
-        def marStatusA = convertFrom(maritalRelationship.startStatus) //the default is the start status
+        def endStatus = getMaritalStatusFromEndStatus(maritalRelationship.endStatus)
+        def marStatusA = getMaritalStatusFromStartStatus(maritalRelationship.startStatus) //the default is the start status
         def marStatusB = marStatusA
 
         if (endStatus == MaritalStatus.WIDOWED){ //If things go OK, for two members who died - maritalrelationship close runs once - so do this check on DeathService.afterCreateDeath
@@ -165,11 +177,11 @@ class MaritalRelationshipService {
 
             if (isDeadA && !isDeadB && (deathA.deathDate == maritalRelationship.endDate)){ //the relationship ended this day
                 marStatusB = MaritalStatus.WIDOWED
-                marStatusA = convertFrom(maritalRelationship.startStatus) //The dead Member will remain with the last Status
+                marStatusA = getMaritalStatusFromStartStatus(maritalRelationship.startStatus) //The dead Member will remain with the last Status
             }
             if (isDeadB && !isDeadA && (deathB.deathDate == maritalRelationship.endDate)){ //the relationship ended this day
                 marStatusA = MaritalStatus.WIDOWED
-                marStatusB = convertFrom(maritalRelationship.startStatus) //The dead Member will remain with the last Status
+                marStatusB = getMaritalStatusFromStartStatus(maritalRelationship.startStatus) //The dead Member will remain with the last Status
             }
             if (isDeadA && isDeadB) { //this can happen if for a odd reason the relationship wasnt closed when one of them died
                 if (deathA.deathDate == deathB.deathDate){
