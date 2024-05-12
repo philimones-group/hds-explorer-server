@@ -11,6 +11,8 @@ class RawMaritalRelationship {
     String id
     String memberA
     String memberB
+    Boolean isPolygamic
+    String polygamicId
     String startStatus
     LocalDate startDate
     String endStatus
@@ -38,6 +40,9 @@ class RawMaritalRelationship {
         memberA nullable: false
         memberB nullable: false
 
+        isPolygamic nullable: true
+        polygamicId nullable: true
+
         startStatus nullable: true, blank:false, enumType: "identity"
         startDate nullable: true
         endStatus nullable: true, blank:true, enumType: "identity"
@@ -64,6 +69,8 @@ class RawMaritalRelationship {
 
         memberA column: "member_a_code", index: "idx_member_a_code"
         memberB column: "member_b_code", index: "idx_member_b_code"
+        isPolygamic column: "is_polygamic"
+        polygamicId column: "polygamic_id", index: "idx_polygamic_id"
         startStatus column: "start_status"
         startDate column: "start_date"
         endStatus column: "end_status"

@@ -4,6 +4,7 @@ import grails.gorm.transactions.Transactional
 import net.betainteractive.utilities.GeneralUtil
 import net.betainteractive.utilities.StringUtil
 import org.philimone.hds.explorer.server.model.collect.raw.RawMaritalRelationship
+import org.philimone.hds.explorer.server.model.enums.Gender
 import org.philimone.hds.explorer.server.model.enums.MaritalEndStatus
 import org.philimone.hds.explorer.server.model.enums.MaritalStartStatus
 import org.philimone.hds.explorer.server.model.enums.MaritalStatus
@@ -109,6 +110,12 @@ class MaritalRelationshipService {
 
         return MaritalStatus.SINGLE
     }
+
+    /*
+    boolean isMainOfPolygamicRawRelationship(RawMaritalRelationship maritalRelationship) {
+        return RawMaritalRelationship.countByPolygamicId(maritalRelationship.collectedId)>0
+    }
+    */
 
     RawMaritalRelationship convertToRaw(MaritalRelationship maritalRelationship){
 
@@ -395,21 +402,24 @@ class MaritalRelationshipService {
             def currentA = getCurrentMaritalRelationship(memberA)
             def currentB = getCurrentMaritalRelationship(memberB)
             def newStartDate = maritalRelationship.startDate
+            def isPolygamic = maritalRelationship.isPolygamic
+            boolean isMalePolygamyA = memberA.gender==Gender.MALE && (isPolygamic);
+            boolean isMalePolygamyB = memberB.gender==Gender.MALE && (isPolygamic);
 
             //P1. Check if last relationship of A still opened
-            if (currentA != null && (currentA.endStatus == null || currentA.endStatus == MaritalEndStatus.NOT_APPLICABLE)){
+            if (currentA != null && (currentA.endStatus == null || currentA.endStatus == MaritalEndStatus.NOT_APPLICABLE) && !isMalePolygamyA){
                 errors << errorMessageService.getRawMessage(RawEntity.MARITAL_RELATIONSHIP, "validation.field.maritalRelationship.prev.relationships.ab.closed.error", [memberA.code], ["previous.memberA.endStatus"])
             }
             //P1. Check if last relationship of B still opened
-            if (currentB != null && (currentB.endStatus == null || currentB.endStatus == MaritalEndStatus.NOT_APPLICABLE)){
+            if (currentB != null && (currentB.endStatus == null || currentB.endStatus == MaritalEndStatus.NOT_APPLICABLE) && !isMalePolygamyB){
                 errors << errorMessageService.getRawMessage(RawEntity.MARITAL_RELATIONSHIP, "validation.field.maritalRelationship.prev.relationships.ab.closed.error", [memberB.code], ["previous.memberB.endStatus"])
             }
             //P2. Check If endDate is greater than new startDate, for memberA
-            if (currentA != null && (currentA.endDate != null && currentA.endDate >= newStartDate)){
+            if (currentA != null && (currentA.endDate != null && currentA.endDate >= newStartDate) && !isMalePolygamyA){
                 errors << errorMessageService.getRawMessage(RawEntity.MARITAL_RELATIONSHIP, "validation.field.maritalRelationship.prev.enddate.before.n.startdate.error", [memberA.code], ["previous.memberA.endDate"])
             }
             //P2. Check If endDate is greater than new startDate, for memberB
-            if (currentB != null && (currentB.endDate != null && currentB.endDate >= newStartDate)){
+            if (currentB != null && (currentB.endDate != null && currentB.endDate >= newStartDate) && !isMalePolygamyB){
                 errors << errorMessageService.getRawMessage(RawEntity.MARITAL_RELATIONSHIP, "validation.field.maritalRelationship.prev.enddate.before.n.startdate.error", [memberB.code], ["previous.memberB.endDate"])
             }
         }
@@ -515,7 +525,9 @@ class MaritalRelationshipService {
         maritalRelationship.memberA = memberService.getMember(mr.memberA)        
         maritalRelationship.memberB = memberService.getMember(mr.memberB)
         maritalRelationship.memberA_code = maritalRelationship.memberA?.code        
-        maritalRelationship.memberB_code = maritalRelationship.memberB?.code        
+        maritalRelationship.memberB_code = maritalRelationship.memberB?.code
+        maritalRelationship.isPolygamic = mr.isPolygamic
+        maritalRelationship.polygamicId = mr.polygamicId
         maritalRelationship.startStatus = MaritalStartStatus.getFrom(mr.startStatus)
         maritalRelationship.startDate = mr.startDate
         maritalRelationship.endStatus = MaritalEndStatus.NOT_APPLICABLE
