@@ -3,6 +3,8 @@ package org.philimone.hds.explorer.server.model.json.dashboard
 class Totals {
     Integer households
     Integer individuals
+    Integer individuals_male
+    Integer individuals_female
 
     Integer residents
     Integer residents_male

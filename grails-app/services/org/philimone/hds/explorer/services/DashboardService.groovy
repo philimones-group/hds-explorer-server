@@ -56,6 +56,8 @@ class DashboardService {
 
         totals.households = Household.count()
         totals.individuals = Member.count()-1 //remove UNK
+        totals.individuals_male = Member.countByGender(Gender.MALE)
+        totals.individuals_female = Member.countByGender(Gender.FEMALE)
 
         totals.residents = Residency.countByEndType(ResidencyEndType.NOT_APPLICABLE)
         totals.residents_male = Residency.executeQuery("select count(r.id) from Residency r where r.endType=?0 and r.member.gender=?1", ResidencyEndType.NOT_APPLICABLE, Gender.MALE).first()

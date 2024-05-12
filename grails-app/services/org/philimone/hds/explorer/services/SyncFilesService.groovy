@@ -1081,7 +1081,7 @@ class SyncFilesService {
                     outputFile.print(toXML(household))
                     household = null
 
-                    if (count % 5000 == 0) {
+                    if (count % 6000 == 0) {
                         cleanUpGorm()
                     }
                 }
@@ -1161,7 +1161,7 @@ class SyncFilesService {
 
             int count = 0
 
-            members.collate(2000).each { batch ->
+            members.collate(500).each { batch ->
                 def list = Member.findAllByIdInList(batch)
 
                 list.each { m ->
@@ -1170,12 +1170,14 @@ class SyncFilesService {
                     outputFile.print(toXML(m))
                     m = null
 
-                    if (count % 5000 == 0) {
+                    if (count % 2000 == 0) {
+                        //println "speed up ${count}"
                         cleanUpGorm()
                     }
                 }
             }
 
+            cleanUpGorm()
             //println "" + (m as XML)
 
             outputFile.print("</members>")
@@ -1252,41 +1254,33 @@ class SyncFilesService {
                 resultResidencies = Residency.executeQuery("select r.id from Residency r")
             }
 
-            DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
 
             // root elements
-            Document doc = docBuilder.newDocument();
-            Element rootElement = doc.createElement("${filename}");
-            doc.appendChild(rootElement);
-
+            println("creating ${filename}.xml of ${resultResidencies.size()} records")
+            PrintStream outputFile = new PrintStream(new FileOutputStream(SystemPath.generatedFilesPath + "/${filename}.xml"), true)
+            outputFile.print("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?><${filename}>")
 
             int count = 0;
 
-            resultResidencies.collate(2000).each { batch ->
+            resultResidencies.collate(1000).each { batch ->
                 def residencies = Residency.findAllByIdInList(batch)
                 residencies.each { residency ->
                     count++;
-                    Element element = createResidency(doc, residency);
-                    rootElement.appendChild(element);
 
-                    if (count % 5000 == 0) {
+                    outputFile.print(createResidencyXml(residency))
+
+                    if (count % 3000 == 0) {
                         cleanUpGorm()
                     }
                 }
             }
 
+            cleanUpGorm()
+
+            outputFile.print("</${filename}>")
+            outputFile.close()
+
             // write the content into xml file
-            TransformerFactory transformerFactory = TransformerFactory.newInstance();
-            Transformer transformer = transformerFactory.newTransformer();
-            DOMSource source = new DOMSource(doc);
-            StreamResult result = new StreamResult(new File(SystemPath.getGeneratedFilesPath() + File.separator + "${xmlFilename}"));
-
-            // Output to console for testing
-            //StreamResult result = new StreamResult(System.out);
-
-            transformer.transform(source, result);
-
             System.out.println("File saved! - ${xmlFilename}");
             output.println("File saved! - ${xmlFilename}");
 
@@ -1357,14 +1351,9 @@ class SyncFilesService {
             lastVisits.clear()
 
 
-            DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
-
-            // root elements
-            Document doc = docBuilder.newDocument();
-
-            Element rootElement = doc.createElement("${filename}");
-            doc.appendChild(rootElement);
+            println("creating ${filename}.xml of ${resultVisits.size()} records")
+            PrintStream outputFile = new PrintStream(new FileOutputStream(SystemPath.generatedFilesPath + "/${filename}.xml"), true)
+            outputFile.print("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?><${filename}>")
 
             int count = 0;
             resultVisits.collate(500).each { batch ->
@@ -1372,25 +1361,21 @@ class SyncFilesService {
                 list.each { visit ->
                     count++;
 
-                    Element element = createVisit(doc, visit);
-                    rootElement.appendChild(element);
+                    outputFile.print(createVisitXml(visit))
 
                     if (count % 2000 == 0) {
+                        //println "speed up ${count}"
                         cleanUpGorm()
                     }
                 }
             }
 
+            cleanUpGorm()
+
+            outputFile.print("</${filename}>")
+            outputFile.close()
+
             // write the content into xml file
-            TransformerFactory transformerFactory = TransformerFactory.newInstance();
-            Transformer transformer = transformerFactory.newTransformer();
-            DOMSource source = new DOMSource(doc);
-            StreamResult result = new StreamResult(new File(SystemPath.getGeneratedFilesPath() + "/${xmlFilename}"));
-
-            // Output to console for testing
-            // StreamResult result = new StreamResult(System.out);
-            transformer.transform(source, result);
-
             System.out.println("File saved! - ${xmlFilename}");
             output.println("File saved! - ${xmlFilename}");
 
@@ -1456,43 +1441,29 @@ class SyncFilesService {
             //Ler todos users
             def resultHeadRelationships = HeadRelationship.executeQuery("select h.id from HeadRelationship h")
 
-            DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
-
-            // root elements
-            Document doc = docBuilder.newDocument();
-            Element rootElement = doc.createElement("${filename}");
-            doc.appendChild(rootElement);
-
+            println("creating ${filename}.xml of ${resultHeadRelationships.size()} records")
+            PrintStream outputFile = new PrintStream(new FileOutputStream(SystemPath.generatedFilesPath + "/${filename}.xml"), true)
+            outputFile.print("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?><${filename}>")
 
             int count = 0;
 
-            resultHeadRelationships.collate(2000).each { batch ->
+            resultHeadRelationships.collate(1000).each { batch ->
                 def list = HeadRelationship.findAllByIdInList(batch)
                 list.each { hr ->
                     count++;
-                    Element element = createHeadRelationship(doc, hr);
-                    rootElement.appendChild(element);
+                    outputFile.print(createHeadRelationshipXml(hr))
 
-                    if (count % 5000 == 0) {
+                    if (count % 3000 == 0) {
                         cleanUpGorm()
                     }
                 }
             }
 
             cleanUpGorm()
+            outputFile.print("</${filename}>")
+            outputFile.close()
 
             // write the content into xml file
-            TransformerFactory transformerFactory = TransformerFactory.newInstance();
-            Transformer transformer = transformerFactory.newTransformer();
-            DOMSource source = new DOMSource(doc);
-            StreamResult result = new StreamResult(new File(SystemPath.getGeneratedFilesPath() + File.separator + "${xmlFilename}"));
-
-            // Output to console for testing
-            //StreamResult result = new StreamResult(System.out);
-
-            transformer.transform(source, result);
-
             System.out.println("File saved! - ${xmlFilename}");
             output.println("File saved! - ${xmlFilename}");
 
@@ -1569,14 +1540,14 @@ class SyncFilesService {
 
             int count = 0;
 
-            resultMaritalRelationships.collate(500).each { batch ->
+            resultMaritalRelationships.collate(1000).each { batch ->
                 def list = MaritalRelationship.findAllByIdInList(batch)
                 list.each { mr ->
                     count++;
                     Element element = createMaritalRelationship(doc, mr);
                     rootElement.appendChild(element);
 
-                    if (count % 2000 == 0) {
+                    if (count % 3000 == 0) {
                         cleanUpGorm()
                     }
                 }
@@ -1852,7 +1823,7 @@ class SyncFilesService {
             doc.appendChild(rootElement);
 
             int count = 0;
-            resultPregnancyRegistrations.collate(500).each { batch ->
+            resultPregnancyRegistrations.collate(1000).each { batch ->
                 def list = PregnancyRegistration.findAllByIdInList(batch)
                 list.each { PregnancyRegistration pregnancyregistration ->
                     count++;
@@ -1860,7 +1831,7 @@ class SyncFilesService {
                     Element element = createPregnancyRegistration(doc, pregnancyregistration);
                     rootElement.appendChild(element);
 
-                    if (count % 2000 == 0) {
+                    if (count % 3000 == 0) {
                         cleanUpGorm()
                     }
                 }
@@ -2039,7 +2010,7 @@ class SyncFilesService {
             doc.appendChild(rootElement);
 
             int count = 0;
-            resultDeaths.collate(500).each { batch ->
+            resultDeaths.collate(1000).each { batch ->
                 def list = Death.findAllByIdInList(batch)
                 list.each { Death death ->
                     count++;
@@ -2047,7 +2018,7 @@ class SyncFilesService {
                     Element element = createDeath(doc, death);
                     rootElement.appendChild(element);
 
-                    if (count % 2000 == 0) {
+                    if (count % 3000 == 0) {
                         cleanUpGorm()
                     }
                 }
@@ -2316,6 +2287,21 @@ class SyncFilesService {
         return element;
     }
 
+    private String createResidencyXml(Residency residency) {
+        StringBuilder element = new StringBuilder("<residency>");
+
+        element.append(createXmlAttribute("householdCode", residency.householdCode));
+        element.append(createXmlAttribute("memberCode", residency.memberCode));
+        element.append(createXmlAttribute("startType", residency.startType.code));
+        element.append(createXmlAttribute("startDate", StringUtil.formatLocalDate(residency.startDate)));
+        element.append(createXmlAttribute("endType", residency.endType.code));
+        element.append(createXmlAttribute("endDate", residency.endDate==null ? "" : StringUtil.format(residency.endDate)));
+
+        element.append("</residency>")
+
+        return element.toString();
+    }
+    
     private Element createVisit(Document doc, Visit visit) {
         Element element = doc.createElement("visit")
 
@@ -2336,8 +2322,31 @@ class SyncFilesService {
 
         element.appendChild(createAttributeNonNull(doc, "collectedId", visit.collectedId==null ? "" : visit.collectedId))
 
-
         return element
+    }
+
+    private String createVisitXml(Visit visit) {
+        StringBuilder element = new StringBuilder("<visit>")
+
+        element.append(createXmlAttribute("code", visit.code))
+        element.append(createXmlAttribute("householdCode", visit.householdCode))
+        element.append(createXmlAttribute("visitDate", StringUtil.format(visit.visitDate, "yyyy-MM-dd")))
+        element.append(createXmlAttribute("visitReason", visit.visitReason==null ? "" : visit.visitReason.code))
+        element.append(createXmlAttribute("visitLocation", visit.visitLocation==null ? "" : visit.visitLocation.code))
+        element.append(createXmlAttribute("visitLocationOther", visit.visitLocationOther==null ? "" : visit.visitLocationOther))
+        element.append(createXmlAttribute("roundNumber", visit.roundNumber+""))
+        element.append(createXmlAttribute("respondentCode", visit.respondentCode==null ? "" : visit.respondentCode))
+        element.append(createXmlAttribute("hasInterpreter", visit.hasInterpreter==null ? "" : "${visit.hasInterpreter}"))
+        element.append(createXmlAttribute("interpreterName", visit.interpreterName==null ? "" : visit.interpreterName))
+        element.append(createXmlAttribute("gpsAccuracy", visit.gpsAccuracy==null ? "" : ""+visit.gpsAccuracy))
+        element.append(createXmlAttribute("gpsAltitude", visit.gpsAltitude==null ? "" : ""+visit.gpsAltitude))
+        element.append(createXmlAttribute("gpsLatitude", visit.gpsLatitude==null ? "" : ""+visit.gpsLatitude))
+        element.append(createXmlAttribute("gpsLongitude", visit.gpsLongitude==null ? "" : ""+visit.gpsLongitude))
+        element.append(createXmlAttribute("collectedId", visit.collectedId==null ? "" : visit.collectedId))
+
+        element.append("</visit>")
+        
+        return element.toString()
     }
 
     private Element createHeadRelationship(Document doc, HeadRelationship headRelationship) {
@@ -2355,11 +2364,30 @@ class SyncFilesService {
         return element;
     }
 
+    private String createHeadRelationshipXml(HeadRelationship headRelationship) {
+        StringBuilder element = new StringBuilder("<headRelationship>");
+
+        element.append(createXmlAttribute("householdCode", headRelationship.householdCode));
+        element.append(createXmlAttribute("memberCode", headRelationship.memberCode));
+        element.append(createXmlAttribute("headCode", headRelationship.headCode));
+        element.append(createXmlAttribute("relationshipType", headRelationship.relationshipType.code));
+        element.append(createXmlAttribute("startType", headRelationship.startType.code));
+        element.append(createXmlAttribute("startDate", StringUtil.formatLocalDate(headRelationship.startDate)));
+        element.append(createXmlAttribute("endType", headRelationship.endType.code));
+        element.append(createXmlAttribute("endDate", headRelationship.endDate==null ? "" : StringUtil.format(headRelationship.endDate)));
+
+        element.append("</headRelationship>")
+        
+        return element;
+    }
+
     private Element createMaritalRelationship(Document doc, MaritalRelationship maritalRelationship) {
         Element element = doc.createElement("maritalRelationship");
 
         element.appendChild(createAttributeNonNull(doc, "memberA_code", maritalRelationship.memberA_code));
         element.appendChild(createAttributeNonNull(doc, "memberB_code", maritalRelationship.memberB_code));
+        element.appendChild(createAttributeNonNull(doc, "isPolygamic", maritalRelationship.isPolygamic==null ? "false" : maritalRelationship.isPolygamic+""));
+        element.appendChild(createAttributeNonNull(doc, "polygamicId", maritalRelationship.polygamicId==null ? "" : maritalRelationship.polygamicId));
         element.appendChild(createAttributeNonNull(doc, "startStatus", maritalRelationship.startStatus.code));
         element.appendChild(createAttributeNonNull(doc, "startDate", maritalRelationship.startDate));
         element.appendChild(createAttributeNonNull(doc, "endStatus", maritalRelationship.endStatus==null ? "" : maritalRelationship.endStatus.code));
@@ -2489,6 +2517,10 @@ class SyncFilesService {
         return element;
     }
 
+    private String createXmlAttribute(String name, String value) {
+        return StringUtil.isBlank(value) ? "<${name} />" : "<${name}>${value}</${name}>"
+    }
+
     /* Convert to XML */
     private String toXML(Household h){
         return ("<household>") +
@@ -2571,5 +2603,29 @@ class SyncFilesService {
                 ((m.modules.empty)        ?  "<modules />"     : "<modules>${moduleService.getListModulesAsText(m.modules)}</modules>")+
 
                 ("</member>")
+    }
+
+    private String toXML(Residency r) {
+        return "<residency>" +
+                "<householdCode>" + r.householdCode +  "</householdCode>" +
+                "<memberCode>" + r.memberCode + "</memberCode>" +
+                "<startType>" + r.startType.code + "</startType>" +
+                "<startDate>" + StringUtil.formatLocalDate(r.startDate) + "</startDate>" +
+                r.endType==null ? "<endType />" : "<endType>" + r.endType.code + "</endType>" +
+                r.endDate==null ? "<endDate />" : "<endDate>" + StringUtil.formatLocalDate(r.endDate) + "</endDate>" +
+                "</residency>"
+    }
+
+    private String toXML(HeadRelationship h) {
+        return "<headRelationship>" +
+                "<householdCode>" + h.householdCode +  "</householdCode>" +
+                "<memberCode>" + h.memberCode + "</memberCode>" +
+                "<headCode>" + h.headCode + "</headCode>" +
+                "<relationshipType>" + h.relationshipType.code + "</relationshipType>" +
+                "<startType>" + h.startType.code + "</startType>" +
+                "<startDate>" + StringUtil.formatLocalDate(h.startDate) + "</startDate>" +
+                h.endType==null ? "<endType />" : "<endType>" + h.endType.code + "</endType>" +
+                h.endDate==null ? "<endDate />" : "<endDate>" + StringUtil.formatLocalDate(h.endDate) + "</endDate>" +
+                "</headRelationship>"
     }
 }
