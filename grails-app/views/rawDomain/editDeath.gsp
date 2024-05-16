@@ -47,6 +47,8 @@
         }
 
     </style>
+
+    <dt:defaultResources />
 </head>
 <body>
 
@@ -104,11 +106,27 @@
             <bi:field bean="${this.rawDeath}" property="deathPlace"    label="rawDeath.deathPlace.label" mode="${mode}" />
 
         </fieldset>
+
+        <g:set var="household_code" value="${this.rawDeath.visitCode?.replaceAll('-.+','')}" />
+
         <fieldset class="buttons">
             <g:if test="${mode == "edit"}">
                 <g:actionSubmit class="save" value="${message(code: "rawDomain.update.reset.label")}" action="updateDeath" onclick="updateReset('true')" />
                 <g:actionSubmit class="save" value="${message(code: "rawDomain.update.label")}" action="updateDeath" />
                 <g:actionSubmit class="save" value="${message(code: "rawDomain.invalidate.label")}" action="invalidateDeath" />
+
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#show_residencies">
+                    <g:message code="rawDomain.helpers.button.residencies.label" />
+                </button>
+
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#show_head_relationships">
+                    <g:message code="rawDomain.helpers.button.headrelationships.label" />
+                </button>
+
+                <g:render template="show_residents"/>
+
+                <g:render template="show_head_relationships"/>
+
             </g:if>
             <g:else>
                 <g:link class="edit" action="editDeath" id="${this.rawDeath.id}" ><g:message code="rawDomain.edit.label" /></g:link>

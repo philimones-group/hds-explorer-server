@@ -47,6 +47,8 @@
         }
 
     </style>
+
+    <dt:defaultResources />
 </head>
 <body>
 
@@ -109,11 +111,27 @@
             <bi:field bean="${this.rawInMigration}" property="migrationReason"    label="rawInMigration.migrationReason.label" mode="${mode}" />
 
         </fieldset>
+
+        <g:set var="household_code" value="${this.rawInMigration.visitCode?.replaceAll('-.+','')}" />
+
         <fieldset class="buttons">
             <g:if test="${mode == "edit"}">
                 <g:actionSubmit class="save" value="${message(code: "rawDomain.update.reset.label")}" action="updateInMigration" onclick="updateReset('true')" />
                 <g:actionSubmit class="save" value="${message(code: "rawDomain.update.label")}" action="updateInMigration" />
                 <g:actionSubmit class="save" value="${message(code: "rawDomain.invalidate.label")}" action="invalidateInMigration" />
+
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#show_residencies">
+                    <g:message code="rawDomain.helpers.button.residencies.label" />
+                </button>
+
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#show_head_relationships">
+                    <g:message code="rawDomain.helpers.button.headrelationships.label" />
+                </button>
+
+                <g:render template="show_residents"/>
+
+                <g:render template="show_head_relationships"/>
+
             </g:if>
             <g:else>
                 <g:link class="edit" action="editInMigration" id="${this.rawInMigration.id}" ><g:message code="rawDomain.edit.label" /></g:link>

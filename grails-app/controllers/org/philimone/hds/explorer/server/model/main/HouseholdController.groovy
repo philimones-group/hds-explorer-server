@@ -167,7 +167,7 @@ class HouseholdController {
         def households = orderer.collect { household ->
             ['code':     "<a href='${createLink(controller: 'household', action: 'show', id: household.id)}'>${household.code}</a>",
              'name':     household.name,
-             'headCode': "<a href='${createLink(controller: 'member', action: 'show', id: household.headMember.id)}'>${household.headCode}</a>",
+             'headCode': "<a href='${createLink(controller: 'member', action: 'show', id: household?.headMember?.id)}'>${household.headCode}</a>",
              'headName': household.headName,
              'collectedDate': StringUtil.format(household.collectedDate),
              'createdDate': StringUtil.format(household.createdDate)

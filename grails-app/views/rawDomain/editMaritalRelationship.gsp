@@ -47,6 +47,8 @@
         }
 
     </style>
+
+    <dt:defaultResources />
 </head>
 <body>
 
@@ -99,17 +101,36 @@
 
             <bi:field bean="${this.rawMaritalRelationship}" property="memberA"    label="rawMaritalRelationship.memberA.label" mode="${mode}" />
             <bi:field bean="${this.rawMaritalRelationship}" property="memberB"    label="rawMaritalRelationship.memberB.label" mode="${mode}" />
+            <bi:field bean="${this.rawMaritalRelationship}" property="isPolygamic"    label="rawMaritalRelationship.isPolygamic.label" mode="${mode}" />
+            <bi:field bean="${this.rawMaritalRelationship}" property="polygamicId"    label="rawMaritalRelationship.polygamicId.label" mode="${mode}" />
             <bi:field bean="${this.rawMaritalRelationship}" property="startStatus"    label="rawMaritalRelationship.startStatus.label" mode="${mode}" />
             <bi:dateField bean="${this.rawMaritalRelationship}" property="startDate"    label="rawMaritalRelationship.startDate.label" mode="${mode}" />
             <bi:field bean="${this.rawMaritalRelationship}" property="endStatus"    label="rawMaritalRelationship.endStatus.label" mode="${mode}" />
             <bi:dateField bean="${this.rawMaritalRelationship}" property="endDate"    label="rawMaritalRelationship.endDate.label" mode="${mode}" />
 
         </fieldset>
+
+        <g:set var="member_a_code" value="${this.rawMaritalRelationship.memberA}" />
+        <g:set var="member_b_code" value="${this.rawMaritalRelationship.memberB}" />
+
         <fieldset class="buttons">
             <g:if test="${mode == "edit"}">
                 <g:actionSubmit class="save" value="${message(code: "rawDomain.update.reset.label")}" action="updateMaritalRelationship" onclick="updateReset('true')" />
                 <g:actionSubmit class="save" value="${message(code: "rawDomain.update.label")}" action="updateMaritalRelationship" />
                 <g:actionSubmit class="save" value="${message(code: "rawDomain.invalidate.label")}" action="invalidateMaritalRelationship" />
+
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#show_a_marital_relationships">
+                    <g:message code="rawDomain.helpers.button.show.a.relationships.label" />
+                </button>
+
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#show_b_marital_relationships">
+                    <g:message code="rawDomain.helpers.button.show.b.relationships.label" />
+                </button>
+
+                <g:render template="show_a_marital_relationships"/>
+
+                <g:render template="show_b_marital_relationships"/>
+
             </g:if>
             <g:else>
                 <g:link class="edit" action="editMaritalRelationship" id="${this.rawMaritalRelationship.id}" ><g:message code="rawDomain.edit.label" /></g:link>

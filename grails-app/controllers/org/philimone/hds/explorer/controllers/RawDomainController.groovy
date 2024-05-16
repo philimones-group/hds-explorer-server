@@ -3,20 +3,28 @@ package org.philimone.hds.explorer.controllers
 import grails.gorm.transactions.Transactional
 import grails.validation.ValidationException
 import net.betainteractive.utilities.StringUtil
+import grails.converters.JSON
 import org.philimone.hds.explorer.server.model.collect.raw.*
 import org.philimone.hds.explorer.server.model.collect.raw.aggregate.RawEvent
 import org.philimone.hds.explorer.server.model.enums.ProcessedStatus
 import org.philimone.hds.explorer.server.model.enums.RawEntity
+import org.philimone.hds.explorer.server.model.enums.temporal.HeadRelationshipEndType
+import org.philimone.hds.explorer.server.model.enums.temporal.ResidencyEndType
+import org.philimone.hds.explorer.server.model.main.HeadRelationship
+import org.philimone.hds.explorer.server.model.main.MaritalRelationship
+import org.philimone.hds.explorer.server.model.main.Residency
 
 @Transactional
 class RawDomainController {
+
+    def rawDomainService
 
     def editDomain = {
 
         //println "id=" + params.id
 
         def errorLog = RawErrorLog.findByUuid(params.id)
-        def entity = errorLog.entity
+        def entity = errorLog?.entity
 
         if (entity == RawEntity.HOUSEHOLD){
             redirect action: "editHousehold", params: [id: params.id]
@@ -78,7 +86,7 @@ class RawDomainController {
             return
         }
 
-        redirect(controller: "eventSync", action:"showSyncReportDetails", model:[id: errorLog.logReportFile.id])
+        redirect(controller: "eventSync", action:"showSyncReportDetails", model:[id: errorLog?.logReportFile?.id])
     }
 
     def editHousehold = {
@@ -621,5 +629,255 @@ class RawDomainController {
 
         flash.message = message(code: 'default.updated.message', args: [message(code: 'rawChangeHead.label', default: 'Raw Change Head'), rawChangeHead.newHeadCode])
         respond rawChangeHead, view:"editChangeHead", model: [mode: "show"]
+    }
+
+    def residenciesList = {
+
+        //convert datatables params to gorm params
+        def jqdtParams = [:]
+        params.each { key, value ->
+            def keyFields = key.replace(']','').split(/\[/)
+            def table = jqdtParams
+            for (int f = 0; f < keyFields.size() - 1; f++) {
+                def keyField = keyFields[f]
+                if (!table.containsKey(keyField))
+                    table[keyField] = [:]
+                table = table[keyField]
+            }
+            table[keyFields[-1]] = value
+        }
+
+        def household_code = rawDomainService.getHouseholdCode(params.id)
+
+        def params_search = jqdtParams.search?.value
+        def columnsList = jqdtParams.columns.collect { k, v -> v.data }
+        def orderList = jqdtParams.order.collect { k, v -> [columnsList[v.column as Integer], v.dir] }
+
+        def search_filter = (params_search != null && !"${params_search}".empty) ? "%${params_search}%" : null
+        def filterer = {
+            //createAlias('endType', 'endTypeAlias')
+            or {
+                member {
+                    or {
+                        if (search_filter) ilike 'code', search_filter
+                        if (search_filter) ilike 'name', search_filter
+                        if (search_filter) ilike 'gender', search_filter
+                    }
+                }
+
+                if (search_filter) ilike 'startType', search_filter
+                if (search_filter) ilike 'endType', search_filter
+
+            }
+        }
+
+        //def residencies = Residency.findAllByHouseholdCodeAndEndType(household_code, ResidencyEndType.NOT_APPLICABLE)
+        def residencies = Residency.withCriteria {
+            filterer.delegate = delegate
+            filterer()
+
+            eq("householdCode", household_code)
+            maxResults (jqdtParams.length as Integer)
+            firstResult (jqdtParams.start as Integer)
+        }
+
+        //println "household=${household_code}, ${residencies?.size()}"
+
+        //Display records
+        def objects = residencies.collect { residency ->
+            ['code':     residency.memberCode,
+             'name':     residency.member.name,
+             'gender':   residency.member.gender?.code,
+             'dob':      StringUtil.formatLocalDate(residency.member.dob),
+             'startType':       residency.startType?.code,
+             'startDate':       StringUtil.formatLocalDate(residency.startDate),
+             'endType':         residency.endType?.code,
+             'endDate':         StringUtil.formatLocalDate(residency.endDate)
+            ]
+        }
+
+
+        //FINAL PARAMETERS
+        def recordsTotal = Residency.countByHouseholdCode(household_code)
+        def recordsFiltered = Residency.withCriteria {
+            filterer.delegate = delegate
+            filterer()
+
+            eq("householdCode", household_code)
+        }.size()
+
+
+        //println "member recordsTotal $recordsTotal"
+        //println "member recordsFiltered $recordsFiltered"
+        //println "members ${members.size()}"
+
+
+        def result = [draw: jqdtParams.draw, recordsTotal: recordsTotal, recordsFiltered: recordsFiltered, data: objects]
+
+        render result as JSON
+    }
+
+    def headRelationshipsList = {
+
+        //convert datatables params to gorm params
+        def jqdtParams = [:]
+        params.each { key, value ->
+            def keyFields = key.replace(']','').split(/\[/)
+            def table = jqdtParams
+            for (int f = 0; f < keyFields.size() - 1; f++) {
+                def keyField = keyFields[f]
+                if (!table.containsKey(keyField))
+                    table[keyField] = [:]
+                table = table[keyField]
+            }
+            table[keyFields[-1]] = value
+        }
+
+        def household_code = rawDomainService.getHouseholdCode(params.id)
+
+        def params_search = jqdtParams.search?.value
+        def columnsList = jqdtParams.columns.collect { k, v -> v.data }
+        def orderList = jqdtParams.order.collect { k, v -> [columnsList[v.column as Integer], v.dir] }
+
+
+        def search_filter = (params_search != null && !"${params_search}".empty) ? "%${params_search}%" : null
+        def filterer = {
+            or {
+                if (search_filter) ilike 'member.code', search_filter
+                if (search_filter) ilike 'member.name', search_filter
+                if (search_filter) ilike 'member.gender', search_filter
+                if (search_filter) ilike 'relationshipType', search_filter
+                if (search_filter) ilike 'startType', search_filter
+                if (search_filter) ilike 'endType', search_filter
+
+            }
+        }
+
+        //def results = HeadRelationship.findAllByHouseholdCodeAndEndType(household_code, HeadRelationshipEndType.NOT_APPLICABLE)
+        def results = HeadRelationship.withCriteria {
+            filterer.delegate = delegate
+            filterer()
+
+            eq("householdCode", household_code)
+            maxResults (jqdtParams.length as Integer)
+            firstResult (jqdtParams.start as Integer)
+        }
+
+        //println "household=${household_code}, ${results?.size()}"
+
+        //Display records
+        def objects = results.collect { obj ->
+            ['code':     obj.memberCode,
+             'name':     obj.member.name,
+             'gender':   obj.member.gender?.code,
+             'dob':      StringUtil.formatLocalDate(obj.member.dob),
+             'headRelationshipType': obj.relationshipType?.code,
+             'startType':       obj.startType?.code,
+             'startDate':       StringUtil.formatLocalDate(obj.startDate),
+             'endType':         obj.endType?.code,
+             'endDate':         StringUtil.formatLocalDate(obj.endDate)
+            ]
+        }
+
+
+        //FINAL PARAMETERS
+        def recordsTotal = HeadRelationship.countByHouseholdCode(household_code)
+        def recordsFiltered = HeadRelationship.withCriteria {
+            eq("householdCode", household_code)
+
+            filterer.delegate = delegate
+            filterer()
+        }.size()
+
+
+        //println "member recordsTotal $recordsTotal"
+        //println "member recordsFiltered $recordsFiltered"
+        //println "members ${members.size()}"
+
+
+        def result = [draw: jqdtParams.draw, recordsTotal: recordsTotal, recordsFiltered: recordsFiltered, data: objects]
+
+        render result as JSON
+    }
+
+    def maritalRelationshipsList = {
+        //convert datatables params to gorm params
+        def jqdtParams = [:]
+        params.each { key, value ->
+            def keyFields = key.replace(']','').split(/\[/)
+            def table = jqdtParams
+            for (int f = 0; f < keyFields.size() - 1; f++) {
+                def keyField = keyFields[f]
+                if (!table.containsKey(keyField))
+                    table[keyField] = [:]
+                table = table[keyField]
+            }
+            table[keyFields[-1]] = value
+        }
+
+        def member_code = params.id
+
+        def params_search = jqdtParams.search?.value
+        def columnsList = jqdtParams.columns.collect { k, v -> v.data }
+        def orderList = jqdtParams.order.collect { k, v -> [columnsList[v.column as Integer], v.dir] }
+
+        def search_filter = (params_search != null && !"${params_search}".empty) ? "%${params_search}%" : null
+        def filterer = {
+            //createAlias('endType', 'endTypeAlias')
+            or {
+                if (search_filter) ilike 'memberA_code', search_filter
+                if (search_filter) ilike 'memberB_code', search_filter
+            }
+        }
+
+        def relationships = MaritalRelationship.withCriteria {
+            filterer.delegate = delegate
+            filterer()
+
+            or {
+                eq("memberA_code", member_code)
+                eq("memberB_code", member_code)
+            }
+
+            maxResults (jqdtParams.length as Integer)
+            firstResult (jqdtParams.start as Integer)
+        }
+
+        println "household=${member_code}, ${relationships?.size()}"
+
+        //Display records memberA_code, memberB_code, isPolygamic, startStatus, startDate, endStatus, endDate
+        def objects = relationships.collect { relationship ->
+            ['memberA_code':     relationship.memberA_code,
+             'memberB_code':     relationship.memberB_code,
+             'isPolygamic':   relationship.isPolygamic==true,
+             'startStatus':       relationship.startStatus?.code,
+             'startDate':       StringUtil.formatLocalDate(relationship.startDate),
+             'endStatus':         relationship.endStatus?.code,
+             'endDate':         StringUtil.formatLocalDate(relationship.endDate)
+            ]
+        }
+
+
+        //FINAL PARAMETERS
+        def recordsTotal = MaritalRelationship.countByMemberA_codeOrMemberB_code(member_code, member_code)
+        def recordsFiltered = MaritalRelationship.withCriteria {
+            filterer.delegate = delegate
+            filterer()
+
+            or {
+                eq("memberA_code", member_code)
+                eq("memberB_code", member_code)
+            }
+        }.size()
+
+
+        println "member recordsTotal $recordsTotal"
+        //println "member recordsFiltered $recordsFiltered"
+        //println "members ${members.size()}"
+
+
+        def result = [draw: jqdtParams.draw, recordsTotal: recordsTotal, recordsFiltered: recordsFiltered, data: objects]
+
+        render result as JSON
     }
 }

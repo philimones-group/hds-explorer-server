@@ -164,10 +164,10 @@ class MemberController {
             ['code':     "<a href='${createLink(controller: 'member', action: 'show', id: member.id)}'>${member.code}</a>",
              'name':     member.name,
              'gender':   message(code: member.gender.name),
-             'dob':      StringUtil.format(member.dob),
+             'dob':      StringUtil.formatLocalDate(member.dob),
              'householdCode':"<a href='${createLink(controller: 'household', action: 'show', id: member.household.id)}'>${member.householdCode}</a>",
-             'collectedDate': StringUtil.format(member.collectedDate),
-             'createdDate': StringUtil.format(member.createdDate)
+             'collectedDate': StringUtil.formatLocalDateTime(member.collectedDate),
+             'createdDate': StringUtil.formatLocalDateTime(member.createdDate)
             ]
         }
 
