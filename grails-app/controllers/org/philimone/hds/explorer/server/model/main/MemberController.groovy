@@ -15,7 +15,7 @@ class MemberController {
 
     def index(Integer max) {
         //params.max = Math.min(max ?: 10, 100)
-        respond memberService.list(params), model:[memberCount: memberService.count()]
+        render view: "index"
     }
 
     def show(String id) {

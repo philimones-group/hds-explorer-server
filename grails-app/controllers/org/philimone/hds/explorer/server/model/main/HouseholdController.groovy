@@ -13,7 +13,7 @@ class HouseholdController {
 
     def index(Integer max) {
         //params.max = Math.min(max ?: 10, 100)
-        respond householdService.list(params), model:[householdCount: householdService.count()]
+        render view: "index"
     }
 
     def show(String id) {
@@ -126,9 +126,6 @@ class HouseholdController {
 
         //code, name, headCode, headName, collectedDate, createdDate
 
-        println(params)
-        println()
-        println "errorlog ${logReportFileInstance}"
         //println()
         //println "household orderList $orderList"
 
@@ -167,7 +164,7 @@ class HouseholdController {
         def households = orderer.collect { household ->
             ['code':     "<a href='${createLink(controller: 'household', action: 'show', id: household.id)}'>${household.code}</a>",
              'name':     household.name,
-             'headCode': "<a href='${createLink(controller: 'member', action: 'show', id: household?.headMember?.id)}'>${household.headCode}</a>",
+             'headCode': "<a href='${createLink(controller: 'member', action: 'show', id: household?.headMember?.id)}'>${household.headCode==null ? '' : household.headCode}</a>",
              'headName': household.headName,
              'collectedDate': StringUtil.format(household.collectedDate),
              'createdDate': StringUtil.format(household.createdDate)

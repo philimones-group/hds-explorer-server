@@ -22,49 +22,15 @@
                 <div class="message" role="status">${flash.message}</div>
             </g:if>
 
-            <dt:table id="regionTable">
-                <thead>
-                <tr>
-                    <th><g:message code="region.code.label" /></th>
 
-                    <th><g:message code="region.name.label" /></th>
+            <div class="whitebox_panel">
+                <bi:tableList id="regionTable" class="region" columns="code, name, hierarchyLevel, hierarchyName, parent, createdBy, createdDate" />
+            </div>
 
-                    <th><g:message code="region.hierarchyLevel.label" /></th>
+            <dt:loadDatatable name="regionTable" data="${createLink(controller: 'region', action: 'regionList')}" columns="code, name, hierarchyLevel, hierarchyName, parent, createdBy, createdDate" />
 
-                    <th><g:message code="region.hierarchyName.label" /></th>
-
-                    <th><g:message code="region.parent.label"/></th>
-
-                    <th><g:message code="region.createdBy.label" /></th>
-
-                    <th><g:message code="region.createdDate.label" /></th>
-                </tr>
-                </thead>
-                <tbody>
-                <g:each in="${regionList}" status="i" var="regionInstance">
-                    <tr>
-
-                        <td><g:link action="show" id="${regionInstance.id}">${fieldValue(bean: regionInstance, field: "code")}</g:link></td>
-
-                        <td><g:link action="show" id="${regionInstance.id}">${fieldValue(bean: regionInstance, field: "name")}</g:link></td>
-
-                        <td><g:message code="${regionInstance.hierarchyLevel.name}" /></td>
-
-                        <td>${hierarchyLevelsMap.get(regionInstance.hierarchyLevel.code)}</td>
-
-                        <td>${regionInstance.parent?.name}</td>
-
-                        <td>${fieldValue(bean: regionInstance, field: "createdBy")}</td>
-
-                        <td>${regionInstance.createdDate}</td>
-
-                    </tr>
-                </g:each>
-                </tbody>
-            </dt:table>
         </div>
 
-    <dt:loadDatatable name="regionTable" />
     
     </body>
 </html>

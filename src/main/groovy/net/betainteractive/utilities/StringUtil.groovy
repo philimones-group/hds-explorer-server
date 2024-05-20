@@ -420,10 +420,10 @@ public class StringUtil {
         return date.format(DateTimeFormatter.ISO_LOCAL_DATE);
     }
 
-    public static String formatLocalDateTime(LocalDate date){
+    public static String formatLocalDateTime(LocalDateTime date){
         if (date == null) return "";
-        //"yyyy-MM-dd and TIME"
-        return date.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        return date.format(formatter);
     }
 
     public static String format(LocalDate date, String format) {
