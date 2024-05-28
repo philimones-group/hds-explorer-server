@@ -53,24 +53,24 @@ class CodeGeneratorService {
     }
 
     String generateModuleCode(String moduleName) {
-        def codes = Module.list().collect { t -> t.code}
+        def codes = Module.listOrderByCode().collect { t -> t.code}
         return codeGenerator.generateModuleCode(moduleName, codes)
     }
 
     String generateTrackingListCode() {
-        def codes = TrackingList.list().collect { t -> t.code}
+        def codes = TrackingList.listOrderByCode().collect { t -> t.code}
         return codeGenerator.generateTrackingListCode(codes)
     }
 
     String generateRegionCode(Region parentRegion, String regionName) {
 
-        def codes = Region.list().collect { t -> t.code}
+        def codes = Region.listOrderByCode().collect { t -> t.code}
         return codeGenerator.generateRegionCode(parentRegion, regionName, codes)
     }
 
     String generateLowestRegionCode(Region parentRegion, String regionName) {
 
-        def codes = Region.list().collect { t -> t.code}
+        def codes = Region.listOrderByCode().collect { t -> t.code}
         return codeGenerator.generateLowestRegionCode(parentRegion, regionName, codes)
     }
 
@@ -104,7 +104,7 @@ class CodeGeneratorService {
 
     String generateUserCode(User user) {
 
-        def codes = User.list().collect{ t -> t.code}
+        def codes = User.listOrderByCode().collect{ t -> t.code}
 
         return codeGenerator.generateUserCode(user, codes)
     }

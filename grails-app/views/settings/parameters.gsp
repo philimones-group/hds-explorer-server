@@ -49,6 +49,26 @@
 
                     </div>
 
+                    <div class="fieldcontain ${hasErrors(bean: this.parameters, field: 'code', 'error')} ">
+                        <label for="codeGeneratorIncRule" title="${message(code: 'settings.parameters.codegenerator.incremental.rule.label')}">
+                            <g:message code="settings.parameters.codegenerator.incremental.rule.label" />
+                            <span class="required-indicator">*</span>
+                        </label>
+
+                        <select id="codeGeneratorIncRule" name="codeGeneratorIncRule" required="" value="${selectedCodeGeneratorIncRule}" class="many-to-one">
+                            <g:each in="${codeGeneratorsRules}" var="rule">
+                                <g:if test="${rule.value?.equals(selectedCodeGeneratorIncRule)}">
+                                    <option value="${rule.value}" selected><g:message code="${rule.name}" /> </option>
+                                </g:if>
+                                <g:else>
+                                    <option value="${rule.value}" ><g:message code="${rule.name}" /></option>
+                                </g:else>
+
+                            </g:each>
+                        </select>
+
+                    </div>
+
                 </fieldset>
                 <fieldset class="buttons">
                     <g:submitButton name="create" class="save" value="${message(code: 'settings.parameters.update.label')}" />

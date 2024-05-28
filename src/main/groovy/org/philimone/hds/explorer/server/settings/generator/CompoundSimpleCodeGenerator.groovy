@@ -154,7 +154,25 @@ class CompoundSimpleCodeGenerator implements CodeGenerator {
         if (existentCodes.size()==0){
             return "${baseCode}000001"
         } else {
-            for (int i=1; i <= 999999; i++){
+            List<String> listCodes = new ArrayList<>();
+            for (String code : existentCodes) {
+                if (code.startsWith(baseCode)) {
+                    listCodes.add(code);
+                }
+            }
+
+            int number = 1;
+            if (CodeGeneratorFactory.INCREMENTAL_RULE == CodeGeneratorIncrementalRule.INCREMENT_LAST_CODE) {
+                try {
+                    String lastCode = listCodes.get(listCodes.size() - 1);
+                    String lastCodeNumber = lastCode.replaceFirst(baseCode, "");
+                    number = Integer.parseInt(lastCodeNumber) + 1;
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+
+            for (int i=number; i <= 999999; i++){
                 def code = "${baseCode}${String.format('%06d', i)}" as String
                 if (!existentCodes.contains(code)){
                     return code
@@ -174,7 +192,18 @@ class CompoundSimpleCodeGenerator implements CodeGenerator {
         if (existentCodes.size()==0){
             return "${baseCode}001" //just add 3 more characters to the compound code
         } else {
-            for (int i=1; i <= 999; i++){
+            int number = 1;
+            if (CodeGeneratorFactory.INCREMENTAL_RULE == CodeGeneratorIncrementalRule.INCREMENT_LAST_CODE) {
+                try {
+                    String lastCode = existentCodes.get(existentCodes.size() - 1);
+                    String lastCodeNumber = lastCode.replaceFirst(baseCode, "");
+                    number = Integer.parseInt(lastCodeNumber) + 1;
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+
+            for (int i=number; i <= 999; i++){
                 def code = "${baseCode}${String.format('%03d', i)}" as String
                 if (!existentCodes.contains(code)){
                     return code
@@ -194,7 +223,18 @@ class CompoundSimpleCodeGenerator implements CodeGenerator {
         if (existentCodes.size()==0){
             return "${baseCode}001" //just add 2 more characters
         } else {
-            for (int i=1; i <= 999; i++){
+            int number = 1;
+            if (CodeGeneratorFactory.INCREMENTAL_RULE == CodeGeneratorIncrementalRule.INCREMENT_LAST_CODE) {
+                try {
+                    String lastCode = existentCodes.get(existentCodes.size() - 1);
+                    String lastCodeNumber = lastCode.replaceFirst(baseCode, "");
+                    number = Integer.parseInt(lastCodeNumber) + 1;
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+
+            for (int i=number; i <= 999; i++){
                 def code = "${baseCode}${String.format('%03d', i)}" as String
                 if (!existentCodes.contains(code)){
                     return code

@@ -16,23 +16,28 @@ class SettingsController {
     def applicationParamService
     def codeGeneratorService
     def coreFormColumnOptionsService
+    def settingsService
     def dt = new DatatablesUITagLib()
 
     def parameters() {
         List<JLanguage> languages = generalUtilitiesService.getSystemLanguages()
         JLanguage currentLanguage = generalUtilitiesService.getCurrentSystemLanguage()
+        def codeGenIncrementalRules = settingsService.codeGeneratorsIncrementalRules
 
-        [languages: languages, selectedLanguage: currentLanguage.language, codeGenerators: Codes.SYSTEM_ALL_CODE_GENERATORS, selectedCodeGenerator: Codes.SYSTEM_CODE_GENERATOR, errorMessages: new ArrayList<String>()]
+        [languages: languages, selectedLanguage: currentLanguage.language, codeGenerators: Codes.SYSTEM_ALL_CODE_GENERATORS, codeGeneratorsRules: codeGenIncrementalRules, selectedCodeGenerator: Codes.SYSTEM_CODE_GENERATOR, selectedCodeGeneratorIncRule: Codes.SYSTEM_CODE_GENERATOR_INCREMENTAL_RULE, errorMessages: new ArrayList<String>()]
     }
 
     def updateParameters = {
 
         def selectedLanguage = params.systemLanguage
         def selectedCodeGenerator = params.codeGenerator
+        def selectedCodeGeneratorIncRule = params.codeGeneratorIncRule
+        def codeGenIncrementalRules = settingsService.codeGeneratorsIncrementalRules
         def errorMessages = new ArrayList<String>()
 
         println "selected ${selectedLanguage}"
         println "selected ${selectedCodeGenerator}"
+        println "selected ${selectedCodeGeneratorIncRule}"
 
         try {
 
@@ -58,6 +63,16 @@ class SettingsController {
                 }
             }
 
+            //Update Code Generator Incremental Rule
+            if (selectedCodeGeneratorIncRule != null && (!Codes.SYSTEM_CODE_GENERATOR_INCREMENTAL_RULE.equals(selectedCodeGeneratorIncRule))) {
+
+
+                Codes.SYSTEM_CODE_GENERATOR_INCREMENTAL_RULE = selectedCodeGeneratorIncRule
+                applicationParamService.updateApplicationParam(Codes.PARAMS_SYSTEM_CODE_GENERATOR_INCREMENTAL_RULE, selectedCodeGeneratorIncRule)
+                codeGeneratorService.codeGenerator = CodeGeneratorFactory.newInstance()
+
+            }
+
             flash.message = message(code: 'settings.parameters.update.success.label')
 
         } catch(Exception ex) {
@@ -71,7 +86,7 @@ class SettingsController {
         println "${errorMessages}"
 
         render view: "parameters", model: [languages: languages, selectedLanguage: currentLanguage.language, errorMessages: errorMessages,
-                                              codeGenerators: Codes.SYSTEM_ALL_CODE_GENERATORS, selectedCodeGenerator: Codes.SYSTEM_CODE_GENERATOR]
+                                              codeGenerators: Codes.SYSTEM_ALL_CODE_GENERATORS, codeGeneratorsRules: codeGenIncrementalRules, selectedCodeGenerator: Codes.SYSTEM_CODE_GENERATOR, selectedCodeGeneratorIncRule: Codes.SYSTEM_CODE_GENERATOR_INCREMENTAL_RULE]
     }
 
     def customOptions = {

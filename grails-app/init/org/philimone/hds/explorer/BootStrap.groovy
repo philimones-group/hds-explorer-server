@@ -426,21 +426,25 @@ class BootStrap {
         def mmaxAge = svc.getConfigValue("${Codes.PARAMS_MIN_AGE_OF_MOTHER}")
         def hmaxAge = svc.getConfigValue("${Codes.PARAMS_MIN_AGE_OF_HEAD}")
         def smaxAge = svc.getConfigValue("${Codes.PARAMS_MIN_AGE_OF_SPOUSE}")
+        def rminAge = svc.getConfigValue("${Codes.PARAMS_MIN_AGE_OF_RESPONDENT}")
         def gndChck = svc.getConfigValue("${Codes.PARAMS_GENDER_CHECKING}")
         def sysLang = svc.getConfigValue("${Codes.PARAMS_SYSTEM_LANGUAGE}")
         def sysCdgn = svc.getConfigValue("${Codes.PARAMS_SYSTEM_CODE_GENERATOR}")
+        def sysCgir = svc.getConfigValue("${Codes.PARAMS_SYSTEM_CODE_GENERATOR_INCREMENTAL_RULE}")
         def sysPath = svc.getConfigValue("${Codes.PARAMS_SYSTEM_HOMEPATH}")
 
-        println "config: ${fmaxAge}"
+        println "config: ${sysCdgn}"
 
         //Save Application/System Parameters to database, Will persist to the database only when its empty - changing parameters will be done through database
         aps.addParam(Codes.PARAMS_MIN_AGE_OF_MOTHER, StringUtil.getInteger(mmaxAge))
         aps.addParam(Codes.PARAMS_MIN_AGE_OF_FATHER, StringUtil.getInteger(fmaxAge))
         aps.addParam(Codes.PARAMS_MIN_AGE_OF_HEAD, StringUtil.getInteger(hmaxAge))
         aps.addParam(Codes.PARAMS_MIN_AGE_OF_SPOUSE, StringUtil.getInteger(smaxAge))
+        aps.addParam(Codes.PARAMS_MIN_AGE_OF_RESPONDENT, StringUtil.getInteger(rminAge))
         aps.addParam(Codes.PARAMS_GENDER_CHECKING, StringUtil.getBoolean(gndChck))
         aps.addParam(Codes.PARAMS_SYSTEM_LANGUAGE, sysLang) //set default language to english
         aps.addParam(Codes.PARAMS_SYSTEM_CODE_GENERATOR, sysCdgn)
+        aps.addParam(Codes.PARAMS_SYSTEM_CODE_GENERATOR_INCREMENTAL_RULE, sysCgir)
         aps.addParam(Codes.PARAMS_SYSTEM_HOMEPATH, sysPath)
 
         aps.addParamNullable(RegionLevel.HIERARCHY_1.code, null)
@@ -582,18 +586,22 @@ class BootStrap {
         def valueAgf = applicationParamService.getIntegerValue(Codes.PARAMS_MIN_AGE_OF_FATHER)
         def valueAgh = applicationParamService.getIntegerValue(Codes.PARAMS_MIN_AGE_OF_HEAD)
         def valueAgs = applicationParamService.getIntegerValue(Codes.PARAMS_MIN_AGE_OF_SPOUSE)
+        def valueAgr = applicationParamService.getIntegerValue(Codes.PARAMS_MIN_AGE_OF_RESPONDENT)
         def valueGch = applicationParamService.getBooleanValue(Codes.PARAMS_GENDER_CHECKING)
         def valueSlg = applicationParamService.getStringValue(Codes.PARAMS_SYSTEM_LANGUAGE)
         def valueScg = applicationParamService.getStringValue(Codes.PARAMS_SYSTEM_CODE_GENERATOR)
+        def valueSir = applicationParamService.getStringValue(Codes.PARAMS_SYSTEM_CODE_GENERATOR_INCREMENTAL_RULE)
         def valuePth = applicationParamService.getStringValue(Codes.PARAMS_SYSTEM_HOMEPATH)
 
         Codes.MIN_MOTHER_AGE_VALUE = valueAgm != null ? valueAgm : Codes.MIN_MOTHER_AGE_VALUE
         Codes.MIN_FATHER_AGE_VALUE = valueAgf != null ? valueAgf : Codes.MIN_FATHER_AGE_VALUE
         Codes.MIN_HEAD_AGE_VALUE =   valueAgh != null ? valueAgh : Codes.MIN_HEAD_AGE_VALUE
         Codes.MIN_SPOUSE_AGE_VALUE = valueAgs != null ? valueAgs : Codes.MIN_SPOUSE_AGE_VALUE
+        Codes.MIN_RESPONDENT_AGE_VALUE = valueAgr != null ? valueAgr : Codes.MIN_RESPONDENT_AGE_VALUE
         Codes.GENDER_CHECKING =      valueGch != null ? valueGch : Codes.GENDER_CHECKING
         Codes.SYSTEM_LANGUAGE =      !StringUtil.isBlank(valueSlg) ? valueSlg : Codes.SYSTEM_LANGUAGE
         Codes.SYSTEM_CODE_GENERATOR = !StringUtil.isBlank(valueScg) ? valueScg : Codes.SYSTEM_CODE_GENERATOR
+        Codes.SYSTEM_CODE_GENERATOR_INCREMENTAL_RULE = !StringUtil.isBlank(valueSir) ? valueSir : Codes.SYSTEM_CODE_GENERATOR_INCREMENTAL_RULE
         Codes.SYSTEM_HOMEPATH = !StringUtil.isBlank(valuePth) ? valuePth : Codes.SYSTEM_HOMEPATH
         SystemPath.HOME_PATH = Codes.SYSTEM_HOMEPATH
 
