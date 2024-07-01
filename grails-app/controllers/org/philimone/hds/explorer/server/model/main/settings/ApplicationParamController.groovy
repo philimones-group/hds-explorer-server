@@ -40,4 +40,49 @@ class ApplicationParamController {
 
         redirect action:"hierarchyLevels"
     }
+
+    def updateHierarchiesTable = {
+        def value = params.name as String
+
+        //enabled.hierarchy1:true.District
+        //head.hierachy1:true - hierachy1.head = true/false
+
+        println "params: ${value}"
+
+        if (value != null) {
+
+            def spt = value.split(":")
+
+            if (spt[0] != null){
+                def var = spt[0]
+                def val = spt[1]
+
+                if (var.startsWith("enabled.")) {
+
+                    def spt2 = val.split("\\.")
+
+                    def hierarchyId = var.replace("enabled.", "")
+                    def hierarchyEnabled = "true".equals(spt2[0])
+                    def hierarchyLabel = spt2[1]
+                    def param = ApplicationParam.findByName(hierarchyId)
+
+                    param.value = hierarchyEnabled ? hierarchyLabel : null
+                    param.save(flush: true)
+
+                    println "errors: ${param.errors}"
+
+
+                } else if (var.startsWith("head.")) {
+                    //handles head
+                }
+
+            }
+
+
+
+
+        }
+
+        render "OK"
+    }
 }

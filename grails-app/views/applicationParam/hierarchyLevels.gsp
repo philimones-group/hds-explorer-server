@@ -7,6 +7,40 @@
         <dt:defaultResources />
     </head>
     <body>
+
+
+    <g:javascript>
+        $(document).ready(function() {
+
+            //Listen to all checkboxes in the table
+            $("#formsTable").on("change", ':checkbox', function(e) {
+                var name = this.name.toString();
+                var value = "" + this.checked;
+
+                //console.log("checked "+this.name+" value="+value)
+
+                if (name.startsWith("enabled.")) {
+                    var elemName = name.replace("enabled.", "value\\.");
+                    var element = $("#"+elemName)       ;
+                    value = value + "." + element.val();
+
+                    if (!this.checked) {
+                        //clear the text field
+                        element.val("");
+                    }
+
+                    //console.log("element name = "+("#"+elemName)+" value="+elemValue)
+                }
+
+                $.ajax({
+                    url: "${createLink(controller: "applicationParam", action: "updateHierarchiesTable")}", data: { "name" : name + ":" + value}, cache: false,
+                    success: function(html) {  }
+                });
+
+            });
+        });
+    </g:javascript>
+
         <a href="#list-applicationParam" class="skip" tabindex="-1"><g:message code="default.link.skip.label" default="Skip to content&hellip;"/></a>
         <div class="nav" role="navigation">
             <ul>

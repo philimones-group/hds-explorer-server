@@ -95,6 +95,7 @@ class RawImportApiController {
         }
 
         RawParseResult<RawHousehold> parseResult = null
+        String xmlContent = request.reader?.text
 
         try {
             def node = new XmlSlurper().parseText(xmlContent) as NodeChild
