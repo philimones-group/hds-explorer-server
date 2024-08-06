@@ -265,30 +265,37 @@ class CoreExtensionService {
     }
 
     LinkedHashMap<String, Object> getInstanceMappedValues(CoreFormExtension coreFormExt, byte[] formDefBytes, byte[] instanceBytes) {
+
+        def mapValues = new LinkedHashMap<String, Object>()
+
         def formDef = XFormReader.getFormDefinition(formDefBytes)
         def instanceXml = XFormReader.getFormInstanceFrom(instanceBytes)
 
-        //open HouseholdExt
-        //get mapping models, navigate xml (attention to Repeat, CHOICE_LIST, GEOPOINT)
-
-        def mapValues = new LinkedHashMap<String, Object>()
-        def repeatIndexes = new LinkedHashMap<String, Integer>()
-        readElementChildren(coreFormExt, formDef, instanceXml.getRoot(), mapValues, null, 0, repeatIndexes, new String[1])
+        if (instanceXml != null) {
+            //open HouseholdExt
+            //get mapping models, navigate xml (attention to Repeat, CHOICE_LIST, GEOPOINT)
+            def repeatIndexes = new LinkedHashMap<String, Integer>()
+            readElementChildren(coreFormExt, formDef, instanceXml.getRoot(), mapValues, null, 0, repeatIndexes, new String[1])
+        }
 
         return mapValues
     }
 
     InstanceMappedValues getExtraInstanceMappedValues(CoreFormExtension coreFormExt, List<String> innerChilds, byte[] formDefBytes, byte[] instanceBytes) {
+
+        def instanceMapValues = new InstanceMappedValues()
+
         def formDef = XFormReader.getFormDefinition(formDefBytes)
         def instanceXml = XFormReader.getFormInstanceFrom(instanceBytes)
 
-        //open HouseholdExt
-        //get mapping models, navigate xml (attention to Repeat, CHOICE_LIST, GEOPOINT)
+        if (instanceXml != null) {
+            //open HouseholdExt
+            //get mapping models, navigate xml (attention to Repeat, CHOICE_LIST, GEOPOINT)
 
-        //def mapValues = new LinkedHashMap<String, Object>()
-        def repeatIndexes = new LinkedHashMap<String, Integer>()
-        def instanceMapValues = new InstanceMappedValues()
-        readExtraElementChildren(coreFormExt, innerChilds, formDef, instanceXml.getRoot(), instanceMapValues, instanceMapValues.mainFormValues, null, 0, repeatIndexes, new String[1])
+            //def mapValues = new LinkedHashMap<String, Object>()
+            def repeatIndexes = new LinkedHashMap<String, Integer>()
+            readExtraElementChildren(coreFormExt, innerChilds, formDef, instanceXml.getRoot(), instanceMapValues, instanceMapValues.mainFormValues, null, 0, repeatIndexes, new String[1])
+        }
 
         return instanceMapValues
     }

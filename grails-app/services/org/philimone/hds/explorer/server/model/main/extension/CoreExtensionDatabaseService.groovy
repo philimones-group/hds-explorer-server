@@ -78,6 +78,13 @@ class CoreExtensionDatabaseService {
 
         removeNonExistentColumns(tableName, mapValues)
 
+        if (mapValues.size()==0) { //core_form xml is empty
+            def msg = "${tableName}: was not possible to insert extension form because is empty"
+            println(msg)
+
+            return new SqlExecutionResult(success: false, errorMessage: msg, command: "empty sql insert")
+        }
+
         def index = 0
         def columns = mapValues.keySet().join(", ")
         def params = mapValues.keySet().collect { "?" }.join(', ') //${index++}

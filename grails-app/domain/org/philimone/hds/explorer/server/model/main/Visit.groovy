@@ -69,7 +69,7 @@ class Visit extends CollectableEntity {
         hasInterpreter nullable: true
         interpreterName blank: true, nullable: true
 
-        nonVisitedMembers blank: true, nullable: true
+        nonVisitedMembers blank: true, nullable: true, maxSize: 1000
 
         gpsAccuracy nullable: true
         gpsAltitude nullable: true
@@ -107,7 +107,7 @@ class Visit extends CollectableEntity {
         hasInterpreter column: "has_interpreter"
         interpreterName column: "interpreter_name"
 
-        nonVisitedMembers column: "non_visited_members", index: "idx_nonv"
+        nonVisitedMembers column: "non_visited_members"
 
         gpsAccuracy column: "gps_accuracy"
         gpsAltitude column: "gps_altitude"

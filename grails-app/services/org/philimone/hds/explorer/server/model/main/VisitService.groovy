@@ -149,9 +149,9 @@ class VisitService {
             errors << errorMessageService.getRawMessage(RawEntity.VISIT, "validation.field.blank", ["visitReason"], ["visitReason"])
         }
         //C1. Check Blank Fields (respondentCode) conditional,
-        if (visitReason != VisitReason.MIGRATION && visitReason != VisitReason.NEW_HOUSEHOLD && !noRespondent && isBlankRespondentCode){
+        /*if (visitReason != VisitReason.MIGRATION && visitReason != VisitReason.NEW_HOUSEHOLD && !noRespondent && isBlankRespondentCode){
             errors << errorMessageService.getRawMessage(RawEntity.VISIT, "validation.field.blank", ["respondentCode"], ["respondentCode"])
-        }
+        }*/
         //C1. Check Blank Fields (hasInterpreter)
         if (isBlankHasInterpreter){
             //If is BLANK we will consider it false

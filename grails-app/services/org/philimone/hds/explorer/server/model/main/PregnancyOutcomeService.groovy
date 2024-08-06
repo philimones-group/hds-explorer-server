@@ -458,11 +458,11 @@ class PregnancyOutcomeService {
 
         //get mother residency
         def visit = visitService.getVisit(pregnancyChild?.outcome.visitCode)
-        def motherResidency= householdService.getHousehold(visit.householdCode) //residencyService.getCurrentResidency(memberService.getMember(motherCode))
+        def motherResidency = householdService.getHousehold(visit.householdCode) //residencyService.getCurrentResidency(memberService.getMember(motherCode))
 
         //Check If childCode belongs to the mother current household
-        if (!isBlankChildCode && motherResidency != null && !pregnancyChild.childCode.startsWith(motherResidency.household?.code)){
-            errors << errorMessageService.getRawMessage(RawEntity.PREGNANCY_CHILD, "validation.field.pregnancy.child.code.invalid.mother.error", [pregnancyChild.childCode, motherResidency.household?.code], ["childCode"])
+        if (!isBlankChildCode && motherResidency != null && !pregnancyChild.childCode.startsWith(motherResidency?.code)){
+            errors << errorMessageService.getRawMessage(RawEntity.PREGNANCY_CHILD, "validation.field.pregnancy.child.code.invalid.mother.error", [pregnancyChild.childCode, motherResidency?.code], ["childCode"])
         }
 
         if (!errors.empty) {

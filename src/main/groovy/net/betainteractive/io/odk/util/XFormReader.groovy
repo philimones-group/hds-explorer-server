@@ -38,11 +38,22 @@ class XFormReader {
     }
 
     static FormInstance getFormInstanceFrom(byte[] instanceXmlBytes) throws IOException, InvalidStructureException, XmlPullParserException, UnfullfilledRequirementsException {
-        try (InputStream inputStream = new ByteArrayInputStream(instanceXmlBytes)) {
+
+        if (instanceXmlBytes == null || instanceXmlBytes.length == 0) return null
+
+        try {
+
+            InputStream inputStream = new ByteArrayInputStream(instanceXmlBytes)
+
             KXmlParser xmlParser = ElementParser.instantiateParser(inputStream);
             TreeElementParser treeElementParser = new TreeElementParser(xmlParser, 0, null);
+
             return new FormInstance(treeElementParser.parse());
+        } catch (Exception ex) {
+            ex.printStackTrace()
         }
+
+        return null
     }
 
 }
