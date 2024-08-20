@@ -4,8 +4,7 @@
         <meta name="layout" content="main" />
         <title><g:message code="default.menu.settings.coreformoptions.label" /></title>
 
-        <asset:stylesheet src="tabulator_site.min.css"/>
-        <asset:javascript src="tabulator.min.js"/>
+        <tb:tabulatorResources/>
 
     </head>
     <body>
@@ -71,7 +70,7 @@
 
             <div class="whitebox_panel">
 
-                <dt:toast id="options_toast" title="Info" message="Test message" />
+                <tb:toast id="options_toast" title="Info" message="Test message" />
 
                 <fieldset class="form-group">
                     <div class="fieldcontain required">
@@ -89,19 +88,21 @@
                     </div>
                 </fieldset>
 
-                <dt:tabulator id="optionsTable" name="optionsTable" toastid="options_toast"
-                              addlabel="${message(code: 'settings.coreformoptions.addlabel.label')}"
-                              remlabel="${message(code: 'settings.coreformoptions.remlabel.label')}"
+                <tb:tabulator id="optionsTable" name="optionsTable" toastid="options_toast" contextMenu="true"
                               data="${g.createLink(controller: 'settings', action: 'fetchOptionsList')}"
-                              update="${createLink(controller: 'settings', action: 'updateCustomOptions')}" boxed="false"
-                              createrow="${createLink(controller: 'settings', action: 'createCustomOptions')}"
-                              deleterow="${createLink(controller: 'settings', action: 'deleteCustomOptions')}">
-                    <dt:column name="columnName"  label="${message(code: 'settings.coreformoptions.columnname.label')}" />
-                    <dt:column name="ordinal"     label="${message(code: 'settings.coreformoptions.ordinal.label')}" />
-                    <dt:column name="optionValue" label="${message(code: 'settings.coreformoptions.optionValue.label')}" hzalign="left" editor="input" />
-                    <dt:column name="optionLabel" label="${message(code: 'settings.coreformoptions.optionLabel.label')}" hzalign="left" editor="input" />
-                    <dt:column name="optionLabelCode" label="${message(code: 'settings.coreformoptions.messageCode.label')}" hzalign="left" editor="input" />
-                </dt:tabulator>
+                              update="${createLink(controller: 'settings', action: 'updateCustomOptions')}" boxed="false">
+
+                    <tb:menuBar>
+                        <tb:menu label="${message(code: 'settings.coreformoptions.addlabel.label')}" type="add" action="${createLink(controller: 'settings', action: 'createCustomOptions')}" />
+                        <tb:menu label="${message(code: 'settings.coreformoptions.remlabel.label')}" type="delete" action="${createLink(controller: 'settings', action: 'deleteCustomOptions')}" />
+                    </tb:menuBar>
+
+                    <tb:column name="columnName"  label="${message(code: 'settings.coreformoptions.columnname.label')}" />
+                    <tb:column name="ordinal"     label="${message(code: 'settings.coreformoptions.ordinal.label')}" />
+                    <tb:column name="optionValue" label="${message(code: 'settings.coreformoptions.optionValue.label')}" hzalign="left" editor="input" />
+                    <tb:column name="optionLabel" label="${message(code: 'settings.coreformoptions.optionLabel.label')}" hzalign="left" editor="input" />
+                    <tb:column name="optionLabelCode" label="${message(code: 'settings.coreformoptions.messageCode.label')}" hzalign="left" editor="input" />
+                </tb:tabulator>
 
             </div>
         </div>

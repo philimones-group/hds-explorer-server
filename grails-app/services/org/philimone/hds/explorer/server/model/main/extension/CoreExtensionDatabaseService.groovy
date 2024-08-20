@@ -16,6 +16,7 @@ import org.javarosa.core.model.instance.TreeReference
 import org.philimone.hds.explorer.server.model.enums.CoreForm
 import org.philimone.hds.explorer.server.model.enums.extensions.DatabaseColumnType
 import org.philimone.hds.explorer.server.model.enums.extensions.FormColumnType
+import org.philimone.hds.explorer.server.model.json.JActionResult
 import org.philimone.hds.explorer.server.model.main.CoreFormExtension
 import org.philimone.hds.explorer.server.model.main.CoreFormExtensionModel
 
@@ -435,18 +436,18 @@ class CoreExtensionDatabaseService {
         return result
     }
 
-    UpdateResult updateDataModel(String editedColumnName, String id, String newValue) {
+    JActionResult updateDataModel(String editedColumnName, String id, String newValue) {
 
         def model = CoreFormExtensionModel.findById(id)
 
         //check if newValue is blank
         if (StringUtil.isBlank(newValue)) {
-            return new UpdateResult(result: UpdateResult.Result.ERROR.name(), message: generalUtilitiesService.getMessageWeb("settings.coreformoptions.message.notblank.label"))
+            return new JActionResult(result: JActionResult.Result.ERROR.name(), message: generalUtilitiesService.getMessageWeb("settings.coreformoptions.message.notblank.label"))
         }
 
         //check if it is renaming dbColumnName
         if (editedColumnName.equals("dbColumnName") && !model.dbColumnName.equals(newValue) && CoreFormExtensionModel.countByDbColumnName(newValue)>0) {
-            return new UpdateResult(result: UpdateResult.Result.ERROR.name(), message: generalUtilitiesService.getMessageWeb("settings.coreformoptions.message.option.unique.label"))
+            return new JActionResult(result: JActionResult.Result.ERROR.name(), message: generalUtilitiesService.getMessageWeb("settings.coreformoptions.message.option.unique.label"))
         }
 
         Object objNewValue = newValue
@@ -458,18 +459,18 @@ class CoreExtensionDatabaseService {
         //update the record
         CoreFormExtensionModel.executeUpdate("update CoreFormExtensionModel set " + editedColumnName + " = ?0 where id = ?1", [objNewValue, id])
 
-        return new UpdateResult(result: UpdateResult.Result.SUCCESS.name(), message: generalUtilitiesService.getMessageWeb("settings.coreformoptions.message.updated.label"))
+        return new JActionResult(result: JActionResult.Result.SUCCESS.name(), message: generalUtilitiesService.getMessageWeb("settings.coreformoptions.message.updated.label"))
     }
 
-    UpdateResult deleteDataModel(String id) {
+    JActionResult deleteDataModel(String id) {
         def model = CoreFormExtensionModel.get(id)
         //checks
         model.delete(flush: true)
 
         if (!model.hasErrors()) {
-            return new UpdateResult(result: UpdateResult.Result.SUCCESS, message: generalUtilitiesService.getMessageWeb("settings.coreformoptions.message.deleted.label"))
+            return new JActionResult(result: JActionResult.Result.SUCCESS, message: generalUtilitiesService.getMessageWeb("settings.coreformoptions.message.deleted.label"))
         } else {
-            return new UpdateResult(result: UpdateResult.Result.ERROR.name(), message: "" + errorMessageService.formatErrors(model))
+            return new JActionResult(result: JActionResult.Result.ERROR.name(), message: "" + errorMessageService.formatErrors(model))
         }
     }
 
@@ -510,12 +511,4 @@ class CoreExtensionDatabaseService {
         List<Object> keys
     }
 
-    class UpdateResult {
-        enum Result {
-            ERROR, SUCCESS
-        }
-
-        String result = Result.ERROR.name()
-        String message = ""
-    }
 }

@@ -3,6 +3,7 @@ package org.philimone.hds.explorer.server.model.main
 import grails.gorm.transactions.Transactional
 import net.betainteractive.utilities.StringUtil
 import org.philimone.hds.explorer.server.model.json.JConstant
+import org.philimone.hds.explorer.server.model.json.JActionResult
 
 @Transactional
 class CoreFormColumnOptionsService {
@@ -36,14 +37,14 @@ class CoreFormColumnOptionsService {
         return CoreFormColumnOptions.findAllByColumnName(columnName)
     }
 
-    UpdateResult updateOptions(String editedColumnName, String id, String newValue) {
+    JActionResult updateOptions(String editedColumnName, String id, String newValue) {
         //get column that is being customized CoreFormColumnOptions.columnName
         def columnOption = CoreFormColumnOptions.findById(id)
         def columnName = columnOption?.columnName
 
         //check if newValue is blank
         if (StringUtil.isBlank(newValue)) {
-            return new UpdateResult(result: UpdateResult.Result.ERROR.name(), message: generalUtilitiesService.getMessageWeb("settings.coreformoptions.message.notblank.label"))
+            return new JActionResult(result: JActionResult.Result.ERROR.name(), message: generalUtilitiesService.getMessageWeb("settings.coreformoptions.message.notblank.label"))
         }
 
         //check if newValue is duplicated for that columnName
@@ -52,16 +53,16 @@ class CoreFormColumnOptionsService {
         println "result count: ${resultCountOpts}"
 
         if (resultCountOpts.size() > 0 && resultCountOpts[0] > 0) {
-            return new UpdateResult(result: UpdateResult.Result.ERROR.name(), message: generalUtilitiesService.getMessageWeb("settings.coreformoptions.message.option.unique.label"))
+            return new JActionResult(result: JActionResult.Result.ERROR.name(), message: generalUtilitiesService.getMessageWeb("settings.coreformoptions.message.option.unique.label"))
         }
 
         //update the record
         CoreFormColumnOptions.executeUpdate("update CoreFormColumnOptions set " + editedColumnName + " = ?0 where id = ?1", [newValue, id])
 
-        return new UpdateResult(result: UpdateResult.Result.SUCCESS.name(), message: generalUtilitiesService.getMessageWeb("settings.coreformoptions.message.updated.label"))
+        return new JActionResult(result: JActionResult.Result.SUCCESS.name(), message: generalUtilitiesService.getMessageWeb("settings.coreformoptions.message.updated.label"))
     }
 
-    CoreFormColumnOptions createCustomOptions(String id) {
+    JActionResult createCustomOptions(String id) {
         def otherOpt = CoreFormColumnOptions.get(id)
         def maxOpt = CoreFormColumnOptions.findAllByColumnName(otherOpt.columnName).max { it.ordinal }
         def optionValue = createSampleOptionValue(otherOpt.columnName)
@@ -72,17 +73,23 @@ class CoreFormColumnOptionsService {
 
         println "${newOpt?.errors}"
 
-        return newOpt
+        if (!newOpt.hasErrors()) {
+            return new JActionResult(result: JActionResult.Result.SUCCESS, message:  generalUtilitiesService.getMessageWeb("settings.coreformoptions.message.updated.label"), data: [newOpt])
+        } else {
+            return new JActionResult(result: JActionResult.Result.ERROR.name(), message: "" + errorMessageService.formatErrors(opt))
+        }
+
+        return null
     }
 
-    UpdateResult deleteCustomOptions(String id) {
+    JActionResult deleteCustomOptions(String id) {
         def opt = CoreFormColumnOptions.get(id)
         //checks
         opt.delete(flush: true)
         if (!opt.hasErrors()) {
-            return new UpdateResult(result: UpdateResult.Result.SUCCESS, message:  generalUtilitiesService.getMessageWeb("settings.coreformoptions.message.deleted.label"))
+            return new JActionResult(result: JActionResult.Result.SUCCESS, message:  generalUtilitiesService.getMessageWeb("settings.coreformoptions.message.deleted.label"))
         } else {
-            return new UpdateResult(result: UpdateResult.Result.ERROR.name(), message: "" + errorMessageService.formatErrors(opt))
+            return new JActionResult(result: JActionResult.Result.ERROR.name(), message: "" + errorMessageService.formatErrors(opt))
         }
     }
 
@@ -118,12 +125,4 @@ class CoreFormColumnOptionsService {
         return newlabel
     }
 
-    class UpdateResult {
-        enum Result {
-            ERROR, SUCCESS
-        }
-
-        String result = Result.ERROR.name()
-        String message = ""
-    }
 }

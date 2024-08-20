@@ -9,6 +9,7 @@ import org.philimone.hds.explorer.server.model.main.Region
 import org.philimone.hds.explorer.server.model.settings.Codes
 import org.philimone.hds.explorer.server.settings.generator.CodeGeneratorFactory
 import org.philimone.hds.explorer.taglib.DatatablesUITagLib
+import org.philimone.hds.explorer.taglib.TabulatorTagLib
 
 class SettingsController {
 
@@ -18,6 +19,7 @@ class SettingsController {
     def coreFormColumnOptionsService
     def settingsService
     def dt = new DatatablesUITagLib()
+    def tb = new TabulatorTagLib()
 
     def parameters() {
         List<JLanguage> languages = generalUtilitiesService.getSystemLanguages()
@@ -113,14 +115,19 @@ class SettingsController {
         def errlabel = message(code: 'settings.coreformoptions.errlabel.label')
         def inflabel = message(code: 'settings.coreformoptions.inflabel.label')
 
-        def tableRendered = dt.tabulator(id: "optionsTable", name: "optionsTable", addlabel: addlabel, remlabel: remlabel,
+        def tableRendered = tb.tabulator(id: "optionsTable", name: "optionsTable", contextMenu: "true", boxed: "true",
                                                          errlabel: errlabel, inflabel: inflabel, toastid: "options_toast",
-                                                         data: dataUrl, update: updateUrl, createrow: createUrl, deleterow: deleteUrl, boxed: "true") {
-            dt.column(name: "columnName", label: "${message(code: 'settings.coreformoptions.columnname.label')}") +
-            dt.column(name: "ordinal", label: "${message(code: 'settings.coreformoptions.ordinal.label')}") +
-            dt.column(name: "optionValue", label: "${message(code: 'settings.coreformoptions.optionValue.label')}", hzalign: "left", editor: "input") +
-            dt.column(name: "optionLabel", label: "${message(code: 'settings.coreformoptions.optionLabel.label')}", hzalign: "left", editor: "input") +
-            dt.column(name: "optionLabelCode", label: "${message(code: 'settings.coreformoptions.messageCode.label')}", hzalign: "left", editor: "input")
+                                                         data: dataUrl, update: updateUrl) {
+
+            tb.menuBar() {
+                tb.menu(label: addlabel, action: createUrl, type: "add") +
+                tb.menu(label: remlabel, action: deleteUrl, type: "remove")
+            } +
+            tb.column(name: "columnName", label: "${message(code: 'settings.coreformoptions.columnname.label')}") +
+            tb.column(name: "ordinal", label: "${message(code: 'settings.coreformoptions.ordinal.label')}") +
+            tb.column(name: "optionValue", label: "${message(code: 'settings.coreformoptions.optionValue.label')}", hzalign: "left", editor: "input") +
+            tb.column(name: "optionLabel", label: "${message(code: 'settings.coreformoptions.optionLabel.label')}", hzalign: "left", editor: "input") +
+            tb.column(name: "optionLabelCode", label: "${message(code: 'settings.coreformoptions.messageCode.label')}", hzalign: "left", editor: "input")
         }
 
         render tableRendered

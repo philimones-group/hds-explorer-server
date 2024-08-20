@@ -5,7 +5,7 @@
         <g:set var="entityName" value="${message(code: 'coreFormExtension.label', default: 'CoreFormExtension')}" />
         <title><g:message code="coreFormExtension.mapping.title.label" /></title>
 
-        <dt:tabulatorResources />
+        <tb:tabulatorResources />
     </head>
     <body>
         <a href="#show-coreFormExtension" class="skip" tabindex="-1"><g:message code="default.link.skip.label" default="Skip to content&hellip;"/></a>
@@ -34,7 +34,7 @@
 
             <div class="whitebox_panel">
 
-                <dt:toast id="models_toast" title="Info" message="Test message" />
+                <tb:toast id="models_toast" title="Info" message="Test message" />
 
                 <ol class="property-list form">
 
@@ -75,25 +75,26 @@
                 </ol>
             </div>
 
-            <dt:tabulator id="modelsTable" name="modelsTable" toastid="models_toast" boxed="true"
-                          addlabel="${message(code: 'settings.coreformoptions.addlabel.label')}"
-                          remlabel="${message(code: 'settings.coreformoptions.remlabel.label')}"
+            <tb:tabulator id="modelsTable" name="modelsTable" toastid="models_toast" boxed="true" contextMenu="true"
                           data="${g.createLink(controller: 'coreFormExtension', action: 'fetchDataModels', id: coreFormExtension?.id)}"
-                          update="${createLink(controller: 'coreFormExtension', action: 'updateDataModel')}"
-                          deleterow="${createLink(controller: 'coreFormExtension', action: 'deleteDataModel')}">
+                          update="${createLink(controller: 'coreFormExtension', action: 'updateDataModel')}">
 
-                <dt:column name="dbColumnIndex"  label="${message(code: 'coreFormExtension.mapping.dbColumnIndex')}" />
-                <dt:column name="dbColumnTable"     label="${message(code: 'coreFormExtension.mapping.dbColumnTable')}" />
-                <dt:column name="dbColumnName" label="${message(code: 'coreFormExtension.mapping.dbColumnName')}" hzalign="left" />
-                <dt:column name="dbColumnType" label="${message(code: 'coreFormExtension.mapping.dbColumnType')}" hzalign="center" display="enumType" />
-                <dt:column name="dbColumnSize" label="${message(code: 'coreFormExtension.mapping.dbColumnSize')}" hzalign="center" editor="input" />
-                <dt:column name="formColumnName" label="${message(code: 'coreFormExtension.mapping.formColumnName')}" hzalign="left" />
-                <dt:column name="formColumnType" label="${message(code: 'coreFormExtension.mapping.formColumnType')}" hzalign="center" display="enumType" />
-                <dt:column name="formRepeatGroup" label="${message(code: 'coreFormExtension.mapping.formRepeatGroup')}" hzalign="center" />
-                <dt:column name="formRepeatLength" label="${message(code: 'coreFormExtension.mapping.formRepeatLength')}" hzalign="center" editor="input" />
-                <dt:column name="formChoiceValue" label="${message(code: 'coreFormExtension.mapping.formChoiceValue')}" hzalign="center" />
+                <tb:menuBar>
+                    <tb:menu label="${message(code: 'settings.coreformoptions.remlabel.label')}" action="${createLink(controller: 'coreFormExtension', action: 'deleteDataModel')}" type="remove" />
+                </tb:menuBar>
 
-            </dt:tabulator>
+                <tb:column name="dbColumnIndex"  label="${message(code: 'coreFormExtension.mapping.dbColumnIndex')}" />
+                <tb:column name="dbColumnTable"     label="${message(code: 'coreFormExtension.mapping.dbColumnTable')}" />
+                <tb:column name="dbColumnName" label="${message(code: 'coreFormExtension.mapping.dbColumnName')}" hzalign="left" />
+                <tb:column name="dbColumnType" label="${message(code: 'coreFormExtension.mapping.dbColumnType')}" hzalign="center" display="enumType" />
+                <tb:column name="dbColumnSize" label="${message(code: 'coreFormExtension.mapping.dbColumnSize')}" hzalign="center" editor="input" />
+                <tb:column name="formColumnName" label="${message(code: 'coreFormExtension.mapping.formColumnName')}" hzalign="left" />
+                <tb:column name="formColumnType" label="${message(code: 'coreFormExtension.mapping.formColumnType')}" hzalign="center" display="enumType" />
+                <tb:column name="formRepeatGroup" label="${message(code: 'coreFormExtension.mapping.formRepeatGroup')}" hzalign="center" />
+                <tb:column name="formRepeatLength" label="${message(code: 'coreFormExtension.mapping.formRepeatLength')}" hzalign="center" editor="input" />
+                <tb:column name="formChoiceValue" label="${message(code: 'coreFormExtension.mapping.formChoiceValue')}" hzalign="center" />
+
+            </tb:tabulator>
 
             <fieldset class="navbar navbar-dark bg-dark">
                 <g:form controller="coreFormExtension" method="POST">

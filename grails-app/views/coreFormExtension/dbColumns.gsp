@@ -4,8 +4,6 @@
         <meta name="layout" content="main" />
         <g:set var="entityName" value="${message(code: 'coreFormExtension.label', default: 'CoreFormExtension')}" />
         <title><g:message code="coreFormExtension.columns.title.label" /></title>
-
-        <dt:tabulatorResources />
     </head>
     <body>
         <a href="#show-coreFormExtension" class="skip" tabindex="-1"><g:message code="default.link.skip.label" default="Skip to content&hellip;"/></a>
