@@ -4,6 +4,7 @@ import grails.gorm.transactions.Transactional
 import net.betainteractive.utilities.StringUtil
 import org.philimone.hds.explorer.server.model.collect.raw.RawResidency
 import org.philimone.hds.explorer.server.model.enums.RawEntity
+import org.philimone.hds.explorer.server.model.enums.ValidatableStatus
 import org.philimone.hds.explorer.server.model.enums.temporal.ResidencyEndType
 import org.philimone.hds.explorer.server.model.enums.temporal.ResidencyStartType
 import org.philimone.hds.explorer.server.model.main.collect.raw.RawExecutionResult
@@ -23,14 +24,9 @@ class ResidencyService {
     Residency getCurrentResidency(Member member){
         if (member != null && member.id != null){
 
-            def residencies = Residency.executeQuery("select r from Residency r where r.member.id=?0 order by r.startDate desc", [member.id], [offset:0, max:1]) // limit 1
+            //def residencies = Residency.executeQuery("select r from Residency r where r.member.id=?0 order by r.startDate desc", [member.id], [offset:0, max:1]) // limit 1
+            def residencies = Residency.executeQuery("select r from Residency r where r.member.id=?0 and (r.status <> ?1 or r.status is null) order by r.startDate desc", [member.id, ValidatableStatus.TEMPORARILY_INACTIVE], [offset:0, max:1]) // limit 1
 
-            /*
-            def residencies = Residency.createCriteria(offset:0, max: 1).list {
-                eq("member", member)
-                order("startDate", "desc")
-            }
-            */
 
             if (residencies != null && residencies.size()>0){
                 return residencies.first()
@@ -43,7 +39,8 @@ class ResidencyService {
     Residency getCurrentResidency(Member member, Household household){
         if (member != null && member.id != null && household != null && household.id != null){
 
-            def residencies = Residency.executeQuery("select r from Residency r where r.member.id=?0 and r.household.id=?1 order by r.startDate desc", [member.id, household.id], [offset:0, max:1]) // limit 1
+            //def residencies = Residency.executeQuery("select r from Residency r where r.member.id=?0 and r.household.id=?1 order by r.startDate desc", [member.id, household.id], [offset:0, max:1]) // limit 1
+            def residencies = Residency.executeQuery("select r from Residency r where r.member.id=?0 and r.household.id=?1 and (r.status <> ?2 or r.status is null) order by r.startDate desc", [member.id, household.id, ValidatableStatus.TEMPORARILY_INACTIVE], [offset:0, max:1]) // limit 1
 
             if (residencies != null && residencies.size()>0){
                 return residencies.first()
@@ -53,14 +50,34 @@ class ResidencyService {
         return null
     }
 
+    List<Member> getCurrentResidentMembers(Household household) {
+        //return Residency.findAllByHouseholdAndEndTypeAndStatusNotEqual(household, ResidencyEndType.NOT_APPLICABLE, ValidatableStatus.TEMPORARILY_INACTIVE).collect { it.member }
+
+        def residencies = Residency.executeQuery("select r from Residency r where r.household=?0 and r.endType=?1 and (r.status <> ?2 or r.status is null) order by r.startDate desc", [household, ResidencyEndType.NOT_APPLICABLE, ValidatableStatus.TEMPORARILY_INACTIVE])
+        return residencies.collect { it.member }
+    }
+
     boolean hasResidents(Household household) {
-        def countResidencies = Residency.countByHouseholdAndEndType(household, ResidencyEndType.NOT_APPLICABLE)
-        return countResidencies > 0;
+        //def countResidencies = Residency.countByHouseholdAndEndTypeAndStatusNotEqual(household, ResidencyEndType.NOT_APPLICABLE, ValidatableStatus.TEMPORARILY_INACTIVE)
+        //return countResidencies > 0;
+
+        def residencies = Residency.executeQuery("select r.id from Residency r where r.household=?0 and r.endType=?1 and (r.status <> ?2 or r.status is null) order by r.startDate desc", [household, ResidencyEndType.NOT_APPLICABLE, ValidatableStatus.TEMPORARILY_INACTIVE])
+        return residencies.size() > 0
     }
 
     boolean hasOneResident(Household household) {
-        def countResidencies = Residency.countByHouseholdAndEndType(household, ResidencyEndType.NOT_APPLICABLE)
-        return countResidencies == 1;
+        //def countResidencies = Residency.countByHouseholdAndEndTypeAndStatusNotEqual(household, ResidencyEndType.NOT_APPLICABLE, ValidatableStatus.TEMPORARILY_INACTIVE)
+        //return countResidencies == 1;
+
+        def residencies = Residency.executeQuery("select r.id from Residency r where r.household=?0 and r.endType=?1 and (r.status <> ?2 or r.status is null) order by r.startDate desc", [household, ResidencyEndType.NOT_APPLICABLE, ValidatableStatus.TEMPORARILY_INACTIVE])
+        return residencies.size() == 1
+    }
+
+    boolean isFirstEntry(Member member) {
+        //Residency.countByMemberAndStatusNotEqual(member, ValidatableStatus.TEMPORARILY_INACTIVE) == 1
+
+        def residencies = Residency.executeQuery("select r.id from Residency r where r.member=?0 and (r.status <> ?1 or r.status is null)", [member, ValidatableStatus.TEMPORARILY_INACTIVE])
+        return residencies.size() == 1
     }
 
     Household getCurrentHousehold(Member member){
@@ -103,7 +120,7 @@ class ResidencyService {
         def household = residency.household.refresh()
 
         //check if is first entry
-        if (Residency.countByMember(member) == 1){
+        if (isFirstEntry(member)){
             member.entryType = residency.startType
             member.entryDate = residency.startDate
             member.entryHousehold = residency.household.code
@@ -512,4 +529,5 @@ class ResidencyService {
 
     }
     //</editor-fold>
+
 }

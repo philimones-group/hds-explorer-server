@@ -2,6 +2,7 @@ package org.philimone.hds.explorer.server.model.main
 
 import org.philimone.hds.explorer.server.model.audit.AuditableEntity
 import org.philimone.hds.explorer.server.model.enums.HeadRelationshipType
+import org.philimone.hds.explorer.server.model.enums.ValidatableStatus
 import org.philimone.hds.explorer.server.model.enums.temporal.HeadRelationshipEndType
 import org.philimone.hds.explorer.server.model.enums.temporal.HeadRelationshipStartType
 
@@ -22,6 +23,8 @@ class HeadRelationship extends AuditableEntity {
     HeadRelationshipEndType endType
     LocalDate endDate
 
+    ValidatableStatus status
+
     static constraints = {
         id maxSize: 32
         household nullable: false
@@ -34,6 +37,8 @@ class HeadRelationship extends AuditableEntity {
         startDate nullable: false
         endType nullable: false, blank:true
         endDate nullable: true
+
+        status nullable: true
     }
 
     static mapping = {
@@ -52,5 +57,7 @@ class HeadRelationship extends AuditableEntity {
         startDate column: "start_date"
         endType column: "end_type", enumType: "identity"
         endDate column: "end_date"
+
+        status column: "status", enumType: "identity"
     }
 }

@@ -3,6 +3,7 @@ package org.philimone.hds.explorer.server.model.main
 import org.philimone.hds.explorer.server.model.audit.CollectableEntity
 import org.philimone.hds.explorer.server.model.enums.MaritalEndStatus
 import org.philimone.hds.explorer.server.model.enums.MaritalStartStatus
+import org.philimone.hds.explorer.server.model.enums.ValidatableStatus
 
 import java.time.LocalDate
 
@@ -20,6 +21,8 @@ class MaritalRelationship extends CollectableEntity {
     MaritalEndStatus endStatus
     LocalDate endDate
 
+    ValidatableStatus status
+
     static constraints = {
         id maxSize: 32
         memberA nullable: false
@@ -32,6 +35,8 @@ class MaritalRelationship extends CollectableEntity {
         startDate nullable: false
         endStatus nullable: true, blank:true, enumType: "identity"
         endDate nullable: true
+
+        status nullable: true
     }
 
     static mapping = {
@@ -49,5 +54,7 @@ class MaritalRelationship extends CollectableEntity {
         startDate column: "start_date"
         endStatus column: "end_status"
         endDate column: "end_date"
+
+        status column: "status", enumType: "identity"
     }
 }

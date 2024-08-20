@@ -73,7 +73,7 @@ class HouseholdService {
     }
 
     List<Member> getResidentMembers(Household household) {
-        def members = Residency.findAllByHouseholdAndEndType(household, ResidencyEndType.NOT_APPLICABLE).collect { it.member }
+        def members = residencyService.getCurrentResidentMembers(household)
         return members
     }
 

@@ -62,7 +62,8 @@ class DeathService {
 
         def residency = residencyService.getCurrentResidencyAsRaw(member)
         def headRelationship = headRelationshipService.getCurrentHeadRelationshipAsRaw(member) //his relationship with the head, even if he is the head
-        def maritalRelationship = maritalRelationshipService.getCurrentMaritalRelationshipAsRaw(member)
+        //def maritalRelationship = maritalRelationshipService.getCurrentMaritalRelationshipAsRaw(member)
+        def maritalRelationships = maritalRelationshipService.getCurrentlyMarriedRelationshipsAsRaw(member)
         def isHeadOfHousehold = headRelationship!=null ? (headRelationship.relationshipType == HeadRelationshipType.HEAD_OF_HOUSEHOLD.code) : false
         def isLastMemberOfHousehold = residencyService.hasOneResident(household)
         def headRelationships = headRelationshipService.getCurrentHeadRelationships(member, household)
@@ -93,36 +94,38 @@ class DeathService {
         }
 
         // Closing MaritalRelationship with WIDOWED
-        if (maritalRelationship != null){
-            println "member[${death.memberCode}] is dead, we are dealing with his maritalrelationship endtype=${maritalRelationship.endStatus}"
-            if (maritalRelationship.endStatus == MaritalEndStatus.NOT_APPLICABLE.code){
-                maritalRelationship.endStatus = MaritalEndStatus.WIDOWED.code
-                maritalRelationship.endDate = death.deathDate
+        maritalRelationships.each { maritalRelationship ->
+            if (maritalRelationship != null){
+                println "member[${death.memberCode}] is dead, we are dealing with his maritalrelationship endtype=${maritalRelationship.endStatus}"
+                if (maritalRelationship.endStatus == MaritalEndStatus.NOT_APPLICABLE.code){
+                    maritalRelationship.endStatus = MaritalEndStatus.WIDOWED.code
+                    maritalRelationship.endDate = death.deathDate
 
-                def result = maritalRelationshipService.closeMaritalRelationship(maritalRelationship)
-                errors += result.errorMessages
+                    def result = maritalRelationshipService.closeMaritalRelationship(maritalRelationship)
+                    errors += result.errorMessages
 
-            } else if (maritalRelationship.endStatus == MaritalEndStatus.WIDOWED.code){ //one of them already died
-                //the idea is to set the correct members maritalStatus
+                } /*else if (maritalRelationship.endStatus == MaritalEndStatus.WIDOWED.code){ //one of them already died
+                    //the idea is to set the correct members maritalStatus
 
-                def memberA = maritalRelationship.memberA==member.code ? member : memberService.getMember(maritalRelationship.memberA)
-                def memberB = maritalRelationship.memberB==member.code ? member : memberService.getMember(maritalRelationship.memberB)
-                def deathA = getDeath(memberA)
-                def deathB = getDeath(memberB)
-                //println "member[${death.memberCode}] relationship already closed! mantain old status[${maritalRelationship.startStatus}] = ${(deathA != null && deathB != null)}, ${(GeneralUtil.dateEquals(deathA.deathDate, deathB.deathDate))}, ${GeneralUtil.dateEquals(maritalRelationship.endDate, deathA.deathDate)}"
-                //println "ma=${memberA.code},mb=${memberB.code}, dates, d.a.date=${StringUtil.format(deathA.deathDate,true)}, d.b.date=${StringUtil.format(deathB.deathDate,true)}, mr.e.date=${StringUtil.format(maritalRelationship.endDate,true)}"
-                //println "ma=${memberA.code},mb=${memberB.code}, dates, d.a.date=${deathA.deathDate.getTime()}, d.b.date=${deathB.deathDate.getTime()}, mr.e.date=${StringUtil.format(maritalRelationship.endDate)}"
+                    def memberA = maritalRelationship.memberA==member.code ? member : memberService.getMember(maritalRelationship.memberA)
+                    def memberB = maritalRelationship.memberB==member.code ? member : memberService.getMember(maritalRelationship.memberB)
+                    def deathA = getDeath(memberA)
+                    def deathB = getDeath(memberB)
+                    //println "member[${death.memberCode}] relationship already closed! mantain old status[${maritalRelationship.startStatus}] = ${(deathA != null && deathB != null)}, ${(GeneralUtil.dateEquals(deathA.deathDate, deathB.deathDate))}, ${GeneralUtil.dateEquals(maritalRelationship.endDate, deathA.deathDate)}"
+                    //println "ma=${memberA.code},mb=${memberB.code}, dates, d.a.date=${StringUtil.format(deathA.deathDate,true)}, d.b.date=${StringUtil.format(deathB.deathDate,true)}, mr.e.date=${StringUtil.format(maritalRelationship.endDate,true)}"
+                    //println "ma=${memberA.code},mb=${memberB.code}, dates, d.a.date=${deathA.deathDate.getTime()}, d.b.date=${deathB.deathDate.getTime()}, mr.e.date=${StringUtil.format(maritalRelationship.endDate)}"
 
-                if ((deathA != null && deathB != null) && (deathA.deathDate == deathB.deathDate) && (maritalRelationship.endDate == deathA.deathDate)) { //both died in the same die while in sort of a relationship
-                    def startStatus = MaritalStartStatus.getFrom(maritalRelationship.startStatus)
-                    def marStatus = maritalRelationshipService.getMaritalStatusFromStartStatus(startStatus)
+                    if ((deathA != null && deathB != null) && (deathA.deathDate == deathB.deathDate) && (maritalRelationship.endDate == deathA.deathDate)) { //both died in the same die while in sort of a relationship
+                        def startStatus = MaritalStartStatus.getFrom(maritalRelationship.startStatus)
+                        def marStatus = maritalRelationshipService.getMaritalStatusFromStartStatus(startStatus)
 
-                    //set the maritalStatus as the same when they started the relationship, so that we preserve the last maritalStatus before they death (it cant be WID - because they died in the same date)
-                    memberA.maritalStatus = marStatus
-                    memberB.maritalStatus = marStatus
-                    memberA.save(flush:true)
-                    memberB.save(flush:true)
-                }
+                        //set the maritalStatus as the same when they started the relationship, so that we preserve the last maritalStatus before they death (it cant be WID - because they died in the same date)
+                        memberA.maritalStatus = marStatus
+                        memberB.maritalStatus = marStatus
+                        memberA.save(flush:true)
+                        memberB.save(flush:true)
+                    }
+                }*/
             }
         }
 
@@ -311,7 +314,8 @@ class DeathService {
 
             def residency = residencyService.getCurrentResidencyAsRaw(member)
             def headRelationship = headRelationshipService.getCurrentHeadRelationshipAsRaw(member) //his relationship with the head, even if he is the head
-            def maritalRelationship = maritalRelationshipService.getCurrentMaritalRelationshipAsRaw(member)
+            //def maritalRelationship = maritalRelationshipService.getCurrentMaritalRelationshipAsRaw(member)
+            def maritalRelationships = maritalRelationshipService.getCurrentlyMarriedRelationshipsAsRaw(member)
             def isHeadOfHousehold = headRelationship!=null ? (headRelationship.relationshipType == HeadRelationshipType.HEAD_OF_HOUSEHOLD.code) : false
             def headRelationships = headRelationshipService.getCurrentHeadRelationships(rawDeath.memberCode, member?.household?.code)
 
@@ -350,8 +354,9 @@ class DeathService {
                 errors += headRelationshipService.validateCloseHeadRelationship(headRelationship)
             }
 
-            //MaritalRelationship
-            if (maritalRelationship != null && maritalRelationship.endStatus == MaritalEndStatus.NOT_APPLICABLE.code){
+            //MaritalRelationship - support multiple relationships
+            //if (maritalRelationship != null && maritalRelationship.endStatus == MaritalEndStatus.NOT_APPLICABLE.code){
+            maritalRelationships.each { maritalRelationship ->
                 //simulate DTH
                 maritalRelationship.endStatus = MaritalEndStatus.WIDOWED.code
                 maritalRelationship.endDate = rawDeath.deathDate

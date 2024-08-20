@@ -7,6 +7,7 @@ import net.betainteractive.utilities.StringUtil
 import org.philimone.hds.explorer.server.model.authentication.User
 import org.philimone.hds.explorer.io.SystemPath
 import org.philimone.hds.explorer.server.model.enums.FormType
+import org.philimone.hds.explorer.server.model.enums.ValidatableStatus
 import org.philimone.hds.explorer.server.model.enums.settings.LogReportCode
 import org.philimone.hds.explorer.server.model.logs.LogReport
 import org.philimone.hds.explorer.server.model.logs.LogReportFile
@@ -1251,7 +1252,7 @@ class SyncFilesService {
             def resultResidencies = []
 
             Residency.withTransaction {
-                resultResidencies = Residency.executeQuery("select r.id from Residency r")
+                resultResidencies = Residency.executeQuery("select r.id from Residency r where r.status <> ?0 or r.status is null", [ValidatableStatus.TEMPORARILY_INACTIVE])
             }
 
 
@@ -1439,7 +1440,7 @@ class SyncFilesService {
 
         try {
             //Ler todos users
-            def resultHeadRelationships = HeadRelationship.executeQuery("select h.id from HeadRelationship h")
+            def resultHeadRelationships = HeadRelationship.executeQuery("select h.id from HeadRelationship h where h.status <> ?0 or h.status is null", [ValidatableStatus.TEMPORARILY_INACTIVE])
 
             println("creating ${filename}.xml of ${resultHeadRelationships.size()} records")
             PrintStream outputFile = new PrintStream(new FileOutputStream(SystemPath.generatedFilesPath + "/${filename}.xml"), true)
@@ -1527,7 +1528,7 @@ class SyncFilesService {
 
         try {
             //Ler todos users
-            def resultMaritalRelationships = MaritalRelationship.executeQuery("select m.id from MaritalRelationship m")
+            def resultMaritalRelationships = MaritalRelationship.executeQuery("select m.id from MaritalRelationship m where r.status <> ?1 or r.status is null", [ValidatableStatus.TEMPORARILY_INACTIVE])
 
             DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder docBuilder = docFactory.newDocumentBuilder();

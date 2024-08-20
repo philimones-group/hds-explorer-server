@@ -9,6 +9,7 @@ import org.philimone.hds.explorer.server.model.enums.MaritalEndStatus
 import org.philimone.hds.explorer.server.model.enums.MaritalStartStatus
 import org.philimone.hds.explorer.server.model.enums.MaritalStatus
 import org.philimone.hds.explorer.server.model.enums.RawEntity
+import org.philimone.hds.explorer.server.model.enums.ValidatableStatus
 import org.philimone.hds.explorer.server.model.main.collect.raw.RawExecutionResult
 import org.philimone.hds.explorer.server.model.main.collect.raw.RawMessage
 import org.philimone.hds.explorer.server.model.settings.Codes
@@ -30,8 +31,8 @@ class MaritalRelationshipService {
     MaritalRelationship getCurrentMaritalRelationship(Member member) {
         if (member != null && member.id != null) {
 
-            def maritalRelationshipsA = MaritalRelationship.executeQuery("select r from MaritalRelationship r where r.memberA.id=?0 order by r.startDate desc", [member.id], [offset:0, max:1]) // limit 1
-            def maritalRelationshipsB = MaritalRelationship.executeQuery("select r from MaritalRelationship r where r.memberB.id=?0 order by r.startDate desc", [member.id], [offset:0, max:1]) // limit 1
+            def maritalRelationshipsA = MaritalRelationship.executeQuery("select r from MaritalRelationship r where r.memberA.id=?0 and (r.status <> ?1 or r.status is null) order by r.startDate desc", [member.id, ValidatableStatus.TEMPORARILY_INACTIVE], [offset:0, max:1]) // limit 1
+            def maritalRelationshipsB = MaritalRelationship.executeQuery("select r from MaritalRelationship r where r.memberB.id=?0 and (r.status <> ?1 or r.status is null) order by r.startDate desc", [member.id, ValidatableStatus.TEMPORARILY_INACTIVE], [offset:0, max:1]) // limit 1
             MaritalRelationship relationA = (maritalRelationshipsA != null && maritalRelationshipsA.size() > 0) ? maritalRelationshipsA.first() as MaritalRelationship : null
             MaritalRelationship relationB = (maritalRelationshipsB != null && maritalRelationshipsB.size() > 0) ? maritalRelationshipsB.first() as MaritalRelationship : null
 
@@ -47,12 +48,23 @@ class MaritalRelationshipService {
         return null
     }
 
+    List<MaritalRelationship> getCurrentlyMarriedRelationships(Member member) {
+        def list = new ArrayList<MaritalRelationship>()
+
+        if (member != null && member.id != null) {
+            def result = MaritalRelationship.executeQuery("select r from MaritalRelationship r where (r.memberA=?0 or r.memberB=?1) and r.endStatus=?2 and (r.status <> ?3 or r.status is null)", [member, member, MaritalEndStatus.NOT_APPLICABLE, ValidatableStatus.TEMPORARILY_INACTIVE])
+            list.addAll(result)
+        }
+
+        return list
+    }
+
     MaritalRelationship getCurrentMaritalRelationship(Member memberA, Member memberB) {
 
         if (memberA != null && memberA.id != null && memberB != null && memberB.id != null) {
 
-            def maritalRelationshipsA = MaritalRelationship.executeQuery("select r from MaritalRelationship r where r.memberA=?0 and r.memberB=?1 order by r.startDate desc", [memberA, memberB], [offset:0, max:1]) // limit 1
-            def maritalRelationshipsB = MaritalRelationship.executeQuery("select r from MaritalRelationship r where r.memberA=?0 and r.memberB=?1 order by r.startDate desc", [memberB, memberA], [offset:0, max:1]) // limit 1
+            def maritalRelationshipsA = MaritalRelationship.executeQuery("select r from MaritalRelationship r where r.memberA=?0 and r.memberB=?1 and (r.status <> ?2 or r.status is null) order by r.startDate desc", [memberA, memberB, ValidatableStatus.TEMPORARILY_INACTIVE], [offset:0, max:1]) // limit 1
+            def maritalRelationshipsB = MaritalRelationship.executeQuery("select r from MaritalRelationship r where r.memberA=?0 and r.memberB=?1 and (r.status <> ?2 or r.status is null) order by r.startDate desc", [memberB, memberA, ValidatableStatus.TEMPORARILY_INACTIVE], [offset:0, max:1]) // limit 1
             MaritalRelationship relationA = (maritalRelationshipsA != null && maritalRelationshipsA.size() > 0) ? maritalRelationshipsA.first() as MaritalRelationship : null
             MaritalRelationship relationB = (maritalRelationshipsB != null && maritalRelationshipsB.size() > 0) ? maritalRelationshipsB.first() as MaritalRelationship : null
 
@@ -71,6 +83,16 @@ class MaritalRelationshipService {
     RawMaritalRelationship getCurrentMaritalRelationshipAsRaw(Member member) {
         def maritalRelationship = getCurrentMaritalRelationship(member)
         return convertToRaw(maritalRelationship)
+    }
+
+    List<RawMaritalRelationship> getCurrentlyMarriedRelationshipsAsRaw(Member member) {
+        def list = new ArrayList<RawMaritalRelationship>()
+
+        getCurrentlyMarriedRelationships(member).each { maritalRelationship ->
+            list.add(convertToRaw(maritalRelationship))
+        }
+
+        return list
     }
 
     /*
