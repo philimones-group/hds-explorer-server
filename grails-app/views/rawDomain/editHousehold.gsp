@@ -96,7 +96,7 @@
         <g:hiddenField name="reset" value="${false}" />
 
         <fieldset class="form">
-
+            <bi:field bean="${this.rawHousehold}" property="regionCode"    label="rawHousehold.id.label" mode="show" />
             <bi:field bean="${this.rawHousehold}" property="regionCode"    label="rawHousehold.regionCode.label" mode="${mode}" />
             <bi:field bean="${this.rawHousehold}" property="regionName"    label="rawHousehold.regionName.label" mode="${mode}" />
             <bi:field bean="${this.rawHousehold}" property="householdCode" label="rawHousehold.householdCode.label" mode="${mode}" />
@@ -108,12 +108,16 @@
             <bi:field bean="${this.rawHousehold}" property="gpsAlt"        label="rawHousehold.gpsAlt.label" mode="${mode}" />
             <bi:field bean="${this.rawHousehold}" property="gpsAcc"        label="rawHousehold.gpsAcc.label" mode="${mode}" />
 
+            <bi:field bean="${this.rawHousehold}" property="collectedDate"    label="rawHousehold.collectedDate.label" mode="show" />
+            <bi:field bean="${this.rawHousehold}" property="uploadedDate"    label="rawHousehold.uploadedDate.label" mode="show" />
+
         </fieldset>
         <fieldset class="buttons">
             <g:if test="${mode=="edit"}">
                 <g:actionSubmit class="save" value="${message(code: "rawDomain.update.reset.label")}" action="updateHousehold" onclick="updateReset('true')" />
                 <g:actionSubmit class="save" value="${message(code: "rawDomain.update.label")}" action="updateHousehold" />
                 <g:actionSubmit class="save" value="${message(code: "rawDomain.invalidate.label")}" action="invalidateHousehold" />
+                <g:actionSubmit class="delete" value="${message(code: 'default.button.delete.label')}" action="deleteHousehold" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');" />
             </g:if>
             <g:else>
                 <g:link class="edit" action="editHousehold" id="${this.rawHousehold.id}" ><g:message code="rawDomain.edit.label" /></g:link>

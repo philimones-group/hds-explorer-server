@@ -49,6 +49,7 @@
     </style>
 
     <dt:defaultResources />
+    <tb:tabulatorResources/>
 </head>
 <body>
 
@@ -99,12 +100,17 @@
 
         <fieldset class="form">
 
+            <bi:field bean="${this.rawChangeHead}" property="id"    label="rawChangeHead.id.label" mode="show" />
             <bi:field bean="${this.rawChangeHead}" property="visitCode"    label="rawChangeHead.visitCode.label" mode="${mode}" />
             <bi:field bean="${this.rawChangeHead}" property="householdCode"    label="rawChangeHead.householdCode.label" mode="${mode}" />
             <bi:field bean="${this.rawChangeHead}" property="oldHeadCode"    label="rawChangeHead.oldHeadCode.label" mode="${mode}" />
             <bi:field bean="${this.rawChangeHead}" property="newHeadCode"    label="rawChangeHead.newHeadCode.label" mode="${mode}" />
             <bi:dateField bean="${this.rawChangeHead}" property="eventDate"    label="rawChangeHead.eventDate.label" mode="${mode}" />
             <bi:field bean="${this.rawChangeHead}" property="reason"    label="rawChangeHead.reason.label" mode="${mode}" />
+
+            <bi:field bean="${this.rawChangeHead}" property="collectedDate"    label="rawChangeHead.collectedDate.label" mode="show" />
+            <bi:field bean="${this.rawChangeHead}" property="uploadedDate"    label="rawChangeHead.uploadedDate.label" mode="show" />
+
 
         </fieldset>
 
@@ -115,6 +121,7 @@
                 <g:actionSubmit class="save" value="${message(code: "rawDomain.update.reset.label")}" action="updateChangeHead" onclick="updateReset('true')" />
                 <g:actionSubmit class="save" value="${message(code: "rawDomain.update.label")}" action="updateChangeHead" />
                 <g:actionSubmit class="save" value="${message(code: "rawDomain.invalidate.label")}" action="invalidateChangeHead" />
+                <g:actionSubmit class="delete" value="${message(code: 'default.button.delete.label')}" action="deleteChangeHead" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');" />
 
                 <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#show_head_relationships">
                     <g:message code="rawDomain.helpers.button.headrelationships.label" />

@@ -97,6 +97,7 @@
 
         <fieldset class="form">
 
+            <bi:field bean="${this.rawPregnancyRegistration}" property="id"    label="rawPregnancyRegistration.id.label" mode="show" />
             <bi:field bean="${this.rawPregnancyRegistration}" property="code"    label="rawPregnancyRegistration.code.label" mode="${mode}" />
             <bi:field bean="${this.rawPregnancyRegistration}" property="motherCode"    label="rawPregnancyRegistration.motherCode.label" mode="${mode}" />
             <bi:dateField bean="${this.rawPregnancyRegistration}" property="recordedDate"    label="rawPregnancyRegistration.recordedDate.label" mode="${mode}" />
@@ -111,12 +112,16 @@
             <bi:field bean="${this.rawPregnancyRegistration}" property="status"    label="rawPregnancyRegistration.status.label" mode="${mode}" />
             <bi:field bean="${this.rawPregnancyRegistration}" property="visitCode"    label="rawPregnancyRegistration.visitCode.label" mode="${mode}" />
 
+            <bi:field bean="${this.rawPregnancyRegistration}" property="collectedDate"    label="rawPregnancyRegistration.collectedDate.label" mode="show" />
+            <bi:field bean="${this.rawPregnancyRegistration}" property="uploadedDate"    label="rawPregnancyRegistration.uploadedDate.label" mode="show" />
+
         </fieldset>
         <fieldset class="buttons">
             <g:if test="${mode == "edit"}">
                 <g:actionSubmit class="save" value="${message(code: "rawDomain.update.reset.label")}" action="updatePregnancyRegistration" onclick="updateReset('true')" />
                 <g:actionSubmit class="save" value="${message(code: "rawDomain.update.label")}" action="updatePregnancyRegistration" />
                 <g:actionSubmit class="save" value="${message(code: "rawDomain.invalidate.label")}" action="invalidatePregnancyRegistration" />
+                <g:actionSubmit class="delete" value="${message(code: 'default.button.delete.label')}" action="deletePregnancyRegistration" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');" />
             </g:if>
             <g:else>
                 <g:link class="edit" action="editPregnancyRegistration" id="${this.rawPregnancyRegistration.id}" ><g:message code="rawDomain.edit.label" /></g:link>

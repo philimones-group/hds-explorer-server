@@ -99,6 +99,7 @@
 
         <fieldset class="form">
 
+            <bi:field bean="${this.rawPregnancyOutcome}" property="id"    label="rawPregnancyOutcome.id.label" mode="show" />
             <bi:field bean="${this.rawPregnancyOutcome}" property="code"    label="rawPregnancyOutcome.code.label" mode="${mode}" />
             <bi:field bean="${this.rawPregnancyOutcome}" property="motherCode"    label="rawPregnancyOutcome.motherCode.label" mode="${mode}" />
             <bi:field bean="${this.rawPregnancyOutcome}" property="fatherCode"    label="rawPregnancyOutcome.fatherCode.label" mode="${mode}" />
@@ -109,15 +110,23 @@
             <bi:field bean="${this.rawPregnancyOutcome}" property="visitCode"    label="rawPregnancyOutcome.visitCode.label" mode="${mode}" />
             <bi:field bean="${this.rawPregnancyOutcome}" property="modules"    label="rawPregnancyOutcome.modules.label" mode="${mode}" />
 
+            <bi:field bean="${this.rawPregnancyOutcome}" property="collectedDate"    label="rawPregnancyOutcome.collectedDate.label" mode="show" />
+            <bi:field bean="${this.rawPregnancyOutcome}" property="uploadedDate"    label="rawPregnancyOutcome.uploadedDate.label" mode="show" />
+
         </fieldset>
 
         <g:set var="household_code" value="${this.rawPregnancyOutcome.visitCode?.replaceAll('-.+','')}" />
+        <g:set var="member_code" value="${this.rawPregnancyOutcome.motherCode}" />
+        <g:set var="member_name" value="${member?.name}" />
+        <g:set var="member_gender" value="${member?.gender}" />
+        <g:set var="member_dob" value="${member?.dob}" />
 
         <fieldset class="buttons">
             <g:if test="${mode == "edit"}">
                 <g:actionSubmit class="save" value="${message(code: "rawDomain.update.reset.label")}" action="updatePregnancyOutcome" onclick="updateReset('true')" />
                 <g:actionSubmit class="save" value="${message(code: "rawDomain.update.label")}" action="updatePregnancyOutcome" />
                 <g:actionSubmit class="save" value="${message(code: "rawDomain.invalidate.label")}" action="invalidatePregnancyOutcome" />
+                <g:actionSubmit class="delete" value="${message(code: 'default.button.delete.label')}" action="deletePregnancyOutcome" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');" />
 
                 <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#show_residencies">
                     <g:message code="rawDomain.helpers.button.residencies.label" />

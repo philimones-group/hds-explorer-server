@@ -99,6 +99,7 @@
 
         <fieldset class="form">
 
+            <bi:field bean="${this.rawMaritalRelationship}" property="id"    label="rawMaritalRelationship.id.label" mode="show" />
             <bi:field bean="${this.rawMaritalRelationship}" property="memberA"    label="rawMaritalRelationship.memberA.label" mode="${mode}" />
             <bi:field bean="${this.rawMaritalRelationship}" property="memberB"    label="rawMaritalRelationship.memberB.label" mode="${mode}" />
             <bi:field bean="${this.rawMaritalRelationship}" property="isPolygamic"    label="rawMaritalRelationship.isPolygamic.label" mode="${mode}" />
@@ -107,6 +108,9 @@
             <bi:dateField bean="${this.rawMaritalRelationship}" property="startDate"    label="rawMaritalRelationship.startDate.label" mode="${mode}" />
             <bi:field bean="${this.rawMaritalRelationship}" property="endStatus"    label="rawMaritalRelationship.endStatus.label" mode="${mode}" />
             <bi:dateField bean="${this.rawMaritalRelationship}" property="endDate"    label="rawMaritalRelationship.endDate.label" mode="${mode}" />
+
+            <bi:field bean="${this.rawMaritalRelationship}" property="collectedDate"    label="rawMaritalRelationship.collectedDate.label" mode="show" />
+            <bi:field bean="${this.rawMaritalRelationship}" property="uploadedDate"    label="rawMaritalRelationship.uploadedDate.label" mode="show" />
 
         </fieldset>
 
@@ -118,6 +122,7 @@
                 <g:actionSubmit class="save" value="${message(code: "rawDomain.update.reset.label")}" action="updateMaritalRelationship" onclick="updateReset('true')" />
                 <g:actionSubmit class="save" value="${message(code: "rawDomain.update.label")}" action="updateMaritalRelationship" />
                 <g:actionSubmit class="save" value="${message(code: "rawDomain.invalidate.label")}" action="invalidateMaritalRelationship" />
+                <g:actionSubmit class="delete" value="${message(code: 'default.button.delete.label')}" action="deleteMaritalRelationship" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');" />
 
                 <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#show_a_marital_relationships">
                     <g:message code="rawDomain.helpers.button.show.a.relationships.label" />

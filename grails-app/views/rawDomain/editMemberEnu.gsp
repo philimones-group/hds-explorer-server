@@ -99,6 +99,7 @@
 
         <fieldset class="form">
 
+            <bi:field bean="${this.rawMemberEnu}" property="id"    label="rawMemberEnu.id.label" mode="show" />
             <bi:field bean="${this.rawMemberEnu}" property="visitCode"    label="rawMemberEnu.visitCode.label" mode="${mode}" />
             <bi:field bean="${this.rawMemberEnu}" property="code"    label="rawMemberEnu.code.label" mode="${mode}" />
             <bi:field bean="${this.rawMemberEnu}" property="name"    label="rawMemberEnu.name.label" mode="${mode}" />
@@ -114,15 +115,23 @@
             <bi:dateField bean="${this.rawMemberEnu}" property="residencyStartDate"    label="rawMemberEnu.residencyStartDate.label" mode="${mode}" />
             <bi:field bean="${this.rawMemberEnu}" property="modules"    label="rawMemberEnu.modules.label" mode="${mode}" />
 
+            <bi:field bean="${this.rawMemberEnu}" property="collectedDate"    label="rawMemberEnu.collectedDate.label" mode="show" />
+            <bi:field bean="${this.rawMemberEnu}" property="uploadedDate"    label="rawMemberEnu.uploadedDate.label" mode="show" />
+
         </fieldset>
 
         <g:set var="household_code" value="${this.rawMemberEnu.householdCode}" />
+        <g:set var="member_code" value="${rawMemberEnu?.code}" />
+        <g:set var="member_name" value="${rawMemberEnu?.name}" />
+        <g:set var="member_gender" value="${rawMemberEnu?.gender}" />
+        <g:set var="member_dob" value="${rawMemberEnu?.dob}" />
 
         <fieldset class="buttons">
             <g:if test="${mode == "edit"}">
                 <g:actionSubmit class="save" value="${message(code: "rawDomain.update.reset.label")}" action="updateMemberEnu" onclick="updateReset('true')" />
                 <g:actionSubmit class="save" value="${message(code: "rawDomain.update.label")}" action="updateMemberEnu" />
                 <g:actionSubmit class="save" value="${message(code: "rawDomain.invalidate.label")}" action="invalidateMemberEnu" />
+                <g:actionSubmit class="delete" value="${message(code: 'default.button.delete.label')}" action="deleteMemberEnu" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');" />
 
                 <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#show_residencies">
                     <g:message code="rawDomain.helpers.button.residencies.label" />

@@ -99,21 +99,31 @@
 
         <fieldset class="form">
 
+            <bi:field bean="${this.rawDeath}" property="id"    label="rawDeath.id.label" mode="show" />
             <bi:field bean="${this.rawDeath}" property="visitCode"    label="rawDeath.visitCode.label" mode="${mode}" />
             <bi:field bean="${this.rawDeath}" property="memberCode"    label="rawDeath.memberCode.label" mode="${mode}" />
             <bi:dateField bean="${this.rawDeath}" property="deathDate"    label="rawDeath.deathDate.label" mode="${mode}" />
             <bi:field bean="${this.rawDeath}" property="deathCause"    label="rawDeath.deathCause.label" mode="${mode}" />
             <bi:field bean="${this.rawDeath}" property="deathPlace"    label="rawDeath.deathPlace.label" mode="${mode}" />
 
+            <bi:field bean="${this.rawDeath}" property="collectedDate"    label="rawDeath.collectedDate.label" mode="show" />
+            <bi:field bean="${this.rawDeath}" property="uploadedDate"    label="rawDeath.uploadedDate.label" mode="show" />
+
         </fieldset>
 
         <g:set var="household_code" value="${this.rawDeath.visitCode?.replaceAll('-.+','')}" />
+        <g:set var="member_code" value="${member?.code}" />
+        <g:set var="member_name" value="${member?.name}" />
+        <g:set var="member_gender" value="${member?.gender}" />
+        <g:set var="member_dob" value="${member?.dob}" />
+
 
         <fieldset class="buttons">
             <g:if test="${mode == "edit"}">
                 <g:actionSubmit class="save" value="${message(code: "rawDomain.update.reset.label")}" action="updateDeath" onclick="updateReset('true')" />
                 <g:actionSubmit class="save" value="${message(code: "rawDomain.update.label")}" action="updateDeath" />
                 <g:actionSubmit class="save" value="${message(code: "rawDomain.invalidate.label")}" action="invalidateDeath" />
+                <g:actionSubmit class="delete" value="${message(code: 'default.button.delete.label')}" action="deleteDeath" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');" />
 
                 <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#show_residencies">
                     <g:message code="rawDomain.helpers.button.residencies.label" />

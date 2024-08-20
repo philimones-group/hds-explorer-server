@@ -8,8 +8,12 @@ import org.philimone.hds.explorer.server.model.collect.raw.*
 import org.philimone.hds.explorer.server.model.collect.raw.aggregate.RawEvent
 import org.philimone.hds.explorer.server.model.enums.ProcessedStatus
 import org.philimone.hds.explorer.server.model.enums.RawEntity
+import org.philimone.hds.explorer.server.model.enums.ValidatableStatus
 import org.philimone.hds.explorer.server.model.enums.temporal.HeadRelationshipEndType
+import org.philimone.hds.explorer.server.model.enums.temporal.HeadRelationshipStartType
 import org.philimone.hds.explorer.server.model.enums.temporal.ResidencyEndType
+import org.philimone.hds.explorer.server.model.json.JActionResult
+import org.philimone.hds.explorer.server.model.logs.LogReportFile
 import org.philimone.hds.explorer.server.model.main.HeadRelationship
 import org.philimone.hds.explorer.server.model.main.MaritalRelationship
 import org.philimone.hds.explorer.server.model.main.Residency
@@ -18,6 +22,7 @@ import org.philimone.hds.explorer.server.model.main.Residency
 class RawDomainController {
 
     def rawDomainService
+    def generalUtilitiesService
 
     def editDomain = {
 
@@ -102,23 +107,33 @@ class RawDomainController {
     }
 
     def editMemberEnu = {
-        respond RawMemberEnu.get(params.id), model: [mode: "edit", errorMessages: RawErrorLog.findByUuid(params.id)?.messages]
+        def obj = RawMemberEnu.get(params.id)
+        def member = rawDomainService.getBasicMember(obj?.code)
+        respond obj, model: [mode: "edit", errorMessages: RawErrorLog.findByUuid(params.id)?.messages, member: member]
     }
 
     def editDeath = {
-        respond RawDeath.get(params.id), model: [mode: "edit", errorMessages: RawErrorLog.findByUuid(params.id)?.messages]
+        def obj = RawDeath.get(params.id)
+        def member = rawDomainService.getBasicMember(obj?.memberCode)
+        respond obj, model: [mode: "edit", errorMessages: RawErrorLog.findByUuid(params.id)?.messages, member: member]
     }
 
     def editOutMigration = {
-        respond RawOutMigration.get(params.id), model: [mode: "edit", errorMessages: RawErrorLog.findByUuid(params.id)?.messages]
+        def obj = RawOutMigration.get(params.id)
+        def member = rawDomainService.getBasicMember(obj?.memberCode)
+        respond obj, model: [mode: "edit", errorMessages: RawErrorLog.findByUuid(params.id)?.messages, member: member]
     }
 
     def editInMigration = {
-        respond RawInMigration.get(params.id), model: [mode: "edit", errorMessages: RawErrorLog.findByUuid(params.id)?.messages]
+        def obj = RawInMigration.get(params.id)
+        def member = rawDomainService.getBasicMember(obj?.memberCode)
+        respond obj, model: [mode: "edit", errorMessages: RawErrorLog.findByUuid(params.id)?.messages, member: member]
     }
 
     def editExternalInMigration = {
-        respond RawExternalInMigration.get(params.id), model: [mode: "edit", errorMessages: RawErrorLog.findByUuid(params.id)?.messages]
+        def obj = RawExternalInMigration.get(params.id)
+        def member = rawDomainService.getBasicMember(obj?.memberCode)
+        respond obj, model: [mode: "edit", errorMessages: RawErrorLog.findByUuid(params.id)?.messages, member: member]
     }
 
     def editPregnancyRegistration = {
@@ -126,7 +141,9 @@ class RawDomainController {
     }
 
     def editPregnancyOutcome = {
-        respond RawPregnancyOutcome.get(params.id), model: [mode: "edit", errorMessages: RawErrorLog.findByUuid(params.id)?.messages]
+        def obj = RawPregnancyOutcome.get(params.id)
+        def member = rawDomainService.getBasicMember(obj?.motherCode)
+        respond obj, model: [mode: "edit", errorMessages: RawErrorLog.findByUuid(params.id)?.messages, member: member]
     }
 
     def editMaritalRelationship = {
@@ -631,6 +648,218 @@ class RawDomainController {
         respond rawChangeHead, view:"editChangeHead", model: [mode: "show"]
     }
 
+    def deleteChangeHead = {
+
+        //delete errorLog, rawObj
+        def rawObj = RawChangeHead.get(params.id)
+        def errorLog = RawErrorLog.findByUuid(params.id)
+        def logReportFileId = errorLog?.logReportFileId
+
+        //delete records
+        try {
+            errorLog.delete(flush: true)
+
+            RawChangeHeadRelationship.executeUpdate("delete from RawChangeHeadRelationship r where r.changeHead=:obj", [obj: rawObj])
+            rawObj.delete(flush: true)
+
+        } catch(Exception ex) {
+            ex.printStackTrace()
+        }
+        //show report details
+        redirect controller: "eventSync", action: "showSyncReportDetails", id: logReportFileId
+    }
+
+    def deleteDeath = {
+
+        def rawObj = RawDeath.get(params.id)
+        def errorLog = RawErrorLog.findByUuid(params.id)
+        def logReportFileId = errorLog?.logReportFileId
+
+        //delete records
+        try {
+            errorLog.delete(flush: true)
+
+            RawDeathRelationship.executeUpdate("delete from RawDeathRelationship r where r.death=:obj", [obj: rawObj])
+            rawObj.delete(flush: true)
+
+        } catch(Exception ex) {
+            ex.printStackTrace()
+        }
+        //show report details
+        redirect controller: "eventSync", action: "showSyncReportDetails", id: logReportFileId
+    }
+
+    def deleteExtInmigration = {
+
+        def rawObj = RawExternalInMigration.get(params.id)
+        def errorLog = RawErrorLog.findByUuid(params.id)
+        def logReportFileId = errorLog?.logReportFileId
+
+        //delete records
+        try {
+            errorLog.delete(flush: true)
+            rawObj.delete(flush: true)
+        } catch(Exception ex) {
+            ex.printStackTrace()
+        }
+        //show report details
+        redirect controller: "eventSync", action: "showSyncReportDetails", id: logReportFileId
+    }
+
+    def deleteHousehold = {
+
+        def rawObj = RawHousehold.get(params.id)
+        def errorLog = RawErrorLog.findByUuid(params.id)
+        def logReportFileId = errorLog?.logReportFileId
+
+        //delete records
+        try {
+            errorLog.delete(flush: true)
+            rawObj.delete(flush: true)
+        } catch(Exception ex) {
+            ex.printStackTrace()
+        }
+        //show report details
+        redirect controller: "eventSync", action: "showSyncReportDetails", id: logReportFileId
+    }
+
+    def deleteIncompleteVisit = {
+
+        def rawObj = RawIncompleteVisit.get(params.id)
+        def errorLog = RawErrorLog.findByUuid(params.id)
+        def logReportFileId = errorLog?.logReportFileId
+
+        //delete records
+        try {
+            errorLog.delete(flush: true)
+            rawObj.delete(flush: true)
+        } catch(Exception ex) {
+            ex.printStackTrace()
+        }
+        //show report details
+        redirect controller: "eventSync", action: "showSyncReportDetails", id: logReportFileId
+    }
+
+    def deleteInmigration = {
+
+        def rawObj = RawInMigration.get(params.id)
+        def errorLog = RawErrorLog.findByUuid(params.id)
+        def logReportFileId = errorLog?.logReportFileId
+
+        //delete records
+        try {
+            errorLog.delete(flush: true)
+            rawObj.delete(flush: true)
+        } catch(Exception ex) {
+            ex.printStackTrace()
+        }
+        //show report details
+        redirect controller: "eventSync", action: "showSyncReportDetails", id: logReportFileId
+    }
+
+    def deleteMaritalRelationship = {
+
+        def rawObj = RawMaritalRelationship.get(params.id)
+        def errorLog = RawErrorLog.findByUuid(params.id)
+        def logReportFileId = errorLog?.logReportFileId
+
+        //delete records
+        try {
+            errorLog.delete(flush: true)
+            rawObj.delete(flush: true)
+        } catch(Exception ex) {
+            ex.printStackTrace()
+        }
+        //show report details
+        redirect controller: "eventSync", action: "showSyncReportDetails", id: logReportFileId
+    }
+
+    def deleteMemberEnu = {
+
+        def rawObj = RawMemberEnu.get(params.id)
+        def errorLog = RawErrorLog.findByUuid(params.id)
+        def logReportFileId = errorLog?.logReportFileId
+
+        //delete records
+        try {
+            errorLog.delete(flush: true)
+            rawObj.delete(flush: true)
+        } catch(Exception ex) {
+            ex.printStackTrace()
+        }
+        //show report details
+        redirect controller: "eventSync", action: "showSyncReportDetails", id: logReportFileId
+    }
+
+    def deleteOutmigration = {
+
+        def rawObj = RawOutMigration.get(params.id)
+        def errorLog = RawErrorLog.findByUuid(params.id)
+        def logReportFileId = errorLog?.logReportFileId
+
+        //delete records
+        try {
+            errorLog.delete(flush: true)
+            rawObj.delete(flush: true)
+        } catch(Exception ex) {
+            ex.printStackTrace()
+        }
+        //show report details
+        redirect controller: "eventSync", action: "showSyncReportDetails", id: logReportFileId
+    }
+
+    def deletePregnancyOutcome = {
+
+        def rawObj = RawPregnancyOutcome.get(params.id)
+        def errorLog = RawErrorLog.findByUuid(params.id)
+        def logReportFileId = errorLog?.logReportFileId
+
+        //delete records
+        try {
+            errorLog.delete(flush: true)
+            RawPregnancyChild.executeUpdate("delete from RawPregnancyChild r where r.outcome = :obj", [obj: rawObj])
+            rawObj.delete(flush: true)
+        } catch(Exception ex) {
+            ex.printStackTrace()
+        }
+        //show report details
+        redirect controller: "eventSync", action: "showSyncReportDetails", id: logReportFileId
+    }
+
+    def deletePregnancyRegistration = {
+
+        def rawObj = RawPregnancyRegistration.get(params.id)
+        def errorLog = RawErrorLog.findByUuid(params.id)
+        def logReportFileId = errorLog?.logReportFileId
+
+        //delete records
+        try {
+            errorLog.delete(flush: true)
+            rawObj.delete(flush: true)
+        } catch(Exception ex) {
+            ex.printStackTrace()
+        }
+        //show report details
+        redirect controller: "eventSync", action: "showSyncReportDetails", id: logReportFileId
+    }
+
+    def deleteVisit = {
+
+        def rawObj = RawVisit.get(params.id)
+        def errorLog = RawErrorLog.findByUuid(params.id)
+        def logReportFileId = errorLog?.logReportFileId
+
+        //delete records
+        try {
+            errorLog.delete(flush: true)
+            rawObj.delete(flush: true)
+        } catch(Exception ex) {
+            ex.printStackTrace()
+        }
+        //show report details
+        redirect controller: "eventSync", action: "showSyncReportDetails", id: logReportFileId
+    }
+
     def residenciesList = {
 
         //convert datatables params to gorm params
@@ -685,10 +914,12 @@ class RawDomainController {
 
         //Display records
         def objects = residencies.collect { residency ->
-            ['code':     residency.memberCode,
+            ['id':     residency.id,
+             'code':     residency.memberCode,
              'name':     residency.member.name,
              'gender':   residency.member.gender?.code,
              'dob':      StringUtil.formatLocalDate(residency.member.dob),
+             'household':       residency.household?.code,
              'startType':       residency.startType?.code,
              'startDate':       StringUtil.formatLocalDate(residency.startDate),
              'endType':         residency.endType?.code,
@@ -767,10 +998,13 @@ class RawDomainController {
 
         //Display records
         def objects = results.collect { obj ->
-            ['code':     obj.memberCode,
+            ['id':     obj.id,
+             'code':     obj.memberCode,
              'name':     obj.member.name,
              'gender':   obj.member.gender?.code,
              'dob':      StringUtil.formatLocalDate(obj.member.dob),
+             'household':       obj.household?.code,
+             'head':            obj.head?.code,
              'headRelationshipType': obj.relationshipType?.code,
              'startType':       obj.startType?.code,
              'startDate':       StringUtil.formatLocalDate(obj.startDate),
@@ -847,7 +1081,8 @@ class RawDomainController {
 
         //Display records memberA_code, memberB_code, isPolygamic, startStatus, startDate, endStatus, endDate
         def objects = relationships.collect { relationship ->
-            ['memberA_code':     relationship.memberA_code,
+            ['id':     relationship.id,
+             'memberA_code':     relationship.memberA_code,
              'memberB_code':     relationship.memberB_code,
              'isPolygamic':   relationship.isPolygamic==true,
              'startStatus':       relationship.startStatus?.code,

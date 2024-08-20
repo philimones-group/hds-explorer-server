@@ -97,6 +97,7 @@
 
         <fieldset class="form">
 
+            <bi:field bean="${this.rawVisit}" property="id"    label="rawVisit.id.label" mode="show" />
             <bi:field bean="${this.rawVisit}" property="code"    label="rawVisit.code.label" mode="${mode}" />
             <bi:field bean="${this.rawVisit}" property="householdCode"    label="rawVisit.householdCode.label" mode="${mode}" />
             <bi:field bean="${this.rawVisit}" property="roundNumber"    label="rawVisit.roundNumber.label" mode="${mode}" />
@@ -104,7 +105,10 @@
             <bi:field bean="${this.rawVisit}" property="visitLocation"    label="rawVisit.visitLocation.label" mode="${mode}" />
             <bi:field bean="${this.rawVisit}" property="visitLocationOther"    label="rawVisit.visitLocationOther.label" mode="${mode}" />
             <bi:field bean="${this.rawVisit}" property="visitReason"    label="rawVisit.visitReason.label" mode="${mode}" />
+            <bi:field bean="${this.rawVisit}" property="respondentResident"    label="rawVisit.respondentResident.label" mode="${mode}" />
+            <bi:field bean="${this.rawVisit}" property="respondentRelationship"    label="rawVisit.respondentRelationship.label" mode="${mode}" />
             <bi:field bean="${this.rawVisit}" property="respondentCode"    label="rawVisit.respondentCode.label" mode="${mode}" />
+            <bi:field bean="${this.rawVisit}" property="respondentName"    label="rawVisit.respondentName.label" mode="${mode}" />
             <bi:field bean="${this.rawVisit}" property="hasInterpreter"    label="rawVisit.hasInterpreter.label" mode="${mode}" />
             <bi:field bean="${this.rawVisit}" property="interpreterName"    label="rawVisit.interpreterName.label" mode="${mode}" />
             <bi:field bean="${this.rawVisit}" property="nonVisitedMembers"    label="rawVisit.nonVisitedMembers.label" mode="${mode}" />
@@ -113,12 +117,16 @@
             <bi:field bean="${this.rawVisit}" property="gpsAlt"    label="rawVisit.gpsAlt.label" mode="${mode}" />
             <bi:field bean="${this.rawVisit}" property="gpsAcc"    label="rawVisit.gpsAcc.label" mode="${mode}" />
 
+            <bi:field bean="${this.rawVisit}" property="collectedDate"    label="rawVisit.collectedDate.label" mode="show" />
+            <bi:field bean="${this.rawVisit}" property="uploadedDate"    label="rawVisit.uploadedDate.label" mode="show" />
+
         </fieldset>
         <fieldset class="buttons">
             <g:if test="${mode == "edit"}">
                 <g:actionSubmit class="save" value="${message(code: "rawDomain.update.reset.label")}" action="updateVisit" onclick="updateReset('true')" />
                 <g:actionSubmit class="save" value="${message(code: "rawDomain.update.label")}" action="updateVisit" />
                 <g:actionSubmit class="save" value="${message(code: "rawDomain.invalidate.label")}" action="invalidateVisit" />
+                <g:actionSubmit class="delete" value="${message(code: 'default.button.delete.label')}" action="deleteVisit" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');" />
             </g:if>
             <g:else>
                 <g:link class="edit" action="editVisit" id="${this.rawVisit.id}" ><g:message code="rawDomain.edit.label" /></g:link>

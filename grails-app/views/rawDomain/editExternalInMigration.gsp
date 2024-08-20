@@ -99,6 +99,7 @@
 
         <fieldset class="form">
 
+            <bi:field bean="${this.rawExternalInMigration}" property="id"    label="rawExternalInMigration.id.label" mode="show" />
             <bi:field bean="${this.rawExternalInMigration}" property="visitCode"    label="rawExternalInMigration.visitCode.label" mode="${mode}" />
             <bi:field bean="${this.rawExternalInMigration}" property="memberCode"    label="rawExternalInMigration.memberCode.label" mode="${mode}" />
             <bi:field bean="${this.rawExternalInMigration}" property="memberName"    label="rawExternalInMigration.memberName.label" mode="${mode}" />
@@ -116,15 +117,23 @@
             <bi:field bean="${this.rawExternalInMigration}" property="migrationReason"    label="rawExternalInMigration.migrationReason.label" mode="${mode}" />
             <bi:field bean="${this.rawExternalInMigration}" property="modules"    label="rawExternalInMigration.modules.label" mode="${mode}" />
 
+            <bi:field bean="${this.rawExternalInMigration}" property="collectedDate"    label="rawExternalInMigration.collectedDate.label" mode="show" />
+            <bi:field bean="${this.rawExternalInMigration}" property="uploadedDate"    label="rawExternalInMigration.uploadedDate.label" mode="show" />
+
         </fieldset>
 
         <g:set var="household_code" value="${this.rawExternalInMigration.visitCode?.replaceAll('-.+','')}" />
+        <g:set var="member_code" value="${this.rawExternalInMigration.memberCode}" />
+        <g:set var="member_name" value="${this.rawExternalInMigration?.memberName}" />
+        <g:set var="member_gender" value="${this.rawExternalInMigration?.memberGender}" />
+        <g:set var="member_dob" value="${this.rawExternalInMigration?.memberDob}" />
 
         <fieldset class="buttons">
             <g:if test="${mode == "edit"}">
                 <g:actionSubmit class="save" value="${message(code: "rawDomain.update.reset.label")}" action="updateExternalInMigration" onclick="updateReset('true')" />
                 <g:actionSubmit class="save" value="${message(code: "rawDomain.update.label")}" action="updateExternalInMigration" />
                 <g:actionSubmit class="save" value="${message(code: "rawDomain.invalidate.label")}" action="invalidateExternalInMigration" />
+                <g:actionSubmit class="delete" value="${message(code: 'default.button.delete.label')}" action="deleteExtInmigration" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');" />
 
                 <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#show_residencies">
                     <g:message code="rawDomain.helpers.button.residencies.label" />

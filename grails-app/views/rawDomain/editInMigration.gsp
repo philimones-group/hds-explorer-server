@@ -99,6 +99,7 @@
 
         <fieldset class="form">
 
+            <bi:field bean="${this.rawInMigration}" property="id"    label="rawInMigration.id.label" mode="show" />
             <bi:field bean="${this.rawInMigration}" property="visitCode"    label="rawInMigration.visitCode.label" mode="${mode}" />
             <bi:field bean="${this.rawInMigration}" property="memberCode"    label="rawInMigration.memberCode.label" mode="${mode}" />
             <bi:field bean="${this.rawInMigration}" property="headRelationshipType"    label="rawInMigration.headRelationshipType.label" mode="${mode}" />
@@ -110,15 +111,23 @@
             <bi:dateField bean="${this.rawInMigration}" property="migrationDate"    label="rawInMigration.migrationDate.label" mode="${mode}" />
             <bi:field bean="${this.rawInMigration}" property="migrationReason"    label="rawInMigration.migrationReason.label" mode="${mode}" />
 
+            <bi:field bean="${this.rawInMigration}" property="collectedDate"    label="rawInMigration.collectedDate.label" mode="show" />
+            <bi:field bean="${this.rawInMigration}" property="uploadedDate"    label="rawInMigration.uploadedDate.label" mode="show" />
+
         </fieldset>
 
         <g:set var="household_code" value="${this.rawInMigration.visitCode?.replaceAll('-.+','')}" />
+        <g:set var="member_code" value="${member?.code}" />
+        <g:set var="member_name" value="${member?.name}" />
+        <g:set var="member_gender" value="${member?.gender}" />
+        <g:set var="member_dob" value="${member?.dob}" />
 
         <fieldset class="buttons">
             <g:if test="${mode == "edit"}">
                 <g:actionSubmit class="save" value="${message(code: "rawDomain.update.reset.label")}" action="updateInMigration" onclick="updateReset('true')" />
                 <g:actionSubmit class="save" value="${message(code: "rawDomain.update.label")}" action="updateInMigration" />
                 <g:actionSubmit class="save" value="${message(code: "rawDomain.invalidate.label")}" action="invalidateInMigration" />
+                <g:actionSubmit class="delete" value="${message(code: 'default.button.delete.label')}" action="deleteInmigration" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');" />
 
                 <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#show_residencies">
                     <g:message code="rawDomain.helpers.button.residencies.label" />

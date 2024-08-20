@@ -97,11 +97,15 @@
 
         <fieldset class="form">
 
+            <bi:field bean="${this.rawIncompleteVisit}" property="id"    label="rawIncompleteVisit.id.label" mode="show" />
             <bi:field bean="${this.rawIncompleteVisit}" property="visitCode"    label="rawIncompleteVisit.visitCode.label" mode="${mode}" />
             <bi:field bean="${this.rawIncompleteVisit}" property="householdCode"    label="rawIncompleteVisit.householdCode.label" mode="${mode}" />
             <bi:field bean="${this.rawIncompleteVisit}" property="memberCode"    label="rawIncompleteVisit.memberCode.label" mode="${mode}" />
             <bi:field bean="${this.rawIncompleteVisit}" property="reason"    label="rawIncompleteVisit.reason.label" mode="${mode}" />
             <bi:field bean="${this.rawIncompleteVisit}" property="reasonOther"    label="rawIncompleteVisit.reasonOther.label" mode="${mode}" />
+
+            <bi:field bean="${this.rawIncompleteVisit}" property="collectedDate"    label="rawIncompleteVisit.collectedDate.label" mode="show" />
+            <bi:field bean="${this.rawIncompleteVisit}" property="uploadedDate"    label="rawIncompleteVisit.uploadedDate.label" mode="show" />
 
         </fieldset>
         <fieldset class="buttons">
@@ -109,6 +113,7 @@
                 <g:actionSubmit class="save" value="${message(code: "rawDomain.update.reset.label")}" action="updateIncompleteVisit" onclick="updateReset('true')" />
                 <g:actionSubmit class="save" value="${message(code: "rawDomain.update.label")}" action="updateIncompleteVisit" />
                 <g:actionSubmit class="save" value="${message(code: "rawDomain.invalidate.label")}" action="invalidateIncompleteVisit" />
+                <g:actionSubmit class="delete" value="${message(code: 'default.button.delete.label')}" action="deleteIncompleteVisit" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');" />
             </g:if>
             <g:else>
                 <g:link class="edit" action="editIncompleteVisit" id="${this.rawIncompleteVisit.id}" ><g:message code="rawDomain.edit.label" /></g:link>
