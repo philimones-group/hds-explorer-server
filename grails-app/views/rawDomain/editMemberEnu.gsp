@@ -49,6 +49,7 @@
     </style>
 
     <dt:defaultResources />
+    <tb:tabulatorResources/>
 </head>
 <body>
 
@@ -133,17 +134,11 @@
                 <g:actionSubmit class="save" value="${message(code: "rawDomain.invalidate.label")}" action="invalidateMemberEnu" />
                 <g:actionSubmit class="delete" value="${message(code: 'default.button.delete.label')}" action="deleteMemberEnu" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');" />
 
-                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#show_residencies">
-                    <g:message code="rawDomain.helpers.button.residencies.label" />
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#show_household_residents">
+                    <g:message code="rawDomain.helpers.button.household.residents.label" />
                 </button>
 
-                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#show_head_relationships">
-                    <g:message code="rawDomain.helpers.button.headrelationships.label" />
-                </button>
-
-                <g:render template="show_residents"/>
-
-                <g:render template="show_head_relationships"/>
+                <g:render template="show_household_residents"/>
             </g:if>
             <g:else>
                 <g:link class="edit" action="editMemberEnu" id="${this.rawMemberEnu.id}" ><g:message code="rawDomain.edit.label" /></g:link>

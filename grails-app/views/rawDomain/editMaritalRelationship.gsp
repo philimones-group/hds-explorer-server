@@ -49,6 +49,7 @@
     </style>
 
     <dt:defaultResources />
+    <tb:tabulatorResources />
 </head>
 <body>
 

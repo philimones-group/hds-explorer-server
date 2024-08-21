@@ -49,6 +49,7 @@
     </style>
 
     <dt:defaultResources />
+    <tb:tabulatorResources />
 </head>
 <body>
 
@@ -116,6 +117,8 @@
         <g:set var="member_name" value="${member?.name}" />
         <g:set var="member_gender" value="${member?.gender}" />
         <g:set var="member_dob" value="${member?.dob}" />
+        <g:set var="member_a_code" value="${member?.code}" />
+        <g:set var="household_hrelationships_title" value="${message(code: 'rawDomain.helpers.deathheadrelationships.title.label')}" />
 
 
         <fieldset class="buttons">
@@ -125,17 +128,17 @@
                 <g:actionSubmit class="save" value="${message(code: "rawDomain.invalidate.label")}" action="invalidateDeath" />
                 <g:actionSubmit class="delete" value="${message(code: 'default.button.delete.label')}" action="deleteDeath" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');" />
 
-                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#show_residencies">
-                    <g:message code="rawDomain.helpers.button.residencies.label" />
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#show_member_residencies_hrelationships">
+                    <g:message code="rawDomain.helpers.button.member.residencies_and_headrelationships.label" />
                 </button>
 
-                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#show_head_relationships">
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#show_household_hrelationships">
                     <g:message code="rawDomain.helpers.button.headrelationships.label" />
                 </button>
 
-                <g:render template="show_residents"/>
+                <g:render template="show_member_residencies_hrelationships"/>
 
-                <g:render template="show_head_relationships"/>
+                <g:render template="show_household_hrelationships"/>
 
             </g:if>
             <g:else>

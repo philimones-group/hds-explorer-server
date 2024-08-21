@@ -115,6 +115,9 @@
         </fieldset>
 
         <g:set var="household_code" value="${this.rawChangeHead.householdCode}" />
+        <g:set var="old_head_code" value="${this.rawChangeHead.oldHeadCode}" />
+        <g:set var="new_head_code" value="${this.rawChangeHead.newHeadCode}" />
+        <g:set var="household_hrelationships_title" value="${message(code: 'rawDomain.helpers.changeheadrelationships.title.label')}" />
 
         <fieldset class="buttons">
             <g:if test="${mode == "edit"}">
@@ -123,11 +126,11 @@
                 <g:actionSubmit class="save" value="${message(code: "rawDomain.invalidate.label")}" action="invalidateChangeHead" />
                 <g:actionSubmit class="delete" value="${message(code: 'default.button.delete.label')}" action="deleteChangeHead" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');" />
 
-                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#show_head_relationships">
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#show_household_hrelationships">
                     <g:message code="rawDomain.helpers.button.headrelationships.label" />
                 </button>
 
-                <g:render template="show_head_relationships"/>
+                <g:render template="show_household_hrelationships"/>
 
             </g:if>
             <g:else>
