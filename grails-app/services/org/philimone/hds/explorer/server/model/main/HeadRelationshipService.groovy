@@ -187,7 +187,7 @@ class HeadRelationshipService {
         return null
     }
 
-    boolean isMostRecehtHeadRelationship(HeadRelationship headRelationship){
+    boolean isMostRecentHeadRelationship(HeadRelationship headRelationship){
         def hr = getCurrentHeadRelationship(headRelationship.member)
         return headRelationship.id.equals(hr.id)
     }

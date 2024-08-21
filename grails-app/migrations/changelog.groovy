@@ -22,4 +22,5 @@ databaseChangeLog = {
     include file: 'add-columns_to_marital_relationship-20240509.groovy'
     include file: 'alter-visit-change-maxsize.groovy'
     include file: 'alter-residency-headrelationship-add-status.groovy'
+    include file: 'add-partially-disabled-table.groovy'
 }

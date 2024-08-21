@@ -139,6 +139,11 @@ class MaritalRelationshipService {
     }
     */
 
+    boolean isMostRecentMaritalRelationship(MaritalRelationship maritalRelationship){
+        def mr = getCurrentMaritalRelationship(maritalRelationship.memberA, maritalRelationship.memberB)
+        return maritalRelationship.id.equals(mr?.id)
+    }
+
     RawMaritalRelationship convertToRaw(MaritalRelationship maritalRelationship){
 
         if (maritalRelationship == null) return null
