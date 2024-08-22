@@ -43,7 +43,7 @@
 				<g:each in="${logReports}" status="i" var="logReport">
 					<tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
 
-						<td class="align-middle"><g:link controller="eventSync" action="showSyncReport" id="${logReport.id}">${fieldValue(bean: logReport, field: "reportId")}</g:link></td>
+						<td class="align-middle"><g:link controller="eventSync" action="showSyncReport" id="${logReport.id}">${60+i}</g:link></td>
 
 						<td class="align-middle" style="text-align: left"><g:message code="${logReport.description}" default="${logReport.description}" /></td>
 
@@ -57,6 +57,7 @@
 							<g:set var="isExecuteEvent" value="${logReport.reportId==LogReportCode.REPORT_SYNC_MANAGER_EXECUTE_ALL_EVENTS || logReport.reportId==LogReportCode.REPORT_SYNC_MANAGER_EXECUTE_EVENTS}" />
 
 							<g:hiddenField name="id" value="${logReport.id}" />
+							<g:hiddenField name="advanced" value="${advanced}" />
 							<g:if test="${advanced==true}">
 								<td class="align-middle">
 									<g:if test="${isExecuteEvent}">

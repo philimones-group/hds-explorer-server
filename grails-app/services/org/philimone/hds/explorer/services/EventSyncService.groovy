@@ -19,6 +19,7 @@ import java.time.LocalDateTime
 class EventSyncService {
 
     def rawBatchExecutionService
+    def dataReconciliationService
     def generalUtilitiesService
 
     def executeAll(LogReportCode logReportId, int executionLimit) {
@@ -240,6 +241,71 @@ class EventSyncService {
 
             rawBatchExecutionService.resetEventsToNotProcessed(reportFileId)
             //rawBatchExecutionService.resetEventsZero()
+
+        }catch (Exception ex){
+            ex.printStackTrace()
+
+            logStatusValue = LogStatus.ERROR
+            processed = 0
+            errors = 1
+            output.println(ex.toString())
+        }
+
+        LogReport.withTransaction {
+            LogReport logReport = LogReport.findByReportId(logReportId)
+            LogReportFile reportFile = LogReportFile.findById(reportFileId)
+
+            reportFile.end = LocalDateTime.now()
+            //reportFile.processedCount = processed
+            //reportFile.errorsCount = errors
+            reportFile.save(flush:true)
+
+            logReport.end = LocalDateTime.now()
+            logReport.status = logStatusValue
+            logReport.save(flush:true)
+
+            //println("errors: ${logReport.errors}")
+        }
+
+        output.close();
+
+    }
+
+    def restoreTemporarilyDisabledResidenciesHeadRelationships(LogReportCode logReportId) {
+
+        LogOutput log = generalUtilitiesService.getOutput(SystemPath.getLogsPath(), "hdsevents-restore-temp-disabled-res-hrels");
+        PrintStream output = log.output
+        if (output == null) return;
+
+        def start = LocalDateTime.now();
+        int processed = 0
+        int errors = 0
+        def logStatusValue = LogStatus.FINISHED
+
+        //create log report file
+        String reportFileId = null;
+
+        LogReport.withTransaction {
+            LogReport logReport = LogReport.findByReportId(logReportId)
+            LogReportFile reportFile = new LogReportFile(creationDate: LocalDateTime.now(), fileName: log.logFileName, logReport: logReport)
+
+            reportFile.keyTimestamp = logReport.keyTimestamp
+            reportFile.start = start
+            reportFile.creationDate = LocalDateTime.now()
+
+            logReport.addToLogFiles(reportFile)
+            logReport = logReport.save(flush:true)
+
+            reportFile = LogReportFile.findByKeyTimestamp(logReport.keyTimestamp)
+            reportFileId = reportFile.id
+
+            //println(reportFileId)
+
+        }
+
+        try {
+
+            dataReconciliationService.restoreTemporarilyDisabledResidenciesHeadRelationships(reportFileId, log)
 
         }catch (Exception ex){
             ex.printStackTrace()

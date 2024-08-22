@@ -29,6 +29,7 @@ enum LogReportCode {
     REPORT_SYNC_MANAGER_EXECUTE_COMPILE_EVENTS (61, "logreport-sync-compile"),
     REPORT_SYNC_MANAGER_EXECUTE_EVENTS (62, "logreport-sync-events"),
     REPORT_SYNC_MANAGER_EXECUTE_RESET_ERRORS (63, "logreport-sync-errors"),
+    REPORT_SYNC_MANAGER_EXECUTE_RESTORE_TEMP_DISABLED (64, "logreport-restore-invalidated"),
 
 
     /*LogReportCode for events of Generating ZIP XML Files */

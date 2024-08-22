@@ -56,7 +56,7 @@ class RawBatchExecutionService {
     /*
      * Organize data by processed = 0 and date of processing
      */
-    def compileAndExecuteEvents(String logReportFileId, int executionLimit) {
+    def synchronized compileAndExecuteEvents(String logReportFileId, int executionLimit) {
         //keyDate   (date of event/capture) will be yyyy-MM-dd or yyyy-MM-dd HH:mm:ss
         //event_type (the HDS Event to be executED, [sort: "collectedDate", order: "asc"]) as INTEGER
         //event_order (the order for members insertion - start with the head of household)
@@ -82,7 +82,7 @@ class RawBatchExecutionService {
         executeEvents(logReportFileId, executionLimit)
     }
 
-    def resetEventsToNotProcessed(String logReportFileId){
+    def synchronized resetEventsToNotProcessed(String logReportFileId){
                 
         RawEvent.withTransaction {
             RawEvent.executeUpdate("update RawEvent e set e.processed=:newStatus where e.processed=:currStatus", [currStatus: ProcessedStatus.ERROR, newStatus: ProcessedStatus.NOT_PROCESSED])
@@ -157,7 +157,7 @@ class RawBatchExecutionService {
         }
     }
 
-    def compileEvents(String logReportFileId){
+    def synchronized compileEvents(String logReportFileId){
 
         println "compiling events"
 
@@ -186,7 +186,7 @@ class RawBatchExecutionService {
         println "finished compiling events"
     }
 
-    def executeEvents(String logReportFileId, int executionLimit) {
+    def synchronized executeEvents(String logReportFileId, int executionLimit) {
 
         println "executing events"
 
@@ -284,14 +284,20 @@ class RawBatchExecutionService {
                 //SKIP killing because of a marital failed
             //}
 
-            //skipped event due to previous error
-            println "the event [id=${event.eventId},code=${event.entityCode}](${event.eventType.name()}) - will be skipped because a previous event [id=${errorEvent.eventId}](${errorEvent.eventType.name()}) has errors})"
+            if (event.eventType == RawEventType.EVENT_MARITAL_RELATIONSHIP) {
+                //Dont stop the execution of MARITAL RELATIONSHIP because of memberA or memberB previous event errors
+                // CONTINUE THE EXECUTION
+            } else {
+                //skip event due to previous error
 
-            def entityObj = getEntityOject(event)
-            def errorMessage = errorMessageService.getRawMessage(entityObj.entity, "validation.dependency.event.previous.error", [event.eventId, event.entityCode, event.eventType.name(), errorEvent.eventId, errorEvent.eventType.name()], [])
-            createRawEventErrorLog(entityObj.entity, event, entityObj.domainObj, "entity_code", [errorMessage], logReportFileId)
+                println "the event [id=${event.eventId}, code=${event.entityCode}](${event.eventType.name()}) - will be skipped because a previous event [id=${errorEvent.eventId}](${errorEvent.eventType.name()}) has errors})"
 
-            return null
+                def entityObj = getEntityOject(event)
+                def errorMessage = errorMessageService.getRawMessage(entityObj.entity, "validation.dependency.event.previous.error", [event.eventId, event.entityCode, event.eventType.name(), errorEvent.eventId, errorEvent.eventType.name()], [])
+                createRawEventErrorLog(entityObj.entity, event, entityObj.domainObj, "entity_code", [errorMessage], logReportFileId)
+
+                return null
+            }
 
         } else if (event.eventType == RawEventType.EVENT_PREGNANCY_OUTCOME) {
             //handle differently

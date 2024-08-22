@@ -370,6 +370,13 @@ class BootStrap {
                 description: 'logreport.sync.syncdss.reset.errors.label'
         ).save(flush: true)
 
+        new LogReport(
+                reportId: LogReportCode.REPORT_SYNC_MANAGER_EXECUTE_RESTORE_TEMP_DISABLED,
+                group: LogGroup.findByGroupId(LogGroupCode.GROUP_SYNC_MANAGER),
+                status: LogStatus.NOT_STARTED,
+                description: 'logreport.sync.syncdss.restore.temp.disabled.label'
+        ).save(flush: true)
+
         /* Group Generate Files */
         new LogReport(
                 reportId: LogReportCode.REPORT_GENERATE_SETTINGS_ZIP_XML_FILES,

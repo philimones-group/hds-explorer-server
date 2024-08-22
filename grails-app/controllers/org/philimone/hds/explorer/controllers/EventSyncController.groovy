@@ -8,7 +8,6 @@ import org.philimone.hds.explorer.server.model.enums.settings.LogGroupCode
 import org.philimone.hds.explorer.server.model.enums.settings.LogReportCode
 import org.philimone.hds.explorer.server.model.logs.LogReport
 import org.philimone.hds.explorer.server.model.logs.LogReportFile
-import org.philimone.hds.explorer.server.model.main.Household
 
 import java.time.LocalDateTime
 
@@ -18,7 +17,7 @@ class EventSyncController {
 
     def index = {
         //def logReports = LogReport.executeQuery("select lr from LogReport lr where lr.group.groupId=?0 order by lr.reportId", [LogGroupCode.GROUP_SYNC_DSS_DATA_FROM_CLIENT])
-        def logReports = LogReport.executeQuery("select lr from LogReport lr where lr.reportId=?0", [LogReportCode.REPORT_DSS_EVENTS_SYNC]) //Get only execute all events
+        def logReports = LogReport.executeQuery("select lr from LogReport lr where lr.reportId in (:list)", [list:[LogReportCode.REPORT_DSS_EVENTS_SYNC, LogReportCode.REPORT_SYNC_MANAGER_EXECUTE_EVENTS, LogReportCode.REPORT_SYNC_MANAGER_EXECUTE_RESTORE_TEMP_DISABLED]]) //Get only execute all events
 
         def syncProcesses = eventSyncService.mainProcessedStatus()
 
@@ -46,6 +45,7 @@ class EventSyncController {
         }
 
         def id = logReport.reportId
+        def advanced = params.advanced
         def executionLimit = 0
         println "exec limit ${params.executionLimit}"
         if (params.executionLimit) {
@@ -96,7 +96,17 @@ class EventSyncController {
             }).start();
         }
 
-        if (logReport.group.groupId==LogGroupCode.GROUP_SYNC_MANAGER) {
+        if (logReport.reportId==LogReportCode.REPORT_SYNC_MANAGER_EXECUTE_RESTORE_TEMP_DISABLED){
+            new Thread(new Runnable() {
+                @Override
+                void run() {
+                    println "executing restore temporarily disabled records"
+                    eventSyncService.restoreTemporarilyDisabledResidenciesHeadRelationships(id)
+                }
+            }).start();
+        }
+
+        if (advanced == true) {
             redirect action: "advancedindex"
             return
         }
