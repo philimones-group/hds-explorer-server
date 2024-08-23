@@ -60,11 +60,11 @@ class PregnancyRegistration extends CollectableEntity {
         eddKnown column: "edd_known"
         hasPrenatalRecord column: "has_precord"
         eddDate column: "edd_date"
-        eddType column: "edd_type"
+        eddType column: "edd_type", enumType: "identity"
         lmpKnown column: "lmp_known"
         lmpDate column: "lmp_date"
         expectedDeliveryDate column: "expected_delivery_date"
-        status column: "status"
+        status column: "status", enumType: "identity"
 
         visit column: "visit_id"
         visitCode column: "visit_code", index: "idx_visit_code"

@@ -36,7 +36,7 @@ class RawPregnancyChild {
         id column: "id", generator: 'uuid'
 
         outcome column: "pregnancy_outcome_id"
-        outcomeType column: "outcomde_type"
+        outcomeType column: "outcome_type"
         childCollectedId column: "child_collected_id"
         childCode column: "child_code", index: "idx_child_code"
         childName column: "child_name"

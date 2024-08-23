@@ -23,4 +23,5 @@ databaseChangeLog = {
     include file: 'alter-visit-change-maxsize.groovy'
     include file: 'alter-residency-headrelationship-add-status.groovy'
     include file: 'add-partially-disabled-table.groovy'
+    include file: 'update-tables-bad-enum-codes-20240823.groovy'
 }

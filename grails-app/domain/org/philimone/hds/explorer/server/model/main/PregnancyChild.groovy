@@ -36,7 +36,7 @@ class PregnancyChild {
 
         outcome column: "pregnancy_outcome_id"
         outcomeCode column: "pregnancy_outcome_code", index: "idx_outcome_code"
-        outcomeType column: "outcomde_type"
+        outcomeType column: "outcome_type", enumType: "identity"
         child column: "child_id"
         childCollectedId column: "child_collected_id", index: "idx_child_coll_id"
         childCode column: "child_code", index: "idx_child_code"

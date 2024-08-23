@@ -54,7 +54,7 @@ class PregnancyOutcome extends CollectableEntity {
         numberOfOutcomes column: "number_of_outcomes"
         numberOfLivebirths column: "number_of_livebirths"
         outcomeDate column: "outcome_date"
-        birthPlace column: "birthplace"
+        birthPlace column: "birthplace", enumType: "identity"
         birthPlaceOther column: "birthplace_other"
 
         visit column: "visit_id"

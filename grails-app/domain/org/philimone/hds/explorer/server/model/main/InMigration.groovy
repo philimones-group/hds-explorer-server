@@ -78,8 +78,8 @@ class InMigration extends CollectableEntity {
         member nullable: false
         memberCode blank: false, nullable: false
 
-        type nullable: false, blank: false, enumType: "string"
-        extMigType nullable: true, blank: true, enumType: "string"
+        type nullable: false, blank: false
+        extMigType nullable: true, blank: true
 
         origin nullable: true
         originCode nullable: true, blank: true
@@ -107,8 +107,8 @@ class InMigration extends CollectableEntity {
         member     column: "member_id"
         memberCode column: "member_code", index: "idx_member_code"
 
-        type       column: "type"
-        extMigType column: "ext_migtype"
+        type       column: "type", enumType: "identity"
+        extMigType column: "ext_migtype", enumType: "string"
 
         origin      column: "origin_id"
         originCode  column: "origin_code", index: "idx_origin_code"

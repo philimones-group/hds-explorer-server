@@ -54,12 +54,22 @@ databaseChangeLog = {
         }
     }
 
+    changeSet(author: "paul (generated)", id: "1723557476626-36") {
+        createIndex(indexName: "idx_spouse_code", tableName: "_partially_disabled") {
+            column(name: "spouse_code")
+        }
+    }
+
     changeSet(author: "paul (generated)", id: "1723557476626-34") {
         addForeignKeyConstraint(baseColumnNames: "member_id", baseTableName: "_partially_disabled", constraintName: "FKbalya2lxg9a66i038sfm9vtf1", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "id", referencedTableName: "member", validate: "true")
     }
 
     changeSet(author: "paul (generated)", id: "1723557476626-35") {
         addForeignKeyConstraint(baseColumnNames: "household_id", baseTableName: "_partially_disabled", constraintName: "FKrld4wakjeg6ajqbgjtjn40gg", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "id", referencedTableName: "household", validate: "true")
+    }
+
+    changeSet(author: "paul (generated)", id: "1723557476626-37") {
+        addForeignKeyConstraint(baseColumnNames: "spouse_id", baseTableName: "_partially_disabled", constraintName: "FK5rmvre2pyyljwkcxrd6xgspcc", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "id", referencedTableName: "member", validate: "true")
     }
 
 }

@@ -51,9 +51,9 @@ class Visit extends CollectableEntity {
         householdCode nullable: false
 
         visitDate nullable: false
-        visitLocation blank: true, nullable: true, enumType: "identity"
+        visitLocation blank: true, nullable: true
         visitLocationOther blank: true, nullable: true
-        visitReason blank:true, nullable: true, enumType: "identity"
+        visitReason blank:true, nullable: true
 
         roundNumber min: 0
 
@@ -89,9 +89,9 @@ class Visit extends CollectableEntity {
         householdCode column: "household_code", index: "idx_household_code"
 
         visitDate column: "visit_date"
-        visitLocation column: "visit_location"
+        visitLocation column: "visit_location", enumType: "identity"
         visitLocationOther column: "visit_location_other"
-        visitReason column: "visit_reason"
+        visitReason column: "visit_reason", enumType: "identity"
 
         roundNumber column: "round_number", index: "idx_round_number"
 

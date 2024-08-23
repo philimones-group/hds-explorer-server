@@ -93,7 +93,7 @@ class OutMigration extends CollectableEntity {
         member     column: "member_id"
         memberCode column: "member_code", index: "idx_member_code"
 
-        migrationType       column: "type"
+        migrationType       column: "type", enumType: "identity"
 
         origin          column: "origin_id"
         originCode      column: "origin_code", index: "idx_origin_code"

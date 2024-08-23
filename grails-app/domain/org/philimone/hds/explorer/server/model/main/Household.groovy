@@ -121,7 +121,7 @@ class Household extends CollectableEntity {
         cosLongitude column: 'cos_longitude'
         sinLongitude column: 'sin_longitude'
 
-        status column: 'status'
+        status column: 'status', enumType: "identity"
 
         preRegistered column: 'pre_registered'
 

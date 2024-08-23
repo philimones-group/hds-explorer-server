@@ -31,9 +31,9 @@ class MaritalRelationship extends CollectableEntity {
         memberB_code nullable: false
         isPolygamic nullable: true
         polygamicId nullable: true
-        startStatus nullable: false, blank:false, enumType: "identity"
+        startStatus nullable: false, blank:false
         startDate nullable: false
-        endStatus nullable: true, blank:true, enumType: "identity"
+        endStatus nullable: true, blank:true
         endDate nullable: true
 
         status nullable: true
@@ -50,9 +50,9 @@ class MaritalRelationship extends CollectableEntity {
         memberB_code column: "member_b_code", index: "idx_member_b_code"
         isPolygamic column: "is_polygamic"
         polygamicId column: "polygamic_id", index: "idx_polygamic_id"
-        startStatus column: "start_status"
+        startStatus column: "start_status", enumType: "identity"
         startDate column: "start_date"
-        endStatus column: "end_status"
+        endStatus column: "end_status", enumType: "identity"
         endDate column: "end_date"
 
         status column: "status", enumType: "identity"
