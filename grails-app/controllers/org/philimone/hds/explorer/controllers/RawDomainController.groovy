@@ -1076,7 +1076,7 @@ class RawDomainController {
             firstResult (jqdtParams.start as Integer)
         }
 
-        println "household=${member_code}, ${relationships?.size()}"
+        //println "household=${member_code}, ${relationships?.size()}"
 
         //Display records memberA_code, memberB_code, isPolygamic, startStatus, startDate, endStatus, endDate
         def objects = relationships.collect { relationship ->
@@ -1105,7 +1105,7 @@ class RawDomainController {
         }.size()
 
 
-        println "member recordsTotal $recordsTotal"
+        //println "member recordsTotal $recordsTotal"
         //println "member recordsFiltered $recordsFiltered"
         //println "members ${members.size()}"
 
@@ -1301,7 +1301,7 @@ class RawDomainController {
         }
 
 
-        println "household=${household_code}, ${residencies?.size()}"
+        //println "household=${household_code}, ${residencies?.size()}"
 
         //Display records
         def objects = residencies.collect { obj ->
@@ -1344,7 +1344,7 @@ class RawDomainController {
 
         results1.addAll(results2)
 
-        println "household=${household_code}, ${results1?.size()}"
+        //println "household=${household_code}, ${results1?.size()}"
 
 
         //Display records
@@ -1356,7 +1356,7 @@ class RawDomainController {
              'dob':      StringUtil.formatLocalDate(obj.member.dob),
              'household':       obj.household?.code,
              'head':            obj.head?.code,
-             'headRelationshipType': obj.relationshipType?.code,
+             'relationshipType': obj.relationshipType?.code,
              'startType':       obj.startType?.code,
              'startDate':       StringUtil.formatLocalDate(obj.startDate),
              'endType':         obj.endType?.code,
@@ -1383,7 +1383,7 @@ class RawDomainController {
             order("startDate", "asc")
         }
 
-        println "household=${household_code}, ${results?.size()}"
+        //println "household=${household_code}, ${results?.size()}"
 
         //Display records
         def objects = results.collect { obj ->
@@ -1394,7 +1394,7 @@ class RawDomainController {
              'dob':      StringUtil.formatLocalDate(obj.member.dob),
              'household':       obj.household?.code,
              'head':            obj.head?.code,
-             'headRelationshipType': obj.relationshipType?.code,
+             'relationshipType': obj.relationshipType?.code,
              'startType':       obj.startType?.code,
              'startDate':       StringUtil.formatLocalDate(obj.startDate),
              'endType':         obj.endType?.code,
@@ -1420,7 +1420,7 @@ class RawDomainController {
         }
 
 
-        println "household=${member_code}, ${residencies?.size()}"
+        //println "household=${member_code}, ${residencies?.size()}"
 
         //Display records
         def objects = residencies.collect { obj ->
@@ -1454,7 +1454,7 @@ class RawDomainController {
             order("startDate", "asc")
         }
 
-        println "household=${member_code}, ${results?.size()}"
+        //println "household=${member_code}, ${results?.size()}"
 
         //Display records
         def objects = results.collect { obj ->
@@ -1465,7 +1465,7 @@ class RawDomainController {
              'dob':      StringUtil.formatLocalDate(obj.member.dob),
              'household':       obj.household?.code,
              'head':            obj.head?.code,
-             'headRelationshipType': obj.relationshipType?.code,
+             'relationshipType': obj.relationshipType?.code,
              'startType':       obj.startType?.code,
              'startDate':       StringUtil.formatLocalDate(obj.startDate),
              'endType':         obj.endType?.code,
@@ -1492,7 +1492,7 @@ class RawDomainController {
             order("startDate", "asc")
         }
 
-        println "member_code=${member_code}, search marital = ${results?.size()}"
+        //println "member_code=${member_code}, search marital = ${results?.size()}"
 
         //Display records
         def objects = results.collect { obj ->
@@ -1576,6 +1576,48 @@ class RawDomainController {
         println "params: ${data}, res: ${obj}"
 
         JActionResult result = rawDomainService.disableMaritalRelationshipEndEvent(obj)
+
+        render result as JSON
+    }
+
+    def updateResidencyField = {
+        //receives a json(id, column, value) and return a JActionResult(result, title, message, data)
+        def data = request.JSON
+
+        //println "params: ${data}"
+        //println "id = ${data.id}"
+        //println "column = ${data.column}"
+        //println "value = ${data.value}"
+
+        def result = rawDomainService.updateResidencyField(data.id, data.column, data.value)
+
+        render result as JSON
+    }
+
+    def updateHeadRelationshipField = {
+        //receives a json(id, column, value) and return a JActionResult(result, title, message, data)
+        def data = request.JSON
+
+        //println "params: ${data}"
+        //println "id = ${data.id}"
+        //println "column = ${data.column}"
+        //println "value = ${data.value}"
+
+        def result = rawDomainService.updateHeadRelationshipField(data.id, data.column, data.value)
+
+        render result as JSON
+    }
+
+    def updateMaritalRelationshipField = {
+        //receives a json(id, column, value) and return a JActionResult(result, title, message, data)
+        def data = request.JSON
+
+        //println "params: ${data}"
+        //println "id = ${data.id}"
+        //println "column = ${data.column}"
+        //println "value = ${data.value}"
+
+        def result = rawDomainService.updateMaritalRelationshipField(data.id, data.column, data.value)
 
         render result as JSON
     }

@@ -2,7 +2,9 @@ package org.philimone.hds.explorer.services
 
 import grails.gorm.transactions.Transactional
 import net.betainteractive.utilities.StringUtil
+import org.philimone.hds.explorer.server.model.enums.HeadRelationshipType
 import org.philimone.hds.explorer.server.model.enums.MaritalEndStatus
+import org.philimone.hds.explorer.server.model.enums.MaritalStartStatus
 import org.philimone.hds.explorer.server.model.enums.ValidatableEntity
 import org.philimone.hds.explorer.server.model.enums.ValidatableStatus
 import org.philimone.hds.explorer.server.model.enums.temporal.HeadRelationshipEndType
@@ -19,6 +21,8 @@ import org.philimone.hds.explorer.server.model.main.PartiallyDisabled
 import org.philimone.hds.explorer.server.model.main.Residency
 import org.philimone.hds.explorer.server.model.main.Visit
 
+import java.time.LocalDate
+
 @Transactional
 class RawDomainService {
 
@@ -26,6 +30,7 @@ class RawDomainService {
     def residencyService
     def headRelationshipService
     def maritalRelationshipService
+    def deathService
     def codeGeneratorService
     def generalUtilitiesService
 
@@ -45,9 +50,12 @@ class RawDomainService {
     }
 
     JMember getBasicMember(String memberCode) {
-        def result = Member.executeQuery("select m.code, m.name, m.gender, m.dob from Member m where m.code = ?0", [memberCode])
+        def result = Member.executeQuery("select m.code, m.name, m.gender, m.dob, m.householdCode, m.householdName from Member m where m.code = ?0", [memberCode])
         def m = result.size()>0 ? result.first() : null
-        return new JMember(m[0], m[1], m[2], m[3])
+
+        if (m == null) return null
+
+        return new JMember(m[0], m[1], m[2], m[3], m[4], m[5])
     }
 
     def getValidationStatus(ValidatableStatus status) {
@@ -315,6 +323,405 @@ class RawDomainService {
 
     }
 
+    JActionResult updateResidencyField(String id, String columnName, String columnValue) {
+
+        /*
+         Available editable columns: startType, startDate, endType, endDate
+         */
+
+        //println "column: ${columnName}, value: ${columnValue}"
+
+        def residency = Residency.get(id)
+
+        if (residency == null) {
+            return new JActionResult(result: JActionResult.Result.ERROR, message: message("rawDomain.helpers.update.record.notfound.label"))
+        }
+
+        if (columnName == null) {
+            return new JActionResult(result: JActionResult.Result.ERROR, message: message("rawDomain.helpers.update.record.column.not.available.label"))
+        }
+
+        def previousResidency = residencyService.getPreviousResidency(residency)
+        def nextResidency = residencyService.getNextResidency(residency)
+
+        if (columnName.equalsIgnoreCase(DataModelsService.COLUMN_START_TYPE)) {
+            def newStartType = ResidencyStartType.getFrom(columnValue) //BIR,ENU,ENT,XEN
+
+            if (previousResidency != null) {
+                def previousEndType = previousResidency.endType
+
+                if (newStartType==ResidencyStartType.BIRTH || newStartType==ResidencyStartType.ENUMERATION) {
+                    return new JActionResult(result: JActionResult.Result.ERROR, message: message("rawDomain.helpers.update.residency.starttype.enu.bir.error.label"))
+                }
+                if (newStartType==ResidencyStartType.INTERNAL_INMIGRATION && previousEndType!=ResidencyEndType.INTERNAL_OUTMIGRATION) {
+                    return new JActionResult(result: JActionResult.Result.ERROR, message: message("rawDomain.helpers.update.residency.starttype.ent.previous.endtype.error.label"))
+                }
+                if (newStartType==ResidencyStartType.EXTERNAL_INMIGRATION && previousEndType!=ResidencyEndType.EXTERNAL_OUTMIGRATION) {
+                    return new JActionResult(result: JActionResult.Result.ERROR, message: message("rawDomain.helpers.update.residency.starttype.xen.previous.endtype.error.label"))
+                }
+                if (previousEndType==ResidencyEndType.NOT_APPLICABLE || previousEndType==ResidencyEndType.DEATH) {
+                    return new JActionResult(result: JActionResult.Result.ERROR, message: message("rawDomain.helpers.update.residency.starttype.previous.endtype.na.dth.error.label", [columnValue]))
+                }
+            } else {
+                if (newStartType==ResidencyStartType.INTERNAL_INMIGRATION) {
+                    return new JActionResult(result: JActionResult.Result.ERROR, message: message("rawDomain.helpers.update.residency.starttype.ent.no.previous.error.label"))
+                }
+            }
+
+
+            residency.startType = newStartType
+
+        } else if (columnName.equalsIgnoreCase(DataModelsService.COLUMN_START_DATE)) {
+            def newStartDate = StringUtil.toLocalDate(columnValue)
+
+            if (newStartDate == null) {
+                return new JActionResult(result: JActionResult.Result.ERROR, message: message("rawDomain.helpers.update.residency.startdate.not.null.error.label"))
+            }
+            if (newStartDate > LocalDate.now()) {
+                return new JActionResult(result: JActionResult.Result.ERROR, message: message("rawDomain.helpers.update.residency.startdate.not.greater.today.error.label"))
+            }
+            if (newStartDate < residency?.member?.dob) {
+                return new JActionResult(result: JActionResult.Result.ERROR, message: message("rawDomain.helpers.update.residency.startdate.not.before.dob.error.label"))
+            }
+            if (newStartDate >= residency.endDate) {
+                return new JActionResult(result: JActionResult.Result.ERROR, message: message("rawDomain.helpers.update.residency.startdate.not.greater.enddate.error.label"))
+            }
+            if (previousResidency != null) {
+                if (newStartDate < previousResidency.endDate) {
+                    return new JActionResult(result: JActionResult.Result.ERROR, message: message("rawDomain.helpers.update.residency.startdate.not.before.previous.enddate.error.label", [columnValue]))
+                }
+            }
+
+
+            residency.startDate = newStartDate
+
+        } else if (columnName.equalsIgnoreCase(DataModelsService.COLUMN_END_TYPE)) {
+            def newEndType = ResidencyEndType.getFrom(columnValue) //CHG,EXT,DTH
+
+            if (nextResidency != null) {
+
+                if (newEndType==ResidencyEndType.NOT_APPLICABLE || newEndType==ResidencyEndType.DEATH) {
+                    return new JActionResult(result: JActionResult.Result.ERROR, message: message("rawDomain.helpers.update.residency.endtype.na.dth.exists.next.error.label", [columnValue]))
+                }
+                if (newEndType==ResidencyEndType.INTERNAL_OUTMIGRATION && nextResidency.startType!=ResidencyStartType.INTERNAL_INMIGRATION) {
+                    return new JActionResult(result: JActionResult.Result.ERROR, message: message("rawDomain.helpers.update.residency.endtype.chg.next.startype.error.label"))
+                }
+                if (newEndType==ResidencyEndType.EXTERNAL_OUTMIGRATION && nextResidency.startType!=ResidencyStartType.EXTERNAL_INMIGRATION) {
+                    return new JActionResult(result: JActionResult.Result.ERROR, message: message("rawDomain.helpers.update.residency.endtype.ext.next.startype.error.label"))
+                }
+
+            } else {
+                if (newEndType==ResidencyEndType.INTERNAL_OUTMIGRATION) {
+                    //Cannot be CHG because there is no a new residency with ENT
+                    return new JActionResult(result: JActionResult.Result.ERROR, message: message("rawDomain.helpers.update.residency.endtype.chg.no.next.error.label"))
+                }
+            }
+
+            residency.endType = newEndType
+
+        } else if (columnName.equalsIgnoreCase(DataModelsService.COLUMN_END_DATE)) {
+            def newEndDate = StringUtil.toLocalDate(columnValue)
+
+            if (newEndDate == null && residency.endType != ResidencyEndType.NOT_APPLICABLE) {
+                return new JActionResult(result: JActionResult.Result.ERROR, message: message("rawDomain.helpers.update.residency.enddate.null.endtype.not.na.error.label"))
+            }
+            if (newEndDate > LocalDate.now()) {
+                return new JActionResult(result: JActionResult.Result.ERROR, message: message("rawDomain.helpers.update.residency.enddate.not.greater.today.error.label"))
+            }
+            if (newEndDate < residency?.member?.dob) {
+                return new JActionResult(result: JActionResult.Result.ERROR, message: message("rawDomain.helpers.update.residency.enddate.not.before.dob.error.label"))
+            }
+            if (newEndDate <= residency.startDate) {
+                return new JActionResult(result: JActionResult.Result.ERROR, message: message("rawDomain.helpers.update.residency.enddate.not.before.startdate.error.label"))
+            }
+            if (nextResidency != null) {
+                if (newEndDate > nextResidency.startDate) {
+                    return new JActionResult(result: JActionResult.Result.ERROR, message: message("rawDomain.helpers.update.residency.enddate.not.greater.next.startdate.error.label", [columnValue]))
+                }
+            }
+
+            residency.endDate = newEndDate
+        }
+
+        residency.save(flush: true)
+
+        return new JActionResult(result: JActionResult.Result.SUCCESS, message: message("rawDomain.helpers.update.record.updated.label"))
+    }
+
+    JActionResult updateHeadRelationshipField(String id, String columnName, String columnValue) {
+
+        /*
+         Available editable columns: startType, startDate, endType, endDate, headRelationshipType
+         */
+
+        //println "column: ${columnName}, value: ${columnValue}"
+
+        def headRelationship = HeadRelationship.get(id)
+
+        if (headRelationship == null) {
+            return new JActionResult(result: JActionResult.Result.ERROR, message: message("rawDomain.helpers.update.record.notfound.label"))
+        }
+
+        if (columnName == null) {
+            return new JActionResult(result: JActionResult.Result.ERROR, message: message("rawDomain.helpers.update.record.column.not.available.label"))
+        }
+
+        def previousHeadRelationship = headRelationshipService.getPreviousHeadRelationship(headRelationship)
+        def nextHeadRelationship = headRelationshipService.getNextHeadRelationship(headRelationship)
+
+        if (columnName.equalsIgnoreCase(DataModelsService.COLUMN_START_TYPE)) {
+            def newStartType = HeadRelationshipStartType.getFrom(columnValue) //BIR,ENU,ENT,XEN,NHH*
+
+            if (previousHeadRelationship != null) {
+                def previousEndType = previousHeadRelationship.endType
+
+                if (newStartType==HeadRelationshipStartType.BIRTH || newStartType==HeadRelationshipStartType.ENUMERATION) {
+                    return new JActionResult(result: JActionResult.Result.ERROR, message: message("rawDomain.helpers.update.headrelationship.starttype.enu.bir.error.label"))
+                }
+                if (newStartType==HeadRelationshipStartType.INTERNAL_INMIGRATION && previousEndType!=HeadRelationshipEndType.INTERNAL_OUTMIGRATION) {
+                    return new JActionResult(result: JActionResult.Result.ERROR, message: message("rawDomain.helpers.update.headrelationship.starttype.ent.previous.endtype.error.label"))
+                }
+                if (newStartType==HeadRelationshipStartType.EXTERNAL_INMIGRATION && previousEndType!=HeadRelationshipEndType.EXTERNAL_OUTMIGRATION) {
+                    return new JActionResult(result: JActionResult.Result.ERROR, message: message("rawDomain.helpers.update.headrelationship.starttype.xen.previous.endtype.error.label"))
+                }
+                if (newStartType==HeadRelationshipStartType.NEW_HEAD_OF_HOUSEHOLD && (previousEndType!=HeadRelationshipEndType.CHANGE_OF_HEAD_OF_HOUSEHOLD && previousEndType!=HeadRelationshipEndType.DEATH_OF_HEAD_OF_HOUSEHOLD)) {
+                    return new JActionResult(result: JActionResult.Result.ERROR, message: message("rawDomain.helpers.update.headrelationship.starttype.nhh.previous.endtype.error.label"))
+                }
+                if (previousEndType==HeadRelationshipEndType.NOT_APPLICABLE || previousEndType==HeadRelationshipEndType.DEATH) {
+                    return new JActionResult(result: JActionResult.Result.ERROR, message: message("rawDomain.helpers.update.headrelationship.starttype.previous.endtype.na.dth.error.label", [columnValue]))
+                }
+            } else {
+                if (newStartType==HeadRelationshipStartType.INTERNAL_INMIGRATION) {
+                    return new JActionResult(result: JActionResult.Result.ERROR, message: message("rawDomain.helpers.update.headrelationship.starttype.ent.no.previous.error.label"))
+                }
+            }
+
+
+            headRelationship.startType = newStartType
+
+        } else if (columnName.equalsIgnoreCase(DataModelsService.COLUMN_START_DATE)) {
+            def newStartDate = StringUtil.toLocalDate(columnValue)
+
+            if (newStartDate == null) {
+                return new JActionResult(result: JActionResult.Result.ERROR, message: message("rawDomain.helpers.update.headrelationship.startdate.not.null.error.label"))
+            }
+            if (newStartDate > LocalDate.now()) {
+                return new JActionResult(result: JActionResult.Result.ERROR, message: message("rawDomain.helpers.update.headrelationship.startdate.not.greater.today.error.label"))
+            }
+            if (newStartDate < headRelationship?.member?.dob) {
+                return new JActionResult(result: JActionResult.Result.ERROR, message: message("rawDomain.helpers.update.headrelationship.startdate.not.before.dob.error.label"))
+            }
+            if (newStartDate >= headRelationship.endDate) {
+                return new JActionResult(result: JActionResult.Result.ERROR, message: message("rawDomain.helpers.update.headrelationship.startdate.not.greater.enddate.error.label"))
+            }
+            if (previousHeadRelationship != null) {
+                if (newStartDate < previousHeadRelationship.endDate) {
+                    return new JActionResult(result: JActionResult.Result.ERROR, message: message("rawDomain.helpers.update.headrelationship.startdate.not.before.previous.enddate.error.label", [columnValue]))
+                }
+            }
+
+
+            headRelationship.startDate = newStartDate
+
+        } else if (columnName.equalsIgnoreCase(DataModelsService.COLUMN_END_TYPE)) {
+            def newEndType = HeadRelationshipEndType.getFrom(columnValue) //CHG,EXT,DTH,DHH*,CHH*
+
+            if (nextHeadRelationship != null) {
+
+                if (newEndType==HeadRelationshipEndType.NOT_APPLICABLE || newEndType==HeadRelationshipEndType.DEATH) {
+                    return new JActionResult(result: JActionResult.Result.ERROR, message: message("rawDomain.helpers.update.headrelationship.endtype.na.dth.exists.next.error.label", [columnValue]))
+                }
+                if (newEndType==HeadRelationshipEndType.INTERNAL_OUTMIGRATION && nextHeadRelationship.startType!=HeadRelationshipStartType.INTERNAL_INMIGRATION) {
+                    return new JActionResult(result: JActionResult.Result.ERROR, message: message("rawDomain.helpers.update.headrelationship.endtype.chg.next.startype.error.label"))
+                }
+                if (newEndType==HeadRelationshipEndType.EXTERNAL_OUTMIGRATION && nextHeadRelationship.startType!=HeadRelationshipStartType.EXTERNAL_INMIGRATION) {
+                    return new JActionResult(result: JActionResult.Result.ERROR, message: message("rawDomain.helpers.update.headrelationship.endtype.ext.next.startype.error.label"))
+                }
+                if ((newEndType==HeadRelationshipEndType.CHANGE_OF_HEAD_OF_HOUSEHOLD || newEndType==HeadRelationshipEndType.DEATH_OF_HEAD_OF_HOUSEHOLD) && nextHeadRelationship.startType!=HeadRelationshipStartType.NEW_HEAD_OF_HOUSEHOLD) {
+                    return new JActionResult(result: JActionResult.Result.ERROR, message: message("rawDomain.helpers.update.headrelationship.endtype.chh.dhh.next.startype.error.label", [columnValue]))
+                }
+
+            } else {
+                if (newEndType==HeadRelationshipEndType.INTERNAL_OUTMIGRATION) {
+                    //Cannot be CHG because there is no a new headrelationship with ENT
+                    return new JActionResult(result: JActionResult.Result.ERROR, message: message("rawDomain.helpers.update.headrelationship.endtype.chg.no.next.error.label"))
+                }
+                if (newEndType==HeadRelationshipEndType.CHANGE_OF_HEAD_OF_HOUSEHOLD || newEndType==HeadRelationshipEndType.DEATH_OF_HEAD_OF_HOUSEHOLD) {
+                    return new JActionResult(result: JActionResult.Result.ERROR, message: message("rawDomain.helpers.update.headrelationship.endtype.chh.dhh.no.next.error.label"))
+                }
+            }
+
+            headRelationship.endType = newEndType
+
+        } else if (columnName.equalsIgnoreCase(DataModelsService.COLUMN_END_DATE)) {
+            def newEndDate = StringUtil.toLocalDate(columnValue)
+
+            if (newEndDate == null && headRelationship.endType != HeadRelationshipEndType.NOT_APPLICABLE) {
+                return new JActionResult(result: JActionResult.Result.ERROR, message: message("rawDomain.helpers.update.headrelationship.enddate.null.endtype.not.na.error.label"))
+            }
+            if (newEndDate > LocalDate.now()) {
+                return new JActionResult(result: JActionResult.Result.ERROR, message: message("rawDomain.helpers.update.headrelationship.enddate.not.greater.today.error.label"))
+            }
+            if (newEndDate < headRelationship?.member?.dob) {
+                return new JActionResult(result: JActionResult.Result.ERROR, message: message("rawDomain.helpers.update.headrelationship.enddate.not.before.dob.error.label"))
+            }
+            if (newEndDate <= headRelationship.startDate) {
+                return new JActionResult(result: JActionResult.Result.ERROR, message: message("rawDomain.helpers.update.headrelationship.enddate.not.before.startdate.error.label"))
+            }
+            if (nextHeadRelationship != null) {
+                if (newEndDate > nextHeadRelationship.startDate) {
+                    return new JActionResult(result: JActionResult.Result.ERROR, message: message("rawDomain.helpers.update.headrelationship.enddate.not.greater.next.startdate.error.label", [columnValue]))
+                }
+            }
+
+            headRelationship.endDate = newEndDate
+        } else if (columnName.equalsIgnoreCase(DataModelsService.COLUMN_HEAD_RELATIONSHIP_TYPE)) {
+            def newRelationshipType = HeadRelationshipType.getFrom(columnValue)
+
+            //If nrt == HOH
+
+            headRelationship.relationshipType = newRelationshipType
+        }
+
+        headRelationship.save(flush: true)
+
+        return new JActionResult(result: JActionResult.Result.SUCCESS, message: message("rawDomain.helpers.update.record.updated.label"))
+    }
+
+    JActionResult updateMaritalRelationshipField(String id, String columnName, String columnValue) {
+
+        /*
+         Available editable columns: startStatus, startDate, endStatus, endDate, isPolygamic
+         */
+
+        //println "column: ${columnName}, value: ${columnValue}"
+
+        def maritalRelationship = MaritalRelationship.get(id)
+
+        if (maritalRelationship == null) {
+            return new JActionResult(result: JActionResult.Result.ERROR, message: message("rawDomain.helpers.update.record.notfound.label"))
+        }
+
+        if (columnName == null) {
+            return new JActionResult(result: JActionResult.Result.ERROR, message: message("rawDomain.helpers.update.record.column.not.available.label"))
+        }
+
+        def prevRelatMemberA = maritalRelationshipService.getPreviousRelationshipMemberA(maritalRelationship)
+        def prevRelatMemberB = maritalRelationshipService.getPreviousRelationshipMemberB(maritalRelationship)
+        def nextRelatMemberA = maritalRelationshipService.getNextRelationshipMemberA(maritalRelationship)
+        def nextRelatMemberB = maritalRelationshipService.getNextRelationshipMemberB(maritalRelationship)
+        def isPolygamicRelationship = maritalRelationshipService.isPolygamicRelationship(maritalRelationship)
+
+        if (columnName.equalsIgnoreCase(DataModelsService.COLUMN_START_STATUS)) {
+            def newStartStatus = MaritalStartStatus.getFrom(columnValue)
+
+            //MAR, LIV - Changing the startStatus doesnt create any issue
+
+            maritalRelationship.startStatus = newStartStatus
+
+        } else if (columnName.equalsIgnoreCase(DataModelsService.COLUMN_START_DATE)) {
+            def newStartDate = StringUtil.toLocalDate(columnValue)
+
+            //default date checks despite polygamic
+            if (newStartDate == null) {
+                return new JActionResult(result: JActionResult.Result.ERROR, message: message("rawDomain.helpers.update.maritalrelationship.startdate.not.null.error.label"))
+            }
+            if (newStartDate > LocalDate.now()) {
+                return new JActionResult(result: JActionResult.Result.ERROR, message: message("rawDomain.helpers.update.maritalrelationship.startdate.not.greater.today.error.label"))
+            }
+            if (newStartDate < maritalRelationship?.memberA?.dob || newStartDate < maritalRelationship?.memberB?.dob) {
+                return new JActionResult(result: JActionResult.Result.ERROR, message: message("rawDomain.helpers.update.maritalrelationship.startdate.not.before.dob.error.label"))
+            }
+            if (newStartDate >= maritalRelationship.endDate) {
+                return new JActionResult(result: JActionResult.Result.ERROR, message: message("rawDomain.helpers.update.maritalrelationship.startdate.not.greater.enddate.error.label"))
+            }
+
+            if (!isPolygamicRelationship) {
+                //must check dates of other relationships
+                if (prevRelatMemberA != null) {
+                    if (newStartDate < prevRelatMemberA.endDate) {
+                        return new JActionResult(result: JActionResult.Result.ERROR, message: message("rawDomain.helpers.update.maritalrelationship.startdate.not.before.previous.enddate.error.label", [columnValue, "A"]))
+                    }
+                }
+                if (prevRelatMemberB != null) {
+                    if (newStartDate < prevRelatMemberB.endDate) {
+                        return new JActionResult(result: JActionResult.Result.ERROR, message: message("rawDomain.helpers.update.maritalrelationship.startdate.not.before.previous.enddate.error.label", [columnValue, "B"]))
+                    }
+                }
+            }
+
+            maritalRelationship.startDate = newStartDate
+
+        } else if (columnName.equalsIgnoreCase(DataModelsService.COLUMN_END_STATUS)) {
+            def newEndStatus = MaritalEndStatus.getFrom(columnValue) //DIV,SEP,WID
+
+            //if not polygamic - check NA and next relationship
+            if (!isPolygamicRelationship) {
+                if (newEndStatus==MaritalEndStatus.NOT_APPLICABLE) {
+                    if (nextRelatMemberA != null && nextRelatMemberA.endStatus == MaritalEndStatus.NOT_APPLICABLE) { //member A is married in the next relationship record
+                        return new JActionResult(result: JActionResult.Result.ERROR, message: message("rawDomain.helpers.update.maritalrelationship.endstatus.na.exists.next.na.error.label", [columnValue, "A"]))
+                    }
+                    if (nextRelatMemberB != null && nextRelatMemberB.endStatus == MaritalEndStatus.NOT_APPLICABLE) { //member B is married in the next relationship record
+                        return new JActionResult(result: JActionResult.Result.ERROR, message: message("rawDomain.helpers.update.maritalrelationship.endstatus.na.exists.next.na.error.label", [columnValue, "B"]))
+                    }
+                }
+            }
+
+            //check deaths through WID despite of polygamic
+            if (newEndStatus == MaritalEndStatus.WIDOWED) {
+                def isDeadA = deathService.hasAnyDeathRecord(maritalRelationship.memberA)
+                def isDeadB = deathService.hasAnyDeathRecord(maritalRelationship.memberB)
+
+                if (!isDeadA && !isDeadB) {
+                    //cannot set WID because neither members are dead
+                    return new JActionResult(result: JActionResult.Result.ERROR, message: message("rawDomain.helpers.update.maritalrelationship.endstatus.wid.nodeath.error.label"))
+                }
+            }
+
+            maritalRelationship.endStatus = newEndStatus
+
+        } else if (columnName.equalsIgnoreCase(DataModelsService.COLUMN_END_DATE)) {
+            def newEndDate = StringUtil.toLocalDate(columnValue)
+
+            if (newEndDate == null && maritalRelationship.endStatus != MaritalEndStatus.NOT_APPLICABLE) {
+                return new JActionResult(result: JActionResult.Result.ERROR, message: message("rawDomain.helpers.update.maritalrelationship.enddate.null.endtype.not.na.error.label"))
+            }
+            if (newEndDate > LocalDate.now()) {
+                return new JActionResult(result: JActionResult.Result.ERROR, message: message("rawDomain.helpers.update.maritalrelationship.enddate.not.greater.today.error.label"))
+            }
+            if (newEndDate < maritalRelationship?.memberA?.dob || newEndDate < maritalRelationship?.memberB?.dob) {
+                return new JActionResult(result: JActionResult.Result.ERROR, message: message("rawDomain.helpers.update.maritalrelationship.enddate.not.before.dob.error.label"))
+            }
+            if (newEndDate <= maritalRelationship.startDate) {
+                return new JActionResult(result: JActionResult.Result.ERROR, message: message("rawDomain.helpers.update.maritalrelationship.enddate.not.before.startdate.error.label"))
+            }
+
+            if (!isPolygamicRelationship) {
+                if (nextRelatMemberA != null) {
+                    if (newEndDate > nextRelatMemberA.startDate) {
+                        return new JActionResult(result: JActionResult.Result.ERROR, message: message("rawDomain.helpers.update.maritalrelationship.enddate.not.greater.next.startdate.error.label", [columnValue, "A"]))
+                    }
+                }
+                if (nextRelatMemberB != null) {
+                    if (newEndDate > nextRelatMemberB.startDate) {
+                        return new JActionResult(result: JActionResult.Result.ERROR, message: message("rawDomain.helpers.update.maritalrelationship.enddate.not.greater.next.startdate.error.label", [columnValue, "B"]))
+                    }
+                }
+            }
+
+            maritalRelationship.endDate = newEndDate
+
+        } else if (columnName.equalsIgnoreCase(DataModelsService.COLUMN_IS_POLYGAMIC)) {
+            def newIsPolygamic = "true".equalsIgnoreCase(columnValue)
+
+            maritalRelationship.isPolygamic = newIsPolygamic
+        }
+
+        maritalRelationship.save(flush: true)
+
+        return new JActionResult(result: JActionResult.Result.SUCCESS, message: message("rawDomain.helpers.update.record.updated.label"))
+    }
+
     def toHeadRelationshipValues(HeadRelationship obj) {
         ['id':     obj.id,
          'code':     obj.memberCode,
@@ -361,5 +768,13 @@ class RawDomainService {
          'statusText':   generalUtilitiesService.getMessage(obj.status==null ? ValidatableStatus.ACTIVE.name : obj.status.name),
          'status':       getValidationStatus(obj.status)
         ]
+    }
+
+    private String message(String code) {
+        generalUtilitiesService.getMessage(code, code)
+    }
+
+    private String message(String code, List args) {
+        generalUtilitiesService.getMessage(code, args.toArray(), code)
     }
 }

@@ -50,6 +50,7 @@
 
     <dt:defaultResources />
     <tb:tabulatorResources />
+    <tb:luxonResources/>
 </head>
 <body>
 
@@ -117,6 +118,7 @@
         </fieldset>
 
         <g:set var="household_code" value="${this.rawPregnancyOutcome.visitCode?.replaceAll('-.+','')}" />
+        <g:set var="household_name" value="${member?.householdName}" />
         <g:set var="member_code" value="${this.rawPregnancyOutcome.motherCode}" />
         <g:set var="member_name" value="${member?.name}" />
         <g:set var="member_gender" value="${member?.gender}" />

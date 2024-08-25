@@ -2,15 +2,32 @@ package org.philimone.hds.explorer.server.model.enums.temporal
 
 enum ExternalInMigrationType {
 
-    ENTRY,
-    REENTRY
+    ENTRY   ("ENTRY", "externalInmigrationType.entry"),
+    REENTRY ("REENTRY", "externalInmigrationType.reentry")
 
     /* Finding Enum by code */
     private static final Map<String, ExternalInMigrationType> MAP = new HashMap<>()
 
+    String code
+    String name
+
+    ExternalInMigrationType(String code, String name) {
+        this.code = code
+        this.name = name
+    }
+
+    String getId(){
+        return code
+    }
+
+    @Override
+    String toString() {
+        return name
+    }
+
     static {
         for (ExternalInMigrationType e: values()) {
-            MAP.put(e.name(), e)
+            MAP.put(e.code, e)
         }
     }
 

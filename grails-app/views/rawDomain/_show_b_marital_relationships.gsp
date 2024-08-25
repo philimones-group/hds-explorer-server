@@ -9,6 +9,7 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
+
             <div class="modal-body">
                 <g:render template="b_marital_relationships"/>
             </div>

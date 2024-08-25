@@ -176,9 +176,9 @@ class EventSyncController {
 
         //event, uuid, column, code, creationDate, errorMessage
 
-        println(params)
+        //println(params)
         //println()
-        println "errorLog file $logReportFileInstance"
+        //println "errorLog file $logReportFileInstance"
         //println()
         //println "errorLog orderList $orderList"
 
@@ -232,9 +232,9 @@ class EventSyncController {
         }
 
 
-        println "errorLog recordsTotal $recordsTotal"
-        println "errorLog recordsFiltered $recordsFiltered"
-        println "errorLogs ${errorLogs.size()}"
+        //println "errorLog recordsTotal $recordsTotal"
+        //println "errorLog recordsFiltered $recordsFiltered"
+        //println "errorLogs ${errorLogs.size()}"
 
 
         def result = [draw: jqdtParams.draw, recordsTotal: recordsTotal, recordsFiltered: recordsFiltered, data: errorLogs]

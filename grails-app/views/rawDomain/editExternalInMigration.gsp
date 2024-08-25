@@ -50,6 +50,7 @@
 
     <dt:defaultResources />
     <tb:tabulatorResources/>
+    <tb:luxonResources/>
 </head>
 <body>
 
@@ -124,6 +125,7 @@
         </fieldset>
 
         <g:set var="household_code" value="${this.rawExternalInMigration.visitCode?.replaceAll('-.+','')}" />
+        <g:set var="household_name" value="${member?.householdName}" />
         <g:set var="member_code" value="${this.rawExternalInMigration.memberCode}" />
         <g:set var="member_name" value="${this.rawExternalInMigration?.memberName}" />
         <g:set var="member_gender" value="${this.rawExternalInMigration?.memberGender}" />

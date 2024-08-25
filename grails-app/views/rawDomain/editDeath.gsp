@@ -50,6 +50,7 @@
 
     <dt:defaultResources />
     <tb:tabulatorResources />
+    <tb:luxonResources/>
 </head>
 <body>
 

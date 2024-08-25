@@ -50,6 +50,7 @@
 
     <dt:defaultResources />
     <tb:tabulatorResources/>
+    <tb:luxonResources/>
 </head>
 <body>
 
@@ -122,6 +123,7 @@
         </fieldset>
 
         <g:set var="household_code" value="${this.rawMemberEnu.householdCode}" />
+        <g:set var="household_name" value="${member?.householdName}" />
         <g:set var="member_code" value="${rawMemberEnu?.code}" />
         <g:set var="member_name" value="${rawMemberEnu?.name}" />
         <g:set var="member_gender" value="${rawMemberEnu?.gender}" />

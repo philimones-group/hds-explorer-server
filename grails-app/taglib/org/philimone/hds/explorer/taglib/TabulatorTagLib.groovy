@@ -1,6 +1,6 @@
 package org.philimone.hds.explorer.taglib
 
-import grails.web.mapping.LinkGenerator
+
 import groovy.json.JsonSlurper
 import net.betainteractive.utilities.StringUtil
 
@@ -233,7 +233,7 @@ class TabulatorTagLib {
                     ceditoptstext = ", editorParams:{\n"
 
                     if (cedit.equalsIgnoreCase("list") || cedit.equalsIgnoreCase("select")) {
-                        def opts = dataModelsService.isRegisteredEnumType(ceditopts) ? dataModelsService.getEnumValues(ceditopts) : ceditopts
+                        def opts = dataModelsService.isRegisteredEnumType(ceditopts) ? dataModelsService.getEnumValuesJSON(ceditopts) : ceditopts
                         ceditoptstext += "                 values:${opts}\n"
                     }
 
