@@ -2387,7 +2387,7 @@ class SyncFilesService {
 
         element.appendChild(createAttributeNonNull(doc, "memberA_code", maritalRelationship.memberA_code));
         element.appendChild(createAttributeNonNull(doc, "memberB_code", maritalRelationship.memberB_code));
-        element.appendChild(createAttributeNonNull(doc, "isPolygamic", maritalRelationship.isPolygamic==null ? "false" : maritalRelationship.isPolygamic+""));
+        element.appendChild(createAttributeNonNull(doc, "isPolygamic", maritalRelationship.isPolygamic==null ? "false" : "${maritalRelationship.isPolygamic}"));
         element.appendChild(createAttributeNonNull(doc, "polygamicId", maritalRelationship.polygamicId==null ? "" : maritalRelationship.polygamicId));
         element.appendChild(createAttributeNonNull(doc, "startStatus", maritalRelationship.startStatus.code));
         element.appendChild(createAttributeNonNull(doc, "startDate", maritalRelationship.startDate));

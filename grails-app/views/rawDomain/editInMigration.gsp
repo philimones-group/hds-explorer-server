@@ -104,9 +104,9 @@
             <bi:field bean="${this.rawInMigration}" property="id"    label="rawInMigration.id.label" mode="show" />
             <bi:field bean="${this.rawInMigration}" property="visitCode"    label="rawInMigration.visitCode.label" mode="${mode}" />
             <bi:field bean="${this.rawInMigration}" property="memberCode"    label="rawInMigration.memberCode.label" mode="${mode}" />
-            <bi:field bean="${this.rawInMigration}" property="headRelationshipType"    label="rawInMigration.headRelationshipType.label" mode="${mode}" />
-            <bi:field bean="${this.rawInMigration}" property="migrationType"    label="rawInMigration.migrationType.label" mode="${mode}" />
-            <bi:field bean="${this.rawInMigration}" property="extMigrationType"    label="rawInMigration.extMigrationType.label" mode="${mode}" />
+            <bi:field bean="${this.rawInMigration}" property="headRelationshipType"    label="rawInMigration.headRelationshipType.label" mode="${mode}" options="HeadRelationshipType" />
+            <bi:field bean="${this.rawInMigration}" property="migrationType"    label="rawInMigration.migrationType.label" mode="${mode}" options="InMigrationType" />
+            <bi:field bean="${this.rawInMigration}" property="extMigrationType"    label="rawInMigration.extMigrationType.label" mode="${mode}" options="ExternalInMigrationType" nullable="true" />
             <bi:field bean="${this.rawInMigration}" property="originCode"    label="rawInMigration.originCode.label" mode="${mode}" />
             <bi:field bean="${this.rawInMigration}" property="originOther"    label="rawInMigration.originOther.label" mode="${mode}" />
             <bi:field bean="${this.rawInMigration}" property="destinationCode"    label="rawInMigration.destinationCode.label" mode="${mode}" />

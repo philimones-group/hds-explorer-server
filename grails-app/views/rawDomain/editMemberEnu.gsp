@@ -105,7 +105,7 @@
             <bi:field bean="${this.rawMemberEnu}" property="visitCode"    label="rawMemberEnu.visitCode.label" mode="${mode}" />
             <bi:field bean="${this.rawMemberEnu}" property="code"    label="rawMemberEnu.code.label" mode="${mode}" />
             <bi:field bean="${this.rawMemberEnu}" property="name"    label="rawMemberEnu.name.label" mode="${mode}" />
-            <bi:field bean="${this.rawMemberEnu}" property="gender"    label="rawMemberEnu.gender.label" mode="${mode}" />
+            <bi:field bean="${this.rawMemberEnu}" property="gender"    label="rawMemberEnu.gender.label" mode="${mode}" options="Gender" />
             <bi:dateField bean="${this.rawMemberEnu}" property="dob"    label="rawMemberEnu.dob.label" mode="${mode}" />
             <bi:field bean="${this.rawMemberEnu}" property="motherCode"    label="rawMemberEnu.motherCode.label" mode="${mode}" />
             <bi:field bean="${this.rawMemberEnu}" property="motherName"    label="rawMemberEnu.motherName.label" mode="${mode}" />
@@ -113,7 +113,7 @@
             <bi:field bean="${this.rawMemberEnu}" property="fatherName"    label="rawMemberEnu.fatherName.label" mode="${mode}" />
             <bi:field bean="${this.rawMemberEnu}" property="householdCode"    label="rawMemberEnu.householdCode.label" mode="${mode}" />
             <bi:field bean="${this.rawMemberEnu}" property="householdName"    label="rawMemberEnu.householdName.label" mode="${mode}" />
-            <bi:field bean="${this.rawMemberEnu}" property="headRelationshipType"    label="rawMemberEnu.headRelationshipType.label" mode="${mode}" />
+            <bi:field bean="${this.rawMemberEnu}" property="headRelationshipType"    label="rawMemberEnu.headRelationshipType.label" mode="${mode}" options="HeadRelationshipType" />
             <bi:dateField bean="${this.rawMemberEnu}" property="residencyStartDate"    label="rawMemberEnu.residencyStartDate.label" mode="${mode}" />
             <bi:field bean="${this.rawMemberEnu}" property="modules"    label="rawMemberEnu.modules.label" mode="${mode}" />
 

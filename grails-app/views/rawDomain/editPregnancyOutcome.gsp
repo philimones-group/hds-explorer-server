@@ -107,7 +107,7 @@
             <bi:field bean="${this.rawPregnancyOutcome}" property="fatherCode"    label="rawPregnancyOutcome.fatherCode.label" mode="${mode}" />
             <bi:field bean="${this.rawPregnancyOutcome}" property="numberOfOutcomes"    label="rawPregnancyOutcome.numberOfOutcomes.label" mode="${mode}" />
             <bi:dateField bean="${this.rawPregnancyOutcome}" property="outcomeDate"    label="rawPregnancyOutcome.outcomeDate.label" mode="${mode}" />
-            <bi:field bean="${this.rawPregnancyOutcome}" property="birthPlace"    label="rawPregnancyOutcome.birthPlace.label" mode="${mode}" />
+            <bi:field bean="${this.rawPregnancyOutcome}" property="birthPlace"    label="rawPregnancyOutcome.birthPlace.label" mode="${mode}" options="BirthPlace" nullable="true" />
             <bi:field bean="${this.rawPregnancyOutcome}" property="birthPlaceOther"    label="rawPregnancyOutcome.birthPlaceOther.label" mode="${mode}" />
             <bi:field bean="${this.rawPregnancyOutcome}" property="visitCode"    label="rawPregnancyOutcome.visitCode.label" mode="${mode}" />
             <bi:field bean="${this.rawPregnancyOutcome}" property="modules"    label="rawPregnancyOutcome.modules.label" mode="${mode}" />

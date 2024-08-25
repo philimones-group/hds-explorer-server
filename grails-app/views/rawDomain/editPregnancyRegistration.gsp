@@ -105,11 +105,11 @@
             <bi:field bean="${this.rawPregnancyRegistration}" property="eddKnown"    label="rawPregnancyRegistration.eddKnown.label" mode="${mode}" />
             <bi:field bean="${this.rawPregnancyRegistration}" property="hasPrenatalRecord"    label="rawPregnancyRegistration.hasPrenatalRecord.label" mode="${mode}" />
             <bi:dateField bean="${this.rawPregnancyRegistration}" property="eddDate"    label="rawPregnancyRegistration.eddDate.label" mode="${mode}" />
-            <bi:field bean="${this.rawPregnancyRegistration}" property="eddType"    label="rawPregnancyRegistration.eddType.label" mode="${mode}" />
+            <bi:field bean="${this.rawPregnancyRegistration}" property="eddType"    label="rawPregnancyRegistration.eddType.label" mode="${mode}" options="EstimatedDateOfDeliveryType" nullable="true" />
             <bi:field bean="${this.rawPregnancyRegistration}" property="lmpKnown"    label="rawPregnancyRegistration.lmpKnown.label" mode="${mode}" />
             <bi:dateField bean="${this.rawPregnancyRegistration}" property="lmpDate"    label="rawPregnancyRegistration.lmpDate.label" mode="${mode}" />
             <bi:dateField bean="${this.rawPregnancyRegistration}" property="expectedDeliveryDate"    label="rawPregnancyRegistration.expectedDeliveryDate.label" mode="${mode}" />
-            <bi:field bean="${this.rawPregnancyRegistration}" property="status"    label="rawPregnancyRegistration.status.label" mode="${mode}" />
+            <bi:field bean="${this.rawPregnancyRegistration}" property="status"    label="rawPregnancyRegistration.status.label" mode="${mode}" options="PregnancyStatus" />
             <bi:field bean="${this.rawPregnancyRegistration}" property="visitCode"    label="rawPregnancyRegistration.visitCode.label" mode="${mode}" />
 
             <bi:field bean="${this.rawPregnancyRegistration}" property="collectedDate"    label="rawPregnancyRegistration.collectedDate.label" mode="show" />

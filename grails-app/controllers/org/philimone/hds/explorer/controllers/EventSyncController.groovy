@@ -14,6 +14,7 @@ import java.time.LocalDateTime
 class EventSyncController {
 
     def eventSyncService
+    def dataModelsService
 
     def index = {
         //def logReports = LogReport.executeQuery("select lr from LogReport lr where lr.group.groupId=?0 order by lr.reportId", [LogGroupCode.GROUP_SYNC_DSS_DATA_FROM_CLIENT])
@@ -185,10 +186,12 @@ class EventSyncController {
 
         //FILTERS - if not null will filter
         def search_filter = (params_search != null && !"${params_search}".empty) ? "%${params_search}%" : null
+        def entitiesList = dataModelsService.findRawEntitiesLike("${params_search}")
+
         def filterer = {
             eq ('logReportFile', logReportFileInstance)
             or {
-                //if (search_filter) ilike 'entity.name', search_filter
+                if (search_filter) 'in'('entity', entitiesList)
                 if (search_filter) ilike 'uuid', search_filter
                 if (search_filter) ilike 'columnName', search_filter
                 if (search_filter) ilike 'message', search_filter

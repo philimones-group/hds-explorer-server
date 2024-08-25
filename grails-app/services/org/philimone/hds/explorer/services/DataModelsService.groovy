@@ -17,6 +17,7 @@ import org.philimone.hds.explorer.server.model.enums.NoVisitReason
 import org.philimone.hds.explorer.server.model.enums.PregnancyOutcomeType
 import org.philimone.hds.explorer.server.model.enums.PregnancyStatus
 import org.philimone.hds.explorer.server.model.enums.ProcessedStatus
+import org.philimone.hds.explorer.server.model.enums.RawEntity
 import org.philimone.hds.explorer.server.model.enums.RegionLevel
 import org.philimone.hds.explorer.server.model.enums.VisitLocationItem
 import org.philimone.hds.explorer.server.model.enums.VisitReason
@@ -131,6 +132,20 @@ class DataModelsService {
         }
 
         return objects
+    }
+
+    List<RawEntity> findRawEntitiesLike(String text) {
+        def list = []
+
+        if (text==null) return RawEntity.values().toList()
+
+        RawEntity.values().each { rawEntity ->
+            def msg = message(rawEntity.name)
+            if (msg?.toLowerCase()?.contains(text?.toLowerCase())){
+                list.add(rawEntity)
+            }
+        }
+        return list
     }
 
     private String message(String code) {

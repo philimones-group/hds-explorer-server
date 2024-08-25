@@ -109,9 +109,9 @@
             <bi:dateField bean="${this.rawExternalInMigration}" property="memberDob"    label="rawExternalInMigration.memberDob.label" mode="${mode}" />
             <bi:field bean="${this.rawExternalInMigration}" property="memberMotherCode"    label="rawExternalInMigration.memberMotherCode.label" mode="${mode}" />
             <bi:field bean="${this.rawExternalInMigration}" property="memberFatherCode"    label="rawExternalInMigration.memberFatherCode.label" mode="${mode}" />
-            <bi:field bean="${this.rawExternalInMigration}" property="headRelationshipType"    label="rawExternalInMigration.headRelationshipType.label" mode="${mode}" />
-            <bi:field bean="${this.rawExternalInMigration}" property="migrationType"    label="rawExternalInMigration.migrationType.label" mode="${mode}" />
-            <bi:field bean="${this.rawExternalInMigration}" property="extMigrationType"    label="rawExternalInMigration.extMigrationType.label" mode="${mode}" />
+            <bi:field bean="${this.rawExternalInMigration}" property="headRelationshipType"    label="rawExternalInMigration.headRelationshipType.label" mode="${mode}" options="HeadRelationshipType" />
+            <bi:field bean="${this.rawExternalInMigration}" property="migrationType"    label="rawExternalInMigration.migrationType.label" mode="${mode}" options="InMigrationType" />
+            <bi:field bean="${this.rawExternalInMigration}" property="extMigrationType"    label="rawExternalInMigration.extMigrationType.label" mode="${mode}" options="ExternalInMigrationType" />
             <bi:field bean="${this.rawExternalInMigration}" property="originCode"    label="rawExternalInMigration.originCode.label" mode="${mode}" />
             <bi:field bean="${this.rawExternalInMigration}" property="originOther"    label="rawExternalInMigration.originOther.label" mode="${mode}" />
             <bi:field bean="${this.rawExternalInMigration}" property="destinationCode"    label="rawExternalInMigration.destinationCode.label" mode="${mode}" />

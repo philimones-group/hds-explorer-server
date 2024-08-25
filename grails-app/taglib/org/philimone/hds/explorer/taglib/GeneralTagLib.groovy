@@ -10,6 +10,7 @@ class GeneralTagLib {
     static namespace = "bi"
 
     def generalUtilitiesService
+    def dataModelsService
 
     /*Menu*/
     def menuBar = {attrs, body ->
@@ -100,6 +101,8 @@ class GeneralTagLib {
         def propertyName = attrs.property
         def label = attrs.label
         def mode = attrs.mode //edit|show/display
+        def options = attrs.options
+        def nullable = attrs.nullable
         def valueMessage = attrs.valueMessage
 
         if ("show".equalsIgnoreCase("${mode}")){
@@ -123,7 +126,38 @@ class GeneralTagLib {
 
         } else {
             //edit mode
-            out << f.field(bean: beanInstance, property: propertyName, value: beanInstance?."${propertyName}")
+
+            if (options != null) { //its a select
+                if (dataModelsService.isRegisteredEnumType("${options}")) {
+                    def opts = dataModelsService.getEnumValuesArray("${options}")
+                    //println "${options}, ${opts}"
+
+                    def propertyValue = beanInstance."${propertyName}"
+                    def propertyDefaultLabel = StringUtil.removePascalCase(propertyName)
+                    def labelText = g.message(code: label, default: propertyDefaultLabel)
+
+                    out << "            <div class=\"fieldcontain required\">\n"
+                    out << "                <label for=\"${propertyName}\">\n"
+                    out << "                    ${labelText}\n"
+                    out << "                </label>\n"
+
+                    if (nullable != null && "true".equalsIgnoreCase("${nullable}")) {
+                        def emptyMap = [null: '']
+                        out << "                ${g.select(name: propertyName, value: propertyValue, optionKey:'id', optionValue:'name', from: opts, noSelection: emptyMap)} \n"
+                    } else {
+                        out << "                ${g.select(name: propertyName, value: propertyValue, optionKey:"id", optionValue:"name", from: opts)}\n"
+                    }
+
+
+                    out << "            </div>\n"
+
+                }
+            } else {
+                out << f.field(bean: beanInstance, property: propertyName, value: beanInstance?."${propertyName}")
+            }
+
+
+
         }
     }
 

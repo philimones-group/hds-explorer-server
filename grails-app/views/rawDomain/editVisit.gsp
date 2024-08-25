@@ -102,9 +102,11 @@
             <bi:field bean="${this.rawVisit}" property="householdCode"    label="rawVisit.householdCode.label" mode="${mode}" />
             <bi:field bean="${this.rawVisit}" property="roundNumber"    label="rawVisit.roundNumber.label" mode="${mode}" />
             <bi:dateField bean="${this.rawVisit}" property="visitDate"    label="rawVisit.visitDate.label" mode="${mode}" />
-            <bi:field bean="${this.rawVisit}" property="visitLocation"    label="rawVisit.visitLocation.label" mode="${mode}" />
+            <bi:field bean="${this.rawVisit}" property="visitLocation"    label="rawVisit.visitLocation.label" mode="${mode}" options="VisitLocationItem" nullable="true" />
             <bi:field bean="${this.rawVisit}" property="visitLocationOther"    label="rawVisit.visitLocationOther.label" mode="${mode}" />
-            <bi:field bean="${this.rawVisit}" property="visitReason"    label="rawVisit.visitReason.label" mode="${mode}" />
+            <bi:field bean="${this.rawVisit}" property="visitReason"    label="rawVisit.visitReason.label" mode="${mode}" options="VisitReason" nullable="true" />
+            <bi:field bean="${this.rawVisit}" property="visitPossible"    label="rawVisit.visitPossible.label" mode="${mode}" />
+            <bi:field bean="${this.rawVisit}" property="visitNotPossibleReason"    label="rawVisit.visitNotPossibleReason.label" mode="${mode}" options="NoVisitReason" nullable="true" />
             <bi:field bean="${this.rawVisit}" property="respondentResident"    label="rawVisit.respondentResident.label" mode="${mode}" />
             <bi:field bean="${this.rawVisit}" property="respondentRelationship"    label="rawVisit.respondentRelationship.label" mode="${mode}" />
             <bi:field bean="${this.rawVisit}" property="respondentCode"    label="rawVisit.respondentCode.label" mode="${mode}" />

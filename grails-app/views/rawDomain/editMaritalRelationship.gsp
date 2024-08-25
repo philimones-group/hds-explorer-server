@@ -106,9 +106,9 @@
             <bi:field bean="${this.rawMaritalRelationship}" property="memberB"    label="rawMaritalRelationship.memberB.label" mode="${mode}" />
             <bi:field bean="${this.rawMaritalRelationship}" property="isPolygamic"    label="rawMaritalRelationship.isPolygamic.label" mode="${mode}" />
             <bi:field bean="${this.rawMaritalRelationship}" property="polygamicId"    label="rawMaritalRelationship.polygamicId.label" mode="${mode}" />
-            <bi:field bean="${this.rawMaritalRelationship}" property="startStatus"    label="rawMaritalRelationship.startStatus.label" mode="${mode}" />
+            <bi:field bean="${this.rawMaritalRelationship}" property="startStatus"    label="rawMaritalRelationship.startStatus.label" mode="${mode}" options="MaritalStartStatus" />
             <bi:dateField bean="${this.rawMaritalRelationship}" property="startDate"    label="rawMaritalRelationship.startDate.label" mode="${mode}" />
-            <bi:field bean="${this.rawMaritalRelationship}" property="endStatus"    label="rawMaritalRelationship.endStatus.label" mode="${mode}" />
+            <bi:field bean="${this.rawMaritalRelationship}" property="endStatus"    label="rawMaritalRelationship.endStatus.label" mode="${mode}" options="MaritalEndStatus" nullable="true" />
             <bi:dateField bean="${this.rawMaritalRelationship}" property="endDate"    label="rawMaritalRelationship.endDate.label" mode="${mode}" />
 
             <bi:field bean="${this.rawMaritalRelationship}" property="collectedDate"    label="rawMaritalRelationship.collectedDate.label" mode="show" />

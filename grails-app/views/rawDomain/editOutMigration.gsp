@@ -104,7 +104,7 @@
             <bi:field bean="${this.rawOutMigration}" property="id"    label="rawOutMigration.id.label" mode="show" />
             <bi:field bean="${this.rawOutMigration}" property="visitCode"    label="rawOutMigration.visitCode.label" mode="${mode}" />
             <bi:field bean="${this.rawOutMigration}" property="memberCode"    label="rawOutMigration.memberCode.label" mode="${mode}" />
-            <bi:field bean="${this.rawOutMigration}" property="migrationType"    label="rawOutMigration.migrationType.label" mode="${mode}" />
+            <bi:field bean="${this.rawOutMigration}" property="migrationType"    label="rawOutMigration.migrationType.label" mode="${mode}" options="OutMigrationType" />
             <bi:field bean="${this.rawOutMigration}" property="originCode"    label="rawOutMigration.originCode.label" mode="${mode}" />
             <bi:field bean="${this.rawOutMigration}" property="destinationCode"    label="rawOutMigration.destinationCode.label" mode="${mode}" />
             <bi:field bean="${this.rawOutMigration}" property="destinationOther"    label="rawOutMigration.destinationOther.label" mode="${mode}" />
