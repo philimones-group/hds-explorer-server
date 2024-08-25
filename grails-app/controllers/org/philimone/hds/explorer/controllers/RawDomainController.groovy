@@ -23,6 +23,11 @@ class RawDomainController {
     def rawDomainService
     def generalUtilitiesService
 
+    def index = {
+        //the bootstrap button show dependency error submit - will call the index when clicked, just retrieve the id and edit domain
+        redirect action: "editDomain", params: [id: params.dependencyEventId]
+    }
+
     def editDomain = {
 
         //println "id=" + params.id
@@ -93,64 +98,104 @@ class RawDomainController {
         redirect(controller: "eventSync", action:"showSyncReportDetails", model:[id: errorLog?.logReportFile?.id])
     }
 
+    def editDependencyDomain = {
+        redirect action: "editDomain", params: [id: params.dependencyEventId]
+    }
+
     def editHousehold = {
-        respond RawHousehold.get(params.id), model: [mode: "edit", errorMessages: RawErrorLog.findByUuid(params.id)?.messages]
+        def errorMessages = RawErrorLog.findByUuid(params.id)?.messages
+        def dependencyCheckResult = rawDomainService.checkDependencyErrors(errorMessages)
+
+        respond RawHousehold.get(params.id), model: [mode: "edit", errorMessages: errorMessages, dependencyResult: dependencyCheckResult]
     }
 
     def editVisit = {
-        respond RawVisit.get(params.id), model: [mode: "edit", errorMessages: RawErrorLog.findByUuid(params.id)?.messages]
+        def errorMessages = RawErrorLog.findByUuid(params.id)?.messages
+        def dependencyCheckResult = rawDomainService.checkDependencyErrors(errorMessages)
+
+        respond RawVisit.get(params.id), model: [mode: "edit", errorMessages: errorMessages, dependencyResult: dependencyCheckResult]
     }
 
     def editIncompleteVisit = {
-        respond RawIncompleteVisit.get(params.id), model: [mode: "edit", errorMessages: RawErrorLog.findByUuid(params.id)?.messages]
+        def errorMessages = RawErrorLog.findByUuid(params.id)?.messages
+        def dependencyCheckResult = rawDomainService.checkDependencyErrors(errorMessages)
+
+        respond RawIncompleteVisit.get(params.id), model: [mode: "edit", errorMessages: errorMessages, dependencyResult: dependencyCheckResult]
     }
 
     def editMemberEnu = {
         def obj = RawMemberEnu.get(params.id)
         def member = rawDomainService.getBasicMember(obj?.code)
-        respond obj, model: [mode: "edit", errorMessages: RawErrorLog.findByUuid(params.id)?.messages, member: member]
+        def errorMessages = RawErrorLog.findByUuid(params.id)?.messages
+        def dependencyCheckResult = rawDomainService.checkDependencyErrors(errorMessages)
+
+        respond obj, model: [mode: "edit", errorMessages: errorMessages, dependencyResult: dependencyCheckResult, member: member]
     }
 
     def editDeath = {
         def obj = RawDeath.get(params.id)
         def member = rawDomainService.getBasicMember(obj?.memberCode)
-        respond obj, model: [mode: "edit", errorMessages: RawErrorLog.findByUuid(params.id)?.messages, member: member]
+        def errorMessages = RawErrorLog.findByUuid(params.id)?.messages
+        def dependencyCheckResult = rawDomainService.checkDependencyErrors(errorMessages)
+
+        respond obj, model: [mode: "edit", errorMessages: errorMessages, dependencyResult: dependencyCheckResult, member: member]
     }
 
     def editOutMigration = {
         def obj = RawOutMigration.get(params.id)
         def member = rawDomainService.getBasicMember(obj?.memberCode)
-        respond obj, model: [mode: "edit", errorMessages: RawErrorLog.findByUuid(params.id)?.messages, member: member]
+        def errorMessages = RawErrorLog.findByUuid(params.id)?.messages
+        def dependencyCheckResult = rawDomainService.checkDependencyErrors(errorMessages)
+
+        respond obj, model: [mode: "edit", errorMessages: errorMessages, dependencyResult: dependencyCheckResult, member: member]
     }
 
     def editInMigration = {
         def obj = RawInMigration.get(params.id)
         def member = rawDomainService.getBasicMember(obj?.memberCode)
-        respond obj, model: [mode: "edit", errorMessages: RawErrorLog.findByUuid(params.id)?.messages, member: member]
+        def errorMessages = RawErrorLog.findByUuid(params.id)?.messages
+        def dependencyCheckResult = rawDomainService.checkDependencyErrors(errorMessages)
+
+        respond obj, model: [mode: "edit", errorMessages: errorMessages, dependencyResult: dependencyCheckResult, member: member]
     }
 
     def editExternalInMigration = {
         def obj = RawExternalInMigration.get(params.id)
         def member = rawDomainService.getBasicMember(obj?.memberCode)
-        respond obj, model: [mode: "edit", errorMessages: RawErrorLog.findByUuid(params.id)?.messages, member: member]
+        def errorMessages = RawErrorLog.findByUuid(params.id)?.messages
+        def dependencyCheckResult = rawDomainService.checkDependencyErrors(errorMessages)
+
+        respond obj, model: [mode: "edit", errorMessages: errorMessages, dependencyResult: dependencyCheckResult, member: member]
     }
 
     def editPregnancyRegistration = {
-        respond RawPregnancyRegistration.get(params.id), model: [mode: "edit", errorMessages: RawErrorLog.findByUuid(params.id)?.messages]
+        def errorMessages = RawErrorLog.findByUuid(params.id)?.messages
+        def dependencyCheckResult = rawDomainService.checkDependencyErrors(errorMessages)
+
+        respond RawPregnancyRegistration.get(params.id), model: [mode: "edit", errorMessages: errorMessages, dependencyResult: dependencyCheckResult]
     }
 
     def editPregnancyOutcome = {
         def obj = RawPregnancyOutcome.get(params.id)
         def member = rawDomainService.getBasicMember(obj?.motherCode)
-        respond obj, model: [mode: "edit", errorMessages: RawErrorLog.findByUuid(params.id)?.messages, member: member]
+        def errorMessages = RawErrorLog.findByUuid(params.id)?.messages
+        def dependencyCheckResult = rawDomainService.checkDependencyErrors(errorMessages)
+
+        respond obj, model: [mode: "edit", errorMessages: errorMessages, dependencyResult: dependencyCheckResult, member: member]
     }
 
     def editMaritalRelationship = {
-        respond RawMaritalRelationship.get(params.id), model: [mode: "edit", errorMessages: RawErrorLog.findByUuid(params.id)?.messages]
+        def errorMessages = RawErrorLog.findByUuid(params.id)?.messages
+        def dependencyCheckResult = rawDomainService.checkDependencyErrors(errorMessages)
+
+        respond RawMaritalRelationship.get(params.id), model: [mode: "edit", errorMessages: errorMessages, dependencyResult: dependencyCheckResult]
     }
 
     def editChangeHead = {
-        respond RawChangeHead.get(params.id), model: [mode: "edit", errorMessages: RawErrorLog.findByUuid(params.id)?.messages]
+        def errorMessages = RawErrorLog.findByUuid(params.id)?.messages
+        def dependencyCheckResult = rawDomainService.checkDependencyErrors(errorMessages)
+
+        respond RawChangeHead.get(params.id), model: [mode: "edit", errorMessages: errorMessages, dependencyResult: dependencyCheckResult]
     }
 
     def updateHousehold = {

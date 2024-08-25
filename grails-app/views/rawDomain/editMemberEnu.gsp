@@ -140,7 +140,16 @@
                     <g:message code="rawDomain.helpers.button.household.residents.label" />
                 </button>
 
+                <g:if test="${dependencyResult.hasDependencyError==true}">
+                    <g:hiddenField name="dependencyEventId" value="${dependencyResult.dependencyEventId}" />
+
+                    <button type="submit" class="btn btn-primary" data-toggle="button" >
+                        <g:message code="rawDomain.helpers.button.show.dependency.label" />
+                    </button>
+                </g:if>
+
                 <g:render template="show_household_residents"/>
+
             </g:if>
             <g:else>
                 <g:link class="edit" action="editMemberEnu" id="${this.rawMemberEnu.id}" ><g:message code="rawDomain.edit.label" /></g:link>

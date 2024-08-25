@@ -20,6 +20,7 @@ import org.philimone.hds.explorer.server.model.main.Member
 import org.philimone.hds.explorer.server.model.main.PartiallyDisabled
 import org.philimone.hds.explorer.server.model.main.Residency
 import org.philimone.hds.explorer.server.model.main.Visit
+import org.philimone.hds.explorer.server.model.main.collect.raw.RawMessage
 
 import java.time.LocalDate
 
@@ -776,5 +777,24 @@ class RawDomainService {
 
     private String message(String code, List args) {
         generalUtilitiesService.getMessage(code, args.toArray(), code)
+    }
+
+    RawDependencyCheckResult checkDependencyErrors(List<RawMessage> rawMessages) {
+
+        for (def rmsg : rawMessages) {
+            if (rmsg?.text?.matches("The event with .+ will be skipped because a previous event .+ has errors")){
+                def id = rmsg.text.replaceAll(".+\\)=>\\[id=", "")
+                id = id.replaceAll("\\].+", "")
+
+                return new RawDependencyCheckResult(hasDependencyError: true, dependencyEventId: id)
+            }
+        }
+
+        return new RawDependencyCheckResult(hasDependencyError: false)
+    }
+
+    class RawDependencyCheckResult {
+        boolean hasDependencyError = false
+        String dependencyEventId = ""
     }
 }

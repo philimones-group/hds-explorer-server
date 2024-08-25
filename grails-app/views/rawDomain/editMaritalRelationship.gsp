@@ -134,6 +134,14 @@
                     <g:message code="rawDomain.helpers.button.show.b.relationships.label" />
                 </button>
 
+                <g:if test="${dependencyResult.hasDependencyError==true}">
+                    <g:hiddenField name="dependencyEventId" value="${dependencyResult.dependencyEventId}" />
+
+                    <button type="submit" class="btn btn-primary" data-toggle="button" >
+                        <g:message code="rawDomain.helpers.button.show.dependency.label" />
+                    </button>
+                </g:if>
+
                 <g:render template="show_a_marital_relationships"/>
 
                 <g:render template="show_b_marital_relationships"/>
