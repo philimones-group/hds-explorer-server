@@ -179,7 +179,18 @@ class HeadRelationshipService {
     HeadRelationship getPreviousHeadRelationship(HeadRelationship headRelationship) {
         //get hr of member, that are not invalidated
         def headRelationships = HeadRelationship.executeQuery("select r from HeadRelationship r where r.member=?0 and r.startDate < ?1 and (r.status <> ?2 or r.status is null) order by r.startDate desc", [headRelationship.member, headRelationship.startDate, ValidatableStatus.TEMPORARILY_INACTIVE], [offset:0, max:1]) // limit 1
-        println "hrs = ${headRelationships.size()}, startdate=${headRelationship.startDate}"
+
+        if (headRelationships != null && headRelationships.size()>0) {
+            return headRelationships.first()
+        }
+
+        return null
+    }
+
+    HeadRelationship getNextHeadRelationship(HeadRelationship headRelationship) {
+        //get hr of member, that are not invalidated
+        def headRelationships = HeadRelationship.executeQuery("select r from HeadRelationship r where r.member=?0 and r.startDate > ?1 and (r.status <> ?2 or r.status is null) order by r.startDate asc", [headRelationship.member, headRelationship.startDate, ValidatableStatus.TEMPORARILY_INACTIVE], [offset:0, max:1]) // limit 1
+
         if (headRelationships != null && headRelationships.size()>0) {
             return headRelationships.first()
         }

@@ -38,6 +38,10 @@ class DeathService {
         return Death.countByMember(member) > 0
     }
 
+    boolean hasAnyDeathRecord(Member member) {
+        return Death.countByMember(member) > 0 || Residency.countByMemberAndEndType(member, ResidencyEndType.DEATH) > 0;
+    }
+
     Death getDeath(String memberCode){
         def member = memberService.getMember(memberCode)
 

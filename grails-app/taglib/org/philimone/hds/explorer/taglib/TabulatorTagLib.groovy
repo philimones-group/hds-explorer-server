@@ -9,10 +9,15 @@ class TabulatorTagLib {
     static namespace = "tb"
 
     def generalUtilitiesService
+    def dataModelsService
 
     def tabulatorResources = {
         out << "        " + asset.stylesheet(src: "tabulator_site.min.css") + "\n"
         out << "        " + asset.javascript(src: "tabulator.min.js") + "\n"
+    }
+
+    def luxonResources = {
+        out << "        " + asset.javascript(src: "luxon.min.js") + "\n"
     }
 
     def tabulator = { attrs, body ->
@@ -87,11 +92,11 @@ class TabulatorTagLib {
 
             //create menu for adding and deleting rows
             out << "        var toast = \$(\"#${attrs.toastid}\");\n"
-            out << "        var toastIconInfo = \$(\"#toastIconInfo\");\n"
-            out << "        var toastIconError = \$(\"#toastIconError\");\n"
-            out << "        var toastTitleInfo = \$(\"#dt_toast_info_title\");\n"
-            out << "        var toastTitleError = \$(\"#dt_toast_erro_title\");\n"
-            out << "        var toastMessage = \$(\"#dt_toast_message\");\n"
+            out << "        var toastIconInfo = \$(\"#${attrs.toastid}_icon_info\");\n"
+            out << "        var toastIconError = \$(\"#${attrs.toastid}_icon_error\");\n"
+            out << "        var toastTitleInfo = \$(\"#${attrs.toastid}_info_title\");\n"
+            out << "        var toastTitleError = \$(\"#${attrs.toastid}_erro_title\");\n"
+            out << "        var toastMessage = \$(\"#${attrs.toastid}_message\");\n"
 
             if (hasPopupMenu && !menusJsonText.empty) {
 
@@ -104,9 +109,9 @@ class TabulatorTagLib {
                 menusJson.eachWithIndex { obj, i ->
                     def mlabel = obj.label
                     def maction = obj.action
-                    def mtype = obj.type
+                    def mtype = obj.type as String
                     def mdisabledtext = obj.disabled != null ? "disabled:${obj.disabled},\n" : ""
-                    def classMenuItem = mtype.equals("add") ? "xsave" : (mtype.equals("remove") || mtype.equals("delete")) ? "xdelete" : "xedit"
+                    def classMenuItem = mtype?.equalsIgnoreCase("add") ? "xsave" : (mtype?.equalsIgnoreCase("remove") || mtype?.equalsIgnoreCase("delete")) ? "xdelete" : mtype?.equalsIgnoreCase("update") ? "xedit" : ""
 
                     if (i > 0) { //add separator after the first item is added
                         out << "              {\n"
@@ -150,11 +155,11 @@ class TabulatorTagLib {
                     out << "                                 toastIconError.hide();\n"
                     out << "                                 toastTitleError.hide();\n"
                     //action
-                    if (mtype.equals("add")) {
+                    if (mtype?.equalsIgnoreCase("add")) {
                         out << "                                 table.addRow(jdata); //add new row\n"
-                    } else if (mtype.equals("remove") || mtype.equals("delete")) {
+                    } else if (mtype?.equalsIgnoreCase("remove") || mtype?.equalsIgnoreCase("delete")) {
                         out << "                                 row.delete();\n"
-                    } else if (mtype.equals("update")) {
+                    } else if (mtype?.equalsIgnoreCase("update")) {
                         //I would like to update the table with a value returned by json
                         out << "                                 table.updateData(jdata); //update the row\n"
                     } else {
@@ -203,12 +208,14 @@ class TabulatorTagLib {
                 def cname = obj.name
                 def clabel = obj.label
                 def cedit = obj.editor != null ? "${obj.editor}" : null
+                def ceditopts = obj.editorOptions != null ? "${obj.editorOptions}" : null
                 def hzalign = obj.hzalign != null ? "${obj.hzalign}" : null
                 def vtalign = obj.vtalign != null ? "${obj.vtalign}" : null
                 def display = obj.display != null ? "${obj.display}" : null
                 def formatter = obj.formatter != null ? "${obj.formatter}" : null
 
-                def cedittext = StringUtil.isBlank(cedit) ? "" : ", ${cedit}"
+                def cedittext = StringUtil.isBlank(cedit) ? "" : ", editor:'${cedit}'"
+                def ceditoptstext = ""
                 def hzaligntext = StringUtil.isBlank(hzalign) ? "" : ", ${hzalign}"
                 def vtaligntext = StringUtil.isBlank(vtalign) ? "" : ", ${vtalign}"
                 def displaytext = ""
@@ -221,7 +228,24 @@ class TabulatorTagLib {
                     }
                 }
 
-                out << "                 {title:'${clabel}', field:'${cname}'${cedittext}${hzaligntext}${vtaligntext}, headerHozAlign:'center'${formattertext}${displaytext}}${i+1==columnsJson.size() ? '' : ','}\n"
+                if (!StringUtil.isBlank(cedit)) {
+
+                    ceditoptstext = ", editorParams:{\n"
+
+                    if (cedit.equalsIgnoreCase("list") || cedit.equalsIgnoreCase("select")) {
+                        def opts = dataModelsService.isRegisteredEnumType(ceditopts) ? dataModelsService.getEnumValues(ceditopts) : ceditopts
+                        ceditoptstext += "                 values:${opts}\n"
+                    }
+
+                    if (cedit.equalsIgnoreCase("date")) {
+                        ceditoptstext += "                 format:\"yyyy-MM-dd\""
+                    }
+
+                    ceditoptstext += "                 }\n"
+
+                }
+
+                out << "                 {title:'${clabel}', field:'${cname}'${cedittext}${hzaligntext}${vtaligntext}, headerHozAlign:'center'${formattertext}${displaytext}${ceditoptstext}}${i+1==columnsJson.size() ? '' : ','}\n"
 
                 // Do something with the values
                 //println "Name: $cname, Label: $clabel"
@@ -303,6 +327,7 @@ class TabulatorTagLib {
         def name = attrs.name
         def label = attrs.label
         def editor = attrs.editor
+        def editorOptions = attrs.editorOptions
         def hzalign = attrs.hzalign
         def vtalign = attrs.vtalign
         def display = attrs.display //custom render method for the object
@@ -310,40 +335,49 @@ class TabulatorTagLib {
         //vertAlign
         def hzaligntext = "hozAlign:" + (hzalign != null ? "'${hzalign}'" : "'center'")
         def vtaligntext = vtalign != null ? "vertAlign:'${vtalign}'" : ""
-        def editortext = editor != null ? "editor:'${editor}'" : ""
+        def editortext = editor != null ? "${editor}" : ""
+        def editoropstext = editorOptions != null ? ", \"editorOptions\": \"${editorOptions}\"" : ""
         def displaytext = display != null ? "${display}" : ""
         def formattertext = formatter != null ? ", \"formatter\": \"${formatter}\"" : ""
 
         //, hozAlign:"center"
 
-        out << "{\"name\": \"${name}\", \"label\": \"${label}\", \"editor\": \"${editortext}\", \"hzalign\": \"${hzaligntext}\", \"vtalign\": \"${vtaligntext}\", \"display\": \"${displaytext}\"${formattertext}},"
+        out << "{\"name\": \"${name}\", \"label\": \"${label}\", \"editor\": \"${editortext}\", \"hzalign\": \"${hzaligntext}\", \"vtalign\": \"${vtaligntext}\", \"display\": \"${displaytext}\"${formattertext}${editoropstext}},"
     }
 
     def toast = {attrs, body ->
         def toastid = attrs.id
         def title = attrs.title
         def message = attrs.message
+        def position = attrs.position
         def infoUrl = g.createLinkTo(dir: 'images', file: 'information.png')
         def erroUrl = g.createLinkTo(dir: 'images', file: 'exclamation.png')
         def infotitle = generalUtilitiesService.getMessageWeb("tabulator.info.title.label")
         def errotitle = generalUtilitiesService.getMessageWeb("tabulator.error.title.label")
 
-        out << "                <div class=\"position-fixed top-0 right-0 p-4\" style=\"z-index: 9999995; right: 30px; position: relative;\">\n" +
-                "                    <div id=\"${toastid}\" class=\"toast hide\" style=\"background-color: #fff; opacity: 1;\" role=\"alert\" aria-live=\"assertive\" aria-atomic=\"true\" data-delay=\"6000\">\n" +
+        if (position != null && "top_center".equalsIgnoreCase("${position}")) {
+            out << "                <div class=\"position-fixed p-0\" style=\"z-index: 9999995; left: 50%; transform: translateX(-50%); position: relative;\">\n"
+        } else {
+            //top right
+            out << "                <div class=\"position-fixed p-4\" style=\"z-index: 9999995; right: 30px; position: relative;\">\n"
+        }
+
+        out <<  "                    <div id=\"${toastid}\" class=\"toast hide\" style=\"background-color: #fff; opacity: 1;\" role=\"alert\" aria-live=\"assertive\" aria-atomic=\"true\" data-delay=\"6000\">\n" +
                 "                        <div class=\"toast-header\">\n" +
-                "                            <img id=\"toastIconInfo\" src=\"${infoUrl}\" class=\"rounded mr-2\" />\n" +
-                "                            <img id=\"toastIconError\" src=\"${erroUrl}\" class=\"rounded mr-2\" />\n" +
-                "                            <strong id=\"dt_toast_info_title\" class=\"mr-auto\">${infotitle}</strong>\n" +
-                "                            <strong id=\"dt_toast_erro_title\" class=\"mr-auto\">${errotitle}</strong>\n" +
+                "                            <img id=\"${toastid}_icon_info\" src=\"${infoUrl}\" class=\"rounded mr-2\" />\n" +
+                "                            <img id=\"${toastid}_icon_error\" src=\"${erroUrl}\" class=\"rounded mr-2\" />\n" +
+                "                            <strong id=\"${toastid}_info_title\" class=\"mr-auto\">${infotitle}</strong>\n" +
+                "                            <strong id=\"${toastid}_erro_title\" class=\"mr-auto\">${errotitle}</strong>\n" +
                 "                            <small></small>\n" +
                 "                            <button type=\"button\" class=\"ml-2 mb-1 close\" data-dismiss=\"toast\" aria-label=\"Close\">\n" +
                 "                                <span aria-hidden=\"true\">&times;</span>\n" +
                 "                            </button>\n" +
                 "                        </div>\n" +
                 "                        <div class=\"toast-body\">\n" +
-                "                            <b id=\"dt_toast_message\">${message}</b>\n" +
+                "                            <b id=\"${toastid}_message\">${message}</b>\n" +
                 "                        </div>\n" +
                 "                    </div>\n" +
                 "                </div>"
     }
+
 }

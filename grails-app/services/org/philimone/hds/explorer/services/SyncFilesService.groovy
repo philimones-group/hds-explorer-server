@@ -1528,7 +1528,7 @@ class SyncFilesService {
 
         try {
             //Ler todos users
-            def resultMaritalRelationships = MaritalRelationship.executeQuery("select m.id from MaritalRelationship m where r.status <> ?1 or r.status is null", [ValidatableStatus.TEMPORARILY_INACTIVE])
+            def resultMaritalRelationships = MaritalRelationship.executeQuery("select m.id from MaritalRelationship m where m.status <> ?0 or m.status is null", [ValidatableStatus.TEMPORARILY_INACTIVE])
 
             DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder docBuilder = docFactory.newDocumentBuilder();

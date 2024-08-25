@@ -95,6 +95,76 @@ class MaritalRelationshipService {
         return list
     }
 
+
+    boolean isPolygamicRelationship(MaritalRelationship maritalRelationship) {
+        return maritalRelationship.isPolygamic || MaritalRelationship.countByPolygamicId(maritalRelationship.collectedId)>0
+    }
+
+    boolean isMostRecentMaritalRelationship(MaritalRelationship maritalRelationship){
+        def mr = getCurrentMaritalRelationship(maritalRelationship.memberA, maritalRelationship.memberB)
+        return maritalRelationship.id.equals(mr?.id)
+    }
+
+    MaritalRelationship getPreviousRelationshipMemberA(MaritalRelationship maritalRelationship){
+        return getPreviousRelationshipMember(maritalRelationship.memberA, maritalRelationship.startDate)
+    }
+
+    MaritalRelationship getPreviousRelationshipMemberB(MaritalRelationship maritalRelationship){
+        return getPreviousRelationshipMember(maritalRelationship.memberB, maritalRelationship.startDate)
+    }
+
+    MaritalRelationship getNextRelationshipMemberA(MaritalRelationship maritalRelationship){
+        return getNextRelationshipMember(maritalRelationship.memberA, maritalRelationship.startDate)
+    }
+
+    MaritalRelationship getNextRelationshipMemberB(MaritalRelationship maritalRelationship){
+        return getNextRelationshipMember(maritalRelationship.memberB, maritalRelationship.startDate)
+    }
+
+    private MaritalRelationship getPreviousRelationshipMember(Member member, LocalDate maxStartDate){
+        def startDate = maxStartDate
+
+        def maritalRelationshipsA = MaritalRelationship.executeQuery("select r from MaritalRelationship r where r.memberA.id=?0 and r.startDate < ?1 and (r.status <> ?2 or r.status is null) order by r.startDate desc", [member.id, startDate, ValidatableStatus.TEMPORARILY_INACTIVE], [offset:0, max:1]) // limit 1
+        def maritalRelationshipsB = MaritalRelationship.executeQuery("select r from MaritalRelationship r where r.memberB.id=?0 and r.startDate < ?1 and (r.status <> ?2 or r.status is null) order by r.startDate desc", [member.id, startDate, ValidatableStatus.TEMPORARILY_INACTIVE], [offset:0, max:1]) // limit 1
+
+        MaritalRelationship relationA = (maritalRelationshipsA != null && maritalRelationshipsA.size() > 0) ? maritalRelationshipsA.first() as MaritalRelationship : null
+        MaritalRelationship relationB = (maritalRelationshipsB != null && maritalRelationshipsB.size() > 0) ? maritalRelationshipsB.first() as MaritalRelationship : null
+
+        if (relationA != null && relationB == null) return relationA
+        if (relationA == null && relationB != null) return relationB
+        if (relationA != null && relationB != null) {
+            if (relationA.startDate > relationB.startDate) {
+                return relationA
+            } else {
+                return relationB
+            }
+        }
+
+        return null
+    }
+
+    private MaritalRelationship getNextRelationshipMember(Member member, LocalDate minStartDate){
+        def startDate = minStartDate
+
+        def maritalRelationshipsA = MaritalRelationship.executeQuery("select r from MaritalRelationship r where r.memberA.id=?0 and r.startDate > ?1 and (r.status <> ?2 or r.status is null) order by r.startDate asc", [member.id, startDate, ValidatableStatus.TEMPORARILY_INACTIVE], [offset:0, max:1]) // limit 1
+        def maritalRelationshipsB = MaritalRelationship.executeQuery("select r from MaritalRelationship r where r.memberB.id=?0 and r.startDate > ?1 and (r.status <> ?2 or r.status is null) order by r.startDate asc", [member.id, startDate, ValidatableStatus.TEMPORARILY_INACTIVE], [offset:0, max:1]) // limit 1
+
+        MaritalRelationship relationA = (maritalRelationshipsA != null && maritalRelationshipsA.size() > 0) ? maritalRelationshipsA.first() as MaritalRelationship : null
+        MaritalRelationship relationB = (maritalRelationshipsB != null && maritalRelationshipsB.size() > 0) ? maritalRelationshipsB.first() as MaritalRelationship : null
+
+        if (relationA != null && relationB == null) return relationA
+        if (relationA == null && relationB != null) return relationB
+        if (relationA != null && relationB != null) {
+            if (relationA.startDate > relationB.startDate) {
+                return relationA
+            } else {
+                return relationB
+            }
+        }
+
+        return null
+    }
+
     /*
     RawMaritalRelationship getCurrentMaritalRelationshipAsRaw(Member memberA, Member memberB) {
         def maritalRelationship = getCurrentMaritalRelationship(memberA, memberB)
@@ -131,17 +201,6 @@ class MaritalRelationshipService {
         }
 
         return MaritalStatus.SINGLE
-    }
-
-    /*
-    boolean isMainOfPolygamicRawRelationship(RawMaritalRelationship maritalRelationship) {
-        return RawMaritalRelationship.countByPolygamicId(maritalRelationship.collectedId)>0
-    }
-    */
-
-    boolean isMostRecentMaritalRelationship(MaritalRelationship maritalRelationship){
-        def mr = getCurrentMaritalRelationship(maritalRelationship.memberA, maritalRelationship.memberB)
-        return maritalRelationship.id.equals(mr?.id)
     }
 
     RawMaritalRelationship convertToRaw(MaritalRelationship maritalRelationship){
@@ -181,6 +240,13 @@ class MaritalRelationshipService {
         memberA.save(flush: true)
         memberB.save(flush: true)
 
+        if (maritalRelationship.isPolygamic) {
+            def mainRelationship = MaritalRelationship.findByCollectedId(maritalRelationship.polygamicId) //polygamicId is the collectedId
+            if (mainRelationship != null) {
+                mainRelationship.isPolygamic = true
+                mainRelationship.save(flush: true)
+            }
+        }
 
         //get errors if they occur and send with the success report
         if (memberA.hasErrors()) {
