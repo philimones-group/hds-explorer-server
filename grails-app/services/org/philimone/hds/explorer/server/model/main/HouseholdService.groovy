@@ -166,7 +166,7 @@ class HouseholdService {
             errors << errorMessageService.getRawMessage(RawEntity.HOUSEHOLD, "validation.field.reference.error", ["Region", "regionCode", household.regionCode], ["regionCode"])
         }
         //C4. Check Code Prefix Reference existence (Region Existence)
-        if (!isBlankHouseholdCode && !regionService.prefixExists(household.householdCode)){
+        if (!isBlankHouseholdCode && !household.householdCode?.startsWith(household.regionCode)) { // !regionService.prefixExists(household.householdCode)){
             errors << errorMessageService.getRawMessage(RawEntity.HOUSEHOLD, "validation.field.pattern.prefix.region.reference.error", [household.householdCode], ["householdCode"])
         }
         //C5. Check User existence

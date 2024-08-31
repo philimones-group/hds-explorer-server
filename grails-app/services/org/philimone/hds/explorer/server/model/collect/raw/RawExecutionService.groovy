@@ -46,7 +46,7 @@ class RawExecutionService {
 
         if (result.status == RawExecutionResult.Status.ERROR){
             //create errorLog
-            def errorLog = new RawErrorLog(uuid: rawDomainInstance.id, entity: result.entity, columnName: "regionCode", code: rawDomainInstance.regionCode)
+            def errorLog = new RawErrorLog(uuid: rawDomainInstance.id, entity: result.entity, collectedDate: rawDomainInstance.collectedDate, columnName: "regionCode", code: rawDomainInstance.regionCode)
             errorLog.uuid = rawDomainInstance.id
             errorLog.logReportFile = LogReportFile.findById(logReportFileId)
             errorLog.setMessages(result.errorMessages)
@@ -67,7 +67,7 @@ class RawExecutionService {
 
         if (result.status == RawExecutionResult.Status.ERROR){
             //create errorLog
-            def errorLog = new RawErrorLog(uuid: rawDomainInstance.id, entity: result.entity, columnName: "householdCode", code: rawDomainInstance.householdCode)
+            def errorLog = new RawErrorLog(uuid: rawDomainInstance.id, entity: result.entity, collectedDate: rawDomainInstance.collectedDate, columnName: "householdCode", code: rawDomainInstance.householdCode)
             errorLog.uuid = rawDomainInstance.id
             errorLog.logReportFile = LogReportFile.findById(logReportFileId)
             errorLog.setMessages(result.errorMessages)
@@ -88,7 +88,7 @@ class RawExecutionService {
 
         if (result.status == RawExecutionResult.Status.ERROR){
             //create errorLog
-            def errorLog = new RawErrorLog(uuid: rawDomainInstance.id, entity: result.entity, columnName: "code", code: rawDomainInstance.code)
+            def errorLog = new RawErrorLog(uuid: rawDomainInstance.id, entity: result.entity, collectedDate: rawDomainInstance.collectedDate, columnName: "code", code: rawDomainInstance.code)
             errorLog.uuid = rawDomainInstance.id
             errorLog.logReportFile = LogReportFile.findById(logReportFileId)
             errorLog.setMessages(result.errorMessages)
@@ -109,7 +109,7 @@ class RawExecutionService {
 
         if (result.status == RawExecutionResult.Status.ERROR){
             //create errorLog
-            def errorLog = new RawErrorLog(uuid: rawDomainInstance.id, entity: result.entity, columnName: "memberCode", code: rawDomainInstance.memberCode)
+            def errorLog = new RawErrorLog(uuid: rawDomainInstance.id, entity: result.entity, collectedDate: rawDomainInstance.collectedDate, columnName: "memberCode", code: rawDomainInstance.memberCode)
             errorLog.uuid = rawDomainInstance.id
             errorLog.logReportFile = LogReportFile.findById(logReportFileId)
             errorLog.setMessages(result.errorMessages)
@@ -130,7 +130,7 @@ class RawExecutionService {
 
         if (result.status == RawExecutionResult.Status.ERROR){
             //create errorLog
-            def errorLog = new RawErrorLog(uuid: rawDomainInstance.id, entity: result.entity, columnName: "code", code: rawDomainInstance.code)
+            def errorLog = new RawErrorLog(uuid: rawDomainInstance.id, entity: result.entity, collectedDate: rawDomainInstance.collectedDate, columnName: "code", code: rawDomainInstance.code)
             errorLog.uuid = rawDomainInstance.id
             errorLog.logReportFile = LogReportFile.findById(logReportFileId)
             errorLog.setMessages(result.errorMessages)
@@ -153,7 +153,7 @@ class RawExecutionService {
 
         if (result.status == RawExecutionResult.Status.ERROR){
             //create errorLog
-            def errorLog = new RawErrorLog(uuid: rawDomainInstance.id, entity: result.entity, columnName: "code", code: rawDomainInstance.code)
+            def errorLog = new RawErrorLog(uuid: rawDomainInstance.id, entity: result.entity, collectedDate: rawDomainInstance.collectedDate, columnName: "code", code: rawDomainInstance.code)
             errorLog.uuid = rawDomainInstance.id
             errorLog.logReportFile = LogReportFile.findById(logReportFileId)
             errorLog.setMessages(result.errorMessages)
@@ -174,7 +174,7 @@ class RawExecutionService {
 
         if (result.status == RawExecutionResult.Status.ERROR){
             //create errorLog
-            def errorLog = new RawErrorLog(uuid: rawDomainInstance.id, entity: result.entity, columnName: "memberA", code: rawDomainInstance.memberA)
+            def errorLog = new RawErrorLog(uuid: rawDomainInstance.id, entity: result.entity, collectedDate: rawDomainInstance.collectedDate, columnName: "memberA", code: rawDomainInstance.memberA)
             errorLog.uuid = rawDomainInstance.id
             errorLog.logReportFile = LogReportFile.findById(logReportFileId)
             errorLog.setMessages(result.errorMessages)
@@ -195,7 +195,7 @@ class RawExecutionService {
 
         if (result.status == RawExecutionResult.Status.ERROR){
             //create errorLog
-            def errorLog = new RawErrorLog(uuid: rawDomainInstance.id, entity: result.entity, columnName: "memberCode", code: rawDomainInstance.memberCode)
+            def errorLog = new RawErrorLog(uuid: rawDomainInstance.id, entity: result.entity, collectedDate: rawDomainInstance.collectedDate, columnName: "memberCode", code: rawDomainInstance.memberCode)
             errorLog.uuid = rawDomainInstance.id
             errorLog.logReportFile = LogReportFile.findById(logReportFileId)
             errorLog.setMessages(result.errorMessages)
@@ -216,7 +216,7 @@ class RawExecutionService {
 
         if (result.status == RawExecutionResult.Status.ERROR){
             //create errorLog
-            def errorLog = new RawErrorLog(uuid: rawDomainInstance.id, entity: result.entity, columnName: "memberCode", code: rawDomainInstance.memberCode)
+            def errorLog = new RawErrorLog(uuid: rawDomainInstance.id, entity: result.entity, collectedDate: rawDomainInstance.collectedDate, columnName: "memberCode", code: rawDomainInstance.memberCode)
             errorLog.uuid = rawDomainInstance.id
             errorLog.logReportFile = LogReportFile.findById(logReportFileId)
             errorLog.setMessages(result.errorMessages)
@@ -237,7 +237,7 @@ class RawExecutionService {
 
         if (result.status == RawExecutionResult.Status.ERROR){
             //create errorLog
-            def errorLog = new RawErrorLog(uuid: rawDomainInstance.id, entity: result.entity, columnName: "memberCode", code: rawDomainInstance.memberCode)
+            def errorLog = new RawErrorLog(uuid: rawDomainInstance.id, entity: result.entity, collectedDate: rawDomainInstance.collectedDate, columnName: "memberCode", code: rawDomainInstance.memberCode)
             errorLog.uuid = rawDomainInstance.id
             errorLog.logReportFile = LogReportFile.findById(logReportFileId)
             errorLog.setMessages(result.errorMessages)
@@ -258,7 +258,7 @@ class RawExecutionService {
 
         if (result.status == RawExecutionResult.Status.ERROR){
             //create errorLog
-            def errorLog = new RawErrorLog(uuid: rawDomainInstance.id, entity: result.entity, columnName: "code", code: rawDomainInstance.code)
+            def errorLog = new RawErrorLog(uuid: rawDomainInstance.id, entity: result.entity, collectedDate: rawDomainInstance.collectedDate, columnName: "code", code: rawDomainInstance.code)
             errorLog.uuid = rawDomainInstance.id
             errorLog.logReportFile = LogReportFile.findById(logReportFileId)
             errorLog.setMessages(result.errorMessages)
@@ -283,7 +283,7 @@ class RawExecutionService {
 
         if (result.status == RawExecutionResult.Status.ERROR){
             //create errorLog
-            def errorLog = new RawErrorLog(uuid: rawDomainInstance.id, entity: result.entity, columnName: "newHeadCode", code: rawDomainInstance.newHeadCode)
+            def errorLog = new RawErrorLog(uuid: rawDomainInstance.id, entity: result.entity, collectedDate: rawDomainInstance.collectedDate, columnName: "newHeadCode", code: rawDomainInstance.newHeadCode)
             errorLog.uuid = rawDomainInstance.id
             errorLog.logReportFile = LogReportFile.findById(logReportFileId)
             errorLog.setMessages(result.errorMessages)
@@ -304,7 +304,7 @@ class RawExecutionService {
 
         if (result.status == RawExecutionResult.Status.ERROR){
             //create errorLog
-            def errorLog = new RawErrorLog(uuid: rawDomainInstance.id, entity: result.entity, columnName: "visitCode", code: rawDomainInstance.visitCode)
+            def errorLog = new RawErrorLog(uuid: rawDomainInstance.id, entity: result.entity, collectedDate: rawDomainInstance.collectedDate, columnName: "visitCode", code: rawDomainInstance.visitCode)
             errorLog.uuid = rawDomainInstance.id
             errorLog.logReportFile = LogReportFile.findById(logReportFileId)
             errorLog.setMessages(result.errorMessages)

@@ -113,6 +113,7 @@
             <bi:dateField bean="${this.rawInMigration}" property="migrationDate"    label="rawInMigration.migrationDate.label" mode="${mode}" />
             <bi:field bean="${this.rawInMigration}" property="migrationReason"    label="rawInMigration.migrationReason.label" mode="${mode}" />
 
+            <bi:field bean="${this.rawInMigration}" property="collectedBy"    label="rawInMigration.collectedBy.label" mode="show" />
             <bi:field bean="${this.rawInMigration}" property="collectedDate"    label="rawInMigration.collectedDate.label" mode="show" />
             <bi:field bean="${this.rawInMigration}" property="uploadedDate"    label="rawInMigration.uploadedDate.label" mode="show" />
 
@@ -140,6 +141,10 @@
                     <g:message code="rawDomain.helpers.button.household.residents.label" />
                 </button>
 
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#show_household_hrelationships">
+                    <g:message code="rawDomain.helpers.button.headrelationships.label" />
+                </button>
+
                 <g:if test="${dependencyResult.hasDependencyError==true}">
                     <g:hiddenField name="dependencyEventId" value="${dependencyResult.dependencyEventId}" />
 
@@ -151,6 +156,8 @@
                 <g:render template="show_member_residencies_hrelationships"/>
 
                 <g:render template="show_household_residents"/>
+
+                <g:render template="show_household_hrelationships"/>
 
             </g:if>
             <g:else>

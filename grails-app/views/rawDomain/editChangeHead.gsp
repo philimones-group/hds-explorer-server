@@ -109,6 +109,7 @@
             <bi:dateField bean="${this.rawChangeHead}" property="eventDate"    label="rawChangeHead.eventDate.label" mode="${mode}" />
             <bi:field bean="${this.rawChangeHead}" property="reason"    label="rawChangeHead.reason.label" mode="${mode}" />
 
+            <bi:field bean="${this.rawChangeHead}" property="collectedBy"    label="rawChangeHead.collectedBy.label" mode="show" />
             <bi:field bean="${this.rawChangeHead}" property="collectedDate"    label="rawChangeHead.collectedDate.label" mode="show" />
             <bi:field bean="${this.rawChangeHead}" property="uploadedDate"    label="rawChangeHead.uploadedDate.label" mode="show" />
 

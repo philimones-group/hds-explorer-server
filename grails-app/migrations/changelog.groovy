@@ -24,4 +24,5 @@ databaseChangeLog = {
     include file: 'alter-residency-headrelationship-add-status.groovy'
     include file: 'add-partially-disabled-table.groovy'
     include file: 'update-tables-bad-enum-codes-20240823.groovy'
+    include file: 'alter-table-raw_event-add-collected_date.groovy'
 }

@@ -187,7 +187,7 @@ class DeathService {
 
         def rawHeadRelationship = new RawHeadRelationship()
 
-        rawHeadRelationship.householdCode = rawDeath.visitCode.substring(0,9)
+        rawHeadRelationship.householdCode = visitService.getHouseholdCode(rawDeath.visitCode)
         rawHeadRelationship.memberCode = rawDthRel.newMemberCode
         rawHeadRelationship.relationshipType = rawDthRel.newRelationshipType
         rawHeadRelationship.startType = HeadRelationshipStartType.NEW_HEAD_OF_HOUSEHOLD.code

@@ -108,6 +108,7 @@
             <bi:field bean="${this.rawDeath}" property="deathCause"    label="rawDeath.deathCause.label" mode="${mode}" />
             <bi:field bean="${this.rawDeath}" property="deathPlace"    label="rawDeath.deathPlace.label" mode="${mode}" />
 
+            <bi:field bean="${this.rawDeath}" property="collectedBy"    label="rawDeath.collectedBy.label" mode="show" />
             <bi:field bean="${this.rawDeath}" property="collectedDate"    label="rawDeath.collectedDate.label" mode="show" />
             <bi:field bean="${this.rawDeath}" property="uploadedDate"    label="rawDeath.uploadedDate.label" mode="show" />
 

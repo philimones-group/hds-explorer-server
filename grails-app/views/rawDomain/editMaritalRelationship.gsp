@@ -111,6 +111,7 @@
             <bi:field bean="${this.rawMaritalRelationship}" property="endStatus"    label="rawMaritalRelationship.endStatus.label" mode="${mode}" options="MaritalEndStatus" nullable="true" />
             <bi:dateField bean="${this.rawMaritalRelationship}" property="endDate"    label="rawMaritalRelationship.endDate.label" mode="${mode}" />
 
+            <bi:field bean="${this.rawMaritalRelationship}" property="collectedBy"    label="rawMaritalRelationship.collectedBy.label" mode="show" />
             <bi:field bean="${this.rawMaritalRelationship}" property="collectedDate"    label="rawMaritalRelationship.collectedDate.label" mode="show" />
             <bi:field bean="${this.rawMaritalRelationship}" property="uploadedDate"    label="rawMaritalRelationship.uploadedDate.label" mode="show" />
 

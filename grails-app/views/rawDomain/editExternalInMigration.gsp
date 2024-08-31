@@ -105,7 +105,7 @@
             <bi:field bean="${this.rawExternalInMigration}" property="visitCode"    label="rawExternalInMigration.visitCode.label" mode="${mode}" />
             <bi:field bean="${this.rawExternalInMigration}" property="memberCode"    label="rawExternalInMigration.memberCode.label" mode="${mode}" />
             <bi:field bean="${this.rawExternalInMigration}" property="memberName"    label="rawExternalInMigration.memberName.label" mode="${mode}" />
-            <bi:field bean="${this.rawExternalInMigration}" property="memberGender"    label="rawExternalInMigration.memberGender.label" mode="${mode}" />
+            <bi:field bean="${this.rawExternalInMigration}" property="memberGender"    label="rawExternalInMigration.memberGender.label" mode="${mode}" options="Gender" />
             <bi:dateField bean="${this.rawExternalInMigration}" property="memberDob"    label="rawExternalInMigration.memberDob.label" mode="${mode}" />
             <bi:field bean="${this.rawExternalInMigration}" property="memberMotherCode"    label="rawExternalInMigration.memberMotherCode.label" mode="${mode}" />
             <bi:field bean="${this.rawExternalInMigration}" property="memberFatherCode"    label="rawExternalInMigration.memberFatherCode.label" mode="${mode}" />
@@ -119,6 +119,7 @@
             <bi:field bean="${this.rawExternalInMigration}" property="migrationReason"    label="rawExternalInMigration.migrationReason.label" mode="${mode}" />
             <bi:field bean="${this.rawExternalInMigration}" property="modules"    label="rawExternalInMigration.modules.label" mode="${mode}" />
 
+            <bi:field bean="${this.rawExternalInMigration}" property="collectedBy"    label="rawExternalInMigration.collectedBy.label" mode="show" />
             <bi:field bean="${this.rawExternalInMigration}" property="collectedDate"    label="rawExternalInMigration.collectedDate.label" mode="show" />
             <bi:field bean="${this.rawExternalInMigration}" property="uploadedDate"    label="rawExternalInMigration.uploadedDate.label" mode="show" />
 

@@ -426,17 +426,17 @@ class RawDomainService {
             if (newEndDate == null && residency.endType != ResidencyEndType.NOT_APPLICABLE) {
                 return new JActionResult(result: JActionResult.Result.ERROR, message: message("rawDomain.helpers.update.residency.enddate.null.endtype.not.na.error.label"))
             }
-            if (newEndDate > LocalDate.now()) {
+            if (newEndDate != null && newEndDate > LocalDate.now()) {
                 return new JActionResult(result: JActionResult.Result.ERROR, message: message("rawDomain.helpers.update.residency.enddate.not.greater.today.error.label"))
             }
-            if (newEndDate < residency?.member?.dob) {
+            if (newEndDate != null && newEndDate < residency?.member?.dob) {
                 return new JActionResult(result: JActionResult.Result.ERROR, message: message("rawDomain.helpers.update.residency.enddate.not.before.dob.error.label"))
             }
-            if (newEndDate <= residency.startDate) {
+            if (newEndDate != null && newEndDate <= residency.startDate) {
                 return new JActionResult(result: JActionResult.Result.ERROR, message: message("rawDomain.helpers.update.residency.enddate.not.before.startdate.error.label"))
             }
             if (nextResidency != null) {
-                if (newEndDate > nextResidency.startDate) {
+                if (newEndDate != null && newEndDate > nextResidency.startDate) {
                     return new JActionResult(result: JActionResult.Result.ERROR, message: message("rawDomain.helpers.update.residency.enddate.not.greater.next.startdate.error.label", [columnValue]))
                 }
             }
@@ -560,17 +560,17 @@ class RawDomainService {
             if (newEndDate == null && headRelationship.endType != HeadRelationshipEndType.NOT_APPLICABLE) {
                 return new JActionResult(result: JActionResult.Result.ERROR, message: message("rawDomain.helpers.update.headrelationship.enddate.null.endtype.not.na.error.label"))
             }
-            if (newEndDate > LocalDate.now()) {
+            if (newEndDate != null && newEndDate > LocalDate.now()) {
                 return new JActionResult(result: JActionResult.Result.ERROR, message: message("rawDomain.helpers.update.headrelationship.enddate.not.greater.today.error.label"))
             }
-            if (newEndDate < headRelationship?.member?.dob) {
+            if (newEndDate != null && newEndDate < headRelationship?.member?.dob) {
                 return new JActionResult(result: JActionResult.Result.ERROR, message: message("rawDomain.helpers.update.headrelationship.enddate.not.before.dob.error.label"))
             }
-            if (newEndDate <= headRelationship.startDate) {
+            if (newEndDate != null && newEndDate <= headRelationship.startDate) {
                 return new JActionResult(result: JActionResult.Result.ERROR, message: message("rawDomain.helpers.update.headrelationship.enddate.not.before.startdate.error.label"))
             }
             if (nextHeadRelationship != null) {
-                if (newEndDate > nextHeadRelationship.startDate) {
+                if (newEndDate != null && newEndDate > nextHeadRelationship.startDate) {
                     return new JActionResult(result: JActionResult.Result.ERROR, message: message("rawDomain.helpers.update.headrelationship.enddate.not.greater.next.startdate.error.label", [columnValue]))
                 }
             }
@@ -687,24 +687,24 @@ class RawDomainService {
             if (newEndDate == null && maritalRelationship.endStatus != MaritalEndStatus.NOT_APPLICABLE) {
                 return new JActionResult(result: JActionResult.Result.ERROR, message: message("rawDomain.helpers.update.maritalrelationship.enddate.null.endtype.not.na.error.label"))
             }
-            if (newEndDate > LocalDate.now()) {
+            if (newEndDate != null && newEndDate > LocalDate.now()) {
                 return new JActionResult(result: JActionResult.Result.ERROR, message: message("rawDomain.helpers.update.maritalrelationship.enddate.not.greater.today.error.label"))
             }
-            if (newEndDate < maritalRelationship?.memberA?.dob || newEndDate < maritalRelationship?.memberB?.dob) {
+            if (newEndDate != null && (newEndDate < maritalRelationship?.memberA?.dob || newEndDate < maritalRelationship?.memberB?.dob)) {
                 return new JActionResult(result: JActionResult.Result.ERROR, message: message("rawDomain.helpers.update.maritalrelationship.enddate.not.before.dob.error.label"))
             }
-            if (newEndDate <= maritalRelationship.startDate) {
+            if (newEndDate != null && newEndDate <= maritalRelationship.startDate) {
                 return new JActionResult(result: JActionResult.Result.ERROR, message: message("rawDomain.helpers.update.maritalrelationship.enddate.not.before.startdate.error.label"))
             }
 
             if (!isPolygamicRelationship) {
                 if (nextRelatMemberA != null) {
-                    if (newEndDate > nextRelatMemberA.startDate) {
+                    if (newEndDate != null && newEndDate > nextRelatMemberA.startDate) {
                         return new JActionResult(result: JActionResult.Result.ERROR, message: message("rawDomain.helpers.update.maritalrelationship.enddate.not.greater.next.startdate.error.label", [columnValue, "A"]))
                     }
                 }
                 if (nextRelatMemberB != null) {
-                    if (newEndDate > nextRelatMemberB.startDate) {
+                    if (newEndDate != null && newEndDate > nextRelatMemberB.startDate) {
                         return new JActionResult(result: JActionResult.Result.ERROR, message: message("rawDomain.helpers.update.maritalrelationship.enddate.not.greater.next.startdate.error.label", [columnValue, "B"]))
                     }
                 }

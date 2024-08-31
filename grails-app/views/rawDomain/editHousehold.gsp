@@ -108,6 +108,7 @@
             <bi:field bean="${this.rawHousehold}" property="gpsAlt"        label="rawHousehold.gpsAlt.label" mode="${mode}" />
             <bi:field bean="${this.rawHousehold}" property="gpsAcc"        label="rawHousehold.gpsAcc.label" mode="${mode}" />
 
+            <bi:field bean="${this.rawHousehold}" property="collectedBy"    label="rawHousehold.collectedBy.label" mode="show" />
             <bi:field bean="${this.rawHousehold}" property="collectedDate"    label="rawHousehold.collectedDate.label" mode="show" />
             <bi:field bean="${this.rawHousehold}" property="uploadedDate"    label="rawHousehold.uploadedDate.label" mode="show" />
 

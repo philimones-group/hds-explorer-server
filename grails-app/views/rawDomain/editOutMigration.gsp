@@ -111,6 +111,7 @@
             <bi:dateField bean="${this.rawOutMigration}" property="migrationDate"    label="rawOutMigration.migrationDate.label" mode="${mode}" />
             <bi:field bean="${this.rawOutMigration}" property="migrationReason"    label="rawOutMigration.migrationReason.label" mode="${mode}" />
 
+            <bi:field bean="${this.rawOutMigration}" property="collectedBy"    label="rawOutMigration.collectedBy.label" mode="show" />
             <bi:field bean="${this.rawOutMigration}" property="collectedDate"    label="rawOutMigration.collectedDate.label" mode="show" />
             <bi:field bean="${this.rawOutMigration}" property="uploadedDate"    label="rawOutMigration.uploadedDate.label" mode="show" />
 

@@ -34,10 +34,14 @@ class RawErrorLog {
      *
      */
     String message
+
+    LocalDateTime collectedDate
+
     /*
      * Timestamp of Execution
      */
     LocalDateTime createdDate = LocalDateTime.now()
+
 
     void setMessages(List<RawMessage> messages){
         Gson gson = new Gson()
@@ -83,6 +87,7 @@ class RawErrorLog {
         entity nullable: false
         columnName blank: true, nullable: true
         code blank: true, nullable: true
+        collectedDate nullable: false
         message blank: false, maxSize: 1000
     }
 
@@ -98,6 +103,7 @@ class RawErrorLog {
         columnName column: "column_name"
         code column: "code", index: "idx_code"
         message column: "message"
+        collectedDate column: "collected_date", defaultValue: "1900-01-01"
         createdDate column: "created_date"
     }
 }

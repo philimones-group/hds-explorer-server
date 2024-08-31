@@ -119,6 +119,7 @@
             <bi:field bean="${this.rawVisit}" property="gpsAlt"    label="rawVisit.gpsAlt.label" mode="${mode}" />
             <bi:field bean="${this.rawVisit}" property="gpsAcc"    label="rawVisit.gpsAcc.label" mode="${mode}" />
 
+            <bi:field bean="${this.rawVisit}" property="collectedBy"    label="rawVisit.collectedBy.label" mode="show" />
             <bi:field bean="${this.rawVisit}" property="collectedDate"    label="rawVisit.collectedDate.label" mode="show" />
             <bi:field bean="${this.rawVisit}" property="uploadedDate"    label="rawVisit.uploadedDate.label" mode="show" />
 

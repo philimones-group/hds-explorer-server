@@ -59,17 +59,19 @@
 				<thead>
 				<tr>
 
-					<g:sortableColumn property="event" title="${message(code: 'logreport.sync.error.event')}" />
+					<th data-ordable="true">${message(code: 'logreport.sync.error.event')}</th>
 
-					<g:sortableColumn property="uuid" title="${message(code: 'logreport.sync.error.uuid')}" />
+					<th data-ordable="false">${message(code: 'logreport.sync.error.uuid')}</th>
 
-					<g:sortableColumn property="uuid" title="${message(code: 'logreport.sync.error.column')}" />
+					<th data-ordable="true">${message(code: 'logreport.sync.error.column')}</th>
 
-					<g:sortableColumn property="uuid" title="${message(code: 'logreport.sync.error.code')}" />
+					<th data-ordable="true">${message(code: 'logreport.sync.error.code')}</th>
 
-					<g:sortableColumn property="uuid" title="${message(code: 'logreport.sync.error.creationDate')}" />
+					<th data-ordable="true">${message(code: 'logreport.sync.error.collectedDate')}</th>
 
-					<g:sortableColumn property="uuid" title="${message(code: 'logreport.sync.error.errorMessage')}" />
+					<th data-ordable="true">${message(code: 'logreport.sync.error.creationDate')}</th>
+
+                    <th data-orderable="false" >${message(code: 'logreport.sync.error.errorMessage')}</th>
 				</tr>
 				</thead>
 				<tbody>
@@ -84,7 +86,7 @@
 			</g:form>
 		</div>
 
-		<dt:loadDatatable name="reportsTable" nosort="true" data="${createLink(controller: 'eventSync', action: 'errorLogList', id: logReportFileInstance.id)}" columns="event, uuid, column, code, creationDate, errorMessage" />
+		<dt:loadDatatable name="reportsTable" data="${createLink(controller: 'eventSync', action: 'errorLogList', id: logReportFileInstance.id)}" columns="event, uuid, column, code, collectedDate, createdDate, errorMessage" />
 
 	</body>
 </html>

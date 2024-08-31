@@ -37,6 +37,23 @@ class VisitService {
         return null
     }
 
+    Household getHousehold(String visitCode) {
+        if (!StringUtil.isBlank(visitCode)){
+            return Visit.findByCode(visitCode)?.household
+        }
+        return null
+    }
+
+    String getHouseholdCode(String visitCode) {
+        if (!StringUtil.isBlank(visitCode)){
+
+            def result = Visit.executeQuery("select v.household.code from Visit v where v.code = ?0", [visitCode])
+
+            return result.empty ? null : result.first()
+        }
+        return null
+    }
+
     boolean isValidRoundNumber(Integer roundNumber){
         Round.countByRoundNumber(roundNumber) > 0
     }

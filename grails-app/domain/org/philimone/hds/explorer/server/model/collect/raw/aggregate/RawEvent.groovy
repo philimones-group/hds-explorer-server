@@ -14,6 +14,8 @@ class RawEvent {
     /* (date of event/capture) will be yyyy-MM-dd or yyyy-MM-dd HH:mm:ss */
     LocalDateTime keyDate
 
+    LocalDateTime collectedDate
+
     /* The HDS Event to be executed) as INTEGER */
     RawEventType eventType
 
@@ -56,6 +58,7 @@ class RawEvent {
     static constraints = {
 
         keyDate nullable: false
+        collectedDate nullable: false
         eventType nullable: false
         eventTypeDesc nullable: true
         eventOrder nullable: true
@@ -75,6 +78,7 @@ class RawEvent {
         version false
 
         keyDate    column: "key_date",   index: "idx_kydate"
+        collectedDate column: "collected_date", index: "idx_coldate", defaultValue: "1900-01-01"
         eventType  column: "event_type", index: "idx_type", enumType: "identity"
         eventTypeDesc column: "event_type_desc", index: "idx_type_desc", enumType: "string"
         eventOrder column: "event_order", index: "idx_event_order", enumType: "identity"

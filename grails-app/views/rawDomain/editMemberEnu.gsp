@@ -117,6 +117,7 @@
             <bi:dateField bean="${this.rawMemberEnu}" property="residencyStartDate"    label="rawMemberEnu.residencyStartDate.label" mode="${mode}" />
             <bi:field bean="${this.rawMemberEnu}" property="modules"    label="rawMemberEnu.modules.label" mode="${mode}" />
 
+            <bi:field bean="${this.rawMemberEnu}" property="collectedBy"    label="rawMemberEnu.collectedBy.label" mode="show" />
             <bi:field bean="${this.rawMemberEnu}" property="collectedDate"    label="rawMemberEnu.collectedDate.label" mode="show" />
             <bi:field bean="${this.rawMemberEnu}" property="uploadedDate"    label="rawMemberEnu.uploadedDate.label" mode="show" />
 
@@ -140,6 +141,10 @@
                     <g:message code="rawDomain.helpers.button.household.residents.label" />
                 </button>
 
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#show_household_hrelationships">
+                    <g:message code="rawDomain.helpers.button.headrelationships.label" />
+                </button>
+
                 <g:if test="${dependencyResult.hasDependencyError==true}">
                     <g:hiddenField name="dependencyEventId" value="${dependencyResult.dependencyEventId}" />
 
@@ -149,6 +154,8 @@
                 </g:if>
 
                 <g:render template="show_household_residents"/>
+
+                <g:render template="show_household_hrelationships"/>
 
             </g:if>
             <g:else>

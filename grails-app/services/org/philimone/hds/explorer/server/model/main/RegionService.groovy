@@ -24,6 +24,7 @@ class RegionService {
         Region.countByCode(regionCode) > 0
     }
 
+    /* This type of checking prefixes is bad specially because we are in a system with multiple code systems*/
     boolean prefixExists(String code){
         exists(code.length()>2 ? code.substring(0, 3) : code)
     }

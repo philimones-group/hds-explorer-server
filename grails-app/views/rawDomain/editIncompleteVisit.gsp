@@ -104,6 +104,7 @@
             <bi:field bean="${this.rawIncompleteVisit}" property="reason"    label="rawIncompleteVisit.reason.label" mode="${mode}" options="IncompleteVisitReason" nullable="true" />
             <bi:field bean="${this.rawIncompleteVisit}" property="reasonOther"    label="rawIncompleteVisit.reasonOther.label" mode="${mode}" />
 
+            <bi:field bean="${this.rawIncompleteVisit}" property="collectedBy"    label="rawIncompleteVisit.collectedBy.label" mode="show" />
             <bi:field bean="${this.rawIncompleteVisit}" property="collectedDate"    label="rawIncompleteVisit.collectedDate.label" mode="show" />
             <bi:field bean="${this.rawIncompleteVisit}" property="uploadedDate"    label="rawIncompleteVisit.uploadedDate.label" mode="show" />
 

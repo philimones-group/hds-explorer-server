@@ -112,6 +112,7 @@
             <bi:field bean="${this.rawPregnancyOutcome}" property="visitCode"    label="rawPregnancyOutcome.visitCode.label" mode="${mode}" />
             <bi:field bean="${this.rawPregnancyOutcome}" property="modules"    label="rawPregnancyOutcome.modules.label" mode="${mode}" />
 
+            <bi:field bean="${this.rawPregnancyOutcome}" property="collectedBy"    label="rawPregnancyOutcome.collectedBy.label" mode="show" />
             <bi:field bean="${this.rawPregnancyOutcome}" property="collectedDate"    label="rawPregnancyOutcome.collectedDate.label" mode="show" />
             <bi:field bean="${this.rawPregnancyOutcome}" property="uploadedDate"    label="rawPregnancyOutcome.uploadedDate.label" mode="show" />
 

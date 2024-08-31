@@ -40,7 +40,7 @@ class DatatablesUITagLib {
         if (attrs.data != null && !attrs.data.isEmpty()) {
             out << "            \"processing\": true,\n"
             out << "            \"serverSide\": true,\n"
-            //out << "            \"order\": [],\n"
+            out << "            \"order\": [],\n"
             out << "            \"ajax\": {\n"
             out << "                url: \"${attrs.data}\",\n"
             out << "                type: \"POST\",\n"

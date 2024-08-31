@@ -362,7 +362,7 @@ class TabulatorTagLib {
             out << "                <div class=\"position-fixed p-4\" style=\"z-index: 9999995; right: 30px; position: relative;\">\n"
         }
 
-        out <<  "                    <div id=\"${toastid}\" class=\"toast hide\" style=\"background-color: #fff; opacity: 1;\" role=\"alert\" aria-live=\"assertive\" aria-atomic=\"true\" data-delay=\"6000\">\n" +
+        out <<  "                    <div id=\"${toastid}\" class=\"toast hide\" style=\"background-color: #fff; opacity: 1;\" role=\"alert\" aria-live=\"assertive\" aria-atomic=\"true\" data-autohide=\"false\" >\n" + //data-delay=\"6000\"
                 "                        <div class=\"toast-header\">\n" +
                 "                            <img id=\"${toastid}_icon_info\" src=\"${infoUrl}\" class=\"rounded mr-2\" />\n" +
                 "                            <img id=\"${toastid}_icon_error\" src=\"${erroUrl}\" class=\"rounded mr-2\" />\n" +
