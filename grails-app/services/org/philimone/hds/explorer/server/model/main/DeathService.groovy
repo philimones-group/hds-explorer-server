@@ -64,7 +64,7 @@ class DeathService {
         def household = residencyService.getCurrentHousehold(member)
 
         def residency = residencyService.getCurrentResidencyAsRaw(member)
-        def headRelationship = headRelationshipService.getCurrentHeadRelationshipAsRaw(member) //his relationship with the head, even if he is the head
+        def headRelationship = headRelationshipService.getLastHeadRelationshipAsRaw(member) //his relationship with the head, even if he is the head
         //def maritalRelationship = maritalRelationshipService.getCurrentMaritalRelationshipAsRaw(member)
         def maritalRelationships = maritalRelationshipService.getCurrentlyMarriedRelationshipsAsRaw(member)
         def isHeadOfHousehold = headRelationship!=null ? (headRelationship.relationshipType == HeadRelationshipType.HEAD_OF_HOUSEHOLD.code) : false
@@ -191,6 +191,8 @@ class DeathService {
         rawHeadRelationship.relationshipType = rawDthRel.newRelationshipType
         rawHeadRelationship.startType = HeadRelationshipStartType.NEW_HEAD_OF_HOUSEHOLD.code
         rawHeadRelationship.startDate = rawDeath.deathDate.plusDays(1)
+        rawHeadRelationship.endType = HeadRelationshipEndType.NOT_APPLICABLE.code
+        rawHeadRelationship.endDate = null
 
         return rawHeadRelationship
     }
@@ -316,7 +318,7 @@ class DeathService {
         if (errors.isEmpty()){
 
             def residency = residencyService.getCurrentResidencyAsRaw(member)
-            def headRelationship = headRelationshipService.getCurrentHeadRelationshipAsRaw(member) //his relationship with the head, even if he is the head
+            def headRelationship = headRelationshipService.getLastHeadRelationshipAsRaw(member) //his relationship with the head, even if he is the head
             //def maritalRelationship = maritalRelationshipService.getCurrentMaritalRelationshipAsRaw(member)
             def maritalRelationships = maritalRelationshipService.getCurrentlyMarriedRelationshipsAsRaw(member)
             def isHeadOfHousehold = headRelationship!=null ? (headRelationship.relationshipType == HeadRelationshipType.HEAD_OF_HOUSEHOLD.code) : false
@@ -388,14 +390,15 @@ class DeathService {
 
                 def fakeHeadOfHouseholdRelationship = headRelationshipService.createFakeHeadRelationshipFromRaw(headRelationship) //if has rawDeathRelationships is a Head of Household, so will use the closed Head
 
-                newRawDeathRelationships.each { rawDeathRelationship ->
+                for (def rawDeathRelationship : newRawDeathRelationships) {
 
+                    /*// We must test the head relationship too
                     if (rawDeathRelationship.newRelationshipType == HeadRelationshipType.HEAD_OF_HOUSEHOLD.code) {
                         return
-                    }
+                    }*/
 
                     def rawHeadRelationship = createRawHeadRelationship(rawDeathRelationship)
-                    def rawCurrentRelationship = headRelationshipService.getCurrentHeadRelationshipAsRaw(rawHeadRelationship.memberCode) //get fake current head relationship for this member (close it)
+                    def rawCurrentRelationship = headRelationshipService.getLastHeadRelationshipAsRaw(rawHeadRelationship.memberCode) //get fake current head relationship for this member (close it)
 
                     if (rawCurrentRelationship != null) {
                         def fakeCurrentRelationship = headRelationshipService.createFakeHeadRelationshipFromRaw(rawCurrentRelationship)
@@ -405,6 +408,16 @@ class DeathService {
                         //ignore head of households (its unusual to have relationshipType=HEAD here)
                         def innerErrors = headRelationshipService.validateCreateHeadRelationship(rawHeadRelationship, fakeCurrentRelationship, fakeHeadOfHouseholdRelationship)
                         errors += errorMessageService.addPrefixToMessages(innerErrors, "validation.field.death.prefix.msg.error", [rawDeath.id])
+
+                        //If no ERRORS and we were dealing with the NEW HEAD OF HOUSEHOLD, we will update the fakeHeadOfHouseholdRelationship with the recently validated rawHeadRelationship
+                        if (innerErrors.size() == 0 && rawHeadRelationship.relationshipType == HeadRelationshipType.HEAD_OF_HOUSEHOLD.code){
+                            //set new fake head of household
+                            fakeHeadOfHouseholdRelationship = headRelationshipService.createFakeHeadRelationshipFromRaw(rawHeadRelationship)
+                        }
+
+                        if (innerErrors.size() > 0) {
+                            break //one error its enough to invalidate the record and avoid a huge message error
+                        }
                     }
                 }
             }

@@ -37,6 +37,7 @@
 							<th><g:message code="logreport.execute.limit.label" default="Execution Limit" /></th>
 						</g:if>
 						<th><g:message code="" default="" /></th>
+						<th></th>
 					</tr>
 				</thead>
 				<tbody>
@@ -67,6 +68,10 @@
 							</g:if>
 							<td class="align-middle">
 								<g:actionSubmit class="btn btn-primary" value="${g.message(code: 'default.execute.label')}" action="execute" name="submitButton" />
+							</td>
+
+							<td>
+								<g:actionSubmit class="btn btn-primary" value="${g.message(code: 'logreport.sync.syncdss.button.showlast.label')}" action="showLastReportDetails" name="submitButton" />
 							</td>
 
 						</g:form>

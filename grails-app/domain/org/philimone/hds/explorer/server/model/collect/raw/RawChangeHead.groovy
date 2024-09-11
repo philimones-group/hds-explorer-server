@@ -38,7 +38,7 @@ class RawChangeHead {
 
         visitCode nullable: false
         householdCode nullable: false
-        oldHeadCode nullable: false, blank:false
+        oldHeadCode nullable: true, blank:true
         newHeadCode nullable: false, blank:false
         eventDate nullable: false
 

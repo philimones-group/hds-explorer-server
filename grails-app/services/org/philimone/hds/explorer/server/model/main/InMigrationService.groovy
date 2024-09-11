@@ -339,7 +339,7 @@ class InMigrationService {
 
             def newRawHeadRelationship = createNewRawHeadRelationshipFrom(rawInMigration)
             def currentResidency = residencyService.getCurrentResidency(member) //current residency
-            def currentHeadRelationship = headRelationshipService.getCurrentHeadRelationship(member)
+            def currentHeadRelationship = headRelationshipService.getLastHeadRelationship(member)
             def newRawResidency = createNewResidencyFromInMig(rawInMigration)   //possible new residency
 
             /* Member must be Living in current Household */
@@ -541,6 +541,8 @@ class InMigrationService {
 
         residency.startDate = rawInMigration.migrationDate
         residency.startType = (rawInMigration.migrationType == InMigrationType.INTERNAL.code) ? ResidencyStartType.INTERNAL_INMIGRATION.code : ResidencyStartType.EXTERNAL_INMIGRATION.code
+        residency.endType = ResidencyEndType.NOT_APPLICABLE.code
+        residency.endDate = null
 
         return residency
     }
@@ -553,6 +555,8 @@ class InMigrationService {
 
         residency.startDate = inMigration.migrationDate
         residency.startType = (inMigration.type == InMigrationType.INTERNAL) ? ResidencyStartType.INTERNAL_INMIGRATION.code : ResidencyStartType.EXTERNAL_INMIGRATION.code
+        residency.endType = ResidencyEndType.NOT_APPLICABLE.code
+        residency.endDate = null
 
         return residency
     }

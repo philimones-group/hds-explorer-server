@@ -27,6 +27,8 @@ import java.time.LocalDateTime
 @Transactional
 class DataReconciliationService {
 
+    def static finalStatuses = [HouseholdStatus.HOUSE_NOT_FOUND, HouseholdStatus.HOUSE_DESTROYED, HouseholdStatus.HOUSE_ABANDONED, HouseholdStatus.OTHER]
+
     SessionFactory sessionFactory
 
     def maritalRelationshipService
@@ -97,7 +99,6 @@ class DataReconciliationService {
     def householdStatusReconcialiation() {
         //get all households
         //-> update Household Status, Household Head
-        def finalStatuses = [HouseholdStatus.HOUSE_NOT_FOUND, HouseholdStatus.HOUSE_DESTROYED, HouseholdStatus.HOUSE_ABANDONED, HouseholdStatus.OTHER]
         def households_ids = Household.executeQuery("select h.id from Household h")
 
         def processed = 0
@@ -109,25 +110,21 @@ class DataReconciliationService {
                 processed++
 
                 //get residencies to determine household status and update members
-                def residencies = Residency.findAllByHouseholdAndEndType(household, ResidencyEndType.NOT_APPLICABLE, [sort: "startDate", order: "asc"])
-                def relationships = HeadRelationship.findAllByHouseholdAndEndType(household, HeadRelationshipEndType.NOT_APPLICABLE, [sort: "startDate", order: "asc"])
+                def residencies = Residency.countByHouseholdAndEndType(household, ResidencyEndType.NOT_APPLICABLE)
+                def head = HeadRelationship.findByHouseholdAndRelationshipTypeAndEndType(household, HeadRelationshipType.HEAD_OF_HOUSEHOLD, HeadRelationshipEndType.NOT_APPLICABLE, [sort: "startDate", order: "desc"])
 
                 //UPDATE HOUSEHOLD STATUS
-                if (residencies.size()==0) {
-                    if (!finalStatuses.contains(household.status)) {
-                        //maintain last status
-                        household.status = HouseholdStatus.HOUSE_VACANT;
-                    }
-                } else {
-                    household.status = HouseholdStatus.HOUSE_OCCUPIED
-                }
+                household.status = residencies > 0 ? HouseholdStatus.HOUSE_OCCUPIED : !finalStatuses.contains(household.status) ? HouseholdStatus.HOUSE_VACANT : household.status
 
                 //UPDATE HEAD OF HOUSEHOLD
-                def head = relationships.find { it.relationshipType== HeadRelationshipType.HEAD_OF_HOUSEHOLD}
                 if (head != null) {
                     household.headMember = head.member
                     household.headCode = head.member.code
                     household.headName = head.member.name
+                } else {
+                    household.headMember = null
+                    household.headCode = null
+                    household.headName = null
                 }
 
                 //household.save()
@@ -139,6 +136,31 @@ class DataReconciliationService {
                 }
             }
         }
+    }
+
+    def householdStatusReconcialiate(Household household) {
+        //get residencies to determine household status and update members
+        def residencies = Residency.countByHouseholdAndEndType(household, ResidencyEndType.NOT_APPLICABLE)
+        //def head = HeadRelationship.findByHouseholdAndRelationshipTypeAndEndType(household, HeadRelationshipType.HEAD_OF_HOUSEHOLD, HeadRelationshipEndType.NOT_APPLICABLE, [sort: "startDate", order: "desc"])
+        def headr = HeadRelationship.executeQuery("select h.member, h.member.code, h.member.name from HeadRelationship h where h.household=?0 and h.relationshipType=?1 and h.endType=?2 order by h.startDate desc", [household, HeadRelationshipType.HEAD_OF_HOUSEHOLD, HeadRelationshipEndType.NOT_APPLICABLE], [max: 1, offset: 0])
+        def head = headr?.first()
+
+        //UPDATE HOUSEHOLD STATUS
+        household.status = residencies > 0 ? HouseholdStatus.HOUSE_OCCUPIED : !finalStatuses.contains(household.status) ? HouseholdStatus.HOUSE_VACANT : household.status
+
+        //UPDATE HEAD OF HOUSEHOLD
+        if (headr?.first() != null) {
+            household.headMember = head[0]
+            household.headCode = head[1]
+            household.headName = head[2]
+        } else {
+            household.headMember = null
+            household.headCode = null
+            household.headName = null
+        }
+
+        //household.save()
+        Household.executeUpdate("update Household h set h.status=?0, h.headMember=?1, h.headCode=?2, h.headName=?3 where h.id=?4", [household.status, household.headMember, household.headCode, household.headName, household.id])
     }
 
     def memberStatusReconcialiation() {
@@ -156,6 +178,15 @@ class DataReconciliationService {
                 def firstRes = Residency.executeQuery("select r from Residency r where r.member=?0 order by r.startDate asc", [member], [max: 1])
                 def lastRes = Residency.executeQuery("select r from Residency r where r.member=?0 order by r.startDate desc", [member], [max: 1])
                 def maritalRelationship = maritalRelationshipService.getCurrentMaritalRelationship(member)
+
+                member.entryHousehold = null
+                member.entryType = null
+                member.entryDate = null
+                member.startType = null
+                member.startDate = null
+                member.endType = null
+                member.endDate = null
+                member.headRelationshipType = HeadRelationshipType.DONT_KNOW
 
                 if (!firstRes?.empty) {
                     def residency = firstRes.first() as Residency
@@ -178,7 +209,7 @@ class DataReconciliationService {
 
                     if (!lastHeadRel?.empty) {
                         def h = lastHeadRel.first() as HeadRelationship
-                        member.headRelationshipType = h.relationshipType
+                        member.headRelationshipType = h != null && h.endType == HeadRelationshipEndType.NOT_APPLICABLE ? h.relationshipType : HeadRelationshipType.DONT_KNOW
                     } else {
                         member.headRelationshipType = HeadRelationshipType.DONT_KNOW
                     }
@@ -246,7 +277,7 @@ class DataReconciliationService {
         partialRecords.each { pRec ->
             if (pRec.entity == ValidatableEntity.HEAD_RELATIONSHIP) {
                 //get current head relationship
-                def currentHr = headRelationshipService.getCurrentHeadRelationship(pRec.member)
+                def currentHr = headRelationshipService.getLastHeadRelationship(pRec.member)
 
                 if (currentHr.endType != HeadRelationshipEndType.NOT_APPLICABLE) {
                     def msg = generalUtilitiesService.getMessage("rawDomain.helpers.temporarily.disabled.partially.cant.restore.label", new Object[] {pRec.id, "HeadRelationship", currentHr.id}, "")

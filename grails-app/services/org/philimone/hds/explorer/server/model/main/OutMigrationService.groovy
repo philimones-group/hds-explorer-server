@@ -37,7 +37,7 @@ class OutMigrationService {
 
         def member = outMigration.member
         def residency = residencyService.getCurrentResidencyAsRaw(member)
-        def headRelationship = headRelationshipService.getCurrentHeadRelationshipAsRaw(member) //his relationship with the head, even if he is the head
+        def headRelationship = headRelationshipService.getLastHeadRelationshipAsRaw(member) //his relationship with the head, even if he is the head
 
         // Closing the Residency with OutMigration
         if (residency != null && residency.endType == ResidencyEndType.NOT_APPLICABLE.code){ //must be opened
@@ -211,7 +211,7 @@ class OutMigrationService {
 
 
             def residency = residencyService.getCurrentResidencyAsRaw(member)
-            def headRelationship = headRelationshipService.getCurrentHeadRelationshipAsRaw(member) //his relationship with the head, even if he is the head
+            def headRelationship = headRelationshipService.getLastHeadRelationshipAsRaw(member) //his relationship with the head, even if he is the head
             def isHeadOfHousehold = headRelationship!=null ? (headRelationship.relationshipType == HeadRelationshipType.HEAD_OF_HOUSEHOLD.code) : false
             def headRelationships = headRelationshipService.getCurrentHeadRelationships(rawOutMigration.memberCode, member?.household?.code)
 

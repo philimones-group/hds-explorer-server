@@ -55,6 +55,7 @@
                 <hds:menu label="${g.message(code: 'default.menu.sync.syncdss.label')}" link="${createLink(controller: 'eventSync', action: 'index')}" class="arrow" />
                 <!--<hds:menu label="${g.message(code: 'default.menu.sync.import_xls')}" link="#" />-->
                 <hds:menu label="${g.message(code: 'default.menu.sync.export.label')}"  link="${createLink(controller: 'syncFiles', action: 'index')}" class="arrow" />
+                <hds:menu label="${g.message(code: 'default.menu.sync.reconciliation.label')}"  link="${createLink(controller: 'dataReconciliation', action: 'index')}" class="arrow" />
             </hds:dropmenu>
             <hds:dropmenu label="${g.message(code: "default.menu.settings.label")}">
                 <hds:menu label="${g.message(code: 'default.menu.settings.modules.label')}" link="${createLink(controller: 'module', action: 'index')}" class="arrow" />

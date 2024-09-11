@@ -49,7 +49,7 @@
 
 				<td>
 					<g:if test="${logReport.enabled==true}">
-						<g:link class="edit" action="execute" id="${logReport.id}">
+						<g:link class="btn btn-primary" action="execute" id="${logReport.id}">
 							<g:message code="default.execute.label" default="Execute" />
 						</g:link>
 					</g:if>

@@ -131,7 +131,27 @@ class EventSyncController {
 
         //println "${logReportFile}, ${errorLogs.size()}"
 
-        render view:"showSyncReportDetails", model: [logReportFileInstance: logReportFile /*, errorLogsCount: errorLogs.size(), errorLogs: errorLogs*/]
+        render view:"showSyncReportDetails", model: [logReportFileInstance: logReportFile]
+    }
+
+    def showLastReportDetails = {
+        LogReport logReport = LogReport.get(params.id)
+
+        if (logReport == null) {
+            flash.message = "LogReport not available"
+            redirect (action: "index")
+            return
+        }
+
+        def result = LogReportFile.executeQuery("select f from LogReportFile f where f.logReport=?0 order by f.keyTimestamp desc, f.start desc", [logReport], [offset: 0, max: 1])
+
+        if (result == null || result.empty) {
+            flash.message = "Report Details for the LogReport[${message(code: logReport.description)}] are not available"
+            redirect (action: "index")
+            return
+        }
+
+        render view:"showSyncReportDetails", model: [logReportFileInstance: result.first()]
     }
 
     def editRawDomain = {
@@ -172,7 +192,7 @@ class EventSyncController {
 
         def params_search = jqdtParams.search?.value
         def columnsList = jqdtParams.columns.collect { k, v -> v.data }
-        def orderList = jqdtParams.order.collect { k, v -> [columnsList[v.column as Integer], v.dir] }
+        def orderList = jqdtParams.order.collect { k, v -> [columnsList[v.column as Integer], v.dir] } //v.dir is asc or desc
         def logReportFileInstance = LogReportFile.get(params.id)
 
         //event, uuid, column, code, creationDate, errorMessage
@@ -186,6 +206,7 @@ class EventSyncController {
 
         //FILTERS - if not null will filter
         def search_filter = (params_search != null && !"${params_search}".empty) ? "%${params_search}%" : null
+        def date_search_filter = StringUtil.isBlank(search_filter) ? null : search_filter.replace(":", "%")
         def entitiesList = dataModelsService.findRawEntitiesLike("${params_search}")
 
         def filterer = {
@@ -193,7 +214,9 @@ class EventSyncController {
             or {
                 if (search_filter) 'in'('entity', entitiesList)
                 if (search_filter) ilike 'uuid', search_filter
+                if (search_filter) ilike 'code', search_filter
                 if (search_filter) ilike 'columnName', search_filter
+                if (date_search_filter) sqlRestriction("DATE_FORMAT(collected_date, '%Y-%m-%d %H:%m:%s') like '${date_search_filter}'")
                 if (search_filter) ilike 'message', search_filter
             }
             //def errorLogs = RawErrorLog.findAllByLogReportFile(logReportFile, [sort: "createdDate", order: "asc"])
@@ -203,9 +226,14 @@ class EventSyncController {
         def orderer = RawErrorLog.withCriteria {
             filterer.delegate = delegate
             filterer()
+            if (orderList.empty) order 'id', 'asc'
             orderList.each { oi ->
                 switch (oi[0]) {
-                    case 'id': order 'id', oi[1]; break
+                    case 'id':    order 'id', oi[1]; break
+                    case 'event': order 'entity', oi[1]; break
+                    case 'code':  order 'code', oi[1]; break
+                    case 'collectedDate': order 'collectedDate', oi[1]; break
+                    case 'createdDate':  order 'createdDate', oi[1]; break
                 }
             }
             maxResults (jqdtParams.length as Integer)
@@ -220,7 +248,8 @@ class EventSyncController {
              'uuid':         errorLog.uuid,
              'column':       errorLog.columnName,
              'code':         errorLog.code,
-             'creationDate': StringUtil.format(errorLog.createdDate),
+             'collectedDate': StringUtil.format(errorLog.collectedDate),
+             'createdDate': StringUtil.format(errorLog.createdDate),
              'errorMessage': "<td style=\"word-wrap: break-word;\">${errorLog.collapsedMessage}</td>"
             ]
         }

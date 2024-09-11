@@ -45,6 +45,8 @@ class ChangeHeadService {
         rawHeadRelationship.relationshipType = HeadRelationshipType.HEAD_OF_HOUSEHOLD.code
         rawHeadRelationship.startType = HeadRelationshipStartType.NEW_HEAD_OF_HOUSEHOLD.code
         rawHeadRelationship.startDate = rawChangeHead.eventDate
+        rawHeadRelationship.endType = HeadRelationshipEndType.NOT_APPLICABLE.code
+        rawHeadRelationship.endDate = null
 
         return rawHeadRelationship
     }
@@ -59,6 +61,8 @@ class ChangeHeadService {
         rawHeadRelationship.relationshipType = rawChr.newRelationshipType
         rawHeadRelationship.startType = HeadRelationshipStartType.NEW_HEAD_OF_HOUSEHOLD.code
         rawHeadRelationship.startDate = rawChangeHead.eventDate
+        rawHeadRelationship.endType = HeadRelationshipEndType.NOT_APPLICABLE.code
+        rawHeadRelationship.endDate = null
 
         return rawHeadRelationship
     }
@@ -246,9 +250,9 @@ class ChangeHeadService {
             errors << errorMessageService.getRawMessage(RawEntity.CHANGE_HEAD_OF_HOUSEHOLD, "validation.field.blank", ["householdCode"], ["householdCode"])
         }
         //C1. Check Blank Fields (oldHeadCode)
-        if (isBlankOldHeadCode){
-            errors << errorMessageService.getRawMessage(RawEntity.CHANGE_HEAD_OF_HOUSEHOLD, "validation.field.blank", ["oldHeadCode"], ["oldHeadCode"])
-        }
+        //if (isBlankOldHeadCode){
+        //    errors << errorMessageService.getRawMessage(RawEntity.CHANGE_HEAD_OF_HOUSEHOLD, "validation.field.blank", ["oldHeadCode"], ["oldHeadCode"])
+        //}
         //C1. Check Blank Fields (newHeadCode)
         if (isBlankNewHeadCode){
             errors << errorMessageService.getRawMessage(RawEntity.CHANGE_HEAD_OF_HOUSEHOLD, "validation.field.blank", ["newHeadCode"], ["newHeadCode"])
@@ -311,7 +315,7 @@ class ChangeHeadService {
             //try to create new head relationships (includes new head)
 
             def oldHeadRelationship = headRelationshipService.getHouseholdHeadRelatioship(household) //until here the oldHead is the current head
-            def currentHeadRelationships = headRelationshipService.getCurrentHeadRelationships(oldHead, household)
+            def currentHeadRelationships = headRelationshipService.getCurrentHeadRelationships(household)
             def eventDate = GeneralUtil.addDaysToDate(changeHead.eventDate, -1)  //the day of moving will be set 1 day before changing head - the last day the member was related to the current head of household
 
             //try to close all relationships
@@ -327,24 +331,35 @@ class ChangeHeadService {
 
             //close temporarily the current head
             def rawOldHeadRelationship = headRelationshipService.convertToRaw(oldHeadRelationship)
-            rawOldHeadRelationship.endType = HeadRelationshipEndType.CHANGE_OF_HEAD_OF_HOUSEHOLD.code
-            rawOldHeadRelationship.endDate = eventDate
+            if (rawOldHeadRelationship != null) {
+                rawOldHeadRelationship.endType = HeadRelationshipEndType.CHANGE_OF_HEAD_OF_HOUSEHOLD.code
+                rawOldHeadRelationship.endDate = eventDate
+            }
+
             def fakeOldHeadRelationship = headRelationshipService.createFakeHeadRelationshipFromRaw(rawOldHeadRelationship)
-println "fake old ${fakeOldHeadRelationship.memberCode} = ${fakeOldHeadRelationship.endType}"
+
             //try to create new relationships with the new head
-            newChangeHeadRelationships.each { rawChangeHeadRelationship ->
+            for (def rawChangeHeadRelationship : newChangeHeadRelationships) {
 
                 def rawHeadRelationship = createRawHeadRelationship(rawChangeHeadRelationship)
-                def currentRelationship = headRelationshipService.getCurrentHeadRelationship(rawHeadRelationship.memberCode) //get fake current head relationship for this member (close it)
+                def currentRelationship = headRelationshipService.getLastHeadRelationship(rawHeadRelationship.memberCode) //get fake current head relationship for this member (close it)
 
                 if (currentRelationship != null) {
                     def fakeCurrentRelationship = headRelationshipService.createFakeHeadRelationship(currentRelationship)
                     fakeCurrentRelationship.endType = HeadRelationshipEndType.CHANGE_OF_HEAD_OF_HOUSEHOLD
                     fakeCurrentRelationship.endDate = eventDate
 
-                    //ignore head of households (its unusual to have relationshipType=HEAD here)
                     def innerErrors = headRelationshipService.validateCreateHeadRelationship(rawHeadRelationship, fakeCurrentRelationship, fakeOldHeadRelationship)
                     errors += errorMessageService.addPrefixToMessages(innerErrors, "validation.field.changehead.prefix.msg.error", [changeHead.id])
+
+                    if (innerErrors.size() == 0 && rawHeadRelationship.relationshipType==HeadRelationshipType.HEAD_OF_HOUSEHOLD.code){
+                        //set new fake head of household
+                        fakeOldHeadRelationship = headRelationshipService.createFakeHeadRelationshipFromRaw(rawHeadRelationship)
+                    }
+
+                    if (innerErrors.size() > 0) {
+                        break //one error its enough to invalidate the record and avoid a huge message error
+                    }
                 }
             }
 

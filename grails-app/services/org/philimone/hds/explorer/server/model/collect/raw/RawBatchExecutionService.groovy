@@ -1204,8 +1204,11 @@ class RawBatchExecutionService {
             dependencyResolved = dependencyResolved && depStatus2.solved
 
             //try to solve member dependency (oldHead)
-            def depStatus3 = solveMemberDependency(oldHeadCode, "oldHeadCode", logReportFileId, eventsWithErrors)
-            dependencyResolved = dependencyResolved && depStatus3.solved
+            def depStatus3 = null as RawDependencyStatus
+            if (!StringUtil.isBlank(oldHeadCode)) {
+                depStatus3 = solveMemberDependency(oldHeadCode, "oldHeadCode", logReportFileId, eventsWithErrors)
+                dependencyResolved = dependencyResolved && depStatus3.solved
+            }
 
             //try to solve member dependency (newHead)
             def depStatus4 = solveMemberDependency(newHeadCode, "newHeadCode", logReportFileId, eventsWithErrors)
