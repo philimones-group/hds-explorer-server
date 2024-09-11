@@ -3,7 +3,6 @@ package org.philimone.hds.explorer.server.model.main
 import grails.gorm.transactions.Transactional
 import net.betainteractive.utilities.GeneralUtil
 import net.betainteractive.utilities.StringUtil
-import org.philimone.hds.explorer.server.model.collect.raw.RawExternalInMigration
 import org.philimone.hds.explorer.server.model.collect.raw.RawHeadRelationship
 import org.philimone.hds.explorer.server.model.collect.raw.RawInMigration
 import org.philimone.hds.explorer.server.model.collect.raw.RawOutMigration
@@ -325,9 +324,9 @@ class InMigrationService {
 
             if (headType == HeadRelationshipType.HEAD_OF_HOUSEHOLD) {
 
-                def currentHead = headRelationshipService.getCurrentHouseholdHead(destination)
+                def currentHead = headRelationshipService.getHouseholdHead(destination) //getLastHeadOfHouseholdRelationship(destination)
 
-                if (currentHead != null && currentHead.endType == HeadRelationshipEndType.NOT_APPLICABLE) {
+                if (currentHead != null) { //there is a current head in this household
                     //cant create inmigration-head-relationship, the household
                     errors << errorMessageService.getRawMessage(RawEntity.IN_MIGRATION, "validation.field.inmigration.external.head.not.closed.error", [rawInMigration.memberCode, rawInMigration.destinationCode], ["memberCode", "destinationCode"])
                 }
@@ -395,10 +394,11 @@ class InMigrationService {
                 if (errors.size() == 0){
 
                     //create fake old relationship
-                    def currentHead = headRelationshipService.getCurrentHouseholdHead(destination)
-                    def fakeClosedHeadRelationship = createFakeClosedHeadRelationship(currentHeadRelationship, HeadRelationshipEndType.INTERNAL_OUTMIGRATION, rawOutMigration.migrationDate)
-                    def fakeClosedHouseholdHead = createFakeClosedHeadRelationship(currentHead, HeadRelationshipEndType.INTERNAL_OUTMIGRATION, rawOutMigration.migrationDate)
-                    def innerErrors1 = headRelationshipService.validateCreateHeadRelationship(newRawHeadRelationship, fakeClosedHeadRelationship, fakeClosedHouseholdHead)
+                    def currentHead = headRelationshipService.getHouseholdHeadRelatioship(destination)
+                    def fakeCurrentHead = headRelationshipService.createFakeHeadRelationship(currentHead)
+                    def fakeClosedHeadRelationship = createFakeClosedHeadRelationship(currentHeadRelationship, HeadRelationshipEndType.INTERNAL_OUTMIGRATION, rawOutMigration.migrationDate) //its simulating a outmigrationof the member
+                    //def fakeClosedHouseholdHead = createFakeClosedHeadRelationship(currentHead, HeadRelationshipEndType.INTERNAL_OUTMIGRATION, rawOutMigration.migrationDate) //we should not fake the closed head, if yes why???
+                    def innerErrors1 = headRelationshipService.validateCreateHeadRelationship(newRawHeadRelationship, fakeClosedHeadRelationship, fakeCurrentHead)
 
                     if (innerErrors1.size()>0){
                         errors += errorMessageService.addPrefixToMessages(innerErrors1, "validation.field.inmigration.prefix.msg.error", [rawInMigration.id])

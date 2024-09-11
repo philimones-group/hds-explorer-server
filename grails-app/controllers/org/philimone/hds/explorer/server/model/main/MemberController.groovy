@@ -3,6 +3,7 @@ package org.philimone.hds.explorer.server.model.main
 import grails.converters.JSON
 import grails.validation.ValidationException
 import net.betainteractive.utilities.StringUtil
+import org.philimone.hds.explorer.server.model.settings.Codes
 
 import static org.springframework.http.HttpStatus.*
 
@@ -131,6 +132,7 @@ class MemberController {
         //FILTERS - if not null will filter
         def search_filter = (params_search != null && !"${params_search}".empty) ? "%${params_search}%" : null
         def filterer = {
+            ne('code', Codes.MEMBER_UNKNOWN_CODE)
             or {
                 if (search_filter) ilike 'code', search_filter
                 if (search_filter) ilike 'name', search_filter
@@ -165,7 +167,7 @@ class MemberController {
              'name':     member.name,
              'gender':   message(code: member.gender.name),
              'dob':      StringUtil.formatLocalDate(member.dob),
-             'householdCode':"<a href='${createLink(controller: 'household', action: 'show', id: member.household.id)}'>${member.householdCode}</a>",
+             'householdCode':"<a href='${createLink(controller: 'household', action: 'show', id: member.household?.id)}'>${member.householdCode}</a>",
              'collectedDate': StringUtil.formatLocalDateTime(member.collectedDate),
              'createdDate': StringUtil.formatLocalDateTime(member.createdDate)
             ]

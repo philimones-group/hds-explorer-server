@@ -213,7 +213,6 @@ class RegionController {
                 if (search_filter) ilike 'code', search_filter
                 if (search_filter) ilike 'name', search_filter
                 if (search_filter) ilike 'hierarchyLevel', search_filter
-                if (search_filter) ilike 'hierarchyName', search_filter
             }
         }
 
@@ -226,7 +225,6 @@ class RegionController {
                     case 'code':           order 'code',          oi[1]; break
                     case 'name':           order 'name',          oi[1]; break
                     case 'hierarchyLevel': order 'hierarchyLevel',        oi[1]; break
-                    case 'hierarchyName':  order 'hierarchyName',           oi[1]; break
                     case 'parent':         order 'parent', oi[1]; break
                     case 'createdBy':      order 'createdBy', oi[1]; break
                     case 'createdDate':    order 'createdDate',   oi[1]; break

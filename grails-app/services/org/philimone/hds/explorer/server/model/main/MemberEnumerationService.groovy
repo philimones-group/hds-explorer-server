@@ -402,9 +402,9 @@ class MemberEnumerationService {
             //check if there is a HeadOfHousehold already
             if (headRelationshipType == HeadRelationshipType.HEAD_OF_HOUSEHOLD) {
 
-                def currentHead = headRelationshipService.getCurrentHouseholdHead(household)
+                def currentHead = headRelationshipService.getHouseholdHead(household) //LastHeadOfHouseholdRelationship(household)
 
-                if (currentHead != null && currentHead.endType == HeadRelationshipEndType.NOT_APPLICABLE) {
+                if (currentHead != null) { // && currentHead.endType == HeadRelationshipEndType.NOT_APPLICABLE) {
                     //cant create inmigration-head-relationship, the household
                     errors << errorMessageService.getRawMessage(RawEntity.MEMBER_ENUMERATION, "validation.field.member.enumeration.head.not.closed.error", [memberEnu.code, currentHead.householdCode], ["memberCode", "householdCode"])
                 }

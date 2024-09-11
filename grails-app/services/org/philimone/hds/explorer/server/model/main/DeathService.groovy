@@ -8,7 +8,6 @@ import org.philimone.hds.explorer.server.model.collect.raw.RawDeathRelationship
 import org.philimone.hds.explorer.server.model.collect.raw.RawHeadRelationship
 import org.philimone.hds.explorer.server.model.enums.HeadRelationshipType
 import org.philimone.hds.explorer.server.model.enums.MaritalEndStatus
-import org.philimone.hds.explorer.server.model.enums.MaritalStartStatus
 import org.philimone.hds.explorer.server.model.enums.RawEntity
 import org.philimone.hds.explorer.server.model.enums.temporal.HeadRelationshipEndType
 import org.philimone.hds.explorer.server.model.enums.temporal.HeadRelationshipStartType
@@ -384,21 +383,29 @@ class DeathService {
 
             //try to create new relationships with the new head
             def newRawDeathRelationships = RawDeathRelationship.findAllByDeath(rawDeath)
-            if (newRawDeathRelationships.size() > 0)
-            newRawDeathRelationships.each { rawDeathRelationship ->
 
-                if (rawDeathRelationship.newRelationshipType==HeadRelationshipType.HEAD_OF_HOUSEHOLD.code) return
+            if (newRawDeathRelationships.size() > 0) {
 
-                def rawHeadRelationship = createRawHeadRelationship(rawDeathRelationship)
-                def currentRelationship = headRelationshipService.getCurrentHeadRelationship(rawHeadRelationship.memberCode) //get fake current head relationship for this member (close it)
+                def fakeHeadOfHouseholdRelationship = headRelationshipService.createFakeHeadRelationshipFromRaw(headRelationship) //if has rawDeathRelationships is a Head of Household, so will use the closed Head
 
-                if (currentRelationship != null) {
-                    currentRelationship.endType = HeadRelationshipEndType.DEATH_OF_HEAD_OF_HOUSEHOLD
-                    currentRelationship.endDate = rawDeath.deathDate
+                newRawDeathRelationships.each { rawDeathRelationship ->
 
-                    //ignore head of households (its unusual to have relationshipType=HEAD here)
-                    def innerErrors = headRelationshipService.validateCreateHeadRelationship(rawHeadRelationship, currentRelationship, null)
-                    errors += errorMessageService.addPrefixToMessages(innerErrors, "validation.field.death.prefix.msg.error", [rawDeath.id])
+                    if (rawDeathRelationship.newRelationshipType == HeadRelationshipType.HEAD_OF_HOUSEHOLD.code) {
+                        return
+                    }
+
+                    def rawHeadRelationship = createRawHeadRelationship(rawDeathRelationship)
+                    def rawCurrentRelationship = headRelationshipService.getCurrentHeadRelationshipAsRaw(rawHeadRelationship.memberCode) //get fake current head relationship for this member (close it)
+
+                    if (rawCurrentRelationship != null) {
+                        def fakeCurrentRelationship = headRelationshipService.createFakeHeadRelationshipFromRaw(rawCurrentRelationship)
+                        fakeCurrentRelationship.endType = HeadRelationshipEndType.DEATH_OF_HEAD_OF_HOUSEHOLD
+                        fakeCurrentRelationship.endDate = rawDeath.deathDate
+
+                        //ignore head of households (its unusual to have relationshipType=HEAD here)
+                        def innerErrors = headRelationshipService.validateCreateHeadRelationship(rawHeadRelationship, fakeCurrentRelationship, fakeHeadOfHouseholdRelationship)
+                        errors += errorMessageService.addPrefixToMessages(innerErrors, "validation.field.death.prefix.msg.error", [rawDeath.id])
+                    }
                 }
             }
 

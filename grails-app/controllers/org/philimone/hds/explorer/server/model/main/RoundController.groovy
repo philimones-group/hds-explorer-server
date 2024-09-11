@@ -76,7 +76,7 @@ class RoundController {
             return
         }
 
-        println "params: ${params}, ${round.description}"
+        //println "params: ${params}, ${round.description}"
 
         params.startDate = StringUtil.toLocalDateFromDate(params.getDate('startDate'))
         params.endDate = StringUtil.toLocalDateFromDate(params.getDate('endDate'))

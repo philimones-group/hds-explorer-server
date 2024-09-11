@@ -204,14 +204,15 @@ class RawBatchExecutionService {
                 //limit the number of events to execute
 
                 initialEvents = RawEvent.executeQuery("select e.id from RawEvent e where e.processed=:processed and e.eventType in (:list) order by e.eventType asc, e.keyDate asc", [processed: ProcessedStatus.NOT_PROCESSED, list: [RawEventType.EVENT_REGION, RawEventType.EVENT_HOUSEHOLD]], [max: executionLimit])
-                otherEvents = RawEvent.executeQuery("select e.id from RawEvent e where e.processed=:processed and e.eventType not in (:list) order by e.keyDate asc, e.eventType asc, e.eventOrder asc, e.entityCode asc", [processed: ProcessedStatus.NOT_PROCESSED, list: [RawEventType.EVENT_REGION, RawEventType.EVENT_HOUSEHOLD]], [max: executionLimit]) //, [offset: offset, max: max])
+                otherEvents = RawEvent.executeQuery("select e.id from RawEvent e where e.processed=:processed and e.eventType not in (:list) order by e.collectedDate asc, e.keyDate asc, e.eventType asc, e.eventOrder asc, e.entityCode asc", [processed: ProcessedStatus.NOT_PROCESSED, list: [RawEventType.EVENT_REGION, RawEventType.EVENT_HOUSEHOLD]], [max: executionLimit]) //, [offset: offset, max: max])
                 //maritalEvents = RawEvent.executeQuery("select e.id from RawEvent e where e.processed=:processed and e.eventType in (:list) order by e.keyDate asc, e.eventType asc, e.eventOrder asc", [processed: ProcessedStatus.NOT_PROCESSED, list: [RawEventType.EVENT_MARITAL_RELATIONSHIP]])
 
             } else {
                 //execute all events
 
                 initialEvents = RawEvent.executeQuery("select e.id from RawEvent e where e.processed=:processed and e.eventType in (:list) order by e.eventType asc, e.keyDate asc", [processed: ProcessedStatus.NOT_PROCESSED, list: [RawEventType.EVENT_REGION, RawEventType.EVENT_HOUSEHOLD]])
-                otherEvents = RawEvent.executeQuery("select e.id from RawEvent e where e.processed=:processed and e.eventType not in (:list) order by e.keyDate asc, e.eventType asc, e.eventOrder asc", [processed: ProcessedStatus.NOT_PROCESSED, list: [RawEventType.EVENT_REGION, RawEventType.EVENT_HOUSEHOLD]]) //, [offset: offset, max: max])
+                otherEvents = RawEvent.executeQuery("select e.id from RawEvent e where e.processed=:processed and e.eventType not in (:list) order by e.collectedDate asc, e.keyDate asc, e.eventType asc, e.eventOrder asc", [processed: ProcessedStatus.NOT_PROCESSED, list: [RawEventType.EVENT_REGION, RawEventType.EVENT_HOUSEHOLD]]) //, [offset: offset, max: max])
+                //otherEvents = RawEvent.executeQuery("select e.id from RawEvent e where e.processed=:processed and e.eventType not in (:list) order by e.keyDate asc, e.collectedDate asc, e.eventType asc, e.eventOrder asc", [processed: ProcessedStatus.NOT_PROCESSED, list: [RawEventType.EVENT_REGION, RawEventType.EVENT_HOUSEHOLD]]) //, [offset: offset, max: max])
                 //maritalEvents = RawEvent.executeQuery("select e.id from RawEvent e where e.processed=:processed and e.eventType in (:list) order by e.keyDate asc, e.eventType asc, e.eventOrder asc", [processed: ProcessedStatus.NOT_PROCESSED, list: [RawEventType.EVENT_MARITAL_RELATIONSHIP]])
             }
 
@@ -276,47 +277,111 @@ class RawBatchExecutionService {
 
         RawExecutionResult result = null
 
+
+        def skipEvent = false
+
         //check if there is a previous flagged error event for this individual - if yes dont execute this event - skip it
+        /**
+         * This process will evaluate if all the related entities data of this event has a previous event with error or not
+         */
         def errorEvent = eventsWithErrors.get(event.entityCode)
         if (errorEvent != null) {
 
-            //if (errorEvent.eventType==RawEventType.EVENT_MARITAL_RELATIONSHIP && event.eventType==RawEventType.EVENT_DEATH){
-                //SKIP killing because of a marital failed
-            //}
-
             if (event.eventType == RawEventType.EVENT_MARITAL_RELATIONSHIP) {
-                //Dont stop the execution of MARITAL RELATIONSHIP because of memberA or memberB previous event errors
-                // CONTINUE THE EXECUTION
-            } else {
-                //skip event due to previous error
+                //Dont stop the execution of MARITAL RELATIONSHIP because of memberA (or memberB - this member is not being checked here) previous event errors
 
-                println "the event [id=${event.eventId}, code=${event.entityCode}](${event.eventType.name()}) - will be skipped because a previous event [id=${errorEvent.eventId}](${errorEvent.eventType.name()}) has errors})"
-
-                def entityObj = getEntityOject(event)
-                def errorMessage = errorMessageService.getRawMessage(entityObj.entity, "validation.dependency.event.previous.error", [event.eventId, event.entityCode, event.eventType.name(), errorEvent.eventId, errorEvent.eventType.name()], [])
-                createRawEventErrorLog(entityObj.entity, event, entityObj.domainObj, "entity_code", [errorMessage], logReportFileId)
-
-                return null
+                //Unless
+                if (errorEvent.eventType == RawEventType.EVENT_MARITAL_RELATIONSHIP) {
+                    //if the previous error is a marital relationship of memberA, skip this current marital relationship
+                    skipEvent = true
+                }
             }
 
         } else if (event.eventType == RawEventType.EVENT_PREGNANCY_OUTCOME) {
-            //handle differently
+            //handle differently - this event affect other members code than the mother itself
             def codesList = StringUtil.toList(event.childCodes)
 
-            codesList?.each {
-                errorEvent = eventsWithErrors.get(it)
+            for (String code : codesList) {
+                errorEvent = eventsWithErrors.get(code)
+
                 if (errorEvent != null) {
-                    //skipped event due to previous error
-                    println "the event [id=${event.eventId},code=${event.entityCode}](${event.eventType.name()}) - will be skipped because a previous event [id=${errorEvent.eventId}](${errorEvent.eventType.name()}) has errors})"
+                    //skipped event due to previous error on this child code
+                    skipEvent = true
 
-                    def entityObj = getEntityOject(event)
-                    def errorMessage = errorMessageService.getRawMessage(entityObj.entity, "validation.dependency.event.previous.error", [event.eventId, event.entityCode, event.eventType.name(), errorEvent.eventId, errorEvent.eventType.name()], [])
-                    createRawEventErrorLog(entityObj.entity, event, entityObj.domainObj, "entity_code", [errorMessage], logReportFileId)
+                    break
+                }
+            }
+        } else if (event.eventType == RawEventType.EVENT_MARITAL_RELATIONSHIP) {
+            //means that memberA dont have a dependency error, we must check the memberB
 
-                    return null
+            def maritalRelationship = RawMaritalRelationship.findById(event.eventId)
+            if (maritalRelationship != null) {
+                //A e B -> tentaram casar e falhar
+                //C e B -> tentam casar
+
+                errorEvent = eventsWithErrors.get(maritalRelationship.memberB) //try to check the partner with has errors
+
+                if (errorEvent != null && errorEvent.eventType == RawEventType.EVENT_MARITAL_RELATIONSHIP) {
+                    //the memberB has errors and its on his marital relationship
+                    skipEvent = true
+                }
+            }
+        } else if (event.eventType == RawEventType.EVENT_CHANGE_HEAD_OF_HOUSEHOLD) {
+            //the event.entityCode represents the newHeadCode column of ChangeHead and it was verified with no errors
+            //but during this event we have other members being affected
+            //the oldHeadCode and the head relationships codes - we must check them: if they have any error event before
+
+            def changeHead = RawChangeHead.findById(event.eventId)
+
+            if (changeHead != null) {
+                def codes = [changeHead.oldHeadCode] //add oldHeadCode to list of codes to be tested
+
+                def relationships = RawChangeHeadRelationship.findAllByChangeHead(changeHead)
+                relationships.each { codes.add(it.newMemberCode) } //add all relationships member codes
+
+                for (String code : codes) {
+                    errorEvent = eventsWithErrors.get(code)
+                    if (errorEvent != null) {
+                        skipEvent = true
+                        break
+                    }
+                }
+            }
+        } else if (event.eventType == RawEventType.EVENT_DEATH) {
+            //the event.entityCode represents the member that is suppose to be dead it has been verified with no errors
+            //but during this event we have other members being affected
+            //the head relationships codes (if is the death of HOH) - we must check them: if they have any error event before
+
+            def death = RawDeath.findById(event.eventId)
+
+            if (death != null) {
+
+                //get all the relationships if they exists and test if they have error events or not
+                def relationships = RawDeathRelationship.findAllByDeath(death)
+
+                for (def relationship : relationships) {
+                    errorEvent = eventsWithErrors.get(relationship.newMemberCode)
+                    if (errorEvent != null) {
+                        skipEvent = true
+                        break
+                    }
                 }
             }
         }
+
+        //skip the event if found a related event error
+        if (skipEvent) {
+            //skip event due to previous error
+
+            println "the event [id=${event.eventId}, code=${event.entityCode}](${event.eventType.name()}) - will be skipped because a previous event [id=${errorEvent.eventId}](${errorEvent.eventType.name()}) has errors})"
+
+            def entityObj = getEntityOject(event)
+            def errorMessage = errorMessageService.getRawMessage(entityObj.entity, "validation.dependency.event.previous.error", [event.eventId, event.entityCode, event.eventType.name(), errorEvent.eventId, errorEvent.eventType.name()], [])
+            createRawEventErrorLog(entityObj.entity, event, entityObj.domainObj, "entity_code", [errorMessage], logReportFileId)
+
+            return null
+        }
+
         
         switch (event?.eventType) {
             case RawEventType.EVENT_REGION:                       result = executeRegion(event, logReportFileId, eventsWithErrors); break
@@ -335,17 +400,65 @@ class RawBatchExecutionService {
             case RawEventType.EVENT_INCOMPLETE_VISIT:             result = executeIncompleteVisit(event, logReportFileId, eventsWithErrors); break
         }
 
+        //flagging the errors
         if (result?.status == RawExecutionResult.Status.ERROR) {
             //flag the error
 
             if (event.eventType == RawEventType.EVENT_PREGNANCY_OUTCOME) {
                 //handle differently
                 def codesList = StringUtil.toList(event.childCodes)
-                codesList?.each {
-                    eventsWithErrors.put(it, event)
+                codesList?.each { code ->
+                    eventsWithErrors.put(code, event)
                 }
 
-            } else if (event.eventType != RawEventType.EVENT_MARITAL_RELATIONSHIP) { //dont include marital relationship on errors
+            } else if (event.eventType == RawEventType.EVENT_MARITAL_RELATIONSHIP) {
+                //marital relationship errors can only skip another marital relationships - but will have no effects on other events
+                def maritalRelationship = RawMaritalRelationship.findById(event.eventId)
+
+                if (maritalRelationship != null) {
+
+                    //flag memberA and memberB as errors
+                    eventsWithErrors.put(maritalRelationship.memberA, event)
+                    eventsWithErrors.put(maritalRelationship.memberB, event)
+                }
+
+            } else if (event.eventType == RawEventType.EVENT_CHANGE_HEAD_OF_HOUSEHOLD) {
+
+                //We need to flag the oldHeadCode, the newHeadCode and all HeadRelationships member codes
+                //because all these members should have an event executed for them but they failed so its not bad to execute new events on them
+
+                def changeHead = RawChangeHead.findById(event.eventId)
+
+                if (changeHead != null) {
+                    def relationships = RawChangeHeadRelationship.findAllByChangeHead(changeHead)
+
+                    //flag oldHeadCode and newHeadCode
+                    eventsWithErrors.put(changeHead.oldHeadCode, event)
+                    eventsWithErrors.put(changeHead.newHeadCode, event)
+                    //flag the head relationships members
+                    relationships.each { relationship ->
+                        eventsWithErrors.put(relationship.newMemberCode, event)
+                    }
+                }
+
+            } else if (event.eventType == RawEventType.EVENT_DEATH) {
+
+                //On death we should flag the member who is supposed to die and if he is a Head, all the head relationships members must be flagged too
+
+                eventsWithErrors.put(event.entityCode, event) //flag the member
+
+                def death = RawDeath.findById(event.eventId)
+
+                if (death != null) {
+                    def relationships = RawDeathRelationship.findAllByDeath(death)
+
+                    //if there is any head relationship flag them
+                    relationships.each { relationship ->
+                        eventsWithErrors.put(relationship.newMemberCode, event)
+                    }
+                }
+
+            } else { //other events
                 eventsWithErrors.put(event.entityCode, event)
             }
         }
@@ -355,7 +468,7 @@ class RawBatchExecutionService {
 
     RawExecutionResult createRawEventErrorLog(RawEntity entity, RawEvent rawEvent, RawDomainObj domainObj, String columnName, List<RawMessage> errors, String logReportFileId) {
         //create errorLog
-        def errorLog = new RawErrorLog(uuid: rawEvent.eventId, entity: entity, columnName: columnName, code: rawEvent.entityCode)
+        def errorLog = new RawErrorLog(uuid: rawEvent.eventId, entity: entity, collectedDate: rawEvent.collectedDate, columnName: columnName, code: rawEvent.entityCode)
         errorLog.uuid = rawEvent.eventId
         errorLog.logReportFile = LogReportFile.findById(logReportFileId)
         errorLog.setMessages(errors)
@@ -1278,7 +1391,7 @@ class RawBatchExecutionService {
         def dependencyResolved = true
         def errors = new ArrayList<RawMessage>()
 
-        def currentHead =  headRelationshipService.getCurrentActiveHouseholdHead(householdCode)//getCurrentHouseholdHead(householdCode)
+        def currentHead =  headRelationshipService.getCurrentActiveHouseholdHead(householdCode)//getLastHeadOfHouseholdRelationship(householdCode)
         def hasHouseholdHead = currentHead != null && currentHead.endType == HeadRelationshipEndType.NOT_APPLICABLE
 
         if (!hasHouseholdHead) { //couldnt find dependency
@@ -1364,7 +1477,7 @@ class RawBatchExecutionService {
             def list = RawRegion.findAllByProcessedStatus(ProcessedStatus.NOT_PROCESSED, [sort: "collectedDate", order: "asc"])
 
             list.each {
-                def rawobj = new RawEvent(keyDate: it.collectedDate, eventType: RawEventType.EVENT_REGION, eventId: it.id, entityCode: it.regionCode)
+                def rawobj = new RawEvent(keyDate: it.collectedDate, collectedDate: it.collectedDate, eventType: RawEventType.EVENT_REGION, eventId: it.id, entityCode: it.regionCode)
                 rawobj.save()
 
                 println "region errors: ${rawobj.errors}"
@@ -1386,7 +1499,7 @@ class RawBatchExecutionService {
         list.collate(500).each { batch ->
             RawHousehold.withTransaction {
                 batch.each {
-                    def event = new RawEvent(keyDate: it.collectedDate, eventType: RawEventType.EVENT_HOUSEHOLD, eventId: it.id, entityCode: it.householdCode)
+                    def event = new RawEvent(keyDate: it.collectedDate, collectedDate: it.collectedDate, eventType: RawEventType.EVENT_HOUSEHOLD, eventId: it.id, entityCode: it.householdCode)
                     event.save()
                     //println "compile house: ${event.errors}"
                 }
@@ -1408,7 +1521,7 @@ class RawBatchExecutionService {
         list.collate(500).each { batch ->
             RawVisit.withTransaction {
                 batch.each {
-                    new RawEvent(keyDate: it.visitDate.atStartOfDay(), eventType: RawEventType.EVENT_VISIT, eventId: it.id, eventHouseholdCode: it.householdCode, entityCode: it.code).save()
+                    new RawEvent(keyDate: it.visitDate.atStartOfDay(), collectedDate: it.collectedDate, eventType: RawEventType.EVENT_VISIT, eventId: it.id, eventHouseholdCode: it.householdCode, entityCode: it.code).save()
                 }
                 println "batch visit inserted: ${batch.size()}"
 
@@ -1432,7 +1545,7 @@ class RawBatchExecutionService {
         list.collate(200).each { batch ->
             RawIncompleteVisit.withTransaction {
                 batch.each {
-                    new RawEvent(keyDate: it.collectedDate, eventType: RawEventType.EVENT_INCOMPLETE_VISIT, eventId: it.id, eventHouseholdCode: it.householdCode, entityCode: it.visitCode).save()
+                    new RawEvent(keyDate: it.collectedDate, collectedDate: it.collectedDate, eventType: RawEventType.EVENT_INCOMPLETE_VISIT, eventId: it.id, eventHouseholdCode: it.householdCode, entityCode: it.visitCode).save()
                 }
             }
         }
@@ -1451,7 +1564,7 @@ class RawBatchExecutionService {
         list.collate(500).each { batch ->
             RawEvent.withTransaction {
                 batch.each {
-                    new RawEvent(keyDate: it.residencyStartDate.atStartOfDay(), eventType: RawEventType.EVENT_MEMBER_ENU, eventOrder: RawMemberOrder.getFromCode(it.headRelationshipType), eventId: it.id, eventHouseholdCode: it.householdCode, entityCode: it.code).save()
+                    new RawEvent(keyDate: it.residencyStartDate.atStartOfDay(), collectedDate: it.collectedDate, eventType: RawEventType.EVENT_MEMBER_ENU, eventOrder: RawMemberOrder.getFromCode(it.headRelationshipType), eventId: it.id, eventHouseholdCode: it.householdCode, entityCode: it.code).save()
                 }
             }
         }
@@ -1471,7 +1584,7 @@ class RawBatchExecutionService {
         list.collate(100).each { batch ->
             RawEvent.withTransaction {
                 batch.each {
-                    new RawEvent(keyDate: it.deathDate.atStartOfDay(), eventType: RawEventType.EVENT_DEATH, eventId: it.id, eventHouseholdCode: it.visitCode, entityCode: it.memberCode).save()
+                    new RawEvent(keyDate: it.deathDate.atStartOfDay(), collectedDate: it.collectedDate, eventType: RawEventType.EVENT_DEATH, eventId: it.id, eventHouseholdCode: it.visitCode, entityCode: it.memberCode).save()
                 }
             }
         }
@@ -1490,7 +1603,7 @@ class RawBatchExecutionService {
         list.collate(200).each { batch ->
             RawEvent.withTransaction {
                 batch.each {
-                    new RawEvent(keyDate: it.migrationDate.atStartOfDay(), eventType: RawEventType.EVENT_OUTMIGRATION, eventId: it.id, eventHouseholdCode: it.visitCode, entityCode: it.memberCode).save()
+                    new RawEvent(keyDate: it.migrationDate.atStartOfDay(), collectedDate: it.collectedDate, eventType: RawEventType.EVENT_OUTMIGRATION, eventId: it.id, eventHouseholdCode: it.visitCode, entityCode: it.memberCode).save()
                 }
             }
         }
@@ -1509,7 +1622,7 @@ class RawBatchExecutionService {
         list.collate(200).each { batch ->
             RawEvent.withTransaction {
                 batch.each {
-                    new RawEvent(keyDate: it.migrationDate.atStartOfDay(), eventType: RawEventType.EVENT_INTERNAL_INMIGRATION, eventOrder: RawMemberOrder.getFromCode(it.headRelationshipType), eventId: it.id, eventHouseholdCode: it.destinationCode, entityCode: it.memberCode).save()
+                    new RawEvent(keyDate: it.migrationDate.atStartOfDay(), collectedDate: it.collectedDate, eventType: RawEventType.EVENT_INTERNAL_INMIGRATION, eventOrder: RawMemberOrder.getFromCode(it.headRelationshipType), eventId: it.id, eventHouseholdCode: it.destinationCode, entityCode: it.memberCode).save()
                 }
             }
         }
@@ -1530,7 +1643,7 @@ class RawBatchExecutionService {
             RawEvent.withTransaction {
                 batch.each {
                     boolean firstEntry = it.extMigrationType == ExternalInMigrationType.ENTRY.name()
-                    new RawEvent(keyDate: it.migrationDate.atStartOfDay(), eventType: firstEntry ? RawEventType.EVENT_EXTERNAL_INMIGRATION_ENTRY : RawEventType.EVENT_EXTERNAL_INMIGRATION_REENTRY, eventOrder: RawMemberOrder.getFromCode(it.headRelationshipType), eventId: it.id, eventHouseholdCode: it.destinationCode, entityCode: it.memberCode).save()
+                    new RawEvent(keyDate: it.migrationDate.atStartOfDay(), collectedDate: it.collectedDate, eventType: firstEntry ? RawEventType.EVENT_EXTERNAL_INMIGRATION_ENTRY : RawEventType.EVENT_EXTERNAL_INMIGRATION_REENTRY, eventOrder: RawMemberOrder.getFromCode(it.headRelationshipType), eventId: it.id, eventHouseholdCode: it.destinationCode, entityCode: it.memberCode).save()
                 }
             }
         }
@@ -1550,7 +1663,7 @@ class RawBatchExecutionService {
         list.collate(200).each { batch ->
             RawEvent.withTransaction {
                 batch.each {
-                    new RawEvent(keyDate: it.recordedDate.atStartOfDay(), eventType: RawEventType.EVENT_PREGNANCY_REGISTRATION, eventId: it.id, eventHouseholdCode: it.visitCode, entityCode: it.code).save()
+                    new RawEvent(keyDate: it.recordedDate.atStartOfDay(), collectedDate: it.collectedDate, eventType: RawEventType.EVENT_PREGNANCY_REGISTRATION, eventId: it.id, eventHouseholdCode: it.visitCode, entityCode: it.code).save()
                 }
             }
         }
@@ -1571,7 +1684,7 @@ class RawBatchExecutionService {
             RawEvent.withTransaction {
                 batch.each {
                     def codes = RawPregnancyChild.executeQuery("select p.childCode from RawPregnancyChild p where p.outcome=?0", [it])
-                    def event = new RawEvent(keyDate: it.outcomeDate.atStartOfDay(), eventType: RawEventType.EVENT_PREGNANCY_OUTCOME, eventId: it.id, eventHouseholdCode: it.visitCode, entityCode: it.code)
+                    def event = new RawEvent(keyDate: it.outcomeDate.atStartOfDay(), collectedDate: it.collectedDate, eventType: RawEventType.EVENT_PREGNANCY_OUTCOME, eventId: it.id, eventHouseholdCode: it.visitCode, entityCode: it.code)
                     event.setChildCodesFrom(codes)
                     event.save()
                 }
@@ -1592,7 +1705,7 @@ class RawBatchExecutionService {
         list.collate(200).each { batch ->
             RawEvent.withTransaction {
                 batch.each {
-                    new RawEvent(keyDate: it.collectedDate, eventType: RawEventType.EVENT_MARITAL_RELATIONSHIP, eventId: it.id, eventHouseholdCode: it.collectedHouseholdId, entityCode: it.memberA).save()
+                    new RawEvent(keyDate: it.collectedDate, collectedDate: it.collectedDate, eventType: RawEventType.EVENT_MARITAL_RELATIONSHIP, eventId: it.id, eventHouseholdCode: it.collectedHouseholdId, entityCode: it.memberA).save()
                 }
             }
         }
@@ -1612,7 +1725,7 @@ class RawBatchExecutionService {
         list.collate(200).each { batch ->
             RawEvent.withTransaction {
                 batch.each {
-                    new RawEvent(keyDate: it.collectedDate, eventType: RawEventType.EVENT_MARITAL_RELATIONSHIP, eventId: it.id, eventHouseholdCode: it.collectedHouseholdId, entityCode: it.memberA).save()
+                    new RawEvent(keyDate: it.collectedDate, collectedDate: it.collectedDate, eventType: RawEventType.EVENT_MARITAL_RELATIONSHIP, eventId: it.id, eventHouseholdCode: it.collectedHouseholdId, entityCode: it.memberA).save()
                 }
             }
         }
@@ -1631,7 +1744,7 @@ class RawBatchExecutionService {
         list.collate(200).each { batch ->
             RawEvent.withTransaction {
                 batch.each {
-                    new RawEvent(keyDate: it.eventDate.atStartOfDay(), eventType: RawEventType.EVENT_CHANGE_HEAD_OF_HOUSEHOLD, eventId: it.id, eventHouseholdCode: it.householdCode, entityCode: it.newHeadCode).save()
+                    new RawEvent(keyDate: it.eventDate.atStartOfDay(), collectedDate: it.collectedDate, eventType: RawEventType.EVENT_CHANGE_HEAD_OF_HOUSEHOLD, eventId: it.id, eventHouseholdCode: it.householdCode, entityCode: it.newHeadCode).save()
                 }
             }
         }

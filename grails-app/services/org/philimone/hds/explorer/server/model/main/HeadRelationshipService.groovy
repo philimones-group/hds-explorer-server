@@ -66,7 +66,7 @@ class HeadRelationshipService {
     /*
      * Gets the last Head of Household that this household had
      */
-    HeadRelationship getCurrentHouseholdHead(Household household){
+    HeadRelationship getLastHeadOfHouseholdRelationship(Household household){
 
         if (household != null && household.id != null){
             def headRelationships = HeadRelationship.executeQuery("select r from HeadRelationship r where r.household.id=?0 and r.relationshipType=?1 and (r.status <> ?2 or r.status is null) order by r.startDate desc", [household.id, HeadRelationshipType.HEAD_OF_HOUSEHOLD, ValidatableStatus.TEMPORARILY_INACTIVE], [offset:0, max:1]) // limit 1
@@ -79,7 +79,7 @@ class HeadRelationshipService {
         return null
     }
 
-    HeadRelationship getCurrentHouseholdHead(String householdCode){
+    HeadRelationship getLastHeadOfHouseholdRelationship(String householdCode){
 
         if (!StringUtil.isBlank(householdCode)){
             def headRelationships = HeadRelationship.executeQuery("select r from HeadRelationship r where r.household.code=?0 and r.relationshipType=?1 and (r.status <> ?2 or r.status is null) order by r.startDate desc", [householdCode, HeadRelationshipType.HEAD_OF_HOUSEHOLD, ValidatableStatus.TEMPORARILY_INACTIVE], [offset:0, max:1]) // limit 1
@@ -106,13 +106,13 @@ class HeadRelationshipService {
     }
 
     boolean hasHeadOfHousehold(String householdCode) {
-        return getCurrentHouseholdHead(householdCode) != null
+        return getLastHeadOfHouseholdRelationship(householdCode) != null
     }
 
-    HeadRelationship getCurrentHouseholdHead(Member member){
+    HeadRelationship getHouseholdHeadRelatioship(Household household){
 
-        if (member != null && member?.id != null){
-            def headRelationships = HeadRelationship.executeQuery("select r from HeadRelationship r where r.member.id=?0 and r.relationshipType=?1 and (r.status <> ?2 or r.status is null) order by r.startDate desc", [member.id, HeadRelationshipType.HEAD_OF_HOUSEHOLD, ValidatableStatus.TEMPORARILY_INACTIVE], [offset:0, max:1]) // limit 1
+        if (household != null && household?.id != null){
+            def headRelationships = HeadRelationship.executeQuery("select r from HeadRelationship r where r.household=?0 and r.relationshipType=?1 and r.endType=?2 and (r.status <> ?3 or r.status is null) order by r.startDate desc", [household, HeadRelationshipType.HEAD_OF_HOUSEHOLD, HeadRelationshipEndType.NOT_APPLICABLE, ValidatableStatus.TEMPORARILY_INACTIVE], [offset:0, max:1]) // limit 1
 
             if (headRelationships != null && headRelationships.size()>0) {
                 return headRelationships.first()
@@ -122,21 +122,38 @@ class HeadRelationshipService {
         return null
     }
 
+    Member getHouseholdHead(Household household){
+
+        if (household != null && household?.id != null){
+            def members = HeadRelationship.executeQuery("select r.member from HeadRelationship r where r.household=?0 and r.relationshipType=?1 and r.endType=?2 and (r.status <> ?3 or r.status is null) order by r.startDate desc", [household, HeadRelationshipType.HEAD_OF_HOUSEHOLD, HeadRelationshipEndType.NOT_APPLICABLE, ValidatableStatus.TEMPORARILY_INACTIVE], [offset:0, max:1]) // limit 1
+
+            if (members != null && members.size()>0) {
+                return members.first()
+            }
+        }
+
+        return null
+    }
+
     boolean isHeadOfHousehold(Member member) {
-        def headRelationship = getCurrentHouseholdHead(member)
+        def headRelationship = getCurrentHeadRelationship(member)
 
         if (headRelationship != null) {
-            return (headRelationship.endType == HeadRelationshipEndType.NOT_APPLICABLE) //if true is a head of an household currently, otherwise he was an head of a household
+            return (headRelationship.relationshipType == HeadRelationshipType.HEAD_OF_HOUSEHOLD && headRelationship.endType == HeadRelationshipEndType.NOT_APPLICABLE) //if true is a head of an household currently, otherwise he was an head of a household
         }
 
         return false
     }
 
     boolean isCurrentHeadOfHousehold(Household household, Member member){
-        def currentHeadRelationship = getCurrentHouseholdHead(household)
-        def currentHead = currentHeadRelationship?.member
 
-        return currentHead?.code==member?.code
+        if (household == null || member == null) return false
+
+        def head = getHouseholdHead(household)
+
+        if (head == null) return false
+
+        return head.code?.equalsIgnoreCase(member.code)
     }
 
     List<HeadRelationship> getCurrentHeadRelationships(Member headOfHousehold, Household household){
@@ -156,6 +173,22 @@ class HeadRelationshipService {
         return getCurrentHeadRelationships(member, household)
     }
 
+    List<HeadRelationship> getCurrentHeadRelationships(Household household){
+        if (household != null && household.id != null) {
+
+            def headRelationships = HeadRelationship.executeQuery("select r from HeadRelationship r where r.household=?0 and (r.status <> ?1 or r.status is null) order by r.startDate", [household, ValidatableStatus.TEMPORARILY_INACTIVE])
+
+            return headRelationships
+
+        }
+        return null
+    }
+
+    List<HeadRelationship> getCurrentHeadRelationships(String householdCode){
+        def household = householdService.getHousehold(householdCode)
+        return getCurrentHeadRelationships(household)
+    }
+
     RawHeadRelationship getCurrentHeadRelationshipAsRaw(Member member) {
         def headRelationship = getCurrentHeadRelationship(member)
         return convertToRaw(headRelationship)
@@ -165,16 +198,6 @@ class HeadRelationshipService {
         def headRelationship = getCurrentHeadRelationship(memberCode)
         return convertToRaw(headRelationship)
     }
-
-    /*RawHeadRelationship getCurrentHeadRelationshipAsRaw(Member member, Household household) {
-        def headRelationship = getCurrentHeadRelationship(member, household)
-        return convertToRaw(headRelationship)
-    }*/
-
-    /*RawHeadRelationship getCurrentHouseholdHeadAsRaw(Household household){
-        def headRelationship = getCurrentHouseholdHead(household)
-        return convertToRaw(headRelationship)
-    }*/
 
     HeadRelationship getPreviousHeadRelationship(HeadRelationship headRelationship) {
         //get hr of member, that are not invalidated
@@ -356,7 +379,7 @@ class HeadRelationshipService {
         def relationshipType = !isBlankRelationshipType ? HeadRelationshipType.getFrom(headRelationship.relationshipType) : null
         def member = !isBlankMemberCode ? memberService.getMember(headRelationship.memberCode) : null
         def household = !isBlankHouseholdCode ? householdService.getHousehold(headRelationship.householdCode) : null
-        def head = !isBlankHouseholdCode ? getCurrentHouseholdHead(household) : null
+        def head = !isBlankHouseholdCode ? getHouseholdHead(household) : null
         def memberExists = member != null
         def householdExists = household != null
         def headExists = head != null
@@ -449,7 +472,7 @@ class HeadRelationshipService {
             //P7. C7. Check If relationshipType is HEAD and if previous head is closed
             if (relationshipType == HeadRelationshipType.HEAD_OF_HOUSEHOLD){
                 //get current household head, we can get that using the household.headMember and/or HeadRelationship
-                def previousHead = fakePreviousHouseholdHead //getCurrentHouseholdHead(household)  - get old/current head of household relationship
+                def previousHead = fakePreviousHouseholdHead //getLastHeadOfHouseholdRelationship(household)  - get old/current head of household relationship
 
                 if (previousHead != null && (previousHead.endType == null || previousHead.endType == HeadRelationshipEndType.NOT_APPLICABLE)){
                     errors << errorMessageService.getRawMessage(RawEntity.HEAD_RELATIONSHIP, "validation.field.headRelationship.type.head.not.closed.error", null, ["lastHead.endType"])
@@ -472,7 +495,7 @@ class HeadRelationshipService {
         def relationshipType = !isBlankRelationshipType ? HeadRelationshipType.getFrom(headRelationship.relationshipType) : null
         def member = !isBlankMemberCode ? memberService.getMember(headRelationship.memberCode) : null
         def household = !isBlankHouseholdCode ? householdService.getHousehold(headRelationship.householdCode) : null
-        def head = !isBlankHouseholdCode ? getCurrentHouseholdHead(household) : null
+        def head = !isBlankHouseholdCode ? getHouseholdHead(household) : null
         def memberExists = member != null
         def householdExists = household != null
         def headExists = head != null
@@ -565,9 +588,9 @@ class HeadRelationshipService {
             //P7. C7. Check If relationshipType is HEAD and if previous head is closed
             if (relationshipType == HeadRelationshipType.HEAD_OF_HOUSEHOLD){
                 //get current household head, we can get that using the household.headMember and/or HeadRelationship
-                def previousHead = getCurrentHouseholdHead(household)
+                def previousHead = getHouseholdHead(household) //getLastHeadOfHouseholdRelationship(household)
 
-                if (previousHead != null && (previousHead.endType == null || previousHead.endType == HeadRelationshipEndType.NOT_APPLICABLE)){
+                if (previousHead != null) {  //&& (previousHead.endType == null || previousHead.endType == HeadRelationshipEndType.NOT_APPLICABLE)){
                     errors << errorMessageService.getRawMessage(RawEntity.HEAD_RELATIONSHIP, "validation.field.headRelationship.type.head.not.closed.error", null, ["lastHead.endType"])
                 }
             }
@@ -655,6 +678,38 @@ class HeadRelationshipService {
         return errors
     }
 
+    HeadRelationship createFakeHeadRelationshipFromRaw(RawHeadRelationship rh) {
+        HeadRelationship headRelationship = new HeadRelationship()
+
+        headRelationship.member = memberService.getMember(rh.memberCode)
+        headRelationship.household = householdService.getHousehold(rh.householdCode)
+        headRelationship.memberCode = headRelationship.member?.code
+        headRelationship.householdCode = headRelationship.household?.code
+        headRelationship.relationshipType = HeadRelationshipType.getFrom(rh.relationshipType)
+        headRelationship.startType = HeadRelationshipStartType.getFrom(rh.startType)
+        headRelationship.startDate = rh.startDate
+        headRelationship.endType = HeadRelationshipEndType.getFrom(rh.endType)
+        headRelationship.endDate = rh.endDate
+
+        return headRelationship
+    }
+
+    HeadRelationship createFakeHeadRelationship(HeadRelationship rh) {
+        HeadRelationship headRelationship = new HeadRelationship()
+
+        headRelationship.member = memberService.getMember(rh.memberCode)
+        headRelationship.household = householdService.getHousehold(rh.householdCode)
+        headRelationship.memberCode = headRelationship.member?.code
+        headRelationship.householdCode = headRelationship.household?.code
+        headRelationship.relationshipType = rh.relationshipType
+        headRelationship.startType = rh.startType
+        headRelationship.startDate = rh.startDate
+        headRelationship.endType = rh.endType
+        headRelationship.endDate = rh.endDate
+
+        return headRelationship
+    }
+
     private HeadRelationship newHeadRelationshipInstance(RawHeadRelationship rh){
 
         HeadRelationship headRelationship = new HeadRelationship()
@@ -675,10 +730,10 @@ class HeadRelationshipService {
             headRelationship.headCode = headRelationship.member.code
         } else {
 
-            def headMemberRel = getCurrentHouseholdHead(headRelationship.household)
+            def head = getHouseholdHead(headRelationship.household) //should get the current head not the last
 
-            headRelationship.head = headMemberRel.member
-            headRelationship.headCode = headMemberRel.member.code
+            headRelationship.head = head
+            headRelationship.headCode = head?.code
         }
 
         return headRelationship
