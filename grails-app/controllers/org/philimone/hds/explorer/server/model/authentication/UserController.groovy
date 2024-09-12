@@ -42,7 +42,7 @@ class UserController {
 
         def file = request.getFile('fileUpload')
         def fileName = file.originalFilename
-        def newFile = "/tmp/userslist-web-${GeneralUtil.generateUUID()}" //SystemPath.externalDocsPath + File.separator + fileName
+        def newFile = File.createTempFile("userslist-web-${GeneralUtil.generateUUID()}", "xlsx") //SystemPath.externalDocsPath + File.separator + fileName
 
         file.transferTo(new File(newFile))
 

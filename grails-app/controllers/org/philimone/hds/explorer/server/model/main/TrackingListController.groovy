@@ -48,7 +48,7 @@ class TrackingListController {
 
         def file = request.getFile('fileUpload')
         def fileName = file.originalFilename
-        def newFile = "/tmp/tracklist-web-${GeneralUtil.generateUUID()}" //SystemPath.externalDocsPath + File.separator + fileName
+        def newFile = File.createTempFile("tracklist-web-${GeneralUtil.generateUUID()}", "xlsx")//SystemPath.externalDocsPath + File.separator + fileName
 
         file.transferTo(new File(newFile))
 
@@ -167,7 +167,7 @@ class TrackingListController {
 
         def file = request.getFile('xls_file')
         def fileName = file.originalFilename
-        def newFile = "/tmp/tracklist-web-${GeneralUtil.generateUUID()}" //SystemPath.externalDocsPath + File.separator + fileName
+        def newFile = File.createTempFile("tracklist-web-${GeneralUtil.generateUUID()}", "xlsx") //SystemPath.externalDocsPath + File.separator + fileName
 
         file.transferTo(new File(newFile))
 

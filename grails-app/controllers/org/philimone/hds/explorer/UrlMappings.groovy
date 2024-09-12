@@ -95,7 +95,8 @@ class UrlMappings {
         "/api/trackinglist/get/${id}"(controller: "trackingList", action: "get", id: "${id}") //working
         "/api/trackinglist/getsample"(controller: "trackingList", action: "downloadSampleXLS") //working
         "/api/trackinglist/gettemplate"(controller: "trackingList", action: "downloadTemplateXLS") //working
-
+        "/api/dataset/get/${id}"(controller: "dataset", action: "get", id: "${id}")
+        "/api/dataset/update/${id}"(controller: "dataset", action: "updatecsv", id: "${id}")
 
         "/download/apk"(controller: "syncFiles", action:"downloadAndroidApk")
 

@@ -697,6 +697,8 @@ class HeadRelationshipService {
     }
 
     HeadRelationship createFakeHeadRelationship(HeadRelationship rh) {
+        if (rh == null) return null
+
         HeadRelationship headRelationship = new HeadRelationship()
 
         headRelationship.member = memberService.getMember(rh.memberCode)

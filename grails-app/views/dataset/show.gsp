@@ -22,7 +22,14 @@
 			<div class="message" role="status">${flash.message}</div>
 			</g:if>
 			<ol class="property-list dataset">
-			
+
+				<g:if test="${dataSetInstance?.id}">
+					<li class="fieldcontain">
+						<span id="id-label" class="property-label"><g:message code="dataset.id.label" default="Id" /></span>
+						<span class="property-value" aria-labelledby="id-label"><g:fieldValue bean="${dataSetInstance}" field="id"/></span>
+					</li>
+				</g:if>
+
 				<g:if test="${dataSetInstance?.name}">
 				<li class="fieldcontain">
 					<span id="name-label" class="property-label"><g:message code="dataset.name.label" default="Name" /></span>

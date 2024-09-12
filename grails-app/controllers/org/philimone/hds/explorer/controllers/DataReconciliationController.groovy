@@ -60,12 +60,12 @@ class DataReconciliationController {
     def executeAll = {
 
         createLogStartup(LogReportCode.REPORT_DATA_RECONCILIATION_HOUSEHOLDS_STATUSES)
+
         new Thread(new Runnable() {
             @Override
             void run() {
                 println "executing household reconciliation"
-                def id = LogReport.findByReportId(LogReportCode.REPORT_DATA_RECONCILIATION_HOUSEHOLDS_STATUSES).id
-                dataReconciliationService.executeHouseholdStatusReconciliation(id)
+                dataReconciliationService.executeHouseholdStatusReconciliation(LogReportCode.REPORT_DATA_RECONCILIATION_HOUSEHOLDS_STATUSES)
             }
         }).start()
 
@@ -74,8 +74,7 @@ class DataReconciliationController {
             @Override
             void run() {
                 println "executing member reconciliation"
-                def id = LogReport.findByReportId(LogReportCode.REPORT_DATA_RECONCILIATION_MEMBERS_STATUSES).id
-                dataReconciliationService.executeMemberStatusReconciliation(id)
+                dataReconciliationService.executeMemberStatusReconciliation(LogReportCode.REPORT_DATA_RECONCILIATION_MEMBERS_STATUSES)
             }
         }).start()
 

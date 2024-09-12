@@ -192,7 +192,7 @@ class TrackingListService {
 
     File createTempTrackingListXLS(TrackingList trackingList) {
         def fileTemplate = getSampleFileEmptyXLS()
-        def fileXls = new File("/tmp/tracklist-${GeneralUtil.generateUUID()}.xlsx")
+        def fileXls = File.createTempFile("tracklist-${GeneralUtil.generateUUID()}", "xlsx")
 
         Files.copy(fileTemplate, fileXls);
 

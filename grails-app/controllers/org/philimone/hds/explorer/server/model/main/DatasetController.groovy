@@ -13,6 +13,7 @@ class DatasetController {
 
     def datasetService
     def moduleService
+    def errorMessageService
 
     def tableList = ["Household","Member","Region","User"]
 
@@ -214,6 +215,85 @@ class DatasetController {
                 redirect action: "index", method: "GET"
             }
             '*'{ render status: NOT_FOUND }
+        }
+    }
+
+    def get(String id) {
+        //create XLS from sample and trackinglist
+
+        def dataset = Dataset.get(id)
+
+        if (dataset == null) {
+            render text: "External Dataset with id=${id} was not found", status: BAD_REQUEST
+            return
+        }
+
+        def file = new File(dataset.filename)
+
+        if (file != null && !file.exists() ) {
+            render text: "Couldnt find the CSV file for the Dataset with id=${id}", status: BAD_REQUEST
+            return
+        }
+
+
+        render file: file, fileName: file.name, contentType:"text/csv"
+
+    }
+
+    def updatecsv(String id) {
+        //println "dataset type=${request.contentType}, id = ${id}"
+
+        def file = null
+
+        try {
+            file = request?.getFile('csv_file')
+        } catch(Exception ex) {
+            //println "ex: ${ex.message}"
+            render text: "No CSV File uploaded, missing csv_file variable", status: BAD_REQUEST
+            return
+        }
+
+
+        def fileName = file.originalFilename
+        def newFile = SystemPath.externalDocsPath + File.separator + fileName
+        file.transferTo(new File(newFile))
+        
+        //println "test ${file.originalFilename}, name=${fileName}"
+
+        if (new File(newFile).exists()) {            
+
+            def dataset = Dataset.get(id)
+            
+            if (dataset != null) {
+                //read csv file and get the list of columns
+                def columnsMap = datasetService.getColumns(newFile)
+                //retrive labels
+                def labels = ""
+                columnsMap.values().each {
+                    labels += (labels.empty ? "":",") + it
+                }
+
+                //dataset.name = datasetService.getDatasetName(fileName)
+                dataset.filename = newFile
+                dataset.tableColumnLabels = labels
+                def result = dataset.save(flush: true)
+
+                if (result?.errors != null && result?.errors?.errorCount>0){
+                    render text: errorMessageService.getRawMessagesText(result), status: BAD_REQUEST
+                    return
+                }
+
+                render text: "${result.id}", status: CREATED
+                
+            } else {
+                render text: "Coulnd't find Dataset with id=${id}", status: BAD_REQUEST
+                return
+            }
+
+        } else {
+
+            render text: "Coulnd't read the CSV file ${fileName}", status: BAD_REQUEST
+            return
         }
     }
 }
