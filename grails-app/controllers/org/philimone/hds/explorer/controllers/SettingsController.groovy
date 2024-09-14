@@ -100,13 +100,13 @@ class SettingsController {
     def getCustomOptionsColumns = {
         def columns = coreFormColumnOptionsService.getCustomOptionsColumns(params.name)
 
-        render g.select(id: "column", name: "column", from: columns)
+        render g.select(id: "column", name: "column", from: columns, optionKey: "value", optionValue: "name")
     }
 
     def renderCustomOptionsTable = {
-        //params.name
+        //println params
 
-        def dataUrl = createLink(controller: 'settings', action: 'fetchOptionsList', id: params.name)
+        def dataUrl = createLink(controller: 'settings', action: 'fetchOptionsList', params: [columnCode: params.name])
         def updateUrl = createLink(controller: 'settings', action: 'updateCustomOptions')
         def createUrl = createLink(controller: 'settings', action: 'createCustomOptions')
         def deleteUrl = createLink(controller: 'settings', action: 'deleteCustomOptions')
@@ -148,9 +148,9 @@ class SettingsController {
     }
 
     def fetchOptionsList = {
-        def list = coreFormColumnOptionsService.getOptions(params.id)
+        def list = coreFormColumnOptionsService.getOptions(params.columnCode)
 
-        //println "testing jsonx - ${params.id}"
+        //println "testing jsonx - ${params.columnCode}"
 
         render list as JSON
     }

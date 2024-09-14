@@ -29,12 +29,12 @@ class CoreFormColumnOptionsService {
     }
 
     List<String> getCustomOptionsColumns(String formName) {
-        def list = CoreFormColumnMap.findAllByFormName(formName)?.collect { it.columnName }
+        def list = CoreFormColumnMap.findAllByFormName(formName)?.collect { new JConstant(name: it.columnName, value: it.columnCode) }
         return list
     }
 
     List<CoreFormColumnOptions> getOptions(String columnName) {
-        return CoreFormColumnOptions.findAllByColumnName(columnName)
+        return CoreFormColumnOptions.findAllByColumnCode(columnName)
     }
 
     JActionResult updateOptions(String editedColumnName, String id, String newValue) {
@@ -42,22 +42,34 @@ class CoreFormColumnOptionsService {
         def columnOption = CoreFormColumnOptions.findById(id)
         def columnName = columnOption?.columnName
 
+        //check readonly
+        if (columnOption != null && columnOption.readonly) {
+            return new JActionResult(result: JActionResult.Result.ERROR.name(), message: generalUtilitiesService.getMessageWeb("settings.coreformoptions.message.readonly.label"))
+        }
+
         //check if newValue is blank
         if (StringUtil.isBlank(newValue)) {
             return new JActionResult(result: JActionResult.Result.ERROR.name(), message: generalUtilitiesService.getMessageWeb("settings.coreformoptions.message.notblank.label"))
         }
 
         //check if newValue is duplicated for that columnName
+        /*
         def resultCountOpts = CoreFormColumnOptions.executeQuery("select count(c.id) from CoreFormColumnOptions c where c.columnName = ?0 and c."+editedColumnName+" = ?1", [columnName, newValue])
 
         println "result count: ${resultCountOpts}"
 
         if (resultCountOpts.size() > 0 && resultCountOpts[0] > 0) {
             return new JActionResult(result: JActionResult.Result.ERROR.name(), message: generalUtilitiesService.getMessageWeb("settings.coreformoptions.message.option.unique.label"))
-        }
+        }*/
 
         //update the record
-        CoreFormColumnOptions.executeUpdate("update CoreFormColumnOptions set " + editedColumnName + " = ?0 where id = ?1", [newValue, id])
+        //CoreFormColumnOptions.executeUpdate("update CoreFormColumnOptions set " + editedColumnName + " = ?0 where id = ?1", [newValue, id])
+        columnOption."${editedColumnName}" = newValue
+        columnOption.save(flush: true)
+
+        if (columnOption.hasErrors()) {
+            return new JActionResult(result: JActionResult.Result.ERROR.name(), message: errorMessageService.getRawMessagesText(columnOption))
+        }
 
         return new JActionResult(result: JActionResult.Result.SUCCESS.name(), message: generalUtilitiesService.getMessageWeb("settings.coreformoptions.message.updated.label"))
     }
@@ -68,7 +80,7 @@ class CoreFormColumnOptionsService {
         def optionValue = createSampleOptionValue(otherOpt.columnName)
         def optionLabel = createSampleOptionLabel(otherOpt.columnName)
 
-        def newOpt = new CoreFormColumnOptions(columnName: otherOpt.columnName, ordinal: maxOpt ? maxOpt.ordinal + 1 : 1, optionValue: optionValue, optionLabel: optionLabel, optionLabelCode: "")
+        def newOpt = new CoreFormColumnOptions(columnCode: otherOpt.columnCode, columnName: otherOpt.columnName, ordinal: maxOpt ? maxOpt.ordinal + 1 : 1, optionValue: optionValue, optionLabel: optionLabel, optionLabelCode: "")
         newOpt = newOpt.save(flush:true)
 
         println "${newOpt?.errors}"

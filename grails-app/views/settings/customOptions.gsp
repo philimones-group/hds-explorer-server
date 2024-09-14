@@ -30,7 +30,7 @@
             function loadColumns(formName) {
                 $.ajax({
                     url: "${createLink(controller: "settings", action: "getCustomOptionsColumns")}",
-                    data: "name=" + formName,
+                    data: "name=" + encodeURIComponent(formName),
                     cache: false,
                     success: function(html) {
                         $("#column").html(html);
@@ -43,10 +43,10 @@
                 });
             }
 
-            function renderTabulator(columnName) {
+            function renderTabulator(columnCode) {
                 $.ajax({
                     url: "${createLink(controller: "settings", action: "renderCustomOptionsTable")}",
-                    data: "name=" + columnName,
+                    data: "name=" + encodeURIComponent(columnCode),
                     cache: false,
                     success: function(html) {
                         $("#optionsTable").html(html);

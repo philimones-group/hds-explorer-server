@@ -2207,6 +2207,7 @@ class SyncFilesService {
 
         //group is disabled
         element.appendChild(createAttributeNonNull(doc, "formName", formName))
+        element.appendChild(createAttributeNonNull(doc, "columnCode", options.columnCode))
         element.appendChild(createAttributeNonNull(doc, "columnName", options.columnName))
         element.appendChild(createAttributeNonNull(doc, "optionValue", options.optionValue))
         element.appendChild(createAttributeNonNull(doc, "optionLabel", "${options.optionLabel}"))

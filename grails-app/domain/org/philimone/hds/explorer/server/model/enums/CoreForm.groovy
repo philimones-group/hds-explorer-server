@@ -7,6 +7,7 @@ enum CoreForm {
     VISIT_FORM ("rawVisit", "coreFormExtension.visit.label", "visit_ext"),
     MEMBER_ENU_FORM ("rawMemberEnu", "coreFormExtension.memberenu.label", "member_ext"),
     MARITAL_RELATIONSHIP_FORM ("rawMaritalRelationship", "coreFormExtension.maritalreg.label", "marital_relationship_ext"),
+    EXT_INMIGRATION_FORM ("rawExternalInMigration", "coreFormExtension.extinmigration.label", "in_migration_ext"),
     INMIGRATION_FORM ("rawInMigration", "coreFormExtension.inmigration.label", "in_migration_ext"),
     OUTMIGRATION_FORM ("rawOutMigration", "coreFormExtension.outmigration.label", "out_migration_ext"),
     PREGNANCY_REGISTRATION_FORM ("rawPregnancyRegistration", "coreFormExtension.pregnancyreg.label", "pregnancy_registration_ext"),
