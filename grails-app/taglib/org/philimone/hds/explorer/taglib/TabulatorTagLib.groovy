@@ -111,6 +111,7 @@ class TabulatorTagLib {
                     def maction = obj.action
                     def mtype = obj.type as String
                     def mdisabledtext = obj.disabled != null ? "disabled:${obj.disabled},\n" : ""
+                    def confirmDialogText = obj.confirmDialog != null ? "${obj.confirmDialog}" : null
                     def classMenuItem = mtype?.equalsIgnoreCase("add") ? "xsave" : (mtype?.equalsIgnoreCase("remove") || mtype?.equalsIgnoreCase("delete")) ? "xdelete" : mtype?.equalsIgnoreCase("update") ? "xedit" : ""
 
                     if (i > 0) { //add separator after the first item is added
@@ -130,6 +131,17 @@ class TabulatorTagLib {
                     out << "                 action:function(e, row){\n"
                     out << "                    var jsonData = { id: '' + row.getData()?.id }; \n"
                     out << "                    \n"
+
+                    //confirm dialog
+                    if (!StringUtil.isBlank(confirmDialogText)){
+
+                        confirmDialogText = generalUtilitiesService.getMessage(confirmDialogText, confirmDialogText)
+
+                        out << "                    if (confirm('${confirmDialogText}')==false) {\n"
+                        out << "                        return;\n"
+                        out << "                    }\n"
+                    }
+
                     out << "                    \$.ajax({\n" //call a remote function and return json
                     out << "                         url: \"${maction}\",\n"
                     out << "                         type: 'POST',\n"
@@ -318,9 +330,11 @@ class TabulatorTagLib {
         def action = attrs.action
         def type = attrs.type
         def disabled = attrs.disabled
+        def confirmDialog = attrs.confirmDialog
         def disabledtext = disabled != null ? ", \"disabled\":\"${disabled}\"" : ""
+        def confirmtext = confirmDialog != null ? ", \"confirmDialog\":\"${confirmDialog}\"" : ""
 
-        out << "{\"label\": \"${label}\", \"action\": \"${action}\", \"type\": \"${type}\"${disabledtext}},"
+        out << "{\"label\": \"${label}\", \"action\": \"${action}\", \"type\": \"${type}\"${disabledtext}${confirmtext}},"
     }
 
     def column = {attrs, body ->

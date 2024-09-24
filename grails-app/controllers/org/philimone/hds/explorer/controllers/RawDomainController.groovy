@@ -1581,6 +1581,17 @@ class RawDomainController {
         render result as JSON
     }
 
+    def deleteResidencyRecord = {
+        def data = request.JSON
+        def obj = Residency.get(data.id)
+
+        println "params: ${data}, res: ${obj}"
+
+        JActionResult result = rawDomainService.deleteResidency(obj)
+
+        render result as JSON
+    }
+
     def disableHeadRelationship = {
         def data = request.JSON
         def obj = HeadRelationship.get(data.id)
@@ -1603,6 +1614,17 @@ class RawDomainController {
         render result as JSON
     }
 
+    def deleteHeadRelationshipRecord = {
+        def data = request.JSON
+        def obj = HeadRelationship.get(data.id)
+
+        println "params: ${data}, res: ${obj}"
+
+        JActionResult result = rawDomainService.deleteHeadRelationship(obj)
+
+        render result as JSON
+    }
+
     def disableMaritalRelationship = {
         def data = request.JSON
         def obj = MaritalRelationship.get(data.id)
@@ -1621,6 +1643,17 @@ class RawDomainController {
         println "params: ${data}, res: ${obj}"
 
         JActionResult result = rawDomainService.disableMaritalRelationshipEndEvent(obj)
+
+        render result as JSON
+    }
+
+    def deleteMaritalRelationshipRecord = {
+        def data = request.JSON
+        def obj = MaritalRelationship.get(data.id)
+
+        println "params: ${data}, res: ${obj}"
+
+        JActionResult result = rawDomainService.deleteMaritalRelationship(obj)
 
         render result as JSON
     }

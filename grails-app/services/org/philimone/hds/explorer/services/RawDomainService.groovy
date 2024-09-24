@@ -15,8 +15,10 @@ import org.philimone.hds.explorer.server.model.enums.temporal.ResidencyStartType
 import org.philimone.hds.explorer.server.model.json.JActionResult
 import org.philimone.hds.explorer.server.model.json.JMember
 import org.philimone.hds.explorer.server.model.main.HeadRelationship
+import org.philimone.hds.explorer.server.model.main.InMigration
 import org.philimone.hds.explorer.server.model.main.MaritalRelationship
 import org.philimone.hds.explorer.server.model.main.Member
+import org.philimone.hds.explorer.server.model.main.OutMigration
 import org.philimone.hds.explorer.server.model.main.PartiallyDisabled
 import org.philimone.hds.explorer.server.model.main.Residency
 import org.philimone.hds.explorer.server.model.main.Visit
@@ -33,7 +35,9 @@ class RawDomainService {
     def maritalRelationshipService
     def deathService
     def codeGeneratorService
+    def dataReconciliationService
     def generalUtilitiesService
+    def errorMessageService
 
     String getHouseholdCode(String code) {
         if (codeGeneratorService.isVisitCodeValid(code)) {
@@ -158,7 +162,35 @@ class RawDomainService {
         return new JActionResult(result: JActionResult.Result.ERROR, message: generalUtilitiesService.getMessage("rawDomain.helpers.temporarily.disabled.not.found.label"))
 
     }
-    
+
+    JActionResult deleteResidency(Residency obj) {
+
+        if (obj != null) {
+
+            if (InMigration.countByDestinationResidency(obj) > 0) {
+                return new JActionResult(result: JActionResult.Result.ERROR, message: message("rawDomain.helpers.delete.record.residency.inmigration.error.label"))
+            }
+
+            if (OutMigration.countByOriginResidency(obj) > 0) {
+                return new JActionResult(result: JActionResult.Result.ERROR, message: message("rawDomain.helpers.delete.record.residency.outmigration.error.label"))
+            }
+
+            try {
+                obj.delete(flush: true)
+
+                dataReconciliationService.memberStatusReconcialiationBy([obj.member?.id])
+
+            } catch(Exception ex) {
+                return new JActionResult(result: JActionResult.Result.ERROR, message: errorMessageService.getRawMessagesText(ex))
+            }
+
+            return new JActionResult(result: JActionResult.Result.SUCCESS, message: generalUtilitiesService.getMessage("rawDomain.helpers.delete.record.deleted.label"))
+        }
+
+        return new JActionResult(result: JActionResult.Result.ERROR, message: generalUtilitiesService.getMessage("rawDomain.helpers.update.record.notfound.label", ["Residency"]))
+
+    }
+
     JActionResult disableHeadRelationship(HeadRelationship obj) {
 
         if (obj != null) {
@@ -255,6 +287,26 @@ class RawDomainService {
 
     }
 
+    JActionResult deleteHeadRelationship(HeadRelationship obj) {
+
+        if (obj != null) {
+
+            try {
+                obj.delete(flush: true)
+
+                dataReconciliationService.memberStatusReconcialiationBy([obj.member?.id])
+
+            } catch(Exception ex) {
+                return new JActionResult(result: JActionResult.Result.ERROR, message: errorMessageService.getRawMessagesText(ex))
+            }
+
+            return new JActionResult(result: JActionResult.Result.SUCCESS, message: generalUtilitiesService.getMessage("rawDomain.helpers.delete.record.deleted.label"))
+        }
+
+        return new JActionResult(result: JActionResult.Result.ERROR, message: generalUtilitiesService.getMessage("rawDomain.helpers.update.record.notfound.label", ["HeadRelationship"]))
+
+    }
+
     JActionResult disableMaritalRelationship(MaritalRelationship obj) {
 
         if (obj != null) {
@@ -324,6 +376,26 @@ class RawDomainService {
 
     }
 
+    JActionResult deleteMaritalRelationship(MaritalRelationship obj) {
+
+        if (obj != null) {
+
+            try {
+                obj.delete(flush: true)
+
+                dataReconciliationService.memberStatusReconcialiationBy([obj.memberA?.id, obj.memberB?.id])
+
+            } catch(Exception ex) {
+                return new JActionResult(result: JActionResult.Result.ERROR, message: errorMessageService.getRawMessagesText(ex))
+            }
+
+            return new JActionResult(result: JActionResult.Result.SUCCESS, message: generalUtilitiesService.getMessage("rawDomain.helpers.delete.record.deleted.label"))
+        }
+
+        return new JActionResult(result: JActionResult.Result.ERROR, message: generalUtilitiesService.getMessage("rawDomain.helpers.update.record.notfound.label", ["MaritalRelationship"]))
+
+    }
+
     JActionResult updateResidencyField(String id, String columnName, String columnValue) {
 
         /*
@@ -335,7 +407,7 @@ class RawDomainService {
         def residency = Residency.get(id)
 
         if (residency == null) {
-            return new JActionResult(result: JActionResult.Result.ERROR, message: message("rawDomain.helpers.update.record.notfound.label"))
+            return new JActionResult(result: JActionResult.Result.ERROR, message: message("rawDomain.helpers.update.record.notfound.label", ["Residency"]))
         }
 
         if (columnName == null) {
@@ -460,7 +532,7 @@ class RawDomainService {
         def headRelationship = HeadRelationship.get(id)
 
         if (headRelationship == null) {
-            return new JActionResult(result: JActionResult.Result.ERROR, message: message("rawDomain.helpers.update.record.notfound.label"))
+            return new JActionResult(result: JActionResult.Result.ERROR, message: message("rawDomain.helpers.update.record.notfound.label", ["HeadRelationship"]))
         }
 
         if (columnName == null) {
@@ -600,7 +672,7 @@ class RawDomainService {
         def maritalRelationship = MaritalRelationship.get(id)
 
         if (maritalRelationship == null) {
-            return new JActionResult(result: JActionResult.Result.ERROR, message: message("rawDomain.helpers.update.record.notfound.label"))
+            return new JActionResult(result: JActionResult.Result.ERROR, message: message("rawDomain.helpers.update.record.notfound.label", ["MaritalRelationship"]))
         }
 
         if (columnName == null) {

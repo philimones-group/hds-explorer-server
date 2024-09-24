@@ -11,7 +11,7 @@
 
     <tb:menuBar>
         <tb:menu label="${message(code: 'member.maritalrelationship.add.label')}" disabled="true" />
-        <tb:menu label="${message(code: 'member.maritalrelationship.edit.label')}" disabled="true" />
+        <tb:menu label="${message(code: 'member.maritalrelationship.remove.label')}" type="remove" confirmDialog="default.button.delete.record.confirm.message" action="${createLink(controller: "rawDomain", action: "deleteMaritalRelationshipRecord")}" />
         <tb:menu label="${message(code: 'member.maritalrelationship.partial.ignore.label')}" action="${createLink(controller: 'rawDomain', action: 'disableMaritalRelationshipEndEvent')}" type="update"/>
         <tb:menu label="${message(code: 'member.maritalrelationship.ignore.label')}" action="${createLink(controller: "rawDomain", action: "disableMaritalRelationship")}" type="update"/>
     </tb:menuBar>

@@ -13,7 +13,7 @@
 
     <tb:menuBar>
         <tb:menu label="${message(code: 'member.residency.add.label')}" disabled="true" />
-        <tb:menu label="${message(code: 'member.residency.edit.label')}" disabled="true" />
+        <tb:menu label="${message(code: 'member.residency.remove.label')}" type="remove" confirmDialog="default.button.delete.record.confirm.message" action="${createLink(controller: "rawDomain", action: "deleteResidencyRecord")}" />
         <tb:menu label="${message(code: 'member.residency.partial.ignore.label')}" action="${createLink(controller: 'rawDomain', action: 'disableResidencyEndEvent')}" type="update"/>
         <tb:menu label="${message(code: 'member.residency.ignore.label')}" action="${createLink(controller: "rawDomain", action: "disableResidency")}" type="update"/>
     </tb:menuBar>
@@ -36,7 +36,7 @@
 
     <tb:menuBar>
         <tb:menu label="${message(code: 'member.headrelationship.add.label')}" disabled="true" />
-        <tb:menu label="${message(code: 'member.headrelationship.edit.label')}" disabled="true" />
+        <tb:menu label="${message(code: 'member.headrelationship.remove.label')}" type="remove" confirmDialog="default.button.delete.record.confirm.message" action="${createLink(controller: "rawDomain", action: "deleteHeadRelationshipRecord")}" />
         <tb:menu label="${message(code: 'member.headrelationship.partial.ignore.label')}" action="${createLink(controller: 'rawDomain', action: 'disableHeadRelationshipEndEvent')}" type="update"/>
         <tb:menu label="${message(code: 'member.headrelationship.ignore.label')}" action="${createLink(controller: 'rawDomain', action: 'disableHeadRelationship')}" type="update"/>
     </tb:menuBar>
