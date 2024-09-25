@@ -855,3 +855,18 @@ img.grails-logo {
     border-bottom: 1px solid #333333;
     border-left: 1px solid #CCCCCC;
 }
+
+/* Custom Jquery UI Autocomplete */
+.ui-autocomplete {
+    z-index: 99998 !important;  /* Ensure it's on top of other elements */
+    background-color: white; /* Ensure background is visible */
+    border: 1px solid #ccc;  /* Add a border */
+    max-height: 200px; /* Limit height if there are many options */
+    overflow-y: auto; /* Allow scrolling if there are many options */
+}
+
+.ui-autocomplete-loading {
+    background-image: url('../images/ui-anim_basic_16x16.gif') !important; /* Force the image to show */
+    background-position: right center !important; /* Ensure the spinner is placed at the right */
+    background-repeat: no-repeat !important; /* Prevent the image from repeating */
+}

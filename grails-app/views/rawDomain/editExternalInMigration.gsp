@@ -48,9 +48,9 @@
 
     </style>
 
-    <dt:defaultResources />
     <tb:tabulatorResources/>
     <tb:luxonResources/>
+    <tb:jquiResources/>
 </head>
 <body>
 

@@ -5,6 +5,8 @@ import net.betainteractive.utilities.StringUtil
 import org.philimone.hds.explorer.server.model.collect.raw.RawResidency
 import org.philimone.hds.explorer.server.model.enums.RawEntity
 import org.philimone.hds.explorer.server.model.enums.ValidatableStatus
+import org.philimone.hds.explorer.server.model.enums.temporal.HeadRelationshipEndType
+import org.philimone.hds.explorer.server.model.enums.temporal.HeadRelationshipStartType
 import org.philimone.hds.explorer.server.model.enums.temporal.ResidencyEndType
 import org.philimone.hds.explorer.server.model.enums.temporal.ResidencyStartType
 import org.philimone.hds.explorer.server.model.main.collect.raw.RawExecutionResult
@@ -121,6 +123,14 @@ class ResidencyService {
         return residency.id.equals(res.id)
     }
 
+    ResidencyStartType getNextStartType(Residency residency) {
+
+        if (residency.endType == ResidencyEndType.INTERNAL_OUTMIGRATION) return ResidencyStartType.INTERNAL_INMIGRATION
+        if (residency.endType == ResidencyEndType.EXTERNAL_OUTMIGRATION) return ResidencyStartType.EXTERNAL_INMIGRATION
+
+        return ResidencyStartType.INTERNAL_INMIGRATION
+    }
+
     RawResidency convertToRaw(Residency residency){
 
         if (residency == null) return null
@@ -137,7 +147,6 @@ class ResidencyService {
 
         return rr
     }
-
 
     List<RawMessage> updatesAfterCreatingResidency(Residency residency){
 

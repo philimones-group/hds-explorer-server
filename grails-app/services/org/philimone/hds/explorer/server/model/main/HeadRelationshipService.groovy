@@ -122,6 +122,17 @@ class HeadRelationshipService {
         return null
     }
 
+    List<HeadRelationship> getHouseholdHeadRelatioships(Household household){
+
+        if (household != null && household?.id != null){
+            def headRelationships = HeadRelationship.executeQuery("select r from HeadRelationship r where r.household=?0 and r.relationshipType=?1 and (r.status <> ?2 or r.status is null) order by r.startDate desc", [household, HeadRelationshipType.HEAD_OF_HOUSEHOLD, ValidatableStatus.TEMPORARILY_INACTIVE])
+
+            return headRelationships
+        }
+
+        return [] as List<HeadRelationship>
+    }
+
     Member getHouseholdHead(Household household){
 
         if (household != null && household?.id != null){
@@ -224,6 +235,17 @@ class HeadRelationshipService {
     boolean isMostRecentHeadRelationship(HeadRelationship headRelationship){
         def hr = getLastHeadRelationship(headRelationship.member)
         return headRelationship.id.equals(hr.id)
+    }
+
+    HeadRelationshipStartType getNextStartType(HeadRelationship headRelationship) {
+
+        if (headRelationship.endType == HeadRelationshipEndType.INTERNAL_OUTMIGRATION) return HeadRelationshipStartType.INTERNAL_INMIGRATION
+        if (headRelationship.endType == HeadRelationshipEndType.EXTERNAL_OUTMIGRATION) return HeadRelationshipStartType.EXTERNAL_INMIGRATION
+        if (headRelationship.endType == HeadRelationshipEndType.CHANGE_OF_HEAD_OF_HOUSEHOLD || headRelationship.endType == HeadRelationshipEndType.DEATH_OF_HEAD_OF_HOUSEHOLD) {
+            return HeadRelationshipStartType.NEW_HEAD_OF_HOUSEHOLD
+        }
+
+        return HeadRelationshipStartType.INTERNAL_INMIGRATION
     }
 
     RawHeadRelationship convertToRaw(HeadRelationship headRelationship){

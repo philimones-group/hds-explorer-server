@@ -1,6 +1,7 @@
 package org.philimone.hds.explorer.services
 
 import grails.gorm.transactions.Transactional
+import grails.web.mapping.LinkGenerator
 import net.betainteractive.utilities.StringUtil
 import grails.converters.JSON
 import org.philimone.hds.explorer.server.model.enums.BirthPlace
@@ -35,7 +36,10 @@ import org.philimone.hds.explorer.server.model.enums.temporal.ResidencyStartType
 class DataModelsService {
 
     def generalUtilitiesService
+    LinkGenerator grailsLinkGenerator
 
+    static final COLUMN_HOUSEHOLD = "household"
+    static final COLUMN_HEAD = "head"
     static final COLUMN_START_TYPE = "startType"
     static final COLUMN_START_DATE = "startDate"
     static final COLUMN_END_TYPE = "endType"
@@ -46,9 +50,6 @@ class DataModelsService {
     static final COLUMN_START_STATUS = "startStatus"
     static final COLUMN_END_STATUS = "endStatus"
     static final COLUMN_IS_POLYGAMIC = "isPolygamic"
-
-
-
 
     def static defaultEnumTypes = [
             "ResidencyStartType" : ResidencyStartType.values(),
@@ -87,6 +88,19 @@ class DataModelsService {
 
     boolean isRegisteredEnumType(String type) {
         return defaultEnumTypes.containsKey(type)
+    }
+
+    String getLookupValuesUrl(String type) {
+        def valuesType = ValuesLookup.getFrom(type)
+
+        if (valuesType == null) return ""
+
+        switch (valuesType) {
+            case ValuesLookup.HOUSEHOLD_CODES: return grailsLinkGenerator.link(controller: "Household", action: "householdCodesList")
+            case ValuesLookup.MEMBER_CODES : return grailsLinkGenerator.link(controller: "Member", action: "memberCodesList")
+        }
+
+        return ""
     }
 
     def getEnumValuesJSON(String type) {
@@ -155,5 +169,35 @@ class DataModelsService {
     class EnumValue {
         String id
         String name
+    }
+
+    enum ValuesLookup {
+
+        HOUSEHOLD_CODES ("Household.code"),
+        MEMBER_CODES ("Member.code")
+
+        String code
+
+        ValuesLookup(String code){
+            this.code = code
+        }
+
+        String getId(){
+            return code
+        }
+
+        /* Finding Enum by code */
+        private static final Map<String, ValuesLookup> MAP = new HashMap<>()
+
+        static {
+            for (ValuesLookup e: values()) {
+                MAP.put(e.code, e)
+            }
+        }
+
+        static ValuesLookup getFrom(String code) {
+            return code==null ? null : MAP.get(code)
+        }
+
     }
 }

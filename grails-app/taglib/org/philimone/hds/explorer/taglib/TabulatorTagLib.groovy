@@ -20,6 +20,11 @@ class TabulatorTagLib {
         out << "        " + asset.javascript(src: "luxon.min.js") + "\n"
     }
 
+    def jquiResources = {
+        out << "        " + asset.stylesheet(src: "jquery-ui.min.css") + "\n"
+        out << "        " + asset.javascript(src: "jquery-ui.min.js") + "\n"
+    }
+
     def tabulator = { attrs, body ->
 
         def dataUrl = attrs.data
@@ -90,6 +95,67 @@ class TabulatorTagLib {
             out << "<script type=\"text/javascript\">\n"
             out << "    \$(document).ready(function () {\n"
 
+            //create autocomplete editor
+            out << "        //Autocomplete Editor for Tabulator\n"
+            out << "        var tabulatorAutocompleteEditor = function(cell, onRendered, success, cancel, editorParams) {\n"
+            out << "            var editor = \$(\"<input type='text'>\"); //document.createElement(\"input\");\n"
+            out << "            // Set current cell value\n"
+            out << "            editor.val(cell.getValue());\n"
+            out << "\n"
+            out << "            // Initialize jQuery UI Autocomplete\n"
+            out << "            editor.autocomplete({\n"
+            out << "                source: function(request, response) {\n"
+            out << "                    if (request.term.length >= 3) {\n"
+            out << "                        \$.ajax({\n"
+            out << "                            url: \"\"+editorParams.url+\"\",\n"
+            out << "                            type: \"GET\",\n"
+            out << "                            data: { term: request.term },\n"
+            out << "                            success: function(data) {\n"
+            out << "                                response(data);\n"
+            out << "                            }\n"
+            out << "                         });\n"
+            out << "                    } else {\n"
+            out << "                        response([]);\n"
+            out << "                    }\n"
+            out << "                },\n"
+            //out << "                minLength: 3,  // Start autocomplete after typing 3 characters\n"
+            out << "                select: function(event, ui) {\n"
+            out << "                    success(ui.item.value);  // Use the selected value\n"
+            out << "                },\n"
+            out << "                close: function() {\n"
+            out << "                    //cancel();\n"
+            out << "                }\n"
+            out << "            });\n"
+            out << "\n"
+            out << "            editor.css({\n"
+            out << "                width: \"100%\",\n"
+            out << "                height: \"100%\",\n"
+            out << "                padding: \"4px\",\n"
+            out << "                boxSizing: \"border-box\"\n"
+            out << "            });\n"
+            out << "\n"
+            out << "            // Focus the input after rendering\n"
+            out << "            onRendered(function() {\n"
+            out << "                editor.appendTo(cell.getElement());\n"
+            out << "                editor.focus();\n"
+            //out << "                editor.select();\n"
+            out << "            });\n"
+            out << "\n"
+            //out << "            // Attach the input to the cell\n"
+            //out << "            \$(cell.getElement()).append(editor);\n"
+            out << "\n"
+            out << "            // Handle loss of focus to submit or cancel\n"
+            out << "            editor.on(\"keydown\", function(e) {\n"
+            out << "                if (e.keyCode === 13) { // Enter pressed\n"
+            out << "                    success(editor.val());\n"
+            out << "                } else if (e.keyCode === 27) { // Escape pressed\n"
+            out << "                    cancel();\n"
+            out << "                }\n"
+            out << "            });\n"
+            out << "\n"
+            out << "            return editor.get(0);\n"
+            out << "        };\n\n"
+
             //create menu for adding and deleting rows
             out << "        var toast = \$(\"#${attrs.toastid}\");\n"
             out << "        var toastIconInfo = \$(\"#${attrs.toastid}_icon_info\");\n"
@@ -112,6 +178,7 @@ class TabulatorTagLib {
                     def mtype = obj.type as String
                     def mdisabledtext = obj.disabled != null ? "disabled:${obj.disabled},\n" : ""
                     def confirmDialogText = obj.confirmDialog != null ? "${obj.confirmDialog}" : null
+                    def addToTableId = obj.add_to_table != null ? "${obj.add_to_table}" : null
                     def classMenuItem = mtype?.equalsIgnoreCase("add") ? "xsave" : (mtype?.equalsIgnoreCase("remove") || mtype?.equalsIgnoreCase("delete")) ? "xdelete" : mtype?.equalsIgnoreCase("update") ? "xedit" : ""
 
                     if (i > 0) { //add separator after the first item is added
@@ -130,6 +197,7 @@ class TabulatorTagLib {
 
                     out << "                 action:function(e, row){\n"
                     out << "                    var jsonData = { id: '' + row.getData()?.id }; \n"
+                    out << "                    var rowTable = row.getTable(); \n"
                     out << "                    \n"
 
                     //confirm dialog
@@ -168,12 +236,19 @@ class TabulatorTagLib {
                     out << "                                 toastTitleError.hide();\n"
                     //action
                     if (mtype?.equalsIgnoreCase("add")) {
-                        out << "                                 table.addRow(jdata); //add new row\n"
+
+                        if (addToTableId != null){
+                            //override with other table
+                            out << "                                 rowTable = Tabulator.findTable(\"#${addToTableId}\")[0];\n"
+                        }
+
+                        out << "                                 rowTable.addRow(jdata); //add new row\n"
+
                     } else if (mtype?.equalsIgnoreCase("remove") || mtype?.equalsIgnoreCase("delete")) {
                         out << "                                 row.delete();\n"
                     } else if (mtype?.equalsIgnoreCase("update")) {
                         //I would like to update the table with a value returned by json
-                        out << "                                 table.updateData(jdata); //update the row\n"
+                        out << "                                 rowTable.updateData(jdata); //update the row\n"
                     } else {
                         out << "                                 //do nothing\n"
                     }
@@ -226,7 +301,8 @@ class TabulatorTagLib {
                 def display = obj.display != null ? "${obj.display}" : null
                 def formatter = obj.formatter != null ? "${obj.formatter}" : null
 
-                def cedittext = StringUtil.isBlank(cedit) ? "" : ", editor:'${cedit}'"
+                def final_cedit = StringUtil.isBlank(cedit) ? "" : cedit.equalsIgnoreCase("autocomplete") ? "tabulatorAutocompleteEditor" : "'${cedit}'"
+                def cedittext = StringUtil.isBlank(cedit) ? "" : ", editor:${final_cedit}"
                 def ceditoptstext = ""
                 def hzaligntext = StringUtil.isBlank(hzalign) ? "" : ", ${hzalign}"
                 def vtaligntext = StringUtil.isBlank(vtalign) ? "" : ", ${vtalign}"
@@ -246,16 +322,35 @@ class TabulatorTagLib {
 
                     if (cedit.equalsIgnoreCase("list") || cedit.equalsIgnoreCase("select")) {
                         def opts = dataModelsService.isRegisteredEnumType(ceditopts) ? dataModelsService.getEnumValuesJSON(ceditopts) : ceditopts
-                        ceditoptstext += "                 values:${opts}\n"
+                        ceditoptstext += "                      values:${opts}\n"
+
+                    } else if (cedit.equalsIgnoreCase("date")) {
+                        ceditoptstext += "                      format:\"yyyy-MM-dd\""
+
+                    } else if (cedit.equalsIgnoreCase("autocomplete")) {
+
+                        def fetchUrl = dataModelsService.getLookupValuesUrl(ceditopts)
+
+                        ceditoptstext += "                      url: \"${fetchUrl}\", \n"
+                                     /*+ "                 emptyValue:null,\n" +
+                                         "                 filterRemote:true, //pass filter term\n" +
+                                         "                 filterDelay:100,\n" +
+                                         "                 autocomplete:true,\n" +
+                                         "                 allowEmpty:true,\n" +
+                                         "                 freetext:true,\n" +
+                                         "                 listOnSelect: function (e, cell, value, item) {\n" +
+                                         "                     //Override to prevent premature selection\n" +
+                                         "                     e.stopPropagation(); // Prevent auto-selection\n" +
+                                         "                 },\n" +
+                                         "                 itemFormatter: function (value, title) {\n" +
+                                         "                     return value;\n" +
+                                         "                 },\n"*/
                     }
 
-                    if (cedit.equalsIgnoreCase("date")) {
-                        ceditoptstext += "                 format:\"yyyy-MM-dd\""
-                    }
-
-                    ceditoptstext += "                 }\n"
+                    ceditoptstext += "                  }\n                 "
 
                 }
+
 
                 out << "                 {title:'${clabel}', field:'${cname}'${cedittext}${hzaligntext}${vtaligntext}, headerHozAlign:'center'${formattertext}${displaytext}${ceditoptstext}}${i+1==columnsJson.size() ? '' : ','}\n"
 
@@ -331,10 +426,12 @@ class TabulatorTagLib {
         def type = attrs.type
         def disabled = attrs.disabled
         def confirmDialog = attrs.confirmDialog
+        def addToTable = attrs.add_to_table
         def disabledtext = disabled != null ? ", \"disabled\":\"${disabled}\"" : ""
         def confirmtext = confirmDialog != null ? ", \"confirmDialog\":\"${confirmDialog}\"" : ""
+        def addToTableText = addToTable != null ? ", \"add_to_table\":\"${addToTable}\"" : ""
 
-        out << "{\"label\": \"${label}\", \"action\": \"${action}\", \"type\": \"${type}\"${disabledtext}${confirmtext}},"
+        out << "{\"label\": \"${label}\", \"action\": \"${action}\", \"type\": \"${type}\"${disabledtext}${confirmtext}${addToTableText}},"
     }
 
     def column = {attrs, body ->

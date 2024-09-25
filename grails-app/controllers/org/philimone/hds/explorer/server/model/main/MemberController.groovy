@@ -192,4 +192,15 @@ class MemberController {
 
         render result as JSON
     }
+
+    def memberCodesList = {
+        //println("params ${params.term}")
+
+        def result = Member.executeQuery("select m.code, m.name from Member m where m.code like ?0 or m.name like ?0 order by m.code", ["%"+params.term+"%"], [max: 40])
+        def codes = result.collect {
+            ['value': it[0], 'label': "${it[0]} - ${it[1]}"]
+        }
+
+        render codes as JSON
+    }
 }

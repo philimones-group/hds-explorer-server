@@ -190,4 +190,15 @@ class HouseholdController {
 
         render result as JSON
     }
+
+    def householdCodesList = {
+        //println("params ${params.term}")
+
+        def result = Household.executeQuery("select h.code, h.name from Household h where h.code like ?0 or h.name like ?0 order by h.code", ["%"+params.term+"%"], [max: 40])
+        def codes = result.collect {
+            ['value': it[0], 'label': "${it[0]} - ${it[1]}"]
+        }
+
+        render codes as JSON
+    }
 }

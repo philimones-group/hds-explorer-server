@@ -1592,6 +1592,28 @@ class RawDomainController {
         render result as JSON
     }
 
+    def createResidencyRecord = {
+        def data = request.JSON
+        def obj = Residency.get(data.id)
+
+        println "params: ${data}, res: ${obj}"
+
+        JActionResult result = rawDomainService.createResidencyBasedOn(obj)
+
+        render result as JSON
+    }
+
+    def createResidencyFromHeadRelationship = {
+        def data = request.JSON
+        def obj = HeadRelationship.get(data.id)
+
+        println "params: ${data}, res: ${obj}"
+
+        JActionResult result = rawDomainService.createResidencyBasedOnHeadRelationship(obj)
+
+        render result as JSON
+    }
+
     def disableHeadRelationship = {
         def data = request.JSON
         def obj = HeadRelationship.get(data.id)
@@ -1621,6 +1643,28 @@ class RawDomainController {
         println "params: ${data}, res: ${obj}"
 
         JActionResult result = rawDomainService.deleteHeadRelationship(obj)
+
+        render result as JSON
+    }
+
+    def createHeadRelationshipRecord = {
+        def data = request.JSON
+        def obj = HeadRelationship.get(data.id)
+
+        println "params: ${data}, res: ${obj}"
+
+        JActionResult result = rawDomainService.createHeadRelationshipBasedOn(obj)
+
+        render result as JSON
+    }
+
+    def createHeadRelationshipFromResidency = {
+        def data = request.JSON
+        def obj = Residency.get(data.id)
+
+        println "params: ${data}, res: ${obj}"
+
+        JActionResult result = rawDomainService.createHeadRelationshipBasedOnResidency(obj)
 
         render result as JSON
     }

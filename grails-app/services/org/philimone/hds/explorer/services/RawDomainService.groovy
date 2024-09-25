@@ -15,6 +15,7 @@ import org.philimone.hds.explorer.server.model.enums.temporal.ResidencyStartType
 import org.philimone.hds.explorer.server.model.json.JActionResult
 import org.philimone.hds.explorer.server.model.json.JMember
 import org.philimone.hds.explorer.server.model.main.HeadRelationship
+import org.philimone.hds.explorer.server.model.main.Household
 import org.philimone.hds.explorer.server.model.main.InMigration
 import org.philimone.hds.explorer.server.model.main.MaritalRelationship
 import org.philimone.hds.explorer.server.model.main.Member
@@ -191,6 +192,92 @@ class RawDomainService {
 
     }
 
+    JActionResult createResidencyBasedOn(Residency obj) {
+
+        if (obj != null) {
+
+            def lastRes = residencyService.getCurrentResidency(obj.member)
+
+            if (lastRes != null) {
+                if (lastRes.endType == ResidencyEndType.NOT_APPLICABLE) {
+                    return new JActionResult(result: JActionResult.Result.ERROR, message: message("rawDomain.helpers.add.residency.record.na.error.label"))
+                }
+
+                if (lastRes.endType == ResidencyEndType.DEATH) {
+                    return new JActionResult(result: JActionResult.Result.ERROR, message: message("rawDomain.helpers.add.residency.record.death.error.label"))
+                }
+            }
+
+            //create new residency record
+            def residency = new Residency()
+            residency.household = obj.household
+            residency.householdCode = obj.household?.code
+            residency.member = obj.member
+            residency.memberCode = obj.member?.code
+            residency.startType = residencyService.getNextStartType(obj)
+            residency.startDate = getNextDate(obj.endDate)
+            residency.endType = ResidencyEndType.NOT_APPLICABLE //create as non-applicable
+            residency.endDate = null
+            residency.status = ValidatableStatus.ACTIVE
+
+            residency.save(flush: true)
+
+            if (residency.hasErrors()) {
+                return new JActionResult(result: JActionResult.Result.ERROR, message: errorMessageService.getRawMessagesText(residency))
+            }
+
+
+            def data = [toResidencyValues(residency)]
+            return new JActionResult(result: JActionResult.Result.SUCCESS, data: data, message: generalUtilitiesService.getMessage("rawDomain.helpers.add.record.created.label"))
+        }
+
+        return new JActionResult(result: JActionResult.Result.ERROR, message: generalUtilitiesService.getMessage("rawDomain.helpers.add.record.notfound.label", ["Residency"]))
+
+    }
+
+    JActionResult createResidencyBasedOnHeadRelationship(HeadRelationship obj) {
+
+        if (obj != null) {
+
+            def lastRes = residencyService.getCurrentResidency(obj.member)
+
+            if (lastRes != null) {
+                if (lastRes.endType == ResidencyEndType.NOT_APPLICABLE) {
+                    return new JActionResult(result: JActionResult.Result.ERROR, message: message("rawDomain.helpers.add.residency.record.na.error.label"))
+                }
+
+                if (lastRes.endType == ResidencyEndType.DEATH) {
+                    return new JActionResult(result: JActionResult.Result.ERROR, message: message("rawDomain.helpers.add.residency.record.death.error.label"))
+                }
+            }
+
+            //create new residency record
+            def residency = new Residency()
+            residency.household = obj.household
+            residency.householdCode = obj.household?.code
+            residency.member = obj.member
+            residency.memberCode = obj.member?.code
+            residency.startType = ResidencyStartType.getFrom(obj.startType.code)==null ? ResidencyStartType.INTERNAL_INMIGRATION : ResidencyStartType.getFrom(obj.startType.code)
+            residency.startDate = obj.startDate
+            residency.endType = ResidencyEndType.getFrom(obj.endType.code)==null ? ResidencyEndType.NOT_APPLICABLE : ResidencyEndType.getFrom(obj.endType.code)
+            residency.endDate = obj.endDate
+            residency.status = ValidatableStatus.ACTIVE
+
+            residency.save(flush: true)
+
+            if (residency.hasErrors()) {
+                return new JActionResult(result: JActionResult.Result.ERROR, message: errorMessageService.getRawMessagesText(residency))
+            }
+
+
+            def data = [toResidencyValues(residency)]
+            return new JActionResult(result: JActionResult.Result.SUCCESS, data: data, message: generalUtilitiesService.getMessage("rawDomain.helpers.add.record.created.label"))
+        }
+
+        return new JActionResult(result: JActionResult.Result.ERROR, message: generalUtilitiesService.getMessage("rawDomain.helpers.add.record.notfound.label", ["Residency"]))
+
+    }
+
     JActionResult disableHeadRelationship(HeadRelationship obj) {
 
         if (obj != null) {
@@ -304,6 +391,98 @@ class RawDomainService {
         }
 
         return new JActionResult(result: JActionResult.Result.ERROR, message: generalUtilitiesService.getMessage("rawDomain.helpers.update.record.notfound.label", ["HeadRelationship"]))
+
+    }
+
+    JActionResult createHeadRelationshipBasedOn(HeadRelationship obj) {
+
+        if (obj != null) {
+
+            def lastHrel = headRelationshipService.getLastHeadRelationship(obj.member)
+
+            if (lastHrel != null) {
+                if (lastHrel.endType == HeadRelationshipEndType.NOT_APPLICABLE) {
+                    return new JActionResult(result: JActionResult.Result.ERROR, message: message("rawDomain.helpers.add.headrelationship.record.na.error.label"))
+                }
+
+                if (lastHrel.endType == HeadRelationshipEndType.DEATH) {
+                    return new JActionResult(result: JActionResult.Result.ERROR, message: message("rawDomain.helpers.add.headrelationship.record.death.error.label"))
+                }
+            }
+
+            //create new residency record
+            def headRelationship = new HeadRelationship()
+            headRelationship.household = obj.household
+            headRelationship.householdCode = obj.household?.code
+            headRelationship.member = obj.member
+            headRelationship.memberCode = obj.member?.code
+            headRelationship.head = obj.head
+            headRelationship.headCode = obj.head?.code
+            headRelationship.relationshipType = obj.relationshipType
+            headRelationship.startType = headRelationshipService.getNextStartType(obj)
+            headRelationship.startDate = getNextDate(obj.endDate)
+            headRelationship.endType = HeadRelationshipEndType.NOT_APPLICABLE //create as non-applicable
+            headRelationship.endDate = null
+            headRelationship.status = ValidatableStatus.ACTIVE
+
+            headRelationship.save(flush: true)
+
+            if (headRelationship.hasErrors()) {
+                return new JActionResult(result: JActionResult.Result.ERROR, message: errorMessageService.getRawMessagesText(headRelationship))
+            }
+
+
+            def data = [toHeadRelationshipValues(headRelationship)]
+            return new JActionResult(result: JActionResult.Result.SUCCESS, data: data, message: generalUtilitiesService.getMessage("rawDomain.helpers.add.record.created.label"))
+        }
+
+        return new JActionResult(result: JActionResult.Result.ERROR, message: generalUtilitiesService.getMessage("rawDomain.helpers.add.record.notfound.label", ["HeadRelationship"]))
+
+    }
+
+    JActionResult createHeadRelationshipBasedOnResidency(Residency obj) {
+
+        if (obj != null) {
+
+            def lastHrel = headRelationshipService.getLastHeadRelationship(obj.member)
+
+            if (lastHrel != null) {
+                if (lastHrel.endType == HeadRelationshipEndType.NOT_APPLICABLE) {
+                    return new JActionResult(result: JActionResult.Result.ERROR, message: message("rawDomain.helpers.add.headrelationship.record.na.error.label"))
+                }
+
+                if (lastHrel.endType == HeadRelationshipEndType.DEATH) {
+                    return new JActionResult(result: JActionResult.Result.ERROR, message: message("rawDomain.helpers.add.headrelationship.record.death.error.label"))
+                }
+            }
+
+            //create new residency record
+            def headRelationship = new HeadRelationship()
+            headRelationship.household = obj.household
+            headRelationship.householdCode = obj.household?.code
+            headRelationship.member = obj.member
+            headRelationship.memberCode = obj.member?.code
+            headRelationship.head = findHeadFor(obj.member, obj.household, obj.startDate)
+            headRelationship.headCode = headRelationship.head?.code
+            headRelationship.relationshipType = HeadRelationshipType.DONT_KNOW
+            headRelationship.startType = HeadRelationshipStartType.getFrom(obj.startType.code)
+            headRelationship.startDate = obj.startDate
+            headRelationship.endType = HeadRelationshipEndType.getFrom(obj.endType.code)
+            headRelationship.endDate = obj.endDate
+            headRelationship.status = obj.status
+
+            headRelationship.save(flush: true)
+
+            if (headRelationship.hasErrors()) {
+                return new JActionResult(result: JActionResult.Result.ERROR, message: errorMessageService.getRawMessagesText(headRelationship))
+            }
+
+
+            def data = [toHeadRelationshipValues(headRelationship)]
+            return new JActionResult(result: JActionResult.Result.SUCCESS, data: data, message: generalUtilitiesService.getMessage("rawDomain.helpers.add.record.created.label"))
+        }
+
+        return new JActionResult(result: JActionResult.Result.ERROR, message: generalUtilitiesService.getMessage("rawDomain.helpers.add.record.notfound.label", ["HeadRelationship"]))
 
     }
 
@@ -514,6 +693,16 @@ class RawDomainService {
             }
 
             residency.endDate = newEndDate
+        } else if (columnName.equalsIgnoreCase(DataModelsService.COLUMN_HOUSEHOLD)) {
+            //Evaluate existing of household and update values
+            def household = Household.findByCode(columnValue)
+
+            if (household == null) {
+                return new JActionResult(result: JActionResult.Result.ERROR, message: message("rawDomain.helpers.update.residency.household.not.found.error.label", [columnValue]))
+            }
+
+            residency.household = household
+            residency.householdCode = household.code
         }
 
         residency.save(flush: true)
@@ -654,6 +843,26 @@ class RawDomainService {
             //If nrt == HOH
 
             headRelationship.relationshipType = newRelationshipType
+        } else if (columnName.equalsIgnoreCase(DataModelsService.COLUMN_HOUSEHOLD)) {
+            //Evaluate existing of household and update values
+            def household = Household.findByCode(columnValue)
+
+            if (household == null) {
+                return new JActionResult(result: JActionResult.Result.ERROR, message: message("rawDomain.helpers.update.headrelationship.household.not.found.error.label", [columnValue]))
+            }
+
+            headRelationship.household = household
+            headRelationship.householdCode = household.code
+        } else if (columnName.equalsIgnoreCase(DataModelsService.COLUMN_HEAD)) {
+            //Evaluate existing of household and update values
+            def member = Member.findByCode(columnValue)
+
+            if (member == null) {
+                return new JActionResult(result: JActionResult.Result.ERROR, message: message("rawDomain.helpers.update.headrelationship.head.not.found.error.label", [columnValue]))
+            }
+
+            headRelationship.head = member
+            headRelationship.headCode = member.code
         }
 
         headRelationship.save(flush: true)
@@ -803,7 +1012,7 @@ class RawDomainService {
          'dob':      StringUtil.formatLocalDate(obj.member.dob),
          'household':       obj.household?.code,
          'head':            obj.head?.code,
-         'headRelationshipType': obj.relationshipType?.code,
+         'relationshipType': obj.relationshipType?.code,
          'startType':       obj.startType?.code,
          'startDate':       StringUtil.formatLocalDate(obj.startDate),
          'endType':         obj.endType?.code,
@@ -841,6 +1050,30 @@ class RawDomainService {
          'statusText':   generalUtilitiesService.getMessage(obj.status==null ? ValidatableStatus.ACTIVE.name : obj.status.name),
          'status':       getValidationStatus(obj.status)
         ]
+    }
+
+    LocalDate getNextDate(LocalDate date) {
+        if (date == null) return LocalDate.now()
+
+        return date.plusDays(1)
+    }
+
+    Member findHeadFor(Member member, Household household, LocalDate residencyStartDate) {
+        def relationships = headRelationshipService.getHouseholdHeadRelatioships(household)
+
+        for (def hr : relationships) {
+            if (hr.endDate != null) {
+                if (residencyStartDate >= hr.startDate && residencyStartDate <= hr.endDate) {
+                    return hr.member
+                }
+            } else if (hr.endType == HeadRelationshipEndType.NOT_APPLICABLE){
+                if (residencyStartDate >= hr.startDate) {
+                    return hr.member
+                }
+            }
+        }
+
+        return member
     }
 
     private String message(String code) {
