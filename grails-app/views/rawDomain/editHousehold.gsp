@@ -96,7 +96,7 @@
         <g:hiddenField name="reset" value="${false}" />
 
         <fieldset class="form">
-            <bi:field bean="${this.rawHousehold}" property="regionCode"    label="rawHousehold.id.label" mode="show" />
+            <bi:field bean="${this.rawHousehold}" property="id"    label="rawHousehold.id.label" mode="show" />
             <bi:field bean="${this.rawHousehold}" property="regionCode"    label="rawHousehold.regionCode.label" mode="${mode}" />
             <bi:field bean="${this.rawHousehold}" property="regionName"    label="rawHousehold.regionName.label" mode="${mode}" />
             <bi:field bean="${this.rawHousehold}" property="householdCode" label="rawHousehold.householdCode.label" mode="${mode}" />

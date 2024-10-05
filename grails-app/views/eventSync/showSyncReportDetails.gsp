@@ -4,7 +4,7 @@
 <html>
 	<head>
 		<meta name="layout" content="main">
-		<g:set var="reportName" value="${message(code: logReportFileInstance?.logReport.description)}" />
+		<g:set var="reportName" value="${message(code: logReportFileInstance?.logReport?.description)}" />
 		<g:set var="entityName" value="${message(code: 'logReport.label', default: 'LogReport')}" />
 
 		<title><g:message code="default.show.label" args="[entityName]" /></title>
@@ -26,10 +26,10 @@
 				<div class="message" role="status">${flash.message}</div>
 			</g:if>
 			<ol class="property-list logReport">
-				<g:if test="${logReportFileInstance?.logReport.description}">
+				<g:if test="${logReportFileInstance?.logReport?.description}">
 				<li class="fieldcontain">
 					<span id="description-label" class="property-label"><g:message code="logreport.description.label" default="Description" /></span>
-					<span class="property-value" aria-labelledby="description-label"><g:message code="${logReportFileInstance.logReport.description}" /></span>
+					<span class="property-value" aria-labelledby="description-label"><g:message code="${logReportFileInstance?.logReport?.description}" /></span>
 				</li>
 				</g:if>
 
@@ -86,7 +86,7 @@
 			</g:form>
 		</div>
 
-		<dt:loadDatatable name="reportsTable" data="${createLink(controller: 'eventSync', action: 'errorLogList', id: logReportFileInstance.id)}" columns="event, uuid, column, code, collectedDate, createdDate, errorMessage" />
+		<dt:loadDatatable name="reportsTable" data="${createLink(controller: 'eventSync', action: 'errorLogList', id: logReportFileInstance?.id)}" columns="event, uuid, column, code, collectedDate, createdDate, errorMessage" />
 
 	</body>
 </html>

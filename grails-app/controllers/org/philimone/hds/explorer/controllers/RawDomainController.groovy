@@ -35,6 +35,11 @@ class RawDomainController {
         def errorLog = RawErrorLog.findByUuid(params.id)
         def entity = errorLog?.entity
 
+        if (entity == RawEntity.REGION){
+            redirect action: "editRegion", params: [id: params.id]
+            return
+        }
+        
         if (entity == RawEntity.HOUSEHOLD){
             redirect action: "editHousehold", params: [id: params.id]
             return
@@ -102,6 +107,13 @@ class RawDomainController {
         redirect action: "editDomain", params: [id: params.dependencyEventId]
     }
 
+    def editRegion = {
+        def errorMessages = RawErrorLog.findByUuid(params.id)?.messages
+        def dependencyCheckResult = rawDomainService.checkDependencyErrors(errorMessages)
+
+        respond RawRegion.get(params.id), model: [mode: "edit", errorMessages: errorMessages, dependencyResult: dependencyCheckResult]
+    }
+    
     def editHousehold = {
         def errorMessages = RawErrorLog.findByUuid(params.id)?.messages
         def dependencyCheckResult = rawDomainService.checkDependencyErrors(errorMessages)
@@ -198,6 +210,37 @@ class RawDomainController {
         respond RawChangeHead.get(params.id), model: [mode: "edit", errorMessages: errorMessages, dependencyResult: dependencyCheckResult]
     }
 
+    def updateRegion = {
+
+        RawRegion rawRegion = RawRegion.get(params.id)
+
+        def reset = false
+
+        if (params.reset){
+            reset = params.reset
+        }
+
+        try {
+            bindData(rawRegion, params)
+            rawRegion.save(flush:true)
+
+            if (reset) {
+                //reset the event
+                RawRegion.executeUpdate("update RawRegion r set r.processedStatus=:status where r.id=:rawId", [status: ProcessedStatus.NOT_PROCESSED, rawId: rawRegion.id])
+                RawEvent.executeUpdate("update RawEvent r set r.processed=:status where r.eventId=:rawId", [status: ProcessedStatus.NOT_PROCESSED, rawId: rawRegion.id])
+                RawErrorLog.executeUpdate("delete from RawErrorLog r where r.uuid=?0", [rawRegion.id])
+            }
+
+        } catch (ValidationException e) {
+            respond rawRegion.errors, view:'editRegion', model: [mode: "edit", errorMessages: RawErrorLog.findByUuid(rawRegion.id)?.messages]
+            return
+        }
+
+        flash.message = message(code: 'default.updated.message', args: [message(code: 'rawRegion.label', default: 'Raw Region'), rawRegion.regionCode])
+        respond rawRegion, view:"editRegion", model: [mode: "show"]
+
+    }
+    
     def updateHousehold = {
 
         RawHousehold rawHousehold = RawHousehold.get(params.id)
@@ -596,6 +639,14 @@ class RawDomainController {
 
     }
 
+    def invalidateRegion = {
+        RawRegion rawRegion = RawRegion.get(params.id)
+        RawRegion.executeUpdate("update RawRegion r set r.processedStatus=:status where r.id=:rawId", [status: ProcessedStatus.INVALIDATED, rawId: rawRegion.id])
+
+        flash.message = message(code: 'default.updated.message', args: [message(code: 'rawRegion.label', default: 'Raw Region'), rawRegion.regionCode])
+        respond rawRegion, view:"editRegion", model: [mode: "show"]
+    }
+    
     def invalidateHousehold = {
         RawHousehold rawHousehold = RawHousehold.get(params.id)
         RawHousehold.executeUpdate("update RawHousehold r set r.processedStatus=:status where r.id=:rawId", [status: ProcessedStatus.INVALIDATED, rawId: rawHousehold.id])
@@ -750,6 +801,23 @@ class RawDomainController {
         redirect controller: "eventSync", action: "showSyncReportDetails", id: logReportFileId
     }
 
+    def deleteRegion = {
+
+        def rawObj = RawRegion.get(params.id)
+        def errorLog = RawErrorLog.findByUuid(params.id)
+        def logReportFileId = errorLog?.logReportFileId
+
+        //delete records
+        try {
+            errorLog.delete(flush: true)
+            rawObj.delete(flush: true)
+        } catch(Exception ex) {
+            ex.printStackTrace()
+        }
+        //show report details
+        redirect controller: "eventSync", action: "showSyncReportDetails", id: logReportFileId
+    }
+    
     def deleteHousehold = {
 
         def rawObj = RawHousehold.get(params.id)
