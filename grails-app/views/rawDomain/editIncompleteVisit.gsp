@@ -107,6 +107,7 @@
             <bi:field bean="${this.rawIncompleteVisit}" property="collectedBy"    label="rawIncompleteVisit.collectedBy.label" mode="show" />
             <bi:field bean="${this.rawIncompleteVisit}" property="collectedDate"    label="rawIncompleteVisit.collectedDate.label" mode="show" />
             <bi:field bean="${this.rawIncompleteVisit}" property="uploadedDate"    label="rawIncompleteVisit.uploadedDate.label" mode="show" />
+            <bi:field bean="${this.rawIncompleteVisit}" property="processedStatus"    label="rawIncompleteVisit.processedStatus.label" mode="show" valueMessage="true"/>
 
         </fieldset>
         <fieldset class="buttons">

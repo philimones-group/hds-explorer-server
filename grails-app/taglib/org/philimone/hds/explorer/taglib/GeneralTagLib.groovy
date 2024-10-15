@@ -121,7 +121,20 @@ class GeneralTagLib {
             out << "                <label for=\"${propertyName}\">\n"
             out << "                    ${labelText}\n"
             out << "                </label>\n"
-            out << "                ${propertyValue==null ? '' : objValue} \n"
+
+            if (propertyValue instanceof Collection){
+                def collection = propertyValue.collect { it.toString() }.sort()
+                out << "                <span class=\"property-value\" aria-labelledby=\"${propertyName}\">\n"
+                out << "                <ul>\n"
+                collection.each {
+                    out << "                   <li class=\"list-style-type: square;\">${it}</li> \n"
+                }
+                out << "                </ul> \n"
+                out << "                </span>\n"
+            } else {
+                out << "                ${propertyValue==null ? '' : objValue} \n"
+            }
+
             out << "            </div>\n"
 
         } else {

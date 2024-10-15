@@ -7,6 +7,7 @@ import net.betainteractive.utilities.StringUtil
 import org.philimone.hds.explorer.server.model.authentication.User
 import org.philimone.hds.explorer.io.SystemPath
 import org.philimone.hds.explorer.server.model.enums.FormType
+import org.philimone.hds.explorer.server.model.enums.PregnancyStatus
 import org.philimone.hds.explorer.server.model.enums.ValidatableStatus
 import org.philimone.hds.explorer.server.model.enums.settings.LogReportCode
 import org.philimone.hds.explorer.server.model.logs.LogReport
@@ -1813,6 +1814,7 @@ class SyncFilesService {
         try {
             //read forms
             def resultPregnancyRegistrations = PregnancyRegistration.executeQuery("select p.id from PregnancyRegistration p")
+            def resultPregOutcomes = PregnancyOutcome.executeQuery("select po.id from PregnancyOutcome po left join PregnancyRegistration pr on po.code=pr.code where pr.code is null")
 
             DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
@@ -1830,6 +1832,21 @@ class SyncFilesService {
                     count++;
 
                     Element element = createPregnancyRegistration(doc, pregnancyregistration);
+                    rootElement.appendChild(element);
+
+                    if (count % 3000 == 0) {
+                        cleanUpGorm()
+                    }
+                }
+            }
+
+            //include codes from pregnancy outcome withou pregnancy registration
+            resultPregOutcomes.collate(1000).each { batch ->
+                def list = PregnancyOutcome.findAllByIdInList(batch)
+                list.each { PregnancyOutcome pregnancyoutcome ->
+                    count++;
+
+                    Element element = createPregnancyRegistrationFromPregOutcome(doc, pregnancyoutcome);
                     rootElement.appendChild(element);
 
                     if (count % 3000 == 0) {
@@ -2454,6 +2471,28 @@ class SyncFilesService {
         element.appendChild(createAttributeNonNull(doc, "visitCode", pregnancyregistration.visitCode))
 
         element.appendChild(createAttributeNonNull(doc, "collectedId", pregnancyregistration.collectedId==null ? "" : pregnancyregistration.collectedId))
+
+        return element
+    }
+
+    private Element createPregnancyRegistrationFromPregOutcome(Document doc, PregnancyOutcome pregnancyoutcome) {
+        Element element = doc.createElement("pregnancyregistration")
+
+        element.appendChild(createAttributeNonNull(doc, "code", pregnancyoutcome.code))
+        element.appendChild(createAttributeNonNull(doc, "motherCode", pregnancyoutcome.motherCode))
+        element.appendChild(createAttributeNonNull(doc, "recordedDate", StringUtil.format(pregnancyoutcome.outcomeDate, "yyyy-MM-dd")))
+        element.appendChild(createAttributeNonNull(doc, "pregMonths", ""))
+        element.appendChild(createAttributeNonNull(doc, "eddKnown", ""))
+        element.appendChild(createAttributeNonNull(doc, "hasPrenatalRecord", ""))
+        element.appendChild(createAttributeNonNull(doc, "eddDate", ""))
+        element.appendChild(createAttributeNonNull(doc, "eddType", ""))
+        element.appendChild(createAttributeNonNull(doc, "lmpKnown", ""))
+        element.appendChild(createAttributeNonNull(doc, "lmpDate", ""))
+        element.appendChild(createAttributeNonNull(doc, "expectedDeliveryDate", ""))
+        element.appendChild(createAttributeNonNull(doc, "status", PregnancyStatus.DELIVERED.code))
+        element.appendChild(createAttributeNonNull(doc, "visitCode", pregnancyoutcome.visitCode))
+
+        element.appendChild(createAttributeNonNull(doc, "collectedId", pregnancyoutcome.collectedId==null ? "" : pregnancyoutcome.collectedId))
 
         return element
     }

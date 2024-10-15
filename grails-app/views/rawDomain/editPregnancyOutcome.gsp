@@ -112,10 +112,12 @@
             <bi:field bean="${this.rawPregnancyOutcome}" property="birthPlaceOther"    label="rawPregnancyOutcome.birthPlaceOther.label" mode="${mode}" />
             <bi:field bean="${this.rawPregnancyOutcome}" property="visitCode"    label="rawPregnancyOutcome.visitCode.label" mode="${mode}" />
             <bi:field bean="${this.rawPregnancyOutcome}" property="modules"    label="rawPregnancyOutcome.modules.label" mode="${mode}" />
+            <bi:field bean="${this.rawPregnancyOutcome}" property="childs"    label="rawPregnancyOutcome.childs.label" mode="show" />
 
             <bi:field bean="${this.rawPregnancyOutcome}" property="collectedBy"    label="rawPregnancyOutcome.collectedBy.label" mode="show" />
             <bi:field bean="${this.rawPregnancyOutcome}" property="collectedDate"    label="rawPregnancyOutcome.collectedDate.label" mode="show" />
             <bi:field bean="${this.rawPregnancyOutcome}" property="uploadedDate"    label="rawPregnancyOutcome.uploadedDate.label" mode="show" />
+            <bi:field bean="${this.rawPregnancyOutcome}" property="processedStatus"    label="rawPregnancyOutcome.processedStatus.label" mode="show" valueMessage="true"/>
 
         </fieldset>
 
@@ -141,6 +143,10 @@
                     <g:message code="rawDomain.helpers.button.household.residents.label" />
                 </button>
 
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#show_member_pregnancies">
+                    <g:message code="rawDomain.helpers.button.show.member.pregnancies.label" />
+                </button>
+
                 <g:if test="${dependencyResult.hasDependencyError==true}">
                     <g:hiddenField name="dependencyEventId" value="${dependencyResult.dependencyEventId}" />
 
@@ -149,9 +155,20 @@
                     </button>
                 </g:if>
 
+                <g:if test="${rawPregnancyRegId}" >
+                    <g:hiddenField name="dependencyEventId" value="${rawPregnancyRegId}" />
+                    <g:hiddenField name="dependencyEventEntity" value="${org.philimone.hds.explorer.server.model.enums.RawEntity.PREGNANCY_REGISTRATION.name()}" />
+
+                    <button type="submit" class="btn btn-primary" data-toggle="button" >
+                        <g:message code="rawDomain.helpers.button.show.raw.pregnancyreg.label" />
+                    </button>
+                </g:if>
+
                 <g:render template="show_member_residencies_hrelationships"/>
 
                 <g:render template="show_household_residents"/>
+
+                <g:render template="show_member_pregnancies"/>
 
             </g:if>
             <g:else>

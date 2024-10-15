@@ -111,6 +111,7 @@
             <bi:field bean="${this.rawHousehold}" property="collectedBy"    label="rawHousehold.collectedBy.label" mode="show" />
             <bi:field bean="${this.rawHousehold}" property="collectedDate"    label="rawHousehold.collectedDate.label" mode="show" />
             <bi:field bean="${this.rawHousehold}" property="uploadedDate"    label="rawHousehold.uploadedDate.label" mode="show" />
+            <bi:field bean="${this.rawHousehold}" property="processedStatus"    label="rawHousehold.processedStatus.label" mode="show" valueMessage="true"/>
 
         </fieldset>
         <fieldset class="buttons">

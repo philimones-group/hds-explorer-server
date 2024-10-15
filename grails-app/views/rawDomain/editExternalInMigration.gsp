@@ -122,6 +122,7 @@
             <bi:field bean="${this.rawExternalInMigration}" property="collectedBy"    label="rawExternalInMigration.collectedBy.label" mode="show" />
             <bi:field bean="${this.rawExternalInMigration}" property="collectedDate"    label="rawExternalInMigration.collectedDate.label" mode="show" />
             <bi:field bean="${this.rawExternalInMigration}" property="uploadedDate"    label="rawExternalInMigration.uploadedDate.label" mode="show" />
+            <bi:field bean="${this.rawExternalInMigration}" property="processedStatus"    label="rawExternalInMigration.processedStatus.label" mode="show" valueMessage="true"/>
 
         </fieldset>
 

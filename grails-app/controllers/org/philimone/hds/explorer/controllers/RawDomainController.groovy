@@ -15,6 +15,8 @@ import org.philimone.hds.explorer.server.model.enums.temporal.ResidencyEndType
 import org.philimone.hds.explorer.server.model.json.JActionResult
 import org.philimone.hds.explorer.server.model.main.HeadRelationship
 import org.philimone.hds.explorer.server.model.main.MaritalRelationship
+import org.philimone.hds.explorer.server.model.main.PregnancyOutcome
+import org.philimone.hds.explorer.server.model.main.PregnancyRegistration
 import org.philimone.hds.explorer.server.model.main.Residency
 
 @Transactional
@@ -25,15 +27,15 @@ class RawDomainController {
 
     def index = {
         //the bootstrap button show dependency error submit - will call the index when clicked, just retrieve the id and edit domain
-        redirect action: "editDomain", params: [id: params.dependencyEventId]
+        redirect action: "editDomain", params: [id: params.dependencyEventId, entity: params.dependencyEventEntity]
     }
 
     def editDomain = {
 
-        //println "id=" + params.id
+        println "id=" + params.id + ", entity=" + params.entity
 
         def errorLog = RawErrorLog.findByUuid(params.id)
-        def entity = errorLog?.entity
+        def entity = errorLog != null ? errorLog?.entity : params.entity ? RawEntity.getFrom(params.entity) : null as RawEntity
 
         if (entity == RawEntity.REGION){
             redirect action: "editRegion", params: [id: params.id]
@@ -181,19 +183,22 @@ class RawDomainController {
     }
 
     def editPregnancyRegistration = {
+        def obj = RawPregnancyRegistration.get(params.id)
         def errorMessages = RawErrorLog.findByUuid(params.id)?.messages
+        def member = rawDomainService.getBasicMember(obj?.motherCode)
         def dependencyCheckResult = rawDomainService.checkDependencyErrors(errorMessages)
 
-        respond RawPregnancyRegistration.get(params.id), model: [mode: "edit", errorMessages: errorMessages, dependencyResult: dependencyCheckResult]
+        respond obj, model: [mode: "edit", errorMessages: errorMessages, dependencyResult: dependencyCheckResult, member: member]
     }
 
     def editPregnancyOutcome = {
         def obj = RawPregnancyOutcome.get(params.id)
         def member = rawDomainService.getBasicMember(obj?.motherCode)
+        def rawPregReg = RawPregnancyRegistration.findByCodeAndVisitCode(obj?.code, obj?.visitCode)
         def errorMessages = RawErrorLog.findByUuid(params.id)?.messages
         def dependencyCheckResult = rawDomainService.checkDependencyErrors(errorMessages)
 
-        respond obj, model: [mode: "edit", errorMessages: errorMessages, dependencyResult: dependencyCheckResult, member: member]
+        respond obj, model: [mode: "edit", errorMessages: errorMessages, dependencyResult: dependencyCheckResult, member: member, rawPregnancyRegId: rawPregReg?.id]
     }
 
     def editMaritalRelationship = {
@@ -522,6 +527,11 @@ class RawDomainController {
             bindData(rawPregnancyRegistration, params)
             rawPregnancyRegistration.save(flush:true)
 
+            if (!previousCode.equalsIgnoreCase(rawPregnancyRegistration.code)) {
+                //code changed - we should change also the rawPregnancyRegistration
+                rawDomainService.updatePregnancyOutcome(rawPregnancyRegistration, previousCode)
+            }
+
             if (reset) {
                 //reset the event
                 RawPregnancyRegistration.executeUpdate("update RawPregnancyRegistration r set r.processedStatus=:status where r.id=:rawId", [status: ProcessedStatus.NOT_PROCESSED, rawId: rawPregnancyRegistration.id])
@@ -552,8 +562,16 @@ class RawDomainController {
         params.outcomeDate = StringUtil.toLocalDateFromDate(params.getDate('outcomeDate'))
 
         try {
+
+            def previousCode = rawPregnancyOutcome.code
+
             bindData(rawPregnancyOutcome, params)
             rawPregnancyOutcome.save(flush:true)
+
+            if (!previousCode.equalsIgnoreCase(rawPregnancyOutcome.code)) {
+                //code changed - we should change also the rawPregnancyRegistration
+                rawDomainService.updatePregnancyRegistration(rawPregnancyOutcome, previousCode)
+            }
 
             if (reset) {
                 //reset the event
@@ -1623,6 +1641,66 @@ class RawDomainController {
         }
 
         //def result = [draw: jqdtParams.draw, recordsTotal: recordsTotal, recordsFiltered: recordsFiltered, data: objects]
+
+        render objects as JSON
+    }
+
+    def fetchMemberPregnanciesList = {
+
+        def member_code = params.id
+
+        //def residencies = Residency.findAllByHouseholdCodeAndEndType(household_code, ResidencyEndType.NOT_APPLICABLE)
+        def registrations = PregnancyRegistration.withCriteria {
+            eq("motherCode", member_code)
+            order("recordedDate", "asc")
+        }
+
+        //println "household=${member_code}, ${residencies?.size()}"
+
+        //Display records
+        def objects = registrations.collect { obj ->
+            ['id':     obj.id,
+             'code':     obj.code,
+             'motherCode':     obj.motherCode,
+             'visitCode':     obj.visitCode,
+             'recordedDate':   StringUtil.formatLocalDate(obj.recordedDate),
+             'pregMonths':      obj.pregMonths,
+             'expectedDeliveryDate':       StringUtil.formatLocalDate(obj.expectedDeliveryDate),
+             'status':          generalUtilitiesService.getMessage(obj.status?.name)
+            ]
+        }
+
+
+        render objects as JSON
+    }
+
+    def fetchMemberOutcomesList = {
+
+        def member_code = params.id
+
+        //def residencies = Residency.findAllByHouseholdCodeAndEndType(household_code, ResidencyEndType.NOT_APPLICABLE)
+        def outcomes = PregnancyOutcome.withCriteria {
+            eq("motherCode", member_code)
+            order("outcomeDate", "asc")
+        }
+
+        //println "household=${member_code}, ${residencies?.size()}"
+
+        //Display records
+        def objects = outcomes.collect { obj ->
+
+            def childs = obj.childs.collect { it.childCode }
+
+            ['id':               obj.id,
+             'code':             obj.code,
+             'motherCode':       obj.motherCode,
+             'visitCode':        obj.visitCode,
+             'outcomeDate':      StringUtil.formatLocalDate(obj.outcomeDate),
+             'numberOfOutcomes': obj.numberOfOutcomes,
+             'childs':           "${childs}"
+            ]
+        }
+
 
         render objects as JSON
     }

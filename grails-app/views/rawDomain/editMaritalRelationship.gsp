@@ -114,6 +114,7 @@
             <bi:field bean="${this.rawMaritalRelationship}" property="collectedBy"    label="rawMaritalRelationship.collectedBy.label" mode="show" />
             <bi:field bean="${this.rawMaritalRelationship}" property="collectedDate"    label="rawMaritalRelationship.collectedDate.label" mode="show" />
             <bi:field bean="${this.rawMaritalRelationship}" property="uploadedDate"    label="rawMaritalRelationship.uploadedDate.label" mode="show" />
+            <bi:field bean="${this.rawMaritalRelationship}" property="processedStatus"    label="rawMaritalRelationship.processedStatus.label" mode="show" valueMessage="true"/>
 
         </fieldset>
 

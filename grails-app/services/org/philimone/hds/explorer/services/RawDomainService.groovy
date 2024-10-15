@@ -2,9 +2,12 @@ package org.philimone.hds.explorer.services
 
 import grails.gorm.transactions.Transactional
 import net.betainteractive.utilities.StringUtil
+import org.philimone.hds.explorer.server.model.collect.raw.RawPregnancyOutcome
+import org.philimone.hds.explorer.server.model.collect.raw.RawPregnancyRegistration
 import org.philimone.hds.explorer.server.model.enums.HeadRelationshipType
 import org.philimone.hds.explorer.server.model.enums.MaritalEndStatus
 import org.philimone.hds.explorer.server.model.enums.MaritalStartStatus
+import org.philimone.hds.explorer.server.model.enums.ProcessedStatus
 import org.philimone.hds.explorer.server.model.enums.ValidatableEntity
 import org.philimone.hds.explorer.server.model.enums.ValidatableStatus
 import org.philimone.hds.explorer.server.model.enums.temporal.HeadRelationshipEndType
@@ -21,6 +24,8 @@ import org.philimone.hds.explorer.server.model.main.MaritalRelationship
 import org.philimone.hds.explorer.server.model.main.Member
 import org.philimone.hds.explorer.server.model.main.OutMigration
 import org.philimone.hds.explorer.server.model.main.PartiallyDisabled
+import org.philimone.hds.explorer.server.model.main.PregnancyOutcome
+import org.philimone.hds.explorer.server.model.main.PregnancyRegistration
 import org.philimone.hds.explorer.server.model.main.Residency
 import org.philimone.hds.explorer.server.model.main.Visit
 import org.philimone.hds.explorer.server.model.main.collect.raw.RawMessage
@@ -1096,6 +1101,40 @@ class RawDomainService {
         }
 
         return new RawDependencyCheckResult(hasDependencyError: false)
+    }
+
+    def updatePregnancyRegistration(RawPregnancyOutcome rawPregnancyOutcome, String previousCode) {
+        //find raw pregnancy registration related to this outcome if it exists and change its code too
+        def rawPregReg = RawPregnancyRegistration.findByCodeAndVisitCode(previousCode, rawPregnancyOutcome.visitCode)
+
+        if (rawPregReg != null) {
+            def newCode = rawPregnancyOutcome.code
+            rawPregReg.code = newCode
+            rawPregReg.save(flush: true)
+
+            def prePreg = PregnancyRegistration.findByCollectedId(rawPregReg.id)
+            if (prePreg != null) {
+                prePreg.code = newCode
+                prePreg.save(flush: true)
+            }
+        }
+    }
+
+    def updatePregnancyOutcome(RawPregnancyRegistration rawPregnancyRegistration, String previousCode) {
+        //find raw pregnancy registration related to this outcome if it exists and change its code too
+        def rawPregOut = RawPregnancyOutcome.findByCodeAndVisitCode(previousCode, rawPregnancyRegistration.visitCode)
+
+        if (rawPregOut != null) {
+            def newCode = rawPregnancyRegistration.code
+            rawPregOut.code = newCode
+            rawPregOut.save(flush: true)
+
+            def preOut = PregnancyOutcome.findByCollectedId(rawPregOut.id)
+            if (preOut != null) {
+                preOut.code = newCode
+                preOut.save(flush: true)
+            }
+        }
     }
 
     class RawDependencyCheckResult {

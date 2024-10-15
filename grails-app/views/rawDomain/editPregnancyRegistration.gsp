@@ -47,6 +47,8 @@
         }
 
     </style>
+
+    <tb:tabulatorResources />
 </head>
 <body>
 
@@ -116,13 +118,27 @@
             <bi:field bean="${this.rawPregnancyRegistration}" property="collectedDate"    label="rawPregnancyRegistration.collectedDate.label" mode="show" />
             <bi:field bean="${this.rawPregnancyRegistration}" property="uploadedDate"    label="rawPregnancyRegistration.uploadedDate.label" mode="show" />
 
+            <bi:field bean="${this.rawPregnancyRegistration}" property="processedStatus"    label="rawPregnancyRegistration.processedStatus.label" mode="show" valueMessage="true"/>
+
         </fieldset>
+
+        <g:set var="household_code" value="${this.rawPregnancyRegistration.visitCode?.replaceAll('-.+','')}" />
+        <g:set var="household_name" value="${member?.householdName}" />
+        <g:set var="member_code" value="${this.rawPregnancyRegistration.motherCode}" />
+        <g:set var="member_name" value="${member?.name}" />
+        <g:set var="member_gender" value="${member?.gender}" />
+        <g:set var="member_dob" value="${member?.dob}" />
+
         <fieldset class="buttons">
             <g:if test="${mode == "edit"}">
                 <g:actionSubmit class="save" value="${message(code: "rawDomain.update.reset.label")}" action="updatePregnancyRegistration" onclick="updateReset('true')" />
                 <g:actionSubmit class="save" value="${message(code: "rawDomain.update.label")}" action="updatePregnancyRegistration" />
                 <g:actionSubmit class="save" value="${message(code: "rawDomain.invalidate.label")}" action="invalidatePregnancyRegistration" />
                 <g:actionSubmit class="delete" value="${message(code: 'default.button.delete.label')}" action="deletePregnancyRegistration" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');" />
+
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#show_member_pregnancies">
+                    <g:message code="rawDomain.helpers.button.show.member.pregnancies.label" />
+                </button>
 
                 <g:if test="${dependencyResult.hasDependencyError==true}">
                     <g:hiddenField name="dependencyEventId" value="${dependencyResult.dependencyEventId}" />
@@ -131,6 +147,9 @@
                         <g:message code="rawDomain.helpers.button.show.dependency.label" />
                     </button>
                 </g:if>
+
+                <g:render template="show_member_pregnancies"/>
+
             </g:if>
             <g:else>
                 <g:link class="edit" action="editPregnancyRegistration" id="${this.rawPregnancyRegistration.id}" ><g:message code="rawDomain.edit.label" /></g:link>

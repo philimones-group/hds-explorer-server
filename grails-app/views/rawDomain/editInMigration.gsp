@@ -117,6 +117,7 @@
             <bi:field bean="${this.rawInMigration}" property="collectedBy"    label="rawInMigration.collectedBy.label" mode="show" />
             <bi:field bean="${this.rawInMigration}" property="collectedDate"    label="rawInMigration.collectedDate.label" mode="show" />
             <bi:field bean="${this.rawInMigration}" property="uploadedDate"    label="rawInMigration.uploadedDate.label" mode="show" />
+            <bi:field bean="${this.rawInMigration}" property="processedStatus"    label="rawInMigration.processedStatus.label" mode="show" valueMessage="true"/>
 
         </fieldset>
 

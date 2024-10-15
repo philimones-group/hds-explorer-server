@@ -121,6 +121,7 @@
             <bi:field bean="${this.rawMemberEnu}" property="collectedBy"    label="rawMemberEnu.collectedBy.label" mode="show" />
             <bi:field bean="${this.rawMemberEnu}" property="collectedDate"    label="rawMemberEnu.collectedDate.label" mode="show" />
             <bi:field bean="${this.rawMemberEnu}" property="uploadedDate"    label="rawMemberEnu.uploadedDate.label" mode="show" />
+            <bi:field bean="${this.rawMemberEnu}" property="processedStatus"    label="rawMemberEnu.processedStatus.label" mode="show" valueMessage="true"/>
 
         </fieldset>
 

@@ -113,6 +113,7 @@
             <bi:field bean="${this.rawChangeHead}" property="collectedBy"    label="rawChangeHead.collectedBy.label" mode="show" />
             <bi:field bean="${this.rawChangeHead}" property="collectedDate"    label="rawChangeHead.collectedDate.label" mode="show" />
             <bi:field bean="${this.rawChangeHead}" property="uploadedDate"    label="rawChangeHead.uploadedDate.label" mode="show" />
+            <bi:field bean="${this.rawChangeHead}" property="processedStatus"    label="rawChangeHead.processedStatus.label" mode="show" valueMessage="true"/>
 
 
         </fieldset>

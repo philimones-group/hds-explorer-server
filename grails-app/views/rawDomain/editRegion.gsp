@@ -104,6 +104,7 @@
             <bi:field bean="${this.rawRegion}" property="collectedBy"    label="rawRegion.collectedBy.label" mode="show" />
             <bi:field bean="${this.rawRegion}" property="collectedDate"    label="rawRegion.collectedDate.label" mode="show" />
             <bi:field bean="${this.rawRegion}" property="uploadedDate"    label="rawRegion.uploadedDate.label" mode="show" />
+            <bi:field bean="${this.rawRegion}" property="processedStatus"    label="rawRegion.processedStatus.label" mode="show" valueMessage="true"/>
 
         </fieldset>
         <fieldset class="buttons">

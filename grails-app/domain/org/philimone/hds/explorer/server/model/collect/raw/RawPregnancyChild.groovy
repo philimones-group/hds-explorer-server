@@ -20,6 +20,11 @@ class RawPregnancyChild {
 
     static belongsTo = [outcome:RawPregnancyOutcome]
 
+    @Override
+    String toString() {
+        "${childCode}"
+    }
+
     static constraints = {
         id maxSize: 32
 
