@@ -162,6 +162,20 @@ class DataModelsService {
         return list
     }
 
+    List<RegionLevel> findRegionLevelLike(String text) {
+        def list = []
+
+        if (text==null) return RegionLevel.values().toList()
+
+        RegionLevel.values().each { regionLevel ->
+            def msg = message(regionLevel.name)
+            if (msg?.toLowerCase()?.contains(text?.toLowerCase())){
+                list.add(regionLevel)
+            }
+        }
+        return list
+    }
+
     private String message(String code) {
         generalUtilitiesService.getMessage(code, code)
     }

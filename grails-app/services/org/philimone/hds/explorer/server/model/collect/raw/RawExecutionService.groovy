@@ -15,6 +15,7 @@ import org.philimone.hds.explorer.server.model.main.OutMigration
 import org.philimone.hds.explorer.server.model.main.PregnancyOutcome
 import org.philimone.hds.explorer.server.model.main.PregnancyRegistration
 import org.philimone.hds.explorer.server.model.main.Region
+import org.philimone.hds.explorer.server.model.main.RegionHeadRelationship
 import org.philimone.hds.explorer.server.model.main.collect.raw.RawExecutionResult
 import org.philimone.hds.explorer.server.model.main.Visit
 
@@ -37,6 +38,7 @@ class RawExecutionService {
     def visitService
     def incompleteVisitService
     def changeHeadService
+    def changeRegionHeadService
 
     //Receive a RawModel, execute it and flag errors
 
@@ -311,6 +313,27 @@ class RawExecutionService {
             errorLog.save(flush:true)
 
             println "incvisit: ${errorLog.errors}"
+        }
+
+        rawDomainInstance.refresh()
+        rawDomainInstance.processedStatus = getProcessedStatus(result.status)
+        rawDomainInstance.save(flush:true)
+
+        return result
+
+    }
+
+    RawExecutionResult<RegionHeadRelationship> createChangeRegionHead(RawChangeRegionHead rawDomainInstance, String logReportFileId){
+
+       def result = changeRegionHeadService.createChangeRegionHead(rawDomainInstance)
+
+        if (result.status == RawExecutionResult.Status.ERROR){
+            //create errorLog
+            def errorLog = new RawErrorLog(uuid: rawDomainInstance.id, entity: result.entity, collectedDate: rawDomainInstance.collectedDate, columnName: "newHeadCode", code: rawDomainInstance.newHeadCode)
+            errorLog.uuid = rawDomainInstance.id
+            errorLog.logReportFile = LogReportFile.findById(logReportFileId)
+            errorLog.setMessages(result.errorMessages)
+            errorLog.save(flush:true)
         }
 
         rawDomainInstance.refresh()

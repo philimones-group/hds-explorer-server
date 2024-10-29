@@ -14,6 +14,7 @@ class RegionController {
 
     RegionService regionService
     ModuleService moduleService
+    def dataModelsService
 
     //static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
 
@@ -203,16 +204,19 @@ class RegionController {
         def params_search = jqdtParams.search?.value
         def columnsList = jqdtParams.columns.collect { k, v -> v.data }
         def orderList = jqdtParams.order.collect { k, v -> [columnsList[v.column as Integer], v.dir] }
+        def entitiesList = dataModelsService.findRegionLevelLike("${params_search}")
 
         //code, name, hierarchyLevel, hierarchyName, parent, createdBy, createdDate
 
         //FILTERS - if not null will filter
+        //we must search also hierarchyLevel.code, hierarchyLevel.name.i18n, parent.name
         def search_filter = (params_search != null && !"${params_search}".empty) ? "%${params_search}%" : null
         def filterer = {
             or {
                 if (search_filter) ilike 'code', search_filter
                 if (search_filter) ilike 'name', search_filter
-                if (search_filter) ilike 'hierarchyLevel', search_filter
+                if (search_filter) 'in'('hierarchyLevel', entitiesList)
+                //if (search_filter) ilike 'hierarchyLevel', search_filter
             }
         }
 
@@ -241,6 +245,7 @@ class RegionController {
              'name':           obj.name,
              'hierarchyLevel': obj.hierarchyLevel.code,
              'hierarchyName':  message(code: obj.hierarchyLevel.name),
+             'head':           obj.head ? "${obj.head?.code} - ${obj.head?.name}" : "",
              'parent':         "<a href='${createLink(controller: 'region', action: 'show', id: obj.parent?.id)}'>${obj}</a>",
              'createdBy':      obj.createdBy?.getFullname(),
              'createdDate':    StringUtil.formatLocalDateTime(obj.createdDate)

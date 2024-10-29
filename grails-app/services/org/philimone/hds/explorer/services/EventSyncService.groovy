@@ -21,6 +21,7 @@ class EventSyncService {
     def rawBatchExecutionService
     def dataReconciliationService
     def generalUtilitiesService
+    def settingsService
 
     def executeAll(LogReportCode logReportId, int executionLimit) {
 
@@ -357,6 +358,10 @@ class EventSyncService {
             list.add(getDeathStatus())
             list.add(getChangeHeadStatus())
             list.add(getIncompleteVisitStatus())
+
+            if (settingsService.getRegionHeadSupport()){
+                list.add(getChangeRegionHeadStatus())
+            }
         }
 
         return list
@@ -598,6 +603,21 @@ class EventSyncService {
         status.notProcessed = RawIncompleteVisit.countByProcessedStatus(ProcessedStatus.NOT_PROCESSED)
         status.invalidated = RawIncompleteVisit.countByProcessedStatus(ProcessedStatus.INVALIDATED)
         //status.otherCases = RawIncompleteVisit.countByProcessedStatus(ProcessedStatus.)
+
+        return status
+    }
+
+    SyncProcessedStatus getChangeRegionHeadStatus(){
+        SyncProcessedStatus status = new SyncProcessedStatus()
+
+        //total records
+        status.name = 'syncdss.sync.changeregionhead.label'
+        status.totalRecords = -1
+        status.processed = RawChangeRegionHead.countByProcessedStatus(ProcessedStatus.SUCCESS)
+        status.processedWithError = RawChangeRegionHead.countByProcessedStatus(ProcessedStatus.ERROR)
+        status.notProcessed = RawChangeRegionHead.countByProcessedStatus(ProcessedStatus.NOT_PROCESSED)
+        status.invalidated = RawChangeRegionHead.countByProcessedStatus(ProcessedStatus.INVALIDATED)
+        //status.otherCases = RawChangeRegionHead.countByProcessedStatus(ProcessedStatus.)
 
         return status
     }

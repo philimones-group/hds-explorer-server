@@ -17,6 +17,7 @@ import org.philimone.hds.explorer.server.model.main.HeadRelationship
 import org.philimone.hds.explorer.server.model.main.MaritalRelationship
 import org.philimone.hds.explorer.server.model.main.PregnancyOutcome
 import org.philimone.hds.explorer.server.model.main.PregnancyRegistration
+import org.philimone.hds.explorer.server.model.main.RegionHeadRelationship
 import org.philimone.hds.explorer.server.model.main.Residency
 
 @Transactional
@@ -99,6 +100,11 @@ class RawDomainController {
 
         if (entity == RawEntity.CHANGE_HEAD_OF_HOUSEHOLD){
             redirect action: "editChangeHead", params: [id: params.id]
+            return
+        }
+
+        if (entity == RawEntity.CHANGE_HEAD_OF_REGION){
+            redirect action: "editChangeRegionHead", params: [id: params.id]
             return
         }
 
@@ -213,6 +219,13 @@ class RawDomainController {
         def dependencyCheckResult = rawDomainService.checkDependencyErrors(errorMessages)
 
         respond RawChangeHead.get(params.id), model: [mode: "edit", errorMessages: errorMessages, dependencyResult: dependencyCheckResult]
+    }
+
+    def editChangeRegionHead = {
+        def errorMessages = RawErrorLog.findByUuid(params.id)?.messages
+        def dependencyCheckResult = rawDomainService.checkDependencyErrors(errorMessages)
+
+        respond RawChangeRegionHead.get(params.id), model: [mode: "edit", errorMessages: errorMessages, dependencyResult: dependencyCheckResult]
     }
 
     def updateRegion = {
@@ -657,6 +670,39 @@ class RawDomainController {
 
     }
 
+    def updateChangeRegionHead = {
+
+        RawChangeRegionHead rawChangeRegionHead = RawChangeRegionHead.get(params.id)
+
+        def reset = false
+
+        if (params.reset){
+            reset = params.reset
+        }
+
+        params.eventDate = StringUtil.toLocalDateFromDate(params.getDate('eventDate'))
+
+        try {
+            bindData(rawChangeRegionHead, params)
+            rawChangeRegionHead.save(flush:true)
+
+            if (reset) {
+                //reset the event
+                RawChangeRegionHead.executeUpdate("update RawChangeRegionHead r set r.processedStatus=:status where r.id=:rawId", [status: ProcessedStatus.NOT_PROCESSED, rawId: rawChangeRegionHead.id])
+                RawEvent.executeUpdate("update RawEvent r set r.processed=:status where r.eventId=:rawId", [status: ProcessedStatus.NOT_PROCESSED, rawId: rawChangeRegionHead.id])
+                RawErrorLog.executeUpdate("delete from RawErrorLog r where r.uuid=?0", [rawChangeRegionHead.id])
+            }
+
+        } catch (ValidationException e) {
+            respond rawChangeRegionHead.errors, view:'editChangeRegionHead', model: [mode: "edit", errorMessages: RawErrorLog.findByUuid(rawChangeRegionHead.id)?.messages]
+            return
+        }
+
+        flash.message = message(code: 'default.updated.message', args: [message(code: 'rawChangeHead.label', default: 'Raw Change Head'), rawChangeRegionHead.newHeadCode])
+        respond rawChangeRegionHead, view:"editChangeRegionHead", model: [mode: "show"]
+
+    }
+
     def invalidateRegion = {
         RawRegion rawRegion = RawRegion.get(params.id)
         RawRegion.executeUpdate("update RawRegion r set r.processedStatus=:status where r.id=:rawId", [status: ProcessedStatus.INVALIDATED, rawId: rawRegion.id])
@@ -758,6 +804,14 @@ class RawDomainController {
         RawChangeHead.executeUpdate("update RawChangeHead r set r.processedStatus=:status where r.id=:rawId", [status: ProcessedStatus.INVALIDATED, rawId: rawChangeHead.id])
 
         flash.message = message(code: 'default.updated.message', args: [message(code: 'rawChangeHead.label', default: 'Raw Change Head'), rawChangeHead.newHeadCode])
+        respond rawChangeHead, view:"editChangeHead", model: [mode: "show"]
+    }
+
+    def invalidateChangeRegionHead = {
+        RawChangeRegionHead rawChangeHead = RawChangeRegionHead.get(params.id)
+        RawChangeRegionHead.executeUpdate("update RawChangeRegionHead r set r.processedStatus=:status where r.id=:rawId", [status: ProcessedStatus.INVALIDATED, rawId: rawChangeHead.id])
+
+        flash.message = message(code: 'default.updated.message', args: [message(code: 'rawChangeRegionHead.label', default: 'Raw Change Region Head'), rawChangeHead.newHeadCode])
         respond rawChangeHead, view:"editChangeHead", model: [mode: "show"]
     }
 
@@ -983,6 +1037,25 @@ class RawDomainController {
         try {
             errorLog.delete(flush: true)
             rawObj.delete(flush: true)
+        } catch(Exception ex) {
+            ex.printStackTrace()
+        }
+        //show report details
+        redirect controller: "eventSync", action: "showSyncReportDetails", id: logReportFileId
+    }
+
+    def deleteChangeRegionHead = {
+
+        //delete errorLog, rawObj
+        def rawObj = RawChangeRegionHead.get(params.id)
+        def errorLog = RawErrorLog.findByUuid(params.id)
+        def logReportFileId = errorLog?.logReportFileId
+
+        //delete records
+        try {
+            errorLog.delete(flush: true)
+            rawObj.delete(flush: true)
+
         } catch(Exception ex) {
             ex.printStackTrace()
         }
@@ -1701,6 +1774,38 @@ class RawDomainController {
             ]
         }
 
+
+        render objects as JSON
+    }
+
+    def fetchRegionHeadRelationshipsList = {
+        def region_code = params.id
+
+        //def results = HeadRelationship.findAllByHouseholdCodeAndEndType(household_code, HeadRelationshipEndType.NOT_APPLICABLE)
+        def results = RegionHeadRelationship.withCriteria {
+            eq("regionCode", region_code)
+            order("startDate", "asc")
+        }
+
+        //println "household=${member_code}, ${results?.size()}"
+
+        //Display records
+        def objects = results.collect { obj ->
+            ['id':     obj.id,
+             'code':     obj.region?.code,
+             'name':     obj.region?.name,
+             'head':             obj.head?.code,
+             'headName':         obj.head?.name,
+             'startType':       obj.startType?.code,
+             'startDate':       StringUtil.formatLocalDate(obj.startDate),
+             'endType':         obj.endType?.code,
+             'endDate':         StringUtil.formatLocalDate(obj.endDate),
+             'statusText':      generalUtilitiesService.getMessage(obj.status==null ? ValidatableStatus.ACTIVE.name : obj.status.name),
+             'status':          rawDomainService.getValidationStatus(obj.status)
+            ]
+        }
+
+        //def result = [draw: jqdtParams.draw, recordsTotal: recordsTotal, recordsFiltered: recordsFiltered, data: objects]
 
         render objects as JSON
     }

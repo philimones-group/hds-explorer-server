@@ -68,7 +68,7 @@ class RawEditExecutionService {
         if (domainInstance != null) {
             domainInstance.name = rawDomainInstance.householdName
             ;
-            if (domainInstance.gpsLatitude != null){
+            if (rawDomainInstance.gpsLat != null){ //if gps was updated
                 domainInstance.gpsLatitude = Double.parseDouble(rawDomainInstance.gpsLat)
                 domainInstance.gpsLongitude = Double.parseDouble(rawDomainInstance.gpsLon)
                 domainInstance.gpsAltitude = Double.parseDouble(rawDomainInstance.gpsAlt)

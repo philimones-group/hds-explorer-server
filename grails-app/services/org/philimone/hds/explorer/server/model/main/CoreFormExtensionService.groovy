@@ -53,6 +53,7 @@ class CoreFormExtensionService {
         if (form == CoreForm.DEATH_FORM) return getDeathMapping();
         if (form == CoreForm.CHANGE_HEAD_FORM) return getChangeHeadMapping();
         if (form == CoreForm.INCOMPLETE_VISIT_FORM) return getIncVisitMapping();
+        if (form == CoreForm.CHANGE_REGION_HEAD_FORM) return getChangeRegionHeadMapping();
 
         return ""
     }
@@ -244,6 +245,22 @@ class CoreFormExtensionService {
         columnsMap.put("member_code", "#memberCode")
         columnsMap.put("member_name", "#memberName")
 
+
+        return mapToString(columnsMap)
+    }
+
+    String getChangeRegionHeadMapping() {
+        def columnsMap = new LinkedHashMap()
+
+        columnsMap.put("core_form_id", CoreForm.CHANGE_REGION_HEAD_FORM.code)
+        columnsMap.put("collected_id", "#id")
+        columnsMap.put("region_code", "#regionCode")
+        columnsMap.put("region_name", "regionName")
+        columnsMap.put("visit_code", "#visitCode")
+        columnsMap.put("old_head_code", "#oldHeadCode")
+        columnsMap.put("old_head_name","#oldHeadName")
+        columnsMap.put("new_head_code", "#newHeadCode")
+        columnsMap.put("new_head_name", "#newHeadName")
 
         return mapToString(columnsMap)
     }

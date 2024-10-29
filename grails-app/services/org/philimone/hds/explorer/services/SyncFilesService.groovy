@@ -32,6 +32,7 @@ import org.philimone.hds.explorer.server.model.main.PregnancyRegistration
 import org.philimone.hds.explorer.server.model.main.RedcapApi
 import org.philimone.hds.explorer.server.model.main.RedcapMapping
 import org.philimone.hds.explorer.server.model.main.Region
+import org.philimone.hds.explorer.server.model.main.RegionHeadRelationship
 import org.philimone.hds.explorer.server.model.main.Residency
 import org.philimone.hds.explorer.server.model.main.ResidencyService
 import org.philimone.hds.explorer.server.model.main.Round
@@ -65,6 +66,7 @@ class SyncFilesService {
     def trackingListService
     def syncFilesReportService
     def moduleService
+    def settingsService
 
     def cleanUpGorm() {
         def session = sessionFactory.currentSession
@@ -99,6 +101,11 @@ class SyncFilesService {
 
         println("saving residencies")
         generateResidenciesXML(logReportId)
+
+        if (settingsService.getRegionHeadSupport()) {
+            println("saving region head relationships")
+            generateRegionHeadsXML(logReportId)
+        }
     }
 
     def generateDemographicEvents(LogReportCode logReportId) {
@@ -1233,6 +1240,102 @@ class SyncFilesService {
 
     }
 
+    def generateRegionHeadsXML(LogReportCode logReportId) {
+        String filename = SyncEntity.REGION_HEADS.filename
+        String xmlFilename = SyncEntity.REGION_HEADS.xmlFilename
+        String zipFilename = SyncEntity.REGION_HEADS.zipFilename
+
+
+        LogOutput log = generalUtilitiesService.getOutput(SystemPath.getLogsPath(), "generate-${filename}-xml-zip");
+        PrintStream output = log.output
+        if (output == null) return;
+
+        def start = LocalDateTime.now();
+        int processed = 0
+        int errors = 0
+        def logStatusValue = LogStatus.FINISHED
+
+        try {
+            //Ler todos users
+            def resultLists = []
+
+            RegionHeadRelationship.withTransaction {
+                resultLists = RegionHeadRelationship.executeQuery("select r.id from RegionHeadRelationship r where r.status <> ?0 or r.status is null", [ValidatableStatus.TEMPORARILY_INACTIVE])
+            }
+
+
+            // root elements
+            println("creating ${filename}.xml of ${resultLists.size()} records")
+            PrintStream outputFile = new PrintStream(new FileOutputStream(SystemPath.generatedFilesPath + "/${filename}.xml"), true)
+            outputFile.print("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?><${filename}>")
+
+            int count = 0;
+
+            resultLists.collate(1000).each { batch ->
+                def list = RegionHeadRelationship.findAllByIdInList(batch)
+                list.each { obj ->
+                    count++;
+
+                    outputFile.print(createRegionHeadRelationshipXml(obj))
+
+                    if (count % 3000 == 0) {
+                        cleanUpGorm()
+                    }
+                }
+            }
+
+            cleanUpGorm()
+
+            outputFile.print("</${filename}>")
+            outputFile.close()
+
+            // write the content into xml file
+            System.out.println("File saved! - ${xmlFilename}");
+            output.println("File saved! - ${xmlFilename}");
+
+            //zip file
+            ZipMaker zipMaker = new ZipMaker(SystemPath.getGeneratedFilesPath() + File.separator + "${zipFilename}")
+            zipMaker.addFile(SystemPath.getGeneratedFilesPath() + File.separator + "${xmlFilename}")
+            def b = zipMaker.makeZip()
+
+            println "creating zip - ${zipFilename} - success=" + b
+
+            processed = 1
+
+            //Save number of records
+            syncFilesReportService.update(SyncEntity.REGION_HEADS, count)
+
+        } catch (Exception ex) {
+            ex.printStackTrace()
+            processed = 0
+            errors = 1
+            output.println(ex.toString())
+
+            logStatusValue = LogStatus.ERROR
+        }
+
+        LogReport.withTransaction {
+            LogReport logReport = LogReport.findByReportId(logReportId)
+            LogReportFile reportFile = new LogReportFile(creationDate: LocalDateTime.now(), fileName: log.logFileName, logReport: logReport)
+            reportFile.keyTimestamp = logReport.keyTimestamp
+            reportFile.start = start
+            reportFile.end = LocalDateTime.now()
+            reportFile.creationDate = LocalDateTime.now()
+            reportFile.processedCount = processed
+            reportFile.errorsCount = errors
+
+            logReport.end = LocalDateTime.now()
+            logReport.status = logStatusValue
+            logReport.addToLogFiles(reportFile)
+            logReport.save()
+
+            //println("errors: ${logReport.errors}")
+        }
+
+        output.close();
+
+    }
+
     def generateResidenciesXML(LogReportCode logReportId) {
         String filename = SyncEntity.RESIDENCIES.filename
         String xmlFilename = SyncEntity.RESIDENCIES.xmlFilename
@@ -2262,6 +2365,7 @@ class SyncFilesService {
         element.appendChild(createAttributeNonNull(doc, "name", region.name));
         element.appendChild(createAttributeNonNull(doc, "hierarchyLevel", region.hierarchyLevel?.code));
         element.appendChild(createAttributeNonNull(doc, "parent", region.parentCode));
+        element.appendChild(createAttributeNonNull(doc, "head", region.headCode));
         element.appendChild(createAttributeNonNull(doc, "modules", moduleService.getListModulesAsText(region.modules)));
 
         return element;
@@ -2529,6 +2633,21 @@ class SyncFilesService {
         element.appendChild(createAttributeNonNull(doc, "collectedId", death.collectedId==null ? "" : death.collectedId))
 
         return element
+    }
+
+    private String createRegionHeadRelationshipXml(RegionHeadRelationship regionHeadRelationship) {
+        StringBuilder element = new StringBuilder("<regionHeadRelationship>");
+
+        element.append(createXmlAttribute("regionCode", regionHeadRelationship.regionCode));
+        element.append(createXmlAttribute("headCode", regionHeadRelationship.headCode));
+        element.append(createXmlAttribute("startType", regionHeadRelationship.startType.code));
+        element.append(createXmlAttribute("startDate", StringUtil.formatLocalDate(regionHeadRelationship.startDate)));
+        element.append(createXmlAttribute("endType", regionHeadRelationship.endType.code));
+        element.append(createXmlAttribute("endDate", regionHeadRelationship.endDate==null ? "" : StringUtil.format(regionHeadRelationship.endDate)));
+
+        element.append("</headRelationship>")
+
+        return element;
     }
 
     private Element createAttribute(Document doc, String name, String value){

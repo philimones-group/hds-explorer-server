@@ -28,6 +28,7 @@ class RawImportApiController {
                              deaths: "POST",
                              changeheads: "POST",
                              incompletevisits: "POST",
+                             changeregionheads: "POST",
                              editregions: "POST",
                              edithouseholds: "POST",
                              editmembers: "POST"]
@@ -75,7 +76,7 @@ class RawImportApiController {
         }
 
         if (resultSave.postExecution){ //execute creation
-            def result = rawExecutionService.createRegion(resultSave)
+            def result = rawExecutionService.createRegion(resultSave, "")
 
             if (result.status== RawExecutionResult.Status.ERROR){
                 render text: errorMessageService.getRawMessagesText(result.errorMessages), status: HttpStatus.BAD_REQUEST
@@ -122,7 +123,7 @@ class RawImportApiController {
         }
 
         if (resultSave.postExecution){ //execute creation
-            def result = rawExecutionService.createHousehold(resultSave)
+            def result = rawExecutionService.createHousehold(resultSave, "")
 
             if (result.status== RawExecutionResult.Status.ERROR){
                 render text: errorMessageService.getRawMessagesText(result.errorMessages), status: HttpStatus.BAD_REQUEST
@@ -171,7 +172,7 @@ class RawImportApiController {
         }
 
         if (resultSave.postExecution){ //execute creation
-            def result = rawExecutionService.createHousehold(resultSave)
+            def result = rawExecutionService.createHousehold(resultSave, "")
 
             if (result.status== RawExecutionResult.Status.ERROR){
                 render text: errorMessageService.getRawMessagesText(result.errorMessages), status: HttpStatus.BAD_REQUEST
@@ -218,7 +219,7 @@ class RawImportApiController {
         }
 
         if (resultSave.postExecution){ //execute creation
-            def result = rawExecutionService.createMember(resultSave)
+            def result = rawExecutionService.createMember(resultSave, "")
 
             if (result?.status== RawExecutionResult.Status.ERROR){
                 render text: errorMessageService.getRawMessagesText(result.errorMessages), status: HttpStatus.BAD_REQUEST
@@ -268,7 +269,7 @@ class RawImportApiController {
         }
 
         if (resultSave.postExecution){ //execute creation
-            def result = rawExecutionService.createVisit(resultSave)
+            def result = rawExecutionService.createVisit(resultSave, "")
 
             if (result.status== RawExecutionResult.Status.ERROR){
                 render text: errorMessageService.getRawMessagesText(result.errorMessages), status: HttpStatus.BAD_REQUEST
@@ -317,7 +318,7 @@ class RawImportApiController {
         }
 
         if (resultSave.postExecution){ //execute creation
-            def result = rawExecutionService.createMemberEnu(resultSave)
+            def result = rawExecutionService.createMemberEnu(resultSave, "")
 
             if (result.status== RawExecutionResult.Status.ERROR){
                 render text: errorMessageService.getRawMessagesText(result.errorMessages), status: HttpStatus.BAD_REQUEST
@@ -366,7 +367,7 @@ class RawImportApiController {
         }
 
         if (resultSave.postExecution){ //execute creation
-            def result = rawExecutionService.createExternalInMigration(resultSave)
+            def result = rawExecutionService.createExternalInMigration(resultSave, "")
 
             if (result.status== RawExecutionResult.Status.ERROR){
                 render text: errorMessageService.getRawMessagesText(result.errorMessages), status: HttpStatus.BAD_REQUEST
@@ -415,7 +416,7 @@ class RawImportApiController {
         }
 
         if (resultSave.postExecution){ //execute creation
-            def result = rawExecutionService.createInMigration(resultSave)
+            def result = rawExecutionService.createInMigration(resultSave, "")
 
             if (result.status== RawExecutionResult.Status.ERROR){
                 render text: errorMessageService.getRawMessagesText(result.errorMessages), status: HttpStatus.BAD_REQUEST
@@ -464,7 +465,7 @@ class RawImportApiController {
         }
 
         if (resultSave.postExecution){ //execute creation
-            def result = rawExecutionService.createOutMigration(resultSave)
+            def result = rawExecutionService.createOutMigration(resultSave, "")
 
             if (result.status== RawExecutionResult.Status.ERROR){
                 render text: errorMessageService.getRawMessagesText(result.errorMessages), status: HttpStatus.BAD_REQUEST
@@ -511,7 +512,7 @@ class RawImportApiController {
         }
 
         if (resultSave.postExecution){ //execute creation
-            def result = rawExecutionService.createHeadRelationship(resultSave)
+            def result = rawExecutionService.createHeadRelationship(resultSave, "")
 
             if (result.status== RawExecutionResult.Status.ERROR){
                 render text: errorMessageService.getRawMessagesText(result.errorMessages), status: HttpStatus.BAD_REQUEST
@@ -560,7 +561,7 @@ class RawImportApiController {
         }
 
         if (resultSave.postExecution){ //execute creation
-            def result = rawExecutionService.executeMaritalRelationship(resultSave)
+            def result = rawExecutionService.executeMaritalRelationship(resultSave, "")
 
             if (result.status== RawExecutionResult.Status.ERROR){
                 render text: errorMessageService.getRawMessagesText(result.errorMessages), status: HttpStatus.BAD_REQUEST
@@ -609,7 +610,7 @@ class RawImportApiController {
         }
 
         if (resultSave.postExecution){ //execute creation
-            def result = rawExecutionService.createPregnancyRegistration(resultSave)
+            def result = rawExecutionService.createPregnancyRegistration(resultSave, "")
 
             if (result.status== RawExecutionResult.Status.ERROR){
                 render text: errorMessageService.getRawMessagesText(result.errorMessages), status: HttpStatus.BAD_REQUEST
@@ -658,7 +659,7 @@ class RawImportApiController {
         }
 
         if (resultSave.postExecution){ //execute creation
-            def result = rawExecutionService.createPregnancyOutcome(resultSave)
+            def result = rawExecutionService.createPregnancyOutcome(resultSave, "")
 
             if (result.status== RawExecutionResult.Status.ERROR){
                 render text: errorMessageService.getRawMessagesText(result.errorMessages), status: HttpStatus.BAD_REQUEST
@@ -707,7 +708,7 @@ class RawImportApiController {
         }
 
         if (resultSave.postExecution){ //execute creation
-            def result = rawExecutionService.createDeath(resultSave)
+            def result = rawExecutionService.createDeath(resultSave, "")
 
             if (result.status== RawExecutionResult.Status.ERROR){
                 render text: errorMessageService.getRawMessagesText(result.errorMessages), status: HttpStatus.BAD_REQUEST
@@ -756,7 +757,7 @@ class RawImportApiController {
         }
 
         if (resultSave.postExecution){ //execute creation
-            def result = rawExecutionService.createChangeHead(resultSave)
+            def result = rawExecutionService.createChangeHead(resultSave, "")
 
             if (result.status== RawExecutionResult.Status.ERROR){
                 render text: errorMessageService.getRawMessagesText(result.errorMessages), status: HttpStatus.BAD_REQUEST
@@ -805,7 +806,56 @@ class RawImportApiController {
         }
 
         if (resultSave.postExecution){ //execute creation
-            def result = rawExecutionService.createIncompleteVisit(resultSave)
+            def result = rawExecutionService.createIncompleteVisit(resultSave, "")
+
+            if (result.status== RawExecutionResult.Status.ERROR){
+                render text: errorMessageService.getRawMessagesText(result.errorMessages), status: HttpStatus.BAD_REQUEST
+                return
+            }
+        }
+
+        render text: "OK", status: HttpStatus.OK
+    }
+
+    def changeregionheads = {
+
+        if (request.format != "xml") {
+            def message = message(code: 'validation.field.raw.xml.invalid.error')
+            render text: message, status:  HttpStatus.BAD_REQUEST // Only XML expected
+            return
+        }
+
+        RawParseResult<RawChangeRegionHead> parseResult = null
+        String xmlContent = request.reader?.text
+        String extensionXml = rawImportApiService.getExtensionXmlText(xmlContent, RawEntity.CHANGE_HEAD_OF_REGION)
+
+        try {
+            def node = new XmlSlurper().parseText(xmlContent) as NodeChild
+            node = node.children().first() as NodeChild //RawDomain
+
+            parseResult = rawImportApiService.parseChangeRegionHead(node)
+        } catch(Exception ex) {
+            def msg = errorMessageService.getRawMessagesText(ex)
+            render text: msg, status: HttpStatus.BAD_REQUEST
+            return
+        }
+        if (parseResult.hasErrors()) {
+            render text: parseResult.getErrorsText(), status: HttpStatus.BAD_REQUEST
+            return
+        }
+
+        def rawInstance = parseResult.domainInstance
+        rawInstance.extensionForm = extensionXml?.getBytes()
+
+        def resultSave = rawInstance.save(flush: true)
+
+        if (rawInstance.hasErrors()){
+            render text: errorMessageService.getRawMessagesText(rawInstance), status: HttpStatus.BAD_REQUEST
+            return
+        }
+
+        if (resultSave.postExecution){ //execute creation
+            def result = rawExecutionService.createChangeRegionHead(resultSave, "")
 
             if (result.status== RawExecutionResult.Status.ERROR){
                 render text: errorMessageService.getRawMessagesText(result.errorMessages), status: HttpStatus.BAD_REQUEST

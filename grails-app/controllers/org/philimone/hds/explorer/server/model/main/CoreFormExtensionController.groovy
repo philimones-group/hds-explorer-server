@@ -14,12 +14,13 @@ class CoreFormExtensionController {
     CoreFormExtensionService coreFormExtensionService
     CoreExtensionService coreExtensionService
     def coreExtensionDatabaseService
+    def settingsService
 
     static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
 
     def index(Integer max) {
         //params.max = Math.min(max ?: 25, 100)
-        respond coreFormExtensionService.list(params), model:[coreFormExtensionCount: coreFormExtensionService.count()]
+        respond getCoreFormExtensionList(params), model:[coreFormExtensionCount: getCoreFormExtensionListCount(params)]
     }
 
     def updateForms = {
@@ -122,26 +123,26 @@ class CoreFormExtensionController {
 
         if (xmlFormId == null) {
             def errorMessages = [g.message(code: "coreFormExtension.uploadForm.xmlform.error", args: [fileName])]
-            render view: "index", model:[coreFormExtensionList: coreFormExtensionService.list(params), coreFormExtensionCount: coreFormExtensionService.count(), errorMessages : errorMessages]
+            render view: "index", model:[coreFormExtensionList: getCoreFormExtensionList(params), coreFormExtensionCount: getCoreFormExtensionListCount(params), errorMessages : errorMessages]
             return
         }
 
         if (formId == null) {
             def errorMessages = [g.message(code: "coreFormExtension.uploadForm.formid.error", args: [])]
-            render view: "index", model:[coreFormExtensionList: coreFormExtensionService.list(params), coreFormExtensionCount: coreFormExtensionService.count(), errorMessages : errorMessages]
+            render view: "index", model:[coreFormExtensionList: getCoreFormExtensionList(params), coreFormExtensionCount: getCoreFormExtensionListCount(params), errorMessages : errorMessages]
             return
         }
 
         if (!formId.equals(xmlFormId)) {
             def errorMessages = [g.message(code: "coreFormExtension.uploadForm.form.not.match.error", args: [xmlFormId, formId])]
-            render view: "index", model:[coreFormExtensionList: coreFormExtensionService.list(params), coreFormExtensionCount: coreFormExtensionService.count(), errorMessages : errorMessages]
+            render view: "index", model:[coreFormExtensionList: getCoreFormExtensionList(params), coreFormExtensionCount: getCoreFormExtensionListCount(params), errorMessages : errorMessages]
             return
         }
 
         def coreFormExtension = CoreFormExtension.findByExtFormId(formId)
         if (coreFormExtension == null) {
             def errorMessages = [g.message(code: "coreFormExtension.uploadForm.coreext.not.found.error", args: [formId])]
-            render view: "index", model:[coreFormExtensionList: coreFormExtensionService.list(params), coreFormExtensionCount: coreFormExtensionService.count(), errorMessages : errorMessages]
+            render view: "index", model:[coreFormExtensionList: getCoreFormExtensionList(params), coreFormExtensionCount: getCoreFormExtensionListCount(params), errorMessages : errorMessages]
             return
         }
 
@@ -149,7 +150,7 @@ class CoreFormExtensionController {
         coreFormExtension.save(flush:true)
         flash.message = g.message(code: "coreFormExtension.uploadForm.success.label", args: [fileName, formId])
 
-        render view: "index", model:[coreFormExtensionList: coreFormExtensionService.list(params), coreFormExtensionCount: coreFormExtensionService.count()]
+        render view: "index", model:[coreFormExtensionList: getCoreFormExtensionList(params), coreFormExtensionCount: getCoreFormExtensionListCount(params)]
     }
 
     def dbMapping = {
@@ -236,5 +237,22 @@ class CoreFormExtensionController {
         flash.message = g.message(code: "coreFormExtension.columns.executed.label")
 
         render view: "dbColumns", model: [coreFormExtension: coreFormExtension, databaseSystem: databaseSystem, totalColumns: totalColumns, sqlCommands: sqlCommands, resultMessages: resultMessages]
+    }
+    
+    List<CoreFormExtension> getCoreFormExtensionList(def params) {
+        def list = coreFormExtensionService.list(params)
+        def supportsRegionHead = settingsService.getRegionHeadSupport()
+        def toRemove = list.find { it.coreForm == CoreForm.CHANGE_REGION_HEAD_FORM }
+        
+        if (!supportsRegionHead) {
+            list.remove(toRemove)
+        }
+        
+        return list
+    }
+    
+    int getCoreFormExtensionListCount(def params) {
+        def list = getCoreFormExtensionList(params)
+        return list.size()
     }
 }

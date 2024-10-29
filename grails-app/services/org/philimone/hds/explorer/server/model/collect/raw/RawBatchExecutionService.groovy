@@ -23,6 +23,7 @@ import org.philimone.hds.explorer.server.model.main.OutMigration
 import org.philimone.hds.explorer.server.model.main.PregnancyOutcome
 import org.philimone.hds.explorer.server.model.main.PregnancyRegistration
 import org.philimone.hds.explorer.server.model.main.Region
+import org.philimone.hds.explorer.server.model.main.RegionHeadRelationship
 import org.philimone.hds.explorer.server.model.main.Visit
 import org.philimone.hds.explorer.server.model.main.collect.raw.RawDependencyStatus
 import org.philimone.hds.explorer.server.model.main.collect.raw.RawDomainObj
@@ -41,6 +42,7 @@ class RawBatchExecutionService {
     def householdService
     def memberService
     def headRelationshipService
+    def settingsService
     def errorMessageService
 
 
@@ -100,6 +102,7 @@ class RawBatchExecutionService {
             RawPregnancyOutcome.executeUpdate(     "update RawPregnancyOutcome r      set r.processedStatus=:newStatus where r.processedStatus=:currStatus", [currStatus: ProcessedStatus.ERROR, newStatus: ProcessedStatus.NOT_PROCESSED])
             RawMaritalRelationship.executeUpdate(  "update RawMaritalRelationship r   set r.processedStatus=:newStatus where r.processedStatus=:currStatus", [currStatus: ProcessedStatus.ERROR, newStatus: ProcessedStatus.NOT_PROCESSED])
             RawChangeHead.executeUpdate(           "update RawChangeHead r            set r.processedStatus=:newStatus where r.processedStatus=:currStatus", [currStatus: ProcessedStatus.ERROR, newStatus: ProcessedStatus.NOT_PROCESSED])
+            RawChangeRegionHead.executeUpdate(     "update RawChangeRegionHead r      set r.processedStatus=:newStatus where r.processedStatus=:currStatus", [currStatus: ProcessedStatus.ERROR, newStatus: ProcessedStatus.NOT_PROCESSED])
 
             RawErrorLog.executeUpdate("delete from RawErrorLog r") //Crazy decision? not that much, if we are going to execute all again we dont need the old errors
         }
@@ -152,6 +155,7 @@ class RawBatchExecutionService {
             RawPregnancyOutcome.executeUpdate(     "update RawPregnancyOutcome r      set r.processedStatus=:newStatus", [newStatus: ProcessedStatus.NOT_PROCESSED])
             RawMaritalRelationship.executeUpdate(  "update RawMaritalRelationship r   set r.processedStatus=:newStatus", [newStatus: ProcessedStatus.NOT_PROCESSED])
             RawChangeHead.executeUpdate(           "update RawChangeHead r            set r.processedStatus=:newStatus", [newStatus: ProcessedStatus.NOT_PROCESSED])
+            RawChangeRegionHead.executeUpdate(     "update RawChangeRegionHead r      set r.processedStatus=:newStatus", [newStatus: ProcessedStatus.NOT_PROCESSED])
 
             RawErrorLog.executeUpdate("delete from RawErrorLog r") //Crazy decision? not that much, if we are going to execute all again we dont need the old errors
         }
@@ -182,6 +186,10 @@ class RawBatchExecutionService {
         collectChangeHoh()
         collectOutMigration()
         collectDeath()
+
+        if (settingsService.getRegionHeadSupport()){
+            collectChangeHeadRegion()
+        }
 
         println "finished compiling events"
     }
@@ -398,6 +406,7 @@ class RawBatchExecutionService {
             case RawEventType.EVENT_MARITAL_RELATIONSHIP:         result = executeMaritalRelationship(event, logReportFileId, eventsWithErrors); break
             case RawEventType.EVENT_CHANGE_HEAD_OF_HOUSEHOLD:     result = executeChangeHead(event, logReportFileId, eventsWithErrors); break
             case RawEventType.EVENT_INCOMPLETE_VISIT:             result = executeIncompleteVisit(event, logReportFileId, eventsWithErrors); break
+            case RawEventType.EVENT_CHANGE_HEAD_OF_REGION:        result = executeChangeRegionHead(event, logReportFileId, eventsWithErrors); break
         }
 
         //flagging the errors
@@ -559,6 +568,12 @@ class RawBatchExecutionService {
 
         if (domainObj.domainInstance instanceof RawIncompleteVisit) {
             def obj = (RawIncompleteVisit) domainObj.domainInstance
+            obj.processedStatus = ProcessedStatus.ERROR
+            obj.save(flush:true)
+        }
+
+        if (domainObj.domainInstance instanceof RawChangeRegionHead) {
+            def obj = (RawChangeRegionHead) domainObj.domainInstance
             obj.processedStatus = ProcessedStatus.ERROR
             obj.save(flush:true)
         }
@@ -1284,6 +1299,68 @@ class RawBatchExecutionService {
         return null
     }
 
+    RawExecutionResult<RegionHeadRelationship> executeChangeRegionHead(RawEvent rawEvent, String logReportFileId, HashMap<String, RawEvent> eventsWithErrors) {
+        if (rawEvent == null || rawEvent?.isProcessed()) return null
+
+        def rawObj = RawChangeRegionHead.findById(rawEvent.eventId)
+
+        if (rawObj != null) {
+
+            def dependencyResolved = true
+
+            //check dependencies existence (visit, household(destinationCode))
+            def regionCode = rawObj.regionCode
+            def visitCode = rawObj.visitCode
+            def oldHeadCode = rawObj.oldHeadCode
+            def newHeadCode = rawObj.newHeadCode
+
+            //try to solve region dependency
+            def depStatus = solveRegionDependency(regionCode, "regionCode", logReportFileId, eventsWithErrors)
+            dependencyResolved = depStatus.solved
+
+            //try to solve visit dependency
+            def depStatus2 = null as RawDependencyStatus
+            if (!StringUtil.isBlank(visitCode)) {
+                depStatus2 = solveVisitDependency(visitCode, "visitCode", logReportFileId, eventsWithErrors)
+                dependencyResolved = dependencyResolved && depStatus2.solved
+            }
+
+            //try to solve member dependency (oldHead)
+            def depStatus3 = null as RawDependencyStatus
+            if (!StringUtil.isBlank(oldHeadCode)) {
+                depStatus3 = solveMemberDependency(oldHeadCode, "oldHeadCode", logReportFileId, eventsWithErrors)
+                dependencyResolved = dependencyResolved && depStatus3.solved
+            }
+
+            //try to solve member dependency (newHead)
+            def depStatus4 = solveMemberDependency(newHeadCode, "newHeadCode", logReportFileId, eventsWithErrors)
+            dependencyResolved = dependencyResolved && depStatus4.solved
+
+
+            if (dependencyResolved) {
+                def result = rawExecutionService.createChangeRegionHead(rawObj, logReportFileId)
+
+                //set event has processed
+                rawEvent.processed = getProcessedStatus(result?.status)
+                rawEvent.save(flush:true)
+
+                return result
+            } else {
+                def errors = new ArrayList<RawMessage>()
+                if (depStatus != null && !depStatus.errorMessages?.isEmpty()) errors.addAll(depStatus?.errorMessages)
+                if (depStatus2 != null && !depStatus2.errorMessages?.isEmpty()) errors.addAll(depStatus2?.errorMessages)
+                if (depStatus3 != null && !depStatus3.errorMessages?.isEmpty()) errors.addAll(depStatus3?.errorMessages)
+                if (depStatus4 != null && !depStatus4.errorMessages?.isEmpty()) errors.addAll(depStatus4?.errorMessages)
+
+                def result = createRawEventErrorLog(RawEntity.CHANGE_HEAD_OF_REGION, rawEvent, RawDomainObj.attach(rawObj), "newHeadCode", errors, logReportFileId)
+                return result
+            }
+
+        }
+
+        return null
+    }
+    
     RawMessage getRegionDependencyError(String regionCode, String columnName) {
         return errorMessageService.getRawMessage(RawEntity.REGION, "validation.dependency.region.not.found", [regionCode, columnName], [columnName])
     }
@@ -1748,6 +1825,25 @@ class RawBatchExecutionService {
             RawEvent.withTransaction {
                 batch.each {
                     new RawEvent(keyDate: it.eventDate.atStartOfDay(), collectedDate: it.collectedDate, eventType: RawEventType.EVENT_CHANGE_HEAD_OF_HOUSEHOLD, eventId: it.id, eventHouseholdCode: it.householdCode, entityCode: it.newHeadCode).save()
+                }
+            }
+        }
+
+        list.clear()
+        cleanUpGorm()
+    }
+
+    def collectChangeHeadRegion() {
+        def list = [] as List<RawChangeRegionHead>
+
+        RawChangeRegionHead.withTransaction {
+            list = RawChangeRegionHead.findAllByProcessedStatus(ProcessedStatus.NOT_PROCESSED, [sort: "eventDate", order: "asc"])
+        }
+
+        list.collate(200).each { batch ->
+            RawEvent.withTransaction {
+                batch.each {
+                    new RawEvent(keyDate: it.eventDate.atStartOfDay(), collectedDate: it.collectedDate, eventType: RawEventType.EVENT_CHANGE_HEAD_OF_REGION, eventId: it.id, eventHouseholdCode: it.regionCode, entityCode: it.newHeadCode).save()
                 }
             }
         }
