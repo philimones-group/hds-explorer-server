@@ -14,8 +14,8 @@ enum CoreForm {
     PREGNANCY_OUTCOME_FORM ("rawPregnancyOutcome", "coreFormExtension.pregnancyoutcome.label", "pregnancy_outcome_ext"),
     DEATH_FORM ("rawDeath", "coreFormExtension.death.label", "death_ext"),
     CHANGE_HEAD_FORM ("rawChangeHead", "coreFormExtension.changehead.label", "change_head_ext"),
-    INCOMPLETE_VISIT_FORM ("rawIncompleteVisit", "coreFormExtension.incompletevisit.label", "incomplete_visit_ext")
-
+    INCOMPLETE_VISIT_FORM ("rawIncompleteVisit", "coreFormExtension.incompletevisit.label", "incomplete_visit_ext"),
+    CHANGE_REGION_HEAD_FORM ("rawChangeRegionHead", "coreFormExtension.changeregionhead.label", "change_region_head_ext")
 
     String code
     String name

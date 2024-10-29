@@ -25,6 +25,10 @@ enum RegionLevel {
         code
     }
 
+    String getHeadParamName() {
+        return code + ".head"
+    }
+
     @Override
     String toString() {
         return name

@@ -27,4 +27,6 @@ databaseChangeLog = {
     include file: 'alter-table-raw_event-add-collected_date.groovy'
     include file: 'update-table-rawchangehead-nullable-oldheadcode-20240911.groovy'
     include file: 'alter-tables-coreformcomluns-add-column-code-20240913.groovy'
+    include file: 'add-region-head-tables.groovy'
+    include file: 'add-change-region-head-extension-table.groovy'
 }

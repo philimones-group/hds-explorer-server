@@ -1,0 +1,149 @@
+<?xml version="1.0"?>
+<h:html xmlns="http://www.w3.org/2002/xforms" xmlns:ev="http://www.w3.org/2001/xml-events" xmlns:h="http://www.w3.org/1999/xhtml" xmlns:jr="http://openrosa.org/javarosa" xmlns:orx="http://openrosa.org/xforms" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <h:head>
+    <h:title>HDS Change Head of Household Extension</h:title>
+    <model>
+      <itext>
+        <translation lang="Portuguese">
+          <text id="/change_region_head_ext/end:label">
+            <value>-</value>
+          </text>
+          <text id="/change_region_head_ext/new_head_code:label">
+            <value>Códido do novo chefe da Região</value>
+          </text>
+          <text id="/change_region_head_ext/start:label">
+            <value>-</value>
+          </text>
+          <text id="/change_region_head_ext/collected_id:label">
+            <value>Id do Formulário Mãe</value>
+          </text>
+          <text id="/change_region_head_ext/visit_code:label">
+            <value>Código da Visita</value>
+          </text>
+          <text id="/change_region_head_ext/old_head_name:label">
+            <value>Nome do antigo chefe da Região</value>
+          </text>
+          <text id="/change_region_head_ext/custom_quest2:label">
+            <value>Custom Question 2</value>
+          </text>
+          <text id="/change_region_head_ext/deviceid:label">
+            <value>-</value>
+          </text>
+          <text id="/change_region_head_ext/old_head_code:label">
+            <value>Códido do antigo chefe da Região</value>
+          </text>
+          <text id="/change_region_head_ext/custom_quest1:label">
+            <value>Custom Question 1</value>
+          </text>
+          <text id="/change_region_head_ext/new_head_name:label">
+            <value>Nome do novo chefe da Região</value>
+          </text>
+          <text id="/change_region_head_ext/region_code:label">
+            <value>Código do Região</value>
+          </text>
+        </translation>
+        <translation default="true()" lang="English">
+          <text id="/change_region_head_ext/end:label">
+            <value>-</value>
+          </text>
+          <text id="/change_region_head_ext/new_head_code:label">
+            <value>New Head of Household Code</value>
+          </text>
+          <text id="/change_region_head_ext/start:label">
+            <value>-</value>
+          </text>
+          <text id="/change_region_head_ext/collected_id:label">
+            <value>Core Form Id</value>
+          </text>
+          <text id="/change_region_head_ext/visit_code:label">
+            <value>Visit Code</value>
+          </text>
+          <text id="/change_region_head_ext/old_head_name:label">
+            <value>Current Head of Region Name</value>
+          </text>
+          <text id="/change_region_head_ext/custom_quest2:label">
+            <value>Custom Question 2</value>
+          </text>
+          <text id="/change_region_head_ext/deviceid:label">
+            <value>-</value>
+          </text>
+          <text id="/change_region_head_ext/old_head_code:label">
+            <value>Current Head of Region Code</value>
+          </text>
+          <text id="/change_region_head_ext/custom_quest1:label">
+            <value>Custom Question 1</value>
+          </text>
+          <text id="/change_region_head_ext/new_head_name:label">
+            <value>New Head of Household Name</value>
+          </text>
+          <text id="/change_region_head_ext/region_code:label">
+            <value>Region Code</value>
+          </text>
+        </translation>
+      </itext>
+      <instance>
+        <change_region_head_ext id="change_region_head_ext" version="1">
+          <start/>
+          <end/>
+          <deviceid/>
+          <collected_id/>
+          <visit_code/>
+          <region_code/>
+          <old_head_code/>
+          <old_head_name/>
+          <new_head_code/>
+          <new_head_name/>
+          <custom_quest1/>
+          <custom_quest2/>
+          <meta>
+            <instanceID/>
+            <instanceName/>
+          </meta>
+        </change_region_head_ext>
+      </instance>
+      <bind jr:preload="timestamp" jr:preloadParams="start" nodeset="/change_region_head_ext/start" required="true()" type="dateTime"/>
+      <bind jr:preload="timestamp" jr:preloadParams="end" nodeset="/change_region_head_ext/end" required="true()" type="dateTime"/>
+      <bind jr:preload="property" jr:preloadParams="deviceid" nodeset="/change_region_head_ext/deviceid" required="true()" type="string"/>
+      <bind nodeset="/change_region_head_ext/collected_id" readonly="true()" required="true()" type="string"/>
+      <bind nodeset="/change_region_head_ext/visit_code" readonly="true()" type="string"/>
+      <bind nodeset="/change_region_head_ext/region_code" readonly="true()" required="true()" type="string"/>
+      <bind nodeset="/change_region_head_ext/old_head_code" readonly="true()" required="true()" type="string"/>
+      <bind nodeset="/change_region_head_ext/old_head_name" readonly="true()" required="true()" type="string"/>
+      <bind nodeset="/change_region_head_ext/new_head_code" readonly="true()" required="true()" type="string"/>
+      <bind nodeset="/change_region_head_ext/new_head_name" readonly="true()" required="true()" type="string"/>
+      <bind nodeset="/change_region_head_ext/custom_quest1" type="string"/>
+      <bind nodeset="/change_region_head_ext/custom_quest2" type="string"/>
+      <bind calculate="concat('uuid:', uuid())" nodeset="/change_region_head_ext/meta/instanceID" readonly="true()" type="string"/>
+      <bind calculate="concat(&quot;HDS_&quot;, /change_region_head_ext/new_head_code ,&quot;_&quot;,&quot;ChangeRegionHead_Extension&quot;)" nodeset="/change_region_head_ext/meta/instanceName" type="string"/>
+    </model>
+  </h:head>
+  <h:body>
+    <input ref="/change_region_head_ext/collected_id">
+      <label ref="jr:itext('/change_region_head_ext/collected_id:label')"/>
+    </input>
+    <input ref="/change_region_head_ext/visit_code">
+      <label ref="jr:itext('/change_region_head_ext/visit_code:label')"/>
+    </input>
+    <input ref="/change_region_head_ext/region_code">
+      <label ref="jr:itext('/change_region_head_ext/region_code:label')"/>
+    </input>
+    <input ref="/change_region_head_ext/old_head_code">
+      <label ref="jr:itext('/change_region_head_ext/old_head_code:label')"/>
+    </input>
+    <input ref="/change_region_head_ext/old_head_name">
+      <label ref="jr:itext('/change_region_head_ext/old_head_name:label')"/>
+    </input>
+    <input ref="/change_region_head_ext/new_head_code">
+      <label ref="jr:itext('/change_region_head_ext/new_head_code:label')"/>
+    </input>
+    <input ref="/change_region_head_ext/new_head_name">
+      <label ref="jr:itext('/change_region_head_ext/new_head_name:label')"/>
+    </input>
+    <input ref="/change_region_head_ext/custom_quest1">
+      <label ref="jr:itext('/change_region_head_ext/custom_quest1:label')"/>
+    </input>
+    <input ref="/change_region_head_ext/custom_quest2">
+      <label ref="jr:itext('/change_region_head_ext/custom_quest2:label')"/>
+    </input>
+  </h:body>
+</h:html>

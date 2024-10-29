@@ -15,7 +15,8 @@ enum RawEventType {
     EVENT_CHANGE_HEAD_OF_HOUSEHOLD     (91),
     EVENT_INCOMPLETE_VISIT             (92),
     EVENT_OUTMIGRATION                 (93),
-    EVENT_DEATH                        (94)
+    EVENT_DEATH                        (94),
+    EVENT_CHANGE_HEAD_OF_REGION        (95)
 
 
     Integer code
