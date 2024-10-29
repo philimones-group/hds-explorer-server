@@ -187,6 +187,7 @@ class BootStrap {
             new SecurityMap(url: "/api/export/visits/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER},${Role.ROLE_FIELD_WORKER}").save(flush: true)
             new SecurityMap(url: "/api/export/pregnancies/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER},${Role.ROLE_FIELD_WORKER}").save(flush: true)
             new SecurityMap(url: "/api/export/deaths/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER},${Role.ROLE_FIELD_WORKER}").save(flush: true)
+            new SecurityMap(url: "/api/export/regionheads/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER},${Role.ROLE_FIELD_WORKER}").save(flush: true)
             new SecurityMap(url: "/api/export/stats/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER},${Role.ROLE_FIELD_WORKER}").save(flush: true)
 
             new SecurityMap(url: "/api/export/params/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER},${Role.ROLE_FIELD_WORKER}").save(flush: true)
@@ -218,6 +219,7 @@ class BootStrap {
             new SecurityMap(url: "/api/import/deaths", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER},${Role.ROLE_FIELD_WORKER}").save(flush: true)
             new SecurityMap(url: "/api/import/changeheads", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER},${Role.ROLE_FIELD_WORKER}").save(flush: true)
             new SecurityMap(url: "/api/import/incompletevisits", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER},${Role.ROLE_FIELD_WORKER}").save(flush: true)
+            new SecurityMap(url: "/api/import/changeregionheads", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER},${Role.ROLE_FIELD_WORKER}").save(flush: true)
             new SecurityMap(url: "/api/import/editregions", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER},${Role.ROLE_FIELD_WORKER}").save(flush: true)
             new SecurityMap(url: "/api/import/edithouseholds", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER},${Role.ROLE_FIELD_WORKER}").save(flush: true)
             new SecurityMap(url: "/api/import/editmembers", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER},${Role.ROLE_FIELD_WORKER}").save(flush: true)
@@ -453,6 +455,7 @@ class BootStrap {
         def sysLang = svc.getConfigValue("${Codes.PARAMS_SYSTEM_LANGUAGE}")
         def sysCdgn = svc.getConfigValue("${Codes.PARAMS_SYSTEM_CODE_GENERATOR}")
         def sysCgir = svc.getConfigValue("${Codes.PARAMS_SYSTEM_CODE_GENERATOR_INCREMENTAL_RULE}")
+        def sysSrhs = svc.getConfigValue("${Codes.PARAMS_SYSTEM_REGION_HEAD_SUPPORT}")
         def sysPath = svc.getConfigValue("${Codes.PARAMS_SYSTEM_HOMEPATH}")
 
         println "config: ${sysCdgn}"
@@ -467,6 +470,7 @@ class BootStrap {
         aps.addParam(Codes.PARAMS_SYSTEM_LANGUAGE, sysLang) //set default language to english
         aps.addParam(Codes.PARAMS_SYSTEM_CODE_GENERATOR, sysCdgn)
         aps.addParam(Codes.PARAMS_SYSTEM_CODE_GENERATOR_INCREMENTAL_RULE, sysCgir)
+        aps.addParam(Codes.PARAMS_SYSTEM_REGION_HEAD_SUPPORT, (sysSrhs!=null) ? sysSrhs.equalsIgnoreCase("true") : false)
         aps.addParam(Codes.PARAMS_SYSTEM_HOMEPATH, sysPath)
 
         aps.addParamNullable(RegionLevel.HIERARCHY_1.code, null)
@@ -480,7 +484,17 @@ class BootStrap {
         aps.addParamNullable(RegionLevel.HIERARCHY_9.code, null)
         aps.addParamNullable(RegionLevel.HIERARCHY_10.code, null)
 
-
+        aps.addParamNullable(RegionLevel.HIERARCHY_1.headParamName, null)
+        aps.addParamNullable(RegionLevel.HIERARCHY_2.headParamName, null)
+        aps.addParamNullable(RegionLevel.HIERARCHY_3.headParamName, null)
+        aps.addParamNullable(RegionLevel.HIERARCHY_4.headParamName, null)
+        aps.addParamNullable(RegionLevel.HIERARCHY_5.headParamName, null)
+        aps.addParamNullable(RegionLevel.HIERARCHY_6.headParamName, null)
+        aps.addParamNullable(RegionLevel.HIERARCHY_7.headParamName, null)
+        aps.addParamNullable(RegionLevel.HIERARCHY_8.headParamName, null)
+        aps.addParamNullable(RegionLevel.HIERARCHY_9.headParamName, null)
+        aps.addParamNullable(RegionLevel.HIERARCHY_10.headParamName, null)
+        
 
         //Inserting Default Mapping Formats
         new MappingFormatType(description: "Boolean [yes, no]", type: "Boolean", format:"yes,no").save(flush: true)
@@ -538,8 +552,9 @@ class BootStrap {
         def core9 = new CoreFormExtension(formName: CoreForm.DEATH_FORM.name, coreForm: CoreForm.DEATH_FORM, formId: CoreForm.DEATH_FORM.code, extFormId: CoreForm.DEATH_FORM.extension, required: true, enabled: false, columnsMapping: svc.getColumnMapping(CoreForm.DEATH_FORM))
         def core10 = new CoreFormExtension(formName: CoreForm.CHANGE_HEAD_FORM.name, coreForm: CoreForm.CHANGE_HEAD_FORM, formId: CoreForm.CHANGE_HEAD_FORM.code, extFormId: CoreForm.CHANGE_HEAD_FORM.extension, required: true, enabled: false, columnsMapping: svc.getColumnMapping(CoreForm.CHANGE_HEAD_FORM))
         def core11 = new CoreFormExtension(formName: CoreForm.INCOMPLETE_VISIT_FORM.name, coreForm: CoreForm.INCOMPLETE_VISIT_FORM, formId: CoreForm.INCOMPLETE_VISIT_FORM.code, extFormId: CoreForm.INCOMPLETE_VISIT_FORM.extension, required: true, enabled: false, columnsMapping: svc.getColumnMapping(CoreForm.INCOMPLETE_VISIT_FORM))
+        def core12 = new CoreFormExtension(formName: CoreForm.CHANGE_REGION_HEAD_FORM.name, coreForm: CoreForm.CHANGE_REGION_HEAD_FORM, formId: CoreForm.CHANGE_REGION_HEAD_FORM.code, extFormId: CoreForm.CHANGE_REGION_HEAD_FORM.extension, required: true, enabled: false, columnsMapping: svc.getColumnMapping(CoreForm.CHANGE_REGION_HEAD_FORM))
 
-        def cores = [core0, core1, core2, core3, core4, core5, core6, core6, core7, core8, core9, core10, core11] as List<CoreFormExtension>
+        def cores = [core0, core1, core2, core3, core4, core5, core6, core6, core7, core8, core9, core10, core11, core12] as List<CoreFormExtension>
 
         for (CoreFormExtension core : cores){
             if (CoreFormExtension.countByFormId(core.formId)==0){
@@ -825,6 +840,7 @@ class BootStrap {
         def valueSlg = applicationParamService.getStringValue(Codes.PARAMS_SYSTEM_LANGUAGE)
         def valueScg = applicationParamService.getStringValue(Codes.PARAMS_SYSTEM_CODE_GENERATOR)
         def valueSir = applicationParamService.getStringValue(Codes.PARAMS_SYSTEM_CODE_GENERATOR_INCREMENTAL_RULE)
+        def valueSrh = applicationParamService.getBooleanValue(Codes.PARAMS_SYSTEM_REGION_HEAD_SUPPORT)
         def valuePth = applicationParamService.getStringValue(Codes.PARAMS_SYSTEM_HOMEPATH)
 
         Codes.MIN_MOTHER_AGE_VALUE = valueAgm != null ? valueAgm : Codes.MIN_MOTHER_AGE_VALUE
@@ -836,6 +852,7 @@ class BootStrap {
         Codes.SYSTEM_LANGUAGE =      !StringUtil.isBlank(valueSlg) ? valueSlg : Codes.SYSTEM_LANGUAGE
         Codes.SYSTEM_CODE_GENERATOR = !StringUtil.isBlank(valueScg) ? valueScg : Codes.SYSTEM_CODE_GENERATOR
         Codes.SYSTEM_CODE_GENERATOR_INCREMENTAL_RULE = !StringUtil.isBlank(valueSir) ? valueSir : Codes.SYSTEM_CODE_GENERATOR_INCREMENTAL_RULE
+        Codes.SYSTEM_REGION_HEAD_SUPPORT = valueSrh != null ? valueSrh : false
         Codes.SYSTEM_HOMEPATH = !StringUtil.isBlank(valuePth) ? valuePth : Codes.SYSTEM_HOMEPATH
         SystemPath.HOME_PATH = Codes.SYSTEM_HOMEPATH
 

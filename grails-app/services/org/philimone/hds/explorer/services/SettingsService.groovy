@@ -2,10 +2,13 @@ package org.philimone.hds.explorer.services
 
 import grails.gorm.transactions.Transactional
 import org.philimone.hds.explorer.server.model.json.JConstant
+import org.philimone.hds.explorer.server.model.settings.Codes
 import org.philimone.hds.explorer.server.settings.generator.CodeGeneratorIncrementalRule
 
 @Transactional
 class SettingsService {
+
+    def applicationParamService
 
     def getCodeGeneratorsIncrementalRules() {
         def incs = CodeGeneratorIncrementalRule.values()
@@ -16,5 +19,17 @@ class SettingsService {
 
         return list
 
+    }
+
+    boolean getRegionHeadSupport() {
+        def value = applicationParamService.getBooleanValue(Codes.PARAMS_SYSTEM_REGION_HEAD_SUPPORT)
+
+        if (value != null) {
+            Codes.SYSTEM_REGION_HEAD_SUPPORT = value
+        } else {
+            Codes.SYSTEM_REGION_HEAD_SUPPORT = false
+        }
+
+        return value
     }
 }

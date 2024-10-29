@@ -24,10 +24,20 @@
 
 
             <div class="whitebox_panel">
-                <bi:tableList id="regionTable" class="region" columns="code, name, hierarchyLevel, hierarchyName, parent, createdBy, createdDate" />
+                <bi:ifRegionHeadSupported>
+                    <bi:tableList id="regionTable" class="region" columns="code, name, hierarchyLevel, hierarchyName, head, parent, createdBy, createdDate" />
+                </bi:ifRegionHeadSupported>
+                <bi:ifRegionHeadNotSupported>
+                    <bi:tableList id="regionTable" class="region" columns="code, name, hierarchyLevel, hierarchyName, parent, createdBy, createdDate" />
+                </bi:ifRegionHeadNotSupported>
             </div>
 
-            <dt:loadDatatable name="regionTable" data="${createLink(controller: 'region', action: 'regionList')}" columns="code, name, hierarchyLevel, hierarchyName, parent, createdBy, createdDate" />
+            <bi:ifRegionHeadSupported>
+                <dt:loadDatatable name="regionTable" data="${createLink(controller: 'region', action: 'regionList')}" columns="code, name, hierarchyLevel, hierarchyName, head, parent, createdBy, createdDate" />
+            </bi:ifRegionHeadSupported>
+            <bi:ifRegionHeadNotSupported>
+                <dt:loadDatatable name="regionTable" data="${createLink(controller: 'region', action: 'regionList')}" columns="code, name, hierarchyLevel, hierarchyName, parent, createdBy, createdDate" />
+            </bi:ifRegionHeadNotSupported>
 
         </div>
 

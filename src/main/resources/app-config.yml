@@ -9,6 +9,7 @@ hds.explorer.constraints.gender.checking: true
 hds.explorer.system.language: "en"
 hds.explorer.system.codegenerator: "org.philimone.hds.explorer.server.settings.generator.DefaultCodeGenerator"
 hds.explorer.system.codegenerator_rules.incremental: "FILL_GAPS"
+hds.explorer.system.region.head.support: false
 hds.explorer.system.path: "/var/lib/hds-explorer"
 
 

@@ -109,4 +109,26 @@ class ApplicationParamService {
 
         return null
     }
+
+    List<HiearchyParam> getHierarchyLevelsParameters() {
+        def params = ApplicationParam.findAllByNameLike("hierarchy%", [sort:"id"])
+        def hiearchyParams = new ArrayList<HiearchyParam>()
+
+        params.each {
+
+            def headParam = ApplicationParam.findByName("${it.name}.head")
+            def headValue = headParam==null ? null : headParam.value
+            hiearchyParams.add(new HiearchyParam(name: it.name, value: it.value, i18nName: it.getI18nName(), head: headValue))
+        }
+
+        return hiearchyParams
+    }
+
+    class HiearchyParam {
+        String name
+        String value
+        String head
+        String i18nName
+
+    }
 }

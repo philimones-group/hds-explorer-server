@@ -69,6 +69,16 @@
 
                     </div>
 
+                    <div class="fieldcontain ${hasErrors(bean: this.parameters, field: 'code', 'error')} ">
+                        <label for="regionHeadSupport" title="${message(code: 'settings.parameters.region.head.support.label')}">
+                            <g:message code="settings.parameters.region.head.support.label" />
+                            <span class="required-indicator">*</span>
+                        </label>
+
+                        <g:checkBox name="regionHeadSupport" value="${selectedRegionHeadSupport}" />
+
+                    </div>
+
                 </fieldset>
                 <fieldset class="buttons">
                     <g:submitButton name="create" class="save" value="${message(code: 'settings.parameters.update.label')}" />

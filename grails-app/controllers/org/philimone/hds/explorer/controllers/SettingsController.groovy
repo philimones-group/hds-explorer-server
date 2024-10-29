@@ -25,8 +25,11 @@ class SettingsController {
         List<JLanguage> languages = generalUtilitiesService.getSystemLanguages()
         JLanguage currentLanguage = generalUtilitiesService.getCurrentSystemLanguage()
         def codeGenIncrementalRules = settingsService.codeGeneratorsIncrementalRules
+        def regionHeadSupport = settingsService.getRegionHeadSupport()
 
-        [languages: languages, selectedLanguage: currentLanguage.language, codeGenerators: Codes.SYSTEM_ALL_CODE_GENERATORS, codeGeneratorsRules: codeGenIncrementalRules, selectedCodeGenerator: Codes.SYSTEM_CODE_GENERATOR, selectedCodeGeneratorIncRule: Codes.SYSTEM_CODE_GENERATOR_INCREMENTAL_RULE, errorMessages: new ArrayList<String>()]
+        [languages: languages, selectedLanguage: currentLanguage.language, codeGenerators: Codes.SYSTEM_ALL_CODE_GENERATORS,
+         codeGeneratorsRules: codeGenIncrementalRules, selectedCodeGenerator: Codes.SYSTEM_CODE_GENERATOR,
+         selectedCodeGeneratorIncRule: Codes.SYSTEM_CODE_GENERATOR_INCREMENTAL_RULE, selectedRegionHeadSupport: regionHeadSupport, errorMessages: new ArrayList<String>()]
     }
 
     def updateParameters = {
@@ -34,12 +37,14 @@ class SettingsController {
         def selectedLanguage = params.systemLanguage
         def selectedCodeGenerator = params.codeGenerator
         def selectedCodeGeneratorIncRule = params.codeGeneratorIncRule
+        def selectedRegionHeadSupport = (params.regionHeadSupport==null ? false : params.regionHeadSupport?.equals("on")) as Boolean
         def codeGenIncrementalRules = settingsService.codeGeneratorsIncrementalRules
         def errorMessages = new ArrayList<String>()
 
-        println "selected ${selectedLanguage}"
-        println "selected ${selectedCodeGenerator}"
-        println "selected ${selectedCodeGeneratorIncRule}"
+        println "selected lng: ${selectedLanguage}"
+        println "selected cgn: ${selectedCodeGenerator}"
+        println "selected cgr: ${selectedCodeGeneratorIncRule}"
+        println "selected rhs: ${params.regionHeadSupport}, ${selectedRegionHeadSupport}, Codes.SYSTEM_REGION_HEAD_SUPPORT=${Codes.SYSTEM_REGION_HEAD_SUPPORT}"
 
         try {
 
@@ -68,11 +73,17 @@ class SettingsController {
             //Update Code Generator Incremental Rule
             if (selectedCodeGeneratorIncRule != null && (!Codes.SYSTEM_CODE_GENERATOR_INCREMENTAL_RULE.equals(selectedCodeGeneratorIncRule))) {
 
-
                 Codes.SYSTEM_CODE_GENERATOR_INCREMENTAL_RULE = selectedCodeGeneratorIncRule
                 applicationParamService.updateApplicationParam(Codes.PARAMS_SYSTEM_CODE_GENERATOR_INCREMENTAL_RULE, selectedCodeGeneratorIncRule)
                 codeGeneratorService.codeGenerator = CodeGeneratorFactory.newInstance()
+            }
 
+            //Update Region Head Support
+            if (selectedRegionHeadSupport != null && !(Codes.SYSTEM_REGION_HEAD_SUPPORT == selectedRegionHeadSupport)) {
+                println "its changed rhs"
+
+                Codes.SYSTEM_REGION_HEAD_SUPPORT = selectedRegionHeadSupport
+                applicationParamService.updateApplicationParam(Codes.PARAMS_SYSTEM_REGION_HEAD_SUPPORT, ""+selectedRegionHeadSupport)
             }
 
             flash.message = message(code: 'settings.parameters.update.success.label')
@@ -88,7 +99,8 @@ class SettingsController {
         println "${errorMessages}"
 
         render view: "parameters", model: [languages: languages, selectedLanguage: currentLanguage.language, errorMessages: errorMessages,
-                                              codeGenerators: Codes.SYSTEM_ALL_CODE_GENERATORS, codeGeneratorsRules: codeGenIncrementalRules, selectedCodeGenerator: Codes.SYSTEM_CODE_GENERATOR, selectedCodeGeneratorIncRule: Codes.SYSTEM_CODE_GENERATOR_INCREMENTAL_RULE]
+                                           codeGenerators: Codes.SYSTEM_ALL_CODE_GENERATORS, codeGeneratorsRules: codeGenIncrementalRules,
+                                           selectedCodeGenerator: Codes.SYSTEM_CODE_GENERATOR, selectedCodeGeneratorIncRule: Codes.SYSTEM_CODE_GENERATOR_INCREMENTAL_RULE, selectedRegionHeadSupport: selectedRegionHeadSupport ]
     }
 
     def customOptions = {

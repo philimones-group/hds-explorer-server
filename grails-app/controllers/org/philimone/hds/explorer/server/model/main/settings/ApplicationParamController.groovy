@@ -4,8 +4,10 @@ import org.philimone.hds.explorer.server.model.settings.ApplicationParam
 
 class ApplicationParamController {
 
+    def applicationParamService
+
     def hierarchyLevels = {
-        def appParams = ApplicationParam.findAllByNameLike("hierarchy%", [sort:"id"])
+        def appParams = applicationParamService.getHierarchyLevelsParameters()
 
         [applicationParamList: appParams, applicationParamCount: appParams.size()]
     }
@@ -69,11 +71,21 @@ class ApplicationParamController {
                     param.value = hierarchyEnabled ? hierarchyLabel : null
                     param.save(flush: true)
 
-                    println "errors: ${param.errors}"
+                    println "param.errors: ${param.errors}"
 
 
                 } else if (var.startsWith("head.")) {
                     //handles head
+                    def spt2 = val.split("\\.")
+                    def enabled = "true".equals(spt2[0])
+                    def paramName = var.replace("head.", "") + ".head"
+                    def param = ApplicationParam.findByName(paramName)
+
+                    param.value = enabled ? "true" : null
+                    param.save(flush: true)
+
+                    println "regionhead.errors: ${param.errors}"
+
                 }
 
             }

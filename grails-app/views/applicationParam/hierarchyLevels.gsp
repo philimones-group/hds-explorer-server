@@ -72,6 +72,8 @@
 
                         <th><g:message code="applicationParams.hierachylevel.value.label" /></th>
 
+                        <th><g:message code="applicationParams.hierachylevel.head.label" /></th>
+
                         <th><g:message code="applicationParams.hierachylevel.enabled.label" /></th>
 
                         <th></th>
@@ -83,9 +85,11 @@
                         <tr>
                             <td></td>
 
-                            <td><g:message code="${appParam.getI18nName()}" /></td>
+                            <td><g:message code="${appParam.i18nName}" /></td>
 
                             <td><g:textField name="value.${appParam.name}" value="${appParam.value}" /> </td>
+
+                            <td><g:checkBox name="head.${appParam.name}" value="${appParam.head!=null && appParam.head.equals('true')}" /></td>
 
                             <td><g:checkBox name="enabled.${appParam.name}" value="${appParam.value!=null}" /></td>
 

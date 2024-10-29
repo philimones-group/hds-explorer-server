@@ -1,6 +1,7 @@
 package org.philimone.hds.explorer.taglib
 
 import net.betainteractive.utilities.StringUtil
+import org.philimone.hds.explorer.server.model.settings.Codes
 
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -11,6 +12,7 @@ class GeneralTagLib {
 
     def generalUtilitiesService
     def dataModelsService
+    def settingsService
 
     /*Menu*/
     def menuBar = {attrs, body ->
@@ -574,5 +576,18 @@ class GeneralTagLib {
 
         return "'"+v+"'"
     }
+
+    def ifRegionHeadSupported = { attrs, body ->
+        if (Codes.SYSTEM_REGION_HEAD_SUPPORT) { //settingsService.getRegionHeadSupport()
+            out << body()
+        }
+    }
+
+    def ifRegionHeadNotSupported = { attrs, body ->
+        if (!Codes.SYSTEM_REGION_HEAD_SUPPORT) { //settingsService.getRegionHeadSupport()
+            out << body()
+        }
+    }
+
 
 }

@@ -67,6 +67,19 @@
                     </li>
                 </g:if>
 
+                <bi:ifRegionHeadSupported>
+                    <g:if test="${this.region?.head}">
+                        <li class="fieldcontain">
+                            <span id="head-label" class="property-label">
+                                <g:message code="region.head.label" /> [${hierarchyLevel}]
+                            </span>
+                            <span class="property-value" aria-labelledby="head-label">
+                                ${region.head?.code} - ${region.head?.name}
+                            </span>
+                        </li>
+                    </g:if>
+                </bi:ifRegionHeadSupported>
+
                 <g:if test="${this.region?.modules}">
                     <li class="fieldcontain">
                         <span id="modules-label" class="property-label">
