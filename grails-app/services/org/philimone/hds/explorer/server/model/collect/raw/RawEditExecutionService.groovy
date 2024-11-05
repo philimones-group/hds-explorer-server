@@ -2,6 +2,9 @@ package org.philimone.hds.explorer.server.model.collect.raw
 
 import grails.gorm.transactions.Transactional
 import org.philimone.hds.explorer.server.model.authentication.User
+import org.philimone.hds.explorer.server.model.collect.raw.editors.RawEditHousehold
+import org.philimone.hds.explorer.server.model.collect.raw.editors.RawEditMember
+import org.philimone.hds.explorer.server.model.collect.raw.editors.RawEditRegion
 import org.philimone.hds.explorer.server.model.enums.Gender
 import org.philimone.hds.explorer.server.model.enums.RawEntity
 import org.philimone.hds.explorer.server.model.enums.temporal.HeadRelationshipStartType
@@ -24,7 +27,7 @@ class RawEditExecutionService {
     def errorMessageService
 
 
-    RawExecutionResult<Region> updateRegion(RawRegion rawDomainInstance) {
+    RawExecutionResult<Region> updateRegion(RawEditRegion rawDomainInstance) {
         List<RawMessage> errors = new ArrayList<>()
 
 
@@ -60,7 +63,7 @@ class RawEditExecutionService {
 
     }
 
-    RawExecutionResult<Household> updateHousehold(RawHousehold rawDomainInstance) {
+    RawExecutionResult<Household> updateHousehold(RawEditHousehold rawDomainInstance) {
         List<RawMessage> errors = new ArrayList<>()
 
         Household domainInstance = Household.findByCode(rawDomainInstance.householdCode)
@@ -81,7 +84,10 @@ class RawEditExecutionService {
 
             if (!domainInstance.hasErrors()) {
                 //update members with householdName
-                Member.executeUpdate("update Member m set m.householdName=?0 where m.householdCode=?1", [domainInstance.name, domainInstance.code])
+
+                updateResidents(domainInstance)
+
+                //Member.executeUpdate("update Member m set m.householdName=?0 where m.householdCode=?1", [domainInstance.name, domainInstance.code])
 
             } else {
                 //throw an error
@@ -104,7 +110,7 @@ class RawEditExecutionService {
         return obj
     }
 
-    RawExecutionResult<Member> updateMember(RawMember rawDomainInstance) {
+    RawExecutionResult<Member> updateMember(RawEditMember rawDomainInstance) {
         List<RawMessage> errors = new ArrayList<>()
 
         Member domainInstance = Member.findByCode(rawDomainInstance.code)
@@ -162,5 +168,28 @@ class RawEditExecutionService {
         RawExecutionResult<Member> obj = RawExecutionResult.newSuccessResult(RawEntity.MEMBER, domainInstance)
         return obj
     }
+
+    def updateResidents(Household household) {
+        def members = householdService.getResidentMembers(household)
+
+        members.each { member ->
+            member.household = household
+            member.householdCode = household.code
+            member.householdName = household.name
+
+            member.gpsAccuracy = household.gpsAccuracy
+            member.gpsAltitude = household.gpsAltitude
+            member.gpsLatitude = household.gpsLatitude
+            member.gpsLongitude = household.gpsLongitude
+            member.gpsNull = member.gpsLatitude==null || member.gpsLongitude
+
+            member.cosLatitude =  member.gpsLatitude==null ?  null : Math.cos(member.gpsLatitude*Math.PI / 180.0)
+            member.sinLatitude =  member.gpsLatitude==null ?  null : Math.sin(member.gpsLatitude*Math.PI / 180.0)
+            member.cosLongitude = member.gpsLongitude==null ? null : Math.cos(member.gpsLongitude*Math.PI / 180.0)
+            member.sinLongitude = member.gpsLongitude==null ? null : Math.sin(member.gpsLongitude*Math.PI / 180.0)
+            member.save(flush: true)
+        }
+    }
+
 
 }

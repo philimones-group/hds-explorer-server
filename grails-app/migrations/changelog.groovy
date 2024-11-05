@@ -30,4 +30,5 @@ databaseChangeLog = {
     include file: 'add-region-head-tables.groovy'
     include file: 'add-change-region-head-extension-table.groovy'
     include file: 'alter-change-region-head-extension-table.groovy'
+    include file: 'add-raw-edit-domains-region-household-member-tables.groovy'
 }

@@ -3,6 +3,9 @@ package org.philimone.hds.explorer.server.model.collect.raw.api
 import groovy.xml.XmlSlurper
 import groovy.xml.slurpersupport.NodeChild
 import org.philimone.hds.explorer.server.model.collect.raw.*
+import org.philimone.hds.explorer.server.model.collect.raw.editors.RawEditHousehold
+import org.philimone.hds.explorer.server.model.collect.raw.editors.RawEditMember
+import org.philimone.hds.explorer.server.model.collect.raw.editors.RawEditRegion
 import org.philimone.hds.explorer.server.model.enums.RawEntity
 import org.philimone.hds.explorer.server.model.main.collect.raw.RawExecutionResult
 import org.philimone.hds.explorer.server.model.main.collect.raw.RawParseResult
@@ -873,7 +876,7 @@ class RawImportApiController {
             return
         }
 
-        RawParseResult<RawRegion> parseResult = null
+        RawParseResult<RawEditRegion> parseResult = null
         String xmlContent = request.reader?.text
         //String extensionXml = rawImportApiService.getExtensionXmlText(xmlContent, RawEntity.REGION)
 
@@ -895,6 +898,13 @@ class RawImportApiController {
         def rawInstance = parseResult.domainInstance
         //rawInstance.extensionForm = extensionXml?.getBytes()
 
+        def resultSave = rawInstance.save(flush: true)
+
+        if (rawInstance.hasErrors()){
+            render text: errorMessageService.getRawMessagesText(rawInstance), status: HttpStatus.BAD_REQUEST
+            return
+        }
+
         //execute creation update
         def result = rawEditExecutionService.updateRegion(rawInstance)
 
@@ -913,7 +923,7 @@ class RawImportApiController {
             return
         }
 
-        RawParseResult<RawHousehold> parseResult = null
+        RawParseResult<RawEditHousehold> parseResult = null
         String xmlContent = request.reader?.text
         //String extensionXml = rawImportApiService.getExtensionXmlText(xmlContent, RawEntity.REGION)
 
@@ -935,6 +945,13 @@ class RawImportApiController {
         def rawInstance = parseResult.domainInstance
         //rawInstance.extensionForm = extensionXml?.getBytes()
 
+        def resultSave = rawInstance.save(flush: true)
+
+        if (rawInstance.hasErrors()){
+            render text: errorMessageService.getRawMessagesText(rawInstance), status: HttpStatus.BAD_REQUEST
+            return
+        }
+
         //execute creation update
         def result = rawEditExecutionService.updateHousehold(rawInstance)
 
@@ -954,7 +971,7 @@ class RawImportApiController {
             return
         }
 
-        RawParseResult<RawMember> parseResult = null
+        RawParseResult<RawEditMember> parseResult = null
         String xmlContent = request.reader?.text
         //String extensionXml = rawImportApiService.getExtensionXmlText(xmlContent, RawEntity.REGION)
 
@@ -975,6 +992,13 @@ class RawImportApiController {
 
         def rawInstance = parseResult.domainInstance
         //rawInstance.extensionForm = extensionXml?.getBytes()
+
+        def resultSave = rawInstance.save(flush: true)
+
+        if (rawInstance.hasErrors()){
+            render text: errorMessageService.getRawMessagesText(rawInstance), status: HttpStatus.BAD_REQUEST
+            return
+        }
 
         //execute creation update
         def result = rawEditExecutionService.updateMember(rawInstance)

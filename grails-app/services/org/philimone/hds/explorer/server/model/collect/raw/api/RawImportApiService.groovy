@@ -4,8 +4,12 @@ import grails.gorm.transactions.Transactional
 import grails.web.databinding.DataBinder
 import groovy.xml.slurpersupport.NodeChild
 import groovy.xml.slurpersupport.Node
+import net.betainteractive.utilities.GeneralUtil
 import net.betainteractive.utilities.StringUtil
 import org.philimone.hds.explorer.server.model.collect.raw.*
+import org.philimone.hds.explorer.server.model.collect.raw.editors.RawEditHousehold
+import org.philimone.hds.explorer.server.model.collect.raw.editors.RawEditMember
+import org.philimone.hds.explorer.server.model.collect.raw.editors.RawEditRegion
 import org.philimone.hds.explorer.server.model.enums.MaritalEndStatus
 import org.philimone.hds.explorer.server.model.enums.MaritalStartStatus
 import org.philimone.hds.explorer.server.model.enums.ProcessedStatus
@@ -1239,7 +1243,7 @@ class RawImportApiService implements DataBinder {
 
     }
 
-    RawParseResult<RawRegion> parseEditRegion(NodeChild xmlNode) {
+    RawParseResult<RawEditRegion> parseEditRegion(NodeChild xmlNode) {
 
         def errors = new ArrayList<RawMessage>()
         def params = xmlNode.childNodes().collectEntries{[it.name(), it.text()]}
@@ -1286,11 +1290,14 @@ class RawImportApiService implements DataBinder {
             }
         }
 
-        return new RawParseResult<RawRegion>(new RawRegion(params), errors)
+        def rawInstance = new RawEditRegion(params)
+        rawInstance.id = GeneralUtil.generateUUID()
+
+        return new RawParseResult<RawEditRegion>(rawInstance, errors)
 
     }
 
-    RawParseResult<RawHousehold> parseEditHousehold(NodeChild xmlNode) {
+    RawParseResult<RawEditHousehold> parseEditHousehold(NodeChild xmlNode) {
 
         def errors = new ArrayList<RawMessage>()
         def params = xmlNode.childNodes().collectEntries{[it.name(), it.text()]}
@@ -1337,11 +1344,14 @@ class RawImportApiService implements DataBinder {
             }
         }
 
-        return new RawParseResult<RawHousehold>(new RawHousehold(params), errors)
+        def rawInstance = new RawEditHousehold(params)
+        rawInstance.id = GeneralUtil.generateUUID()
+
+        return new RawParseResult<RawEditHousehold>(rawInstance, errors)
 
     }
 
-    RawParseResult<RawMember> parseEditMember(NodeChild xmlNode) {
+    RawParseResult<RawEditMember> parseEditMember(NodeChild xmlNode) {
 
         def errors = new ArrayList<RawMessage>()
         def params = xmlNode.childNodes().collectEntries{[it.name(), it.text()]}
@@ -1397,7 +1407,10 @@ class RawImportApiService implements DataBinder {
             }
         }
 
-        return new RawParseResult<RawMember>(new RawMember(params), errors)
+        def rawInstance = new RawEditMember(params)
+        rawInstance.id = GeneralUtil.generateUUID()
+
+        return new RawParseResult<RawEditMember>(rawInstance, errors)
 
     }
 
