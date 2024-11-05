@@ -31,7 +31,7 @@ enum SyncEntity {
     PREGNANCY_OUTCOMES (23, "syncEntity.pregnancyOutcomes.label", "pregnancyoutcomes"),
     DEATHS             (24, "syncEntity.deaths.label", "deaths"),
     INCOMPLETE_VISITS  (25, "syncEntity.incomplete_visits.label", "incompletevisits"),
-    REGION_HEADS       (25, "syncEntity.regionheads.label", "regionheads")
+    REGION_HEADS       (26, "syncEntity.regionheads.label", "regionheads")
 
     final int code
     final String name

@@ -1061,7 +1061,7 @@ class SyncFilesService {
 
     def generateHouseHoldsXML(LogReportCode logReportId) {
 
-        LogOutput log = generalUtilitiesService.getOutput(SystemPath.logsPath, "/generate-households-xml");
+        LogOutput log = generalUtilitiesService.getOutput(SystemPath.logsPath, "generate-households-xml");
         PrintStream output = log.output
         if (output == null) return;
 
@@ -1147,7 +1147,7 @@ class SyncFilesService {
 
     def generateMembersXML(LogReportCode logReportId) {
 
-        LogOutput log = generalUtilitiesService.getOutput(SystemPath.logsPath, "/generate-members-xml");
+        LogOutput log = generalUtilitiesService.getOutput(SystemPath.logsPath, "generate-members-xml");
         PrintStream output = log.output
         if (output == null) return;
 
@@ -2365,7 +2365,7 @@ class SyncFilesService {
         element.appendChild(createAttributeNonNull(doc, "name", region.name));
         element.appendChild(createAttributeNonNull(doc, "hierarchyLevel", region.hierarchyLevel?.code));
         element.appendChild(createAttributeNonNull(doc, "parent", region.parentCode));
-        element.appendChild(createAttributeNonNull(doc, "head", region.headCode));
+        element.appendChild(createAttributeNonNull(doc, "head", region.headCode==null ? "" : region.headCode));
         element.appendChild(createAttributeNonNull(doc, "modules", moduleService.getListModulesAsText(region.modules)));
 
         return element;
@@ -2645,7 +2645,7 @@ class SyncFilesService {
         element.append(createXmlAttribute("endType", regionHeadRelationship.endType.code));
         element.append(createXmlAttribute("endDate", regionHeadRelationship.endDate==null ? "" : StringUtil.format(regionHeadRelationship.endDate)));
 
-        element.append("</headRelationship>")
+        element.append("</regionHeadRelationship>")
 
         return element;
     }

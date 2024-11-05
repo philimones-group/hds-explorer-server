@@ -29,4 +29,5 @@ databaseChangeLog = {
     include file: 'alter-tables-coreformcomluns-add-column-code-20240913.groovy'
     include file: 'add-region-head-tables.groovy'
     include file: 'add-change-region-head-extension-table.groovy'
+    include file: 'alter-change-region-head-extension-table.groovy'
 }

@@ -14,8 +14,8 @@ class ChangeRegionHeadExt {
         collected_id unique: true, nullable: false
         visit_code nullable: true
         region_code nullable: false
-        old_head_code nullable: false
-        old_head_name nullable: false
+        old_head_code nullable: true
+        old_head_name nullable: true
         new_head_code nullable: false
         new_head_name nullable: false
     }

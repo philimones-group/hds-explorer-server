@@ -15,6 +15,7 @@ class RegionController {
     RegionService regionService
     ModuleService moduleService
     def dataModelsService
+    def applicationParamService
 
     //static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
 
@@ -205,6 +206,7 @@ class RegionController {
         def columnsList = jqdtParams.columns.collect { k, v -> v.data }
         def orderList = jqdtParams.order.collect { k, v -> [columnsList[v.column as Integer], v.dir] }
         def entitiesList = dataModelsService.findRegionLevelLike("${params_search}")
+        def hierarchyParams = applicationParamService.getHierarchyLevelsParameters()
 
         //code, name, hierarchyLevel, hierarchyName, parent, createdBy, createdDate
 
@@ -244,7 +246,7 @@ class RegionController {
             ['code':           "<a href='${createLink(controller: 'region', action: 'show', id: obj.id)}'>${obj.code}</a>",
              'name':           obj.name,
              'hierarchyLevel': obj.hierarchyLevel.code,
-             'hierarchyName':  message(code: obj.hierarchyLevel.name),
+             'hierarchyName':  message(code: obj.hierarchyLevel.name) + " - ${hierarchyParams.find { it.name.equals(obj.hierarchyLevel.code)}?.value}",
              'head':           obj.head ? "${obj.head?.code} - ${obj.head?.name}" : "",
              'parent':         "<a href='${createLink(controller: 'region', action: 'show', id: obj.parent?.id)}'>${obj}</a>",
              'createdBy':      obj.createdBy?.getFullname(),

@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <h:html xmlns="http://www.w3.org/2002/xforms" xmlns:ev="http://www.w3.org/2001/xml-events" xmlns:h="http://www.w3.org/1999/xhtml" xmlns:jr="http://openrosa.org/javarosa" xmlns:orx="http://openrosa.org/xforms" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <h:head>
-    <h:title>HDS Change Head of Household Extension</h:title>
+    <h:title>HDS Change Head of Region Extension</h:title>
     <model>
       <itext>
         <translation lang="Portuguese">
@@ -107,8 +107,8 @@
       <bind nodeset="/change_region_head_ext/collected_id" readonly="true()" required="true()" type="string"/>
       <bind nodeset="/change_region_head_ext/visit_code" readonly="true()" type="string"/>
       <bind nodeset="/change_region_head_ext/region_code" readonly="true()" required="true()" type="string"/>
-      <bind nodeset="/change_region_head_ext/old_head_code" readonly="true()" required="true()" type="string"/>
-      <bind nodeset="/change_region_head_ext/old_head_name" readonly="true()" required="true()" type="string"/>
+      <bind nodeset="/change_region_head_ext/old_head_code" readonly="true()" type="string"/>
+      <bind nodeset="/change_region_head_ext/old_head_name" readonly="true()" type="string"/>
       <bind nodeset="/change_region_head_ext/new_head_code" readonly="true()" required="true()" type="string"/>
       <bind nodeset="/change_region_head_ext/new_head_name" readonly="true()" required="true()" type="string"/>
       <bind nodeset="/change_region_head_ext/custom_quest1" type="string"/>
