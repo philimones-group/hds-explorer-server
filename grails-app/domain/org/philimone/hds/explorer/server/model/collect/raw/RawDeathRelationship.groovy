@@ -10,6 +10,11 @@ class RawDeathRelationship {
 
     static belongsTo = [death:RawDeath]
 
+    @Override
+    String toString() {
+        "${newMemberCode} - [${newRelationshipType}]"
+    }
+
     static constraints = {
         id maxSize: 32
 

@@ -23,6 +23,11 @@ class MemberController {
         respond memberService.get(id)
     }
 
+    def showbycode(String id) {
+        println(id)
+        redirect action: 'show', id: memberService.getMember(id)?.id
+    }
+
     def create() {
         respond new Member(params)
     }

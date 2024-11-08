@@ -4,6 +4,10 @@
         <meta name="layout" content="main" />
         <g:set var="entityName" value="${message(code: 'member.label', default: 'Member')}" />
         <title><g:message code="default.show.label" args="[entityName]" /></title>
+
+        <tb:tabulatorResources/>
+        <tb:luxonResources/>
+        <tb:jquiResources/>
     </head>
     <body>
         <a href="#show-member" class="skip" tabindex="-1"><g:message code="default.link.skip.label" default="Skip to content&hellip;"/></a>
@@ -46,12 +50,22 @@
             <bi:dateField bean="${this.member}" property="createdDate" label="member.createdDate.label" mode="show" />
             <bi:field bean="${this.member}" property="updatedBy" label="member.updatedBy.label" mode="show" />
             <bi:dateField bean="${this.member}" property="updatedDate" label="member.updatedDate.label" mode="show" />
-            
-            
+
+
+            <g:set var="member_code" value="${this.member?.code}" />
+            <g:set var="member_name" value="${this.member?.name}" />
+            <g:set var="member_gender" value="${this.member?.gender}" />
+            <g:set var="member_dob" value="${this.member?.dob}" />
+
             <g:form resource="${this.member}" method="DELETE">
                 <fieldset class="buttons">
                     <!-- <g:link class="edit" action="edit" resource="${this.member}"><g:message code="default.button.edit.label" default="Edit" /></g:link> -->
                     <input class="delete" type="submit" value="${message(code: 'default.button.delete.label', default: 'Delete')}" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');" />
+
+                    <input class="list" type="button" data-toggle="modal" data-target="#show_member_residencies_hrelationships" value="${message(code: 'rawDomain.helpers.button.member.residencies_and_headrelationships.label', default: 'Show Residents')}" />
+
+                    <g:render template="show_member_residencies_hrelationships"/>
+
                 </fieldset>
             </g:form>
         </div>

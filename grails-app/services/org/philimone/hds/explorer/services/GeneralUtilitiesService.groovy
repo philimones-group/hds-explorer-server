@@ -29,6 +29,10 @@ class GeneralUtilitiesService {
         return grailsApplication.config.getProperty("grails.mail.username", String.class)
     }
 
+    def String getAppVersion(){
+        getConfigValue("info.app.version")
+    }
+
     def String getConfigValue(String variable){
         return grailsApplication.config.getProperty("${variable}", String.class)
     }

@@ -2,7 +2,9 @@ package org.philimone.hds.explorer.controllers
 
 class GeneralUtilitiesController {
 
+    def generalUtilitiesService
+
     def loginTest = {
-        render "OK"
+        render "${generalUtilitiesService.getAppVersion()}" //"OK"
     }
 }

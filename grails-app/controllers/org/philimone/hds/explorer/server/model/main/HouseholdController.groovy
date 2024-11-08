@@ -18,10 +18,8 @@ class HouseholdController {
 
     def show(String id) {
         def household = householdService.get(id)
-        def residentsList = householdService.getResidentMembers(household)
-        respond household, model: [residentsList: residentsList]
-
-        println "class name: " + household.class.name
+        //def residentsList = householdService.getResidentMembers(household)
+        respond household
     }
 
     def create() {

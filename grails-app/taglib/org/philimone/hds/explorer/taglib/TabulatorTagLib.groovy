@@ -300,6 +300,7 @@ class TabulatorTagLib {
                 def vtalign = obj.vtalign != null ? "${obj.vtalign}" : null
                 def display = obj.display != null ? "${obj.display}" : null
                 def formatter = obj.formatter != null ? "${obj.formatter}" : null
+                def link = obj.link != null ? "${obj.link}" : ""
 
                 def final_cedit = StringUtil.isBlank(cedit) ? "" : cedit.equalsIgnoreCase("autocomplete") ? "tabulatorAutocompleteEditor" : "'${cedit}'"
                 def cedittext = StringUtil.isBlank(cedit) ? "" : ", editor:${final_cedit}"
@@ -314,6 +315,11 @@ class TabulatorTagLib {
                     if (display.equalsIgnoreCase("enumType")) { //call object.toString()
                         displaytext = ", formatter:function(cell, formatterParams, onRendered){ return cell.getValue()?.name; }"
                     }
+                }
+
+                if (!StringUtil.isBlank(link)) {
+                    //override the formmtter
+                    displaytext = ", formatter:function(cell, formatterParams, onRendered){ return \"<a href='${link}/\" + cell.getValue() + \"'>\" + cell.getValue() + \"</a>\"; }"
                 }
 
                 if (!StringUtil.isBlank(cedit)) {
@@ -443,6 +449,7 @@ class TabulatorTagLib {
         def vtalign = attrs.vtalign
         def display = attrs.display //custom render method for the object
         def formatter = attrs.formatter
+        def link = attrs.link
         //vertAlign
         def hzaligntext = "hozAlign:" + (hzalign != null ? "'${hzalign}'" : "'center'")
         def vtaligntext = vtalign != null ? "vertAlign:'${vtalign}'" : ""
@@ -450,10 +457,11 @@ class TabulatorTagLib {
         def editoropstext = editorOptions != null ? ", \"editorOptions\": \"${editorOptions}\"" : ""
         def displaytext = display != null ? "${display}" : ""
         def formattertext = formatter != null ? ", \"formatter\": \"${formatter}\"" : ""
+        def linktext = link != null ? ", \"link\": \"${link}\"" : ""
 
         //, hozAlign:"center"
 
-        out << "{\"name\": \"${name}\", \"label\": \"${label}\", \"editor\": \"${editortext}\", \"hzalign\": \"${hzaligntext}\", \"vtalign\": \"${vtaligntext}\", \"display\": \"${displaytext}\"${formattertext}${editoropstext}},"
+        out << "{\"name\": \"${name}\", \"label\": \"${label}\", \"editor\": \"${editortext}\", \"hzalign\": \"${hzaligntext}\", \"vtalign\": \"${vtaligntext}\", \"display\": \"${displaytext}\"${formattertext}${editoropstext}${linktext}},"
     }
 
     def toast = {attrs, body ->

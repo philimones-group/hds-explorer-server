@@ -10,6 +10,11 @@ class RawChangeHeadRelationship {
 
     static belongsTo = [changeHead:RawChangeHead]
 
+    @Override
+    String toString() {
+        "${newMemberCode} - [${newRelationshipType}]"
+    }
+
     static constraints = {
         id maxSize: 32
 
