@@ -161,6 +161,15 @@ class RawDomainController {
         respond obj, model: [mode: "edit", errorMessages: errorMessages, dependencyResult: dependencyCheckResult, member: member]
     }
 
+    def editDeathRelationship = {
+        def obj = RawDeathRelationship.get(params.id)
+        def parentObj = obj?.death
+        //def member = rawDomainService.getBasicMember(obj?.memberCode)
+        def errorMessages = RawErrorLog.findByUuid(parentObj?.id)?.messages
+
+        respond obj, model: [mode: "edit", errorMessages: errorMessages]
+    }
+
     def editOutMigration = {
         def obj = RawOutMigration.get(params.id)
         def member = rawDomainService.getBasicMember(obj?.memberCode)
@@ -207,6 +216,13 @@ class RawDomainController {
         respond obj, model: [mode: "edit", errorMessages: errorMessages, dependencyResult: dependencyCheckResult, member: member, rawPregnancyRegId: rawPregReg?.id]
     }
 
+    def editPregnancyChild = {
+        def obj = RawPregnancyChild.get(params.id)
+        def errorMessages = RawErrorLog.findByUuid(params.id)?.messages
+
+        respond obj, model: [mode: "edit", errorMessages: errorMessages]
+    }
+
     def editMaritalRelationship = {
         def errorMessages = RawErrorLog.findByUuid(params.id)?.messages
         def dependencyCheckResult = rawDomainService.checkDependencyErrors(errorMessages)
@@ -219,6 +235,12 @@ class RawDomainController {
         def dependencyCheckResult = rawDomainService.checkDependencyErrors(errorMessages)
 
         respond RawChangeHead.get(params.id), model: [mode: "edit", errorMessages: errorMessages, dependencyResult: dependencyCheckResult]
+    }
+
+    def editChangeHeadRelationship = {
+        def errorMessages = RawErrorLog.findByUuid(params.id)?.messages
+
+        respond RawChangeHeadRelationship.get(params.id), model: [mode: "edit", errorMessages: errorMessages]
     }
 
     def editChangeRegionHead = {
@@ -421,6 +443,27 @@ class RawDomainController {
 
     }
 
+    def updateDeathRelationship = {
+
+        RawDeathRelationship rawDeathRelationship = RawDeathRelationship.get(params.id)
+        RawDeath rawDeath = rawDeathRelationship?.death
+
+
+        try {
+            bindData(rawDeathRelationship, params)
+            rawDeathRelationship.save(flush:true)
+
+
+        } catch (ValidationException e) {
+            respond rawDeathRelationship.errors, view:'editDeathRelationship', model: [mode: "edit", errorMessages: RawErrorLog.findByUuid(rawDeathRelationship.id)?.messages]
+            return
+        }
+
+        flash.message = message(code: 'default.updated.message', args: [message(code: 'rawDeathRelationship.label', default: 'Raw Death Relationship'), rawDeathRelationship.newMemberCode])
+        redirect action: "editDeath", id: rawDeath.id
+
+    }
+
     def updateOutMigration = {
 
         RawOutMigration rawOutMigration = RawOutMigration.get(params.id)
@@ -603,6 +646,26 @@ class RawDomainController {
 
     }
 
+    def updatePregnancyChild = {
+
+        RawPregnancyChild rawPregnancyChild = RawPregnancyChild.get(params.id)
+        RawPregnancyOutcome rawPregnancyOutcome = rawPregnancyChild.outcome
+
+        try {
+
+            bindData(rawPregnancyChild, params)
+            rawPregnancyChild.save(flush:true)
+
+        } catch (ValidationException e) {
+            respond rawPregnancyChild.errors, view:'editPregnancyChild', model: [mode: "edit", errorMessages: RawErrorLog.findByUuid(rawPregnancyOutcome?.id)?.messages]
+            return
+        }
+
+        flash.message = message(code: 'default.updated.message', args: [message(code: 'rawPregnancyChild.label', default: 'Raw Pregnancy Child'), rawPregnancyChild.childCode])
+        respond rawPregnancyOutcome, view:"editPregnancyOutcome", model: [mode: "show"]
+
+    }
+
     def updateMaritalRelationship = {
 
         RawMaritalRelationship rawMaritalRelationship = RawMaritalRelationship.get(params.id)
@@ -667,6 +730,27 @@ class RawDomainController {
 
         flash.message = message(code: 'default.updated.message', args: [message(code: 'rawChangeHead.label', default: 'Raw Change Head'), rawChangeHead.newHeadCode])
         respond rawChangeHead, view:"editChangeHead", model: [mode: "show"]
+
+    }
+
+    def updateChangeHeadRelationship = {
+
+        RawChangeHeadRelationship rawChangeHeadRelationship = RawChangeHeadRelationship.get(params.id)
+        RawChangeHead rawChangeHead = rawChangeHeadRelationship?.changeHead
+
+
+        try {
+            bindData(rawChangeHeadRelationship, params)
+            rawChangeHeadRelationship.save(flush:true)
+
+
+        } catch (ValidationException e) {
+            respond rawChangeHeadRelationship.errors, view:'editChangeHeadRelationship', model: [mode: "edit", errorMessages: RawErrorLog.findByUuid(rawChangeHeadRelationship.id)?.messages]
+            return
+        }
+
+        flash.message = message(code: 'default.updated.message', args: [message(code: 'rawChangeHeadRelationship.label', default: 'Raw ChangeHead Relationship'), rawChangeHeadRelationship.newMemberCode])
+        redirect action: "editChangeHead", id: rawChangeHead.id
 
     }
 
@@ -836,6 +920,20 @@ class RawDomainController {
         redirect controller: "eventSync", action: "showSyncReportDetails", id: logReportFileId
     }
 
+    def deleteChangeHeadRelationship = {
+
+        def rawObj = RawChangeHeadRelationship.get(params.id)
+        def parentRawObj = rawObj.changeHead
+        //delete records
+        try {
+            rawObj.delete(flush: true)
+        } catch(Exception ex) {
+            ex.printStackTrace()
+        }
+        //show report details
+        redirect action: "editChangeHead", id: parentRawObj?.id
+    }
+
     def deleteDeath = {
 
         def rawObj = RawDeath.get(params.id)
@@ -854,6 +952,20 @@ class RawDomainController {
         }
         //show report details
         redirect controller: "eventSync", action: "showSyncReportDetails", id: logReportFileId
+    }
+
+    def deleteDeathRelationship = {
+
+        def rawObj = RawDeathRelationship.get(params.id)
+        def parentRawObj = rawObj.death
+        //delete records
+        try {
+            rawObj.delete(flush: true)
+        } catch(Exception ex) {
+            ex.printStackTrace()
+        }
+        //show report details
+        redirect action: "editDeath", id: parentRawObj?.id
     }
 
     def deleteExtInmigration = {
@@ -1008,6 +1120,21 @@ class RawDomainController {
         }
         //show report details
         redirect controller: "eventSync", action: "showSyncReportDetails", id: logReportFileId
+    }
+
+    def deletePregnancyChild = {
+
+        def rawObj = RawPregnancyChild.get(params.id)
+        def parentRawObj = rawObj?.outcome
+
+        //delete records
+        try {
+            rawObj.delete(flush: true)
+        } catch(Exception ex) {
+            ex.printStackTrace()
+        }
+        //show report details
+        redirect action: "editPregnancyOutcome", id: parentRawObj?.id
     }
 
     def deletePregnancyRegistration = {

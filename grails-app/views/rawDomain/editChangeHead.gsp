@@ -109,7 +109,27 @@
             <bi:field bean="${this.rawChangeHead}" property="newHeadCode"    label="rawChangeHead.newHeadCode.label" mode="${mode}" />
             <bi:dateField bean="${this.rawChangeHead}" property="eventDate"    label="rawChangeHead.eventDate.label" mode="${mode}" />
             <bi:field bean="${this.rawChangeHead}" property="reason"    label="rawChangeHead.reason.label" mode="${mode}" />
-            <bi:field bean="${this.rawChangeHead}" property="relationships"    label="rawChangeHead.relationships.label" mode="show" />
+
+            <g:if test="${this.rawChangeHead?.relationships}">
+
+                <li class="fieldcontain">
+                    <span id="relationships-label" class="property-label">
+                        <g:message code="rawChangeHead.relationships.label" />
+                    </span>
+                    <span class="property-value" aria-labelledby="relationships-label">
+                        <ul>
+                            <g:each in="${this.rawChangeHead.relationships}" var="changeHeadRelationship">
+                                <li class="list-style-type: square;">
+                                    <g:link controller="rawDomain" action="editChangeHeadRelationship" id="${changeHeadRelationship.id}">
+                                        ${changeHeadRelationship?.toString()}
+                                    </g:link>
+                                </li>
+                            </g:each>
+                        </ul>
+                    </span>
+                </li>
+
+            </g:if>
 
             <bi:field bean="${this.rawChangeHead}" property="collectedBy"    label="rawChangeHead.collectedBy.label" mode="show" />
             <bi:field bean="${this.rawChangeHead}" property="collectedDate"    label="rawChangeHead.collectedDate.label" mode="show" />

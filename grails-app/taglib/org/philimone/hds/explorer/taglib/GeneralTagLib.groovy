@@ -101,6 +101,7 @@ class GeneralTagLib {
 
         def beanInstance = attrs.get("bean")
         def propertyName = attrs.property
+        def subPropertyName = attrs.subProperty
         def label = attrs.label
         def mode = attrs.mode //edit|show/display
         def options = attrs.options
@@ -111,6 +112,7 @@ class GeneralTagLib {
             //output display, getmessages for label
 
             def propertyValue = beanInstance."${propertyName}"
+            propertyValue = subPropertyName != null ? propertyValue?."${subPropertyName}" : propertyValue
             def propertyDefaultLabel = StringUtil.removePascalCase(propertyName)
             def labelText = g.message(code: label, default: propertyDefaultLabel)
             def objValue = getObjectValue(propertyValue)
@@ -148,6 +150,7 @@ class GeneralTagLib {
                     //println "${options}, ${opts}"
 
                     def propertyValue = beanInstance."${propertyName}"
+                    propertyValue = subPropertyName != null ? propertyValue?."${subPropertyName}" : propertyValue
                     def propertyDefaultLabel = StringUtil.removePascalCase(propertyName)
                     def labelText = g.message(code: label, default: propertyDefaultLabel)
 
@@ -170,8 +173,6 @@ class GeneralTagLib {
             } else {
                 out << f.field(bean: beanInstance, property: propertyName, value: beanInstance?."${propertyName}")
             }
-
-
 
         }
     }

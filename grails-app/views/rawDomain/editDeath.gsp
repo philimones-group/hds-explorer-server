@@ -110,7 +110,24 @@
             <bi:field bean="${this.rawDeath}" property="deathPlace"    label="rawDeath.deathPlace.label" mode="${mode}" />
 
             <g:if test="${this.rawDeath?.relationships}">
-                <bi:field bean="${this.rawDeath}" property="relationships"    label="rawDeath.relationships.label" mode="show" />
+
+                <li class="fieldcontain">
+                    <span id="relationships-label" class="property-label">
+                        <g:message code="rawDeath.relationships.label" />
+                    </span>
+                    <span class="property-value" aria-labelledby="relationships-label">
+                        <ul>
+                            <g:each in="${this.rawDeath.relationships}" var="deathRelationship">
+                                <li class="list-style-type: square;">
+                                    <g:link controller="rawDomain" action="editDeathRelationship" id="${deathRelationship.id}">
+                                        ${deathRelationship?.toString()}
+                                    </g:link>
+                                </li>
+                            </g:each>
+                        </ul>
+                    </span>
+                </li>
+
             </g:if>
 
             <bi:field bean="${this.rawDeath}" property="collectedBy"    label="rawDeath.collectedBy.label" mode="show" />

@@ -112,7 +112,27 @@
             <bi:field bean="${this.rawPregnancyOutcome}" property="birthPlaceOther"    label="rawPregnancyOutcome.birthPlaceOther.label" mode="${mode}" />
             <bi:field bean="${this.rawPregnancyOutcome}" property="visitCode"    label="rawPregnancyOutcome.visitCode.label" mode="${mode}" />
             <bi:field bean="${this.rawPregnancyOutcome}" property="modules"    label="rawPregnancyOutcome.modules.label" mode="${mode}" />
-            <bi:field bean="${this.rawPregnancyOutcome}" property="childs"    label="rawPregnancyOutcome.childs.label" mode="show" />
+
+            <g:if test="${this.rawPregnancyOutcome?.childs}">
+
+                <li class="fieldcontain">
+                    <span id="relationships-label" class="property-label">
+                        <g:message code="rawPregnancyOutcome.childs.label" />
+                    </span>
+                    <span class="property-value" aria-labelledby="childs-label">
+                        <ul>
+                            <g:each in="${this.rawPregnancyOutcome.childs}" var="child">
+                                <li class="list-style-type: square;">
+                                    <g:link controller="rawDomain" action="editPregnancyChild" id="${child.id}">
+                                        ${child?.toString()}
+                                    </g:link>
+                                </li>
+                            </g:each>
+                        </ul>
+                    </span>
+                </li>
+
+            </g:if>
 
             <bi:field bean="${this.rawPregnancyOutcome}" property="collectedBy"    label="rawPregnancyOutcome.collectedBy.label" mode="show" />
             <bi:field bean="${this.rawPregnancyOutcome}" property="collectedDate"    label="rawPregnancyOutcome.collectedDate.label" mode="show" />
