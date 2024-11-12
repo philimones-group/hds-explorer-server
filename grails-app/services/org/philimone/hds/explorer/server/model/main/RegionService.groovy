@@ -179,7 +179,7 @@ class RegionService {
             def validateLowest = isBlankParentCode && lowestLevel==RegionLevel.HIERARCHY_1
             println "lwl = ${lowestLevel}"
 
-            if (validateLowest==false && !isBlankParentCode && exists(region.parentCode)){
+            if (!validateLowest && !isBlankParentCode && exists(region.parentCode)){
                 def parentRegion = getRegion(region.parentCode)
                 def nextLevel = getNextLevel(parentRegion)
 
@@ -196,7 +196,9 @@ class RegionService {
             println "validate ${validateLowest}"
 
             //Validate using lowestRegionCodeValidation and regionCodeValidation
-            if ((validateLowest && !codeGeneratorService.isLowestRegionCodeValid(region.regionCode)) || (!validateLowest && !codeGeneratorService.isRegionCodeValid(region.regionCode))) {
+            if (validateLowest && !codeGeneratorService.isLowestRegionCodeValid(region.regionCode)) {
+                errors << errorMessageService.getRawMessage(RawEntity.REGION, "validation.field.pattern.no.matches", ["regionCode", codeGeneratorService.lowestRegionSampleCode], ["regionCode"])
+            } else if (!validateLowest && !codeGeneratorService.isRegionCodeValid(region.regionCode)) {
                 errors << errorMessageService.getRawMessage(RawEntity.REGION, "validation.field.pattern.no.matches", ["regionCode", codeGeneratorService.regionSampleCode], ["regionCode"])
             }
 
@@ -277,7 +279,7 @@ class RegionService {
     
     List<JRegionLevel> getRegionLevels(){
         def list = []
-        ApplicationParam.executeQuery("select p from ApplicationParam p where p.name like '%hierarchy%' and p.value is not null order by p.name asc" ).each {
+        ApplicationParam.executeQuery("select p from ApplicationParam p where p.name like '%hierarchy%' and p.name not like '%.head' and p.value is not null order by p.name asc" ).each {
             list << new JRegionLevel(level: it.name, name: it.value, regionLevel: RegionLevel.getFrom(it.name))
         }
         return list
@@ -287,7 +289,7 @@ class RegionService {
         def list = new ArrayList<JRegionLevel>()
         def listRemove = new ArrayList<JRegionLevel>()
 
-        ApplicationParam.executeQuery("select p from ApplicationParam p where p.name like 'hierarchy%' and p.value is not null order by p.name asc" ).each {
+        ApplicationParam.executeQuery("select p from ApplicationParam p where p.name like 'hierarchy%' and p.name not like '%.head' and p.value is not null order by p.name asc" ).each {
             list << new JRegionLevel(level: it.name, name: it.value, regionLevel: RegionLevel.getFrom(it.name))
         }
 
@@ -319,7 +321,7 @@ class RegionService {
 
     Map<String, String> getRegionLevelNames(){
         def map = new LinkedHashMap()
-        ApplicationParam.executeQuery("select p from ApplicationParam p where p.name like '%hierarchy%' and p.value is not null order by p.name asc" ).each {
+        ApplicationParam.executeQuery("select p from ApplicationParam p where p.name like '%hierarchy%' and p.name not like '%.head' and p.value is not null order by p.name asc" ).each {
             map.put(it.name, it.value)
         }
         return map
@@ -327,7 +329,7 @@ class RegionService {
 
     RegionLevel getLowestRegionLevel() {
         def lastHierarchy = ""
-        ApplicationParam.executeQuery("select p from ApplicationParam p where p.name like '%hierarchy%' and p.value is not null order by p.name asc" ).each { ap ->
+        ApplicationParam.executeQuery("select p from ApplicationParam p where p.name like '%hierarchy%' and p.name not like '%.head' and p.value is not null order by p.name asc" ).each { ap ->
             lastHierarchy = ap.name
         }
 

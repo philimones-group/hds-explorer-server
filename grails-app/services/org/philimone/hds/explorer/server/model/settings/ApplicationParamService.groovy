@@ -111,7 +111,7 @@ class ApplicationParamService {
     }
 
     List<HiearchyParam> getHierarchyLevelsParameters() {
-        def params = ApplicationParam.findAllByNameLike("hierarchy%", [sort:"id"])
+        def params = ApplicationParam.findAllByNameLikeAndNameNotIlike("hierarchy%", "%.head", [sort:"id"])
         def hiearchyParams = new ArrayList<HiearchyParam>()
 
         params.each {
