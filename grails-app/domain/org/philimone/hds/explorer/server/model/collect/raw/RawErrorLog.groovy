@@ -88,7 +88,7 @@ class RawErrorLog {
         columnName blank: true, nullable: true
         code blank: true, nullable: true
         collectedDate nullable: false
-        message blank: false, maxSize: 1000
+        message blank: false
     }
 
     static mapping = {
@@ -102,7 +102,7 @@ class RawErrorLog {
         entity column: "entity", index: "idx_entity"
         columnName column: "column_name"
         code column: "code", index: "idx_code"
-        message column: "message"
+        message column: "message", sqlType: "text"
         collectedDate column: "collected_date", defaultValue: "1900-01-01"
         createdDate column: "created_date"
     }
