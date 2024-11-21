@@ -2,6 +2,7 @@ package org.philimone.hds.explorer.server.settings.generator
 
 import net.betainteractive.utilities.StringUtil
 import org.philimone.hds.explorer.server.model.authentication.User
+import org.philimone.hds.explorer.server.model.enums.RegionLevel
 import org.philimone.hds.explorer.server.model.main.Household
 import org.philimone.hds.explorer.server.model.main.Region
 import org.philimone.hds.explorer.server.model.main.Round
@@ -38,14 +39,14 @@ class CompoundSimpleCodeGenerator implements CodeGenerator {
     }
 
     @Override
-    boolean isRegionCodeValid(String code) {
-        return !StringUtil.isBlank(code) && code.matches(REGION_CODE_PATTERN)
-    }
+    boolean isRegionCodeValid(RegionLevel lowestRegionLevel, RegionLevel codeRegionLevel, String code) {
+        //On Compound based code generator the lowestRegionLevel is a Compound with code that differs from other region levels
 
-    @Override
-    boolean isLowestRegionCodeValid(String code) {
-        //Other implementations of codegenerators can use a different approach to generate lowest region level codes
-        return !StringUtil.isBlank(code) && code.matches(COMPOUND_CODE_PATTERN)
+        if (lowestRegionLevel == codeRegionLevel) {
+            return !StringUtil.isBlank(code) && code.matches(COMPOUND_CODE_PATTERN)
+        } else {
+            return !StringUtil.isBlank(code) && code.matches(REGION_CODE_PATTERN)
+        }
     }
 
     @Override
@@ -109,7 +110,20 @@ class CompoundSimpleCodeGenerator implements CodeGenerator {
     }
 
     @Override
-    String generateRegionCode(Region parentRegion, String regionName, List<String> existentCodes) {
+    String generateRegionCode(RegionLevel lowestRegionLevel, Region parentRegion, String regionName, List<String> existentCodes) {
+
+        if (StringUtil.isBlank(regionName)) return null
+
+        def regionLevel = (parentRegion==null) ? RegionLevel.HIERARCHY_1 : parentRegion.hierarchyLevel.nextLevel()
+
+        if (lowestRegionLevel == regionLevel) {
+            return generateCompoundRegionCode(parentRegion, regionName, existentCodes)
+        }
+
+        return generateRegularRegionCode(parentRegion, regionName, existentCodes)
+    }
+
+    String generateRegularRegionCode(Region parentRegion, String regionName, List<String> existentCodes) {
 
         if (StringUtil.isBlank(regionName)) return null
 
@@ -128,7 +142,7 @@ class CompoundSimpleCodeGenerator implements CodeGenerator {
                 if (b==' ') continue
                 for (def c : clist){
                     if (c==' ') continue
-                    
+
                     def test = "${a}${b}${c}" as String
 
                     if (!existentCodes.contains(test)){
@@ -142,9 +156,8 @@ class CompoundSimpleCodeGenerator implements CodeGenerator {
         return null
     }
 
-    String generateLowestRegionCode(Region parentRegion, String regionName, List<String> existentCodes) {
+    String generateCompoundRegionCode(Region parentRegion, String regionName, List<String> existentCodes) {
         //Other implementations of codegenerators can use a different approach to generate lowest region level codes
-        //return generateRegionCode(parentRegion, regionName, existentCodes)
 
         //This is a Compound Code - similar to openhds location
         String baseCode = parentRegion.code
@@ -353,13 +366,12 @@ class CompoundSimpleCodeGenerator implements CodeGenerator {
     }
 
     @Override
-    String getRegionSampleCode() {
-        return "TXU"
-    }
-
-    @Override
-    String getLowestRegionSampleCode() {
-        return "TXU000001"
+    String getRegionSampleCode(RegionLevel lowestRegionLevel, RegionLevel regionLevel) {
+        if (lowestRegionLevel == regionLevel) {
+            return "TXU000001"
+        } else {
+            return "TXU"
+        }
     }
 
     @Override

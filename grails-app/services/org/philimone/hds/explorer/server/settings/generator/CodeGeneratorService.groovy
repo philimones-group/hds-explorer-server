@@ -2,6 +2,7 @@ package org.philimone.hds.explorer.server.settings.generator
 
 import grails.gorm.transactions.Transactional
 import org.philimone.hds.explorer.server.model.authentication.User
+import org.philimone.hds.explorer.server.model.enums.RegionLevel
 import org.philimone.hds.explorer.server.model.main.Household
 import org.philimone.hds.explorer.server.model.main.Member
 import org.philimone.hds.explorer.server.model.main.PregnancyRegistration
@@ -15,6 +16,7 @@ import org.philimone.hds.explorer.server.model.main.Visit
 class CodeGeneratorService {
 
     def codeGenerator = CodeGeneratorFactory.newInstance()
+    def regionService
 
     boolean isModuleCodeValid(String code) {
         return codeGenerator.isModuleCodeValid(code)
@@ -24,12 +26,9 @@ class CodeGeneratorService {
         return codeGenerator.isTrackingListCodeValid(code)
     }
 
-    boolean isRegionCodeValid(String code) {
-        return codeGenerator.isRegionCodeValid(code)
-    }
-
-    boolean isLowestRegionCodeValid(String code) {
-        return codeGenerator.isLowestRegionCodeValid(code)
+    boolean isRegionCodeValid(RegionLevel regionLevel, String code) {
+        def lowestLevel = regionService.getLowestRegionLevel()
+        return codeGenerator.isRegionCodeValid(lowestLevel, regionLevel, code)
     }
 
     boolean isHouseholdCodeValid(String code) {
@@ -63,15 +62,10 @@ class CodeGeneratorService {
     }
 
     String generateRegionCode(Region parentRegion, String regionName) {
-
+        def lowestLevel = regionService.lowestRegionLevel
         def codes = Region.listOrderByCode().collect { t -> t.code}
-        return codeGenerator.generateRegionCode(parentRegion, regionName, codes)
-    }
 
-    String generateLowestRegionCode(Region parentRegion, String regionName) {
-
-        def codes = Region.listOrderByCode().collect { t -> t.code}
-        return codeGenerator.generateLowestRegionCode(parentRegion, regionName, codes)
+        return codeGenerator.generateRegionCode(lowestLevel, parentRegion, regionName, codes)
     }
 
     String generateHouseholdCode(Region region, User user) {
@@ -124,12 +118,9 @@ class CodeGeneratorService {
         return codeGenerator.getTrackingListSampleCode()
     }
 
-    String getRegionSampleCode() {
-        return codeGenerator.getRegionSampleCode()
-    }
-
-    String getLowestRegionSampleCode() {
-        return codeGenerator.getLowestRegionSampleCode()
+    String getRegionSampleCode(RegionLevel regionLevel) {
+        def lowestLevel = regionService.getLowestRegionLevel()
+        return codeGenerator.getRegionSampleCode(lowestLevel, regionLevel)
     }
 
     String getHouseholdSampleCode() {

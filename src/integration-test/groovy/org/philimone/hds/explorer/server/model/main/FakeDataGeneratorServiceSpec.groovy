@@ -395,7 +395,7 @@ class FakeDataGeneratorServiceSpec extends Specification {
 
             println "${newNameValue}"
 
-            def newCode = codeGeneratorService.codeGenerator.generateRegionCode(null, newNameValue, regionCodes)
+            def newCode = codeGeneratorService.codeGenerator.generateRegionCode(null, null, newNameValue, regionCodes)
             regionCodes.add(newCode)
 
             if (newCodeCell == null) {

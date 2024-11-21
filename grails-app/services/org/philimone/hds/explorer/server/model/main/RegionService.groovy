@@ -85,15 +85,15 @@ class RegionService {
     }
 
     String generateCode(Region parentRegion, String regionName){
-
+/*
         def lowestRegionLevel = getLowestRegionLevel()
 
         if ((parentRegion == null && lowestRegionLevel==RegionLevel.HIERARCHY_1) || (parentRegion != null && lowestRegionLevel == getNextLevel(parentRegion))) {
             return codeGeneratorService.generateLowestRegionCode(parentRegion, regionName)
-        }
+        }*/
 
 
-        return codeGeneratorService.generateRegionCode(parentRegion, regionName)
+        return codeGeneratorService.generateRegionCode(parentRegion, regionName) //this will generate the respective regionLevel based on parentRegion
     }
 
     //</editor-fold>
@@ -176,19 +176,21 @@ class RegionService {
         //C2. Check Code Regex Pattern
         if (!isBlankRegionCode) {
             def lowestLevel = getLowestRegionLevel()
+            def parentRegion = getRegion(region.parentCode)
+            def nextRegionLevel = getNextLevel(parentRegion)
             def validateLowest = isBlankParentCode && lowestLevel==RegionLevel.HIERARCHY_1
             println "lwl = ${lowestLevel}"
 
             if (!validateLowest && !isBlankParentCode && exists(region.parentCode)){
-                def parentRegion = getRegion(region.parentCode)
-                def nextLevel = getNextLevel(parentRegion)
+                //def parentRegion = getRegion(region.parentCode)
+                //def nextLevel = getNextLevel(parentRegion)
 
-                if (nextLevel == null) {
+                if (nextRegionLevel == null) {
                     //error: Can't create a new region with code=[{0}], because the region parent with parentCode=[{1}] is invalid, it is the lowest region level available
                     errors << errorMessageService.getRawMessage(RawEntity.REGION, "validation.field.region.invalid.parent.error", [region.regionCode, region.parentCode], ["parentCode"])
 
 
-                } else if (nextLevel == lowestLevel) {
+                } else if (nextRegionLevel == lowestLevel) {
                     validateLowest = true
                 }
             }
@@ -196,10 +198,10 @@ class RegionService {
             println "validate ${validateLowest}"
 
             //Validate using lowestRegionCodeValidation and regionCodeValidation
-            if (validateLowest && !codeGeneratorService.isLowestRegionCodeValid(region.regionCode)) {
-                errors << errorMessageService.getRawMessage(RawEntity.REGION, "validation.field.pattern.no.matches", ["regionCode", codeGeneratorService.lowestRegionSampleCode], ["regionCode"])
-            } else if (!validateLowest && !codeGeneratorService.isRegionCodeValid(region.regionCode)) {
-                errors << errorMessageService.getRawMessage(RawEntity.REGION, "validation.field.pattern.no.matches", ["regionCode", codeGeneratorService.regionSampleCode], ["regionCode"])
+            if (validateLowest && !codeGeneratorService.isRegionCodeValid(lowestLevel, region.regionCode)) {
+                errors << errorMessageService.getRawMessage(RawEntity.REGION, "validation.field.pattern.no.matches", ["regionCode", codeGeneratorService.getRegionSampleCode(nextRegionLevel)], ["regionCode"])
+            } else if (!validateLowest && !codeGeneratorService.isRegionCodeValid(nextRegionLevel, region.regionCode)) {
+                errors << errorMessageService.getRawMessage(RawEntity.REGION, "validation.field.pattern.no.matches", ["regionCode", codeGeneratorService.getRegionSampleCode(nextRegionLevel)], ["regionCode"])
             }
 
         }
@@ -277,10 +279,18 @@ class RegionService {
         module.save(flush:true)
     }
     
-    List<JRegionLevel> getRegionLevels(){
+    List<JRegionLevel> getJRegionLevels(){
         def list = []
         ApplicationParam.executeQuery("select p from ApplicationParam p where p.name like '%hierarchy%' and p.name not like '%.head' and p.value is not null order by p.name asc" ).each {
             list << new JRegionLevel(level: it.name, name: it.value, regionLevel: RegionLevel.getFrom(it.name))
+        }
+        return list
+    }
+
+    List<RegionLevel> getRegionLevels(){
+        def list = []
+        ApplicationParam.executeQuery("select p from ApplicationParam p where p.name like '%hierarchy%' and p.name not like '%.head' and p.value is not null order by p.name asc" ).each {
+            list << RegionLevel.getFrom(it.name)
         }
         return list
     }

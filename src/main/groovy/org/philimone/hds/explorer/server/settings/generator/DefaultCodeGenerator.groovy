@@ -2,6 +2,7 @@ package org.philimone.hds.explorer.server.settings.generator
 
 import net.betainteractive.utilities.StringUtil
 import org.philimone.hds.explorer.server.model.authentication.User
+import org.philimone.hds.explorer.server.model.enums.RegionLevel
 import org.philimone.hds.explorer.server.model.main.Household
 import org.philimone.hds.explorer.server.model.main.Region
 import org.philimone.hds.explorer.server.model.main.Round
@@ -36,14 +37,9 @@ class DefaultCodeGenerator implements CodeGenerator {
     }
 
     @Override
-    boolean isRegionCodeValid(String code) {
+    boolean isRegionCodeValid(RegionLevel lowestRegionLevel, RegionLevel codeRegionLevel, String code) {
+        //Other implementations of codegenerators can use a different approach to generate region codes - by having different schemes for each level
         return !StringUtil.isBlank(code) && code.matches(REGION_CODE_PATTERN)
-    }
-
-    @Override
-    boolean isLowestRegionCodeValid(String code) {
-        //Other implementations of codegenerators can use a different approach to generate lowest region level codes
-        return isRegionCodeValid(code)
     }
 
     @Override
@@ -107,7 +103,8 @@ class DefaultCodeGenerator implements CodeGenerator {
     }
 
     @Override
-    String generateRegionCode(Region parentRegion, String regionName, List<String> existentCodes) {
+    String generateRegionCode(RegionLevel lowestRegionLevel, Region parentRegion, String regionName, List<String> existentCodes) {
+        //Other implementations of codegenerators can use a different approach to generate each region level codes
 
         if (StringUtil.isBlank(regionName)) return null
 
@@ -138,11 +135,6 @@ class DefaultCodeGenerator implements CodeGenerator {
         }
 
         return null
-    }
-
-    String generateLowestRegionCode(Region parentRegion, String regionName, List<String> existentCodes) {
-        //Other implementations of codegenerators can use a different approach to generate lowest region level codes
-        return generateRegionCode(parentRegion, regionName, existentCodes)
     }
 
     @Override
@@ -315,13 +307,8 @@ class DefaultCodeGenerator implements CodeGenerator {
     }
 
     @Override
-    String getRegionSampleCode() {
+    String getRegionSampleCode(RegionLevel lowestRegionLevel, RegionLevel regionLevel) {
         return "TXU"
-    }
-
-    @Override
-    String getLowestRegionSampleCode() {
-        return getRegionSampleCode()
     }
 
     @Override

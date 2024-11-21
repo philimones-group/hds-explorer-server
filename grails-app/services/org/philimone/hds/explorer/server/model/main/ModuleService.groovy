@@ -12,6 +12,7 @@ class ModuleService {
     def generalUtilitiesService
     def codeGeneratorService
     def residencyService
+    def regionService
     SessionLocaleResolver localeResolver
 
     Module get(Serializable id){
@@ -150,9 +151,14 @@ class ModuleService {
             file.eachLine { line ->
                 if (line != null && !line.trim().isEmpty()){
                     def s = line.trim() //check if ID exits
+                    def levels = regionService.regionLevels
 
-                    if (codeGeneratorService.isRegionCodeValid(s)) { //region code = TXU
-                        list.get(0).add(s)
+                    //TEST ALL THE REGION LEVEL
+                    for (def level : levels) {
+                        if (codeGeneratorService.isRegionCodeValid(level, s)) { //region code = TXU
+                            list.get(0).add(s)
+                            break
+                        }
                     }
 
                     if (codeGeneratorService.isHouseholdCodeValid(s)) { //household code = TXUPF1001
