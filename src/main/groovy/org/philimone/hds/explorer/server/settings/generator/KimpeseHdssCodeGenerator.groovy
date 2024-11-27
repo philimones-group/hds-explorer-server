@@ -214,7 +214,7 @@ class KimpeseHdssCodeGenerator implements CodeGenerator {
                 try {
                     String lastCode = listCodes.get(listCodes.size() - 1);
                     String lastCodeNumber = lastCode.replaceFirst(baseCode, "");
-                    number = Integer.parseInt(lastCodeNumber) + 1;
+                    number = StringUtil.isBlank(lastCodeNumber) ? 1 : (Integer.parseInt(lastCodeNumber) + 1);
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
@@ -256,7 +256,7 @@ class KimpeseHdssCodeGenerator implements CodeGenerator {
                 try {
                     String lastCode = listCodes.get(listCodes.size() - 1);
                     String lastCodeLetter = lastCode.replaceFirst(baseCode, "");
-                    index = CHARS_A_TO_Z_EXCEPT_IO.indexOf(lastCodeLetter) + 1;
+                    index = StringUtil.isBlank(lastCodeLetter) ? 0 : (CHARS_A_TO_Z_EXCEPT_IO.indexOf(lastCodeLetter) + 1);
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
@@ -296,7 +296,7 @@ class KimpeseHdssCodeGenerator implements CodeGenerator {
                 try {
                     String lastCode = listCodes.get(listCodes.size() - 1);
                     String lastCodeNumber = lastCode.replaceFirst(baseCode, "");
-                    number = Integer.parseInt(lastCodeNumber) + 1;
+                    number = StringUtil.isBlank(lastCodeNumber) ? 1 : (Integer.parseInt(lastCodeNumber) + 1);
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }

@@ -3,6 +3,7 @@ package org.philimone.hds.explorer.server.model.main
 import grails.converters.JSON
 import grails.validation.ValidationException
 import net.betainteractive.utilities.StringUtil
+import org.apache.http.HttpStatus
 import org.philimone.hds.explorer.server.model.collect.raw.RawRegion
 import org.philimone.hds.explorer.server.model.enums.RegionLevel
 import org.philimone.hds.explorer.server.model.main.collect.raw.RawExecutionResult
@@ -33,7 +34,7 @@ class RegionController {
         def levelName = regionService.getRegionLevelName(region.hierarchyLevel.code)
 
         def modules = moduleService.findAllByCodes(region.modules)
-        respond region, model: [hierarchyLevel: levelName, modules: modules]
+        respond region, model: [hierarchyLevel: levelName, modules: modules, errorMessages: params.errorMessages]
     }
 
     def create() {
@@ -121,17 +122,42 @@ class RegionController {
         }
     }
 
-    def delete(Long id) {
+    def delete(String id) {
         if (id == null) {
             notFound()
             return
         }
 
-        regionService.delete(id)
+        def region = regionService.get(id)
+        def levelName = regionService.getRegionLevelName(region.hierarchyLevel.code)
+        def modules = moduleService.findAllByCodes(region.modules)
+
+
+        try {
+
+            if (Region.countByParent(region) > 0) {
+                //has dependants
+                //Cannot delete the Region with code = [{0}] because this Region is parent of another Regions, to be able to delete it first delete the child Regions
+                def errorMessages = [new RawMessage(message(code: "region.parent.delete.evaluation.error", args: [region.code]), ["id"])]
+                render view: "show", model: [region: region, hierarchyLevel: levelName, modules: modules, errorMessages: errorMessages]
+                return
+
+            }
+
+
+            region.delete(flush: true)
+        } catch(Exception ex) {
+
+            ex.printStackTrace()
+
+            def errorMessages = [new RawMessage(ex.message, ["id"])]
+            render view: "show", model: [region: region, hierarchyLevel: levelName, modules: modules, errorMessages: errorMessages]
+            return
+        }
 
         request.withFormat {
             form multipartForm {
-                flash.message = message(code: 'default.deleted.message', args: [message(code: 'region.label', default: 'Region'), id])
+                flash.message = message(code: 'default.deleted.message', args: [message(code: 'region.label', default: 'Region'), region?.code])
                 redirect action:"index", method:"GET"
             }
             '*'{ render status: NO_CONTENT }
@@ -167,7 +193,7 @@ class RegionController {
         def selectId = args[1]
         def regions = Region.findAllByHierarchyLevel(hierarchyLevel)
 
-        render g.select(id: "${selectId}", name: "${selectId}", from: regions, optionKey:"id", optionValue:"name", noSelection: ['':''])
+        render g.select(id: "${selectId}", name: "${selectId}", from: regions, optionKey:"id", noSelection: ['':''])
     }
 
     def loadRegionsByIdToGsp = {
@@ -178,7 +204,7 @@ class RegionController {
         def parentRegion = Region.get(parentRegionId)
         def regions = Region.findAllByParent(parentRegion, [sort: "code", order: "asc"])
 
-        render g.select(id: "${selectId}", name: "${selectId}", from: regions, optionKey:"id", optionValue:"name", noSelection: ['':''])
+        render g.select(id: "${selectId}", name: "${selectId}", from: regions, optionKey:"id", noSelection: ['':''])
     }
 
     def showRegion = {

@@ -18,10 +18,14 @@ class Role implements Serializable {
 	static String ROLE_ADMINISTRATOR = "ROLE_ADMINISTRATOR"
 	static String ROLE_DATA_MANAGER = "ROLE_DATA_MANAGER"
 	static String ROLE_FIELD_WORKER = "ROLE_FIELD_WORKER"
+	static String ROLE_MONITOR = "ROLE_MONITOR"
+
 
 	static String LABEL_ADMINISTRATOR = "role.administrator.label"
 	static String LABEL_DATA_MANAGER = "role.datamanager.label"
 	static String LABEL_FIELD_WORKER = "role.fieldworker.label"
+	static String LABEL_MONITOR = "role.monitor.label"
+
 
 	String id
 	String name

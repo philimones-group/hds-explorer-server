@@ -21,6 +21,14 @@
             <div class="message" role="status">${flash.message}</div>
             </g:if>
 
+            <g:if test="${errorMessages}">
+                <ul class="errors" role="alert">
+                    <g:each in="${errorMessages}" status="i" var="error">
+                        <li data-field-id="${error?.text}">${error?.text}</li>
+                    </g:each>
+                </ul>
+            </g:if>
+
             <ol class="property-list region">
 
                 <g:if test="${this.region?.code}">
@@ -148,7 +156,7 @@
             <g:form resource="${this.region}" method="DELETE">
                 <fieldset class="buttons">
                     <g:link class="edit" action="edit" resource="${this.region}"><g:message code="default.button.edit.label" default="Edit" /></g:link>
-                    <!--<input class="delete" type="submit" value="${message(code: 'default.button.delete.label', default: 'Delete')}" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');" />-->
+                    <input class="delete" type="submit" value="${message(code: 'default.button.delete.label', default: 'Delete')}" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');" />
                 </fieldset>
             </g:form>
         </div>
