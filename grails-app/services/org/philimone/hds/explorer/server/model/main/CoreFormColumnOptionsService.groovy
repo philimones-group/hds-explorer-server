@@ -137,4 +137,13 @@ class CoreFormColumnOptionsService {
         return newlabel
     }
 
+    void updateColumnOptionLabels(){
+        CoreFormColumnOptions.list().each {
+            def msg = generalUtilitiesService.getMessage(it.optionLabelCode)
+            if (msg != null) {
+                it.optionLabel = msg;
+                it.save()
+            }
+        }
+    }
 }

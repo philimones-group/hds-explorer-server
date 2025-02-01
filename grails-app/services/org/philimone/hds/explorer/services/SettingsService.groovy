@@ -2,6 +2,8 @@ package org.philimone.hds.explorer.services
 
 import grails.gorm.transactions.Transactional
 import org.philimone.hds.explorer.server.model.json.JConstant
+import org.philimone.hds.explorer.server.model.main.CoreFormColumnOptions
+import org.philimone.hds.explorer.server.model.main.CoreFormColumnOptionsService
 import org.philimone.hds.explorer.server.model.main.Region
 import org.philimone.hds.explorer.server.model.settings.Codes
 import org.philimone.hds.explorer.server.settings.generator.CodeGeneratorIncrementalRule
@@ -10,6 +12,7 @@ import org.philimone.hds.explorer.server.settings.generator.CodeGeneratorIncreme
 class SettingsService {
 
     def applicationParamService
+    def coreFormColumnOptionsService
 
     def getCodeGeneratorsIncrementalRules() {
         def incs = CodeGeneratorIncrementalRule.values()
@@ -39,5 +42,9 @@ class SettingsService {
         def regionSupportsHead = applicationParamService.getBooleanValue(region.hierarchyLevel.getHeadParamName())
 
         return sysRegionHeadSupport && regionSupportsHead;
+    }
+
+    void afterUpdateSystemLanguage(){
+        coreFormColumnOptionsService.updateColumnOptionLabels()
     }
 }

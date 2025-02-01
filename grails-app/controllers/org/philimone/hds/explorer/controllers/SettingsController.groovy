@@ -52,6 +52,8 @@ class SettingsController {
             if (selectedLanguage != null) {
                 Codes.SYSTEM_LANGUAGE = selectedLanguage
                 applicationParamService.updateApplicationParam(Codes.PARAMS_SYSTEM_LANGUAGE, selectedLanguage)
+
+                settingsService.afterUpdateSystemLanguage()
             } else {
                 errorMessages << message(code: 'settings.parameters.update.language.error.null.label') + ""
             }
