@@ -6,6 +6,7 @@ import org.philimone.hds.explorer.server.model.collect.raw.editors.RawEditHouseh
 import org.philimone.hds.explorer.server.model.collect.raw.editors.RawEditMember
 import org.philimone.hds.explorer.server.model.collect.raw.editors.RawEditRegion
 import org.philimone.hds.explorer.server.model.enums.Gender
+import org.philimone.hds.explorer.server.model.enums.ProcessedStatus
 import org.philimone.hds.explorer.server.model.enums.RawEntity
 import org.philimone.hds.explorer.server.model.enums.temporal.HeadRelationshipStartType
 import org.philimone.hds.explorer.server.model.enums.temporal.ResidencyStartType
@@ -45,13 +46,18 @@ class RawEditExecutionService {
             if (domainInstance.hasErrors()) {
                 //throw an error
                 errors.addAll(errorMessageService.getRawMessages(RawEntity.REGION, domainInstance))
+                rawDomainInstance.processedStatus = ProcessedStatus.ERROR
+            } else {
+                rawDomainInstance.processedStatus = ProcessedStatus.SUCCESS
             }
 
         } else {
             //Domain not found -> Can't update Region, Region with code=? was not found in the database
             errors << errorMessageService.getRawMessage("rawEditDomain.region.not.found.label", [rawDomainInstance.regionCode])
+            rawDomainInstance.processedStatus = ProcessedStatus.ERROR
         }
 
+        rawDomainInstance.save(flush:true)
 
         if (errors.size()>0) {
             RawExecutionResult<Region> obj = RawExecutionResult.newErrorResult(RawEntity.REGION, errors)
@@ -89,17 +95,22 @@ class RawEditExecutionService {
 
                 //Member.executeUpdate("update Member m set m.householdName=?0 where m.householdCode=?1", [domainInstance.name, domainInstance.code])
 
+                rawDomainInstance.processedStatus = ProcessedStatus.SUCCESS
             } else {
                 //throw an error
                 errors.addAll(errorMessageService.getRawMessages(RawEntity.HOUSEHOLD, domainInstance))
+
+                rawDomainInstance.processedStatus = ProcessedStatus.ERROR
             }
 
         } else {
             //Domain not found -> Can't update Household, Household with code=? was not found in the database
 
             errors << errorMessageService.getRawMessage("rawEditDomain.household.not.found.label", [rawDomainInstance.householdCode])
+            rawDomainInstance.processedStatus = ProcessedStatus.ERROR
         }
 
+        rawDomainInstance.save(flush:true)
 
         if (errors.size()>0) {
             RawExecutionResult<Household> obj = RawExecutionResult.newErrorResult(RawEntity.HOUSEHOLD, errors)
@@ -125,6 +136,9 @@ class RawEditExecutionService {
             domainInstance.father = Member.findByCode(rawDomainInstance.fatherCode)
             domainInstance.fatherCode = rawDomainInstance.fatherCode
             domainInstance.fatherName = rawDomainInstance.fatherName
+            //no education/religion
+            domainInstance.phonePrimary = rawDomainInstance.phonePrimary
+            domainInstance.phoneAlternative = rawDomainInstance.phoneAlternative
             domainInstance.updatedBy = User.findByUsername(rawDomainInstance.collectedBy)
             domainInstance.updatedDate = rawDomainInstance.collectedDate
             domainInstance.save(flush:true)
@@ -146,19 +160,25 @@ class RawEditExecutionService {
                     pregnacny.save(flush:true)
                 }
 
+                rawDomainInstance.processedStatus = ProcessedStatus.SUCCESS
 
             } else {
 
                 //throw an error
                 errors.addAll(errorMessageService.getRawMessages(RawEntity.MEMBER, domainInstance))
+
+                rawDomainInstance.processedStatus = ProcessedStatus.ERROR
             }
 
         } else {
             //Domain not found -> Can't update Member, Member with code=? was not found in the database
 
             errors << errorMessageService.getRawMessage("rawEditDomain.member.not.found.label", [rawDomainInstance.code])
+
+            rawDomainInstance.processedStatus = ProcessedStatus.ERROR
         }
 
+        rawDomainInstance.save(flush:true)
 
         if (errors.size()>0) {
             RawExecutionResult<Member> obj = RawExecutionResult.newErrorResult(RawEntity.MEMBER, errors)

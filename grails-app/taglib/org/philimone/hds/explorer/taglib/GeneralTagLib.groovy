@@ -107,6 +107,8 @@ class GeneralTagLib {
         def options = attrs.options
         def nullable = attrs.nullable
         def valueMessage = attrs.valueMessage
+        def valueMessagePrefix = attrs.valueMessagePrefix
+        def valueMessageEnumType = attrs.valueMessageEnumType
 
         if ("show".equalsIgnoreCase("${mode}")){
             //output display, getmessages for label
@@ -119,6 +121,17 @@ class GeneralTagLib {
 
             if ("true".equalsIgnoreCase("${valueMessage}")) {
                 objValue = g.message(code: objValue, default: objValue)
+            }
+
+            if (!StringUtil.isBlank(valueMessagePrefix)) {
+                def code = valueMessagePrefix + "" + objValue
+                println "${code}"
+                println "${g.message(code: code, default: objValue)}"
+                objValue = g.message(code: "${valueMessagePrefix}${objValue}", default: objValue)
+            }
+
+            if (!StringUtil.isBlank(valueMessageEnumType)) {
+                objValue = dataModelsService.getMessage(valueMessageEnumType, objValue)
             }
 
             out << "            <div class=\"fieldcontain required\">\n"

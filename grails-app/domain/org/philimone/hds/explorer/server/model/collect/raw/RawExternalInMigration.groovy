@@ -21,6 +21,8 @@ class RawExternalInMigration {
 
     String education
     String religion
+    String phonePrimary
+    String phoneAlternative
 
     String headRelationshipType
 
@@ -63,6 +65,8 @@ class RawExternalInMigration {
 
         education blank: true, nullable: true
         religion blank: true, nullable: true
+        phonePrimary blank: true, nullable: true
+        phoneAlternative blank: true, nullable: true
 
         migrationType nullable: false, blank: false
         extMigrationType nullable: false, blank: false
@@ -110,6 +114,8 @@ class RawExternalInMigration {
 
         education column: "education"
         religion column: "religion"
+        phonePrimary column: "phone_primary"
+        phoneAlternative column: "phone_alternative"
 
         headRelationshipType column: "head_relationship_type"
 

@@ -22,6 +22,8 @@ class RawMember {
 
     String education
     String religion
+    String phonePrimary
+    String phoneAlternative
 
     String householdCode
 
@@ -55,6 +57,9 @@ class RawMember {
 
         education blank: true, nullable: true
         religion blank: true, nullable: true
+        phonePrimary blank: true, nullable: true
+        phoneAlternative blank: true, nullable: true
+
 
         householdCode blank: false
 
@@ -92,6 +97,8 @@ class RawMember {
 
         education column: "education"
         religion column: "religion"
+        phonePrimary column: "phone_primary"
+        phoneAlternative column: "phone_alternative"
 
         householdCode column: 'household_code', index: "idx_household_code"
 

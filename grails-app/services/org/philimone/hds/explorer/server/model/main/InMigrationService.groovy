@@ -7,8 +7,10 @@ import org.philimone.hds.explorer.server.model.collect.raw.RawHeadRelationship
 import org.philimone.hds.explorer.server.model.collect.raw.RawInMigration
 import org.philimone.hds.explorer.server.model.collect.raw.RawOutMigration
 import org.philimone.hds.explorer.server.model.collect.raw.RawResidency
+import org.philimone.hds.explorer.server.model.enums.Gender
 import org.philimone.hds.explorer.server.model.enums.HeadRelationshipType
 import org.philimone.hds.explorer.server.model.enums.HouseholdStatus
+import org.philimone.hds.explorer.server.model.enums.MaritalStatus
 import org.philimone.hds.explorer.server.model.enums.RawEntity
 import org.philimone.hds.explorer.server.model.enums.temporal.ExternalInMigrationType
 import org.philimone.hds.explorer.server.model.enums.temporal.HeadRelationshipEndType
@@ -203,6 +205,14 @@ class InMigrationService {
         def household = householdService.getHousehold(rawObj.destinationCode)
         if (household != null) {
             householdService.updateHouseholdStatus(household, HouseholdStatus.HOUSE_OCCUPIED)
+        }
+
+        //update member data if reentry
+        def inMigType = InMigrationType.getFrom(rawObj.migrationType)
+        def extInMigType = ExternalInMigrationType.getFrom(rawObj.extMigrationType) 
+        if (inMigType == InMigrationType.INTERNAL || extInMigType == ExternalInMigrationType.REENTRY) {
+            //update member data
+            updateMember(rawObj)
         }
     }
 
@@ -461,6 +471,8 @@ class InMigrationService {
 
         inmigration.education = rin.education
         inmigration.religion = rin.religion
+        inmigration.phonePrimary = rin.phonePrimary
+        inmigration.phoneAlternative = rin.phoneAlternative
 
         //set collected by info
         inmigration.collectedId = rin.id
@@ -474,6 +486,19 @@ class InMigrationService {
 
         return inmigration
 
+    }
+    
+    private void updateMember(RawInMigration rawObj) {
+        def member = memberService.getMember(rawObj.memberCode)
+
+        if (member != null) {
+            member.education = rawObj.education
+            member.religion = rawObj.religion
+            member.phonePrimary = rawObj.phonePrimary
+            member.phoneAlternative = rawObj.phoneAlternative
+
+            member.save(flush: true)
+        }
     }
 
     private RawHeadRelationship createNewRawHeadRelationshipFrom(RawInMigration rawInMigration){

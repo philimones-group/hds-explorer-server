@@ -36,6 +36,12 @@
             <bi:field bean="${this.member}" property="maritalStatus" label="member.maritalStatus.label" mode="show" valueMessage="true" />
             <bi:field bean="${this.member}" property="spouseCode" label="member.spouseCode.label" mode="show" />
             <bi:field bean="${this.member}" property="spouseName" label="member.spouseName.label" mode="show" />
+
+            <bi:field bean="${this.member}" property="education" label="member.education.label" mode="show" valueMessageEnumType="EducationType" />
+            <bi:field bean="${this.member}" property="religion" label="member.religion.label" mode="show" valueMessageEnumType="ReligionType" />
+            <bi:field bean="${this.member}" property="phonePrimary" label="member.phonePrimary.label" mode="show" />
+            <bi:field bean="${this.member}" property="phoneAlternative" label="member.phoneAlternative.label" mode="show" />
+
             <bi:field bean="${this.member}" property="householdCode" label="member.householdCode.label" mode="show" />
             <bi:field bean="${this.member}" property="householdName" label="member.householdName.label" mode="show" />
             <bi:field bean="${this.member}" property="headRelationshipType" label="member.headRelationshipType.label" mode="show" valueMessage="true" />

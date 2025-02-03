@@ -71,6 +71,9 @@ class Member extends CollectableEntity {
     String education
     String religion
 
+    String phonePrimary
+    String phoneAlternative
+
     /**
      * Current Household where the Individual is living
      */
@@ -169,6 +172,9 @@ class Member extends CollectableEntity {
         education blank: true, nullable: true
         religion blank: true, nullable: true
 
+        phonePrimary blank: true, nullable: true
+        phoneAlternative blank: true, nullable: true
+
         household nullable: true
         householdCode blank: true, nullable: true
         householdName blank: true, nullable: true
@@ -230,6 +236,9 @@ class Member extends CollectableEntity {
 
         education column: "education"
         religion column: "religion"
+
+        phonePrimary column: "phone_primary"
+        phoneAlternative column: "phone_alternative"
 
         household column: 'household_id'
         householdCode column: 'household_code', index: "idx_household_code"

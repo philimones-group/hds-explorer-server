@@ -159,6 +159,8 @@ class MemberEnumerationService {
         enumeration.eventDate = rawMemberEnu.residencyStartDate
         enumeration.education = rawMemberEnu.education
         enumeration.religion = rawMemberEnu.religion
+        enumeration.phonePrimary = rawMemberEnu.phonePrimary
+        enumeration.phoneAlternative = rawMemberEnu.phoneAlternative
         enumeration.collectedId = rawMemberEnu.id
         enumeration.collectedBy = userService.getUser(rawMemberEnu.collectedBy)
         enumeration.collectedStart = rawMemberEnu.collectedStart
@@ -440,6 +442,8 @@ class MemberEnumerationService {
                 householdCode: memberEnu.householdCode,
                 education: memberEnu.education,
                 religion: memberEnu.religion,
+                phonePrimary: memberEnu.phonePrimary,
+                phoneAlternative: memberEnu.phoneAlternative,
                 modules: memberEnu.modules,
                 collectedId: memberEnu.collectedMemberId,
                 collectedBy: memberEnu.collectedBy,

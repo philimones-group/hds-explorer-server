@@ -375,6 +375,8 @@ class ExternalInMigrationService {
                 householdCode: externalInMigration.destinationCode,
                 education: externalInMigration.education,
                 religion: externalInMigration.religion,
+                phonePrimary: externalInMigration.phonePrimary,
+                phoneAlternative: externalInMigration.phoneAlternative,
                 collectedId: externalInMigration.collectedMemberId,
                 collectedBy: externalInMigration.collectedBy,
                 collectedDate: externalInMigration.collectedDate,
@@ -401,6 +403,8 @@ class ExternalInMigrationService {
 
         rawInMig.education = rawExternalInMigration.education
         rawInMig.religion = rawExternalInMigration.religion
+        rawInMig.phonePrimary = rawExternalInMigration.phonePrimary;
+        rawInMig.phoneAlternative = rawExternalInMigration.phoneAlternative;
 
         rawInMig.collectedBy = rawExternalInMigration.collectedBy
         rawInMig.collectedDeviceId = rawExternalInMigration.collectedDeviceId

@@ -5,6 +5,7 @@ import grails.web.mapping.LinkGenerator
 import net.betainteractive.utilities.StringUtil
 import grails.converters.JSON
 import org.philimone.hds.explorer.server.model.enums.BirthPlace
+import org.philimone.hds.explorer.server.model.enums.EducationType
 import org.philimone.hds.explorer.server.model.enums.EstimatedDateOfDeliveryType
 import org.philimone.hds.explorer.server.model.enums.Gender
 import org.philimone.hds.explorer.server.model.enums.HeadRelationshipType
@@ -20,6 +21,7 @@ import org.philimone.hds.explorer.server.model.enums.PregnancyStatus
 import org.philimone.hds.explorer.server.model.enums.ProcessedStatus
 import org.philimone.hds.explorer.server.model.enums.RawEntity
 import org.philimone.hds.explorer.server.model.enums.RegionLevel
+import org.philimone.hds.explorer.server.model.enums.ReligionType
 import org.philimone.hds.explorer.server.model.enums.VisitLocationItem
 import org.philimone.hds.explorer.server.model.enums.VisitReason
 import org.philimone.hds.explorer.server.model.enums.temporal.ExternalInMigrationType
@@ -77,7 +79,9 @@ class DataModelsService {
             "RegionLevel" : RegionLevel.values(),
             "VisitReason" : VisitReason.values(),
             "VisitLocationItem" : VisitLocationItem.values(),
-            "BirthPlace" : BirthPlace.values()
+            "BirthPlace" : BirthPlace.values(),
+            "EducationType" : EducationType.values(),
+            "ReligionType" : ReligionType.values()
 
     ] as HashMap<String, Enum[]>
 
@@ -146,6 +150,19 @@ class DataModelsService {
         }
 
         return objects
+    }
+
+    String getMessage(String enumType, String enumCode) {
+        def values = defaultEnumTypes.get(enumType)
+        def msg = enumCode
+        values.each {
+            if (it?.code?.equals(enumCode)) {
+                msg = message("${it?.name}")
+                return
+            }
+        }
+
+        return msg
     }
 
     List<RawEntity> findRawEntitiesLike(String text) {

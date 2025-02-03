@@ -256,6 +256,8 @@ class MemberService {
 
         member.education = rm.education
         member.religion = rm.religion
+        member.phonePrimary = rm.phonePrimary
+        member.phoneAlternative = rm.phoneAlternative
 
         if (household != null) {
             member.household = household
