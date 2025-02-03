@@ -1,5 +1,7 @@
 package org.philimone.hds.explorer.server.model.collect.raw
 
+import java.time.LocalDateTime
+
 class RawChangeHeadRelationship {
 
     String id
@@ -8,11 +10,14 @@ class RawChangeHeadRelationship {
     String newMemberCode
     String newRelationshipType
 
+    Integer ordinal
+    LocalDateTime createdDate = LocalDateTime.now()
+
     static belongsTo = [changeHead:RawChangeHead]
 
     @Override
     String toString() {
-        "${newMemberCode} - [${newRelationshipType}]"
+        "${String.format("%02d", ordinal)} : ${newMemberCode} - [${newRelationshipType}]"
     }
 
     static constraints = {
@@ -21,6 +26,9 @@ class RawChangeHeadRelationship {
         changeHead nullable: false
         newMemberCode nullable: false
         newRelationshipType nullable: false
+
+        ordinal nullable: false
+        createdDate nullable: true
     }
 
     static mapping = {
@@ -31,6 +39,9 @@ class RawChangeHeadRelationship {
         changeHead column: "change_head_id"
         newMemberCode column: "new_member_code", index: "idx_new_membercode"
         newRelationshipType column: "new_relationship_type"
+
+        ordinal column: "ordinal", defaultValue: "'0'"
+        createdDate column: "created_date"
     }
 
 }

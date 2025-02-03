@@ -1014,9 +1014,11 @@ class RawImportApiService implements DataBinder {
         rawDeath.id = params.id
 
         if (paramsRelationships.size() > 0) {
+            def ordinal = 1
             paramsRelationships.each { cparams ->
                 def rawRelationship = new RawDeathRelationship(cparams)
                 rawRelationship.death = rawDeath
+                rawRelationship.ordinal = ordinal++
                 rawDeath.addToRelationships(rawRelationship)
             }
         }
@@ -1110,9 +1112,11 @@ class RawImportApiService implements DataBinder {
         rawInstance.id = params.id
 
         if (paramsRelationships.size() > 0) {
+            def ordinal = 1
             paramsRelationships.each { cparams ->
                 def rawRelationship = new RawChangeHeadRelationship(cparams)
                 rawRelationship.changeHead = rawInstance
+                rawRelationship.ordinal = ordinal++
                 rawInstance.addToRelationships(rawRelationship)
             }
         }

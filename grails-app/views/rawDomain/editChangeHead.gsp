@@ -123,6 +123,11 @@
                                     <g:link controller="rawDomain" action="editChangeHeadRelationship" id="${changeHeadRelationship.id}">
                                         ${changeHeadRelationship?.toString()}
                                     </g:link>
+
+                                    <g:form controller="rawDomain" method="POST" style="display:inline;" >
+                                        <g:hiddenField name="id" value="${changeHeadRelationship.id}" />
+                                        <g:actionSubmit class="btn btn-outline-primary" value="${message(code: 'default.button.delete.label')}" action="deleteChangeHeadRelationship" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');" style="margin-left: 10px;" />
+                                    </g:form>
                                 </li>
                             </g:each>
                         </ul>

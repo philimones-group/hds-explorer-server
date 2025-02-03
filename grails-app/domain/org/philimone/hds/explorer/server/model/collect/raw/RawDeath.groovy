@@ -82,6 +82,8 @@ class RawDeath {
         postExecution column: "post_execution"
 
         processedStatus column: "processed", enumType: "identity"
+
+        relationships sort: 'ordinal', order: 'asc'
     }
 }
 

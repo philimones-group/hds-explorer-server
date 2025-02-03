@@ -1,5 +1,9 @@
 package org.philimone.hds.explorer.server.model.collect.raw
 
+import net.betainteractive.utilities.StringUtil
+
+import java.time.LocalDateTime
+
 class RawDeathRelationship {
 
     String id
@@ -8,11 +12,14 @@ class RawDeathRelationship {
     String newMemberCode
     String newRelationshipType
 
+    Integer ordinal
+    LocalDateTime createdDate = LocalDateTime.now()
+
     static belongsTo = [death:RawDeath]
 
     @Override
     String toString() {
-        "${newMemberCode} - [${newRelationshipType}]"
+        "${String.format("%02d", ordinal)} : ${newMemberCode} - [${newRelationshipType}]"
     }
 
     static constraints = {
@@ -21,6 +28,9 @@ class RawDeathRelationship {
         death nullable: false
         newMemberCode nullable: false
         newRelationshipType nullable: false
+
+        ordinal nullable: false
+        createdDate nullable: true
     }
 
     static mapping = {
@@ -31,5 +41,8 @@ class RawDeathRelationship {
         death column: "death_id"
         newMemberCode column: "new_member_code", index: "idx_new_member_code"
         newRelationshipType column: "new_relationship_type"
+
+        ordinal column: "ordinal", defaultValue: "'0'"
+        createdDate column: "created_date"
     }
 }

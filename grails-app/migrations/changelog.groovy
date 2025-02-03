@@ -33,4 +33,5 @@ databaseChangeLog = {
     include file: 'add-raw-edit-domains-region-household-member-tables.groovy'
     include file: 'alter-raw_error_log-message_to_type-text.groovy'
     include file: 'add-phonenumber-variables-to-member-n-others.groovy'
+    include file: 'alter-raw_death_changehead__relationshop-add-ordinal.groovy'
 }

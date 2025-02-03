@@ -88,7 +88,7 @@
     <section id="footer">
         <div id="footerMenu">
             <div id="siteInfo" class="siteInfo" align="right">
-                <a href="#">Paulo Filimone </a> | &copy;2024 HDS-Explorer Server <g:meta name="info.app.version"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <a href="#">Paulo Filimone </a> | &copy;2025 HDS-Explorer Server <g:meta name="info.app.version"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
             </div>
 
         </div>
