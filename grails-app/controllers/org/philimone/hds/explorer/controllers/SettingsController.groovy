@@ -26,9 +26,10 @@ class SettingsController {
         JLanguage currentLanguage = generalUtilitiesService.getCurrentSystemLanguage()
         def codeGenIncrementalRules = settingsService.codeGeneratorsIncrementalRules
         def regionHeadSupport = settingsService.getRegionHeadSupport()
+        def gpsRequired = settingsService.getVisitGpsRequired()
 
         [languages: languages, selectedLanguage: currentLanguage.language, codeGenerators: Codes.SYSTEM_ALL_CODE_GENERATORS,
-         codeGeneratorsRules: codeGenIncrementalRules, selectedCodeGenerator: Codes.SYSTEM_CODE_GENERATOR,
+         codeGeneratorsRules: codeGenIncrementalRules, selectedCodeGenerator: Codes.SYSTEM_CODE_GENERATOR, selectedGpsRequired: gpsRequired,
          selectedCodeGeneratorIncRule: Codes.SYSTEM_CODE_GENERATOR_INCREMENTAL_RULE, selectedRegionHeadSupport: regionHeadSupport, errorMessages: new ArrayList<String>()]
     }
 
@@ -38,6 +39,7 @@ class SettingsController {
         def selectedCodeGenerator = params.codeGenerator
         def selectedCodeGeneratorIncRule = params.codeGeneratorIncRule
         def selectedRegionHeadSupport = (params.regionHeadSupport==null ? false : params.regionHeadSupport?.equals("on")) as Boolean
+        def selectedGpsRequired = (params.gpsRequired==null ? false : params.gpsRequired?.equals("on")) as Boolean
         def codeGenIncrementalRules = settingsService.codeGeneratorsIncrementalRules
         def errorMessages = new ArrayList<String>()
 
@@ -45,6 +47,7 @@ class SettingsController {
         println "selected cgn: ${selectedCodeGenerator}"
         println "selected cgr: ${selectedCodeGeneratorIncRule}"
         println "selected rhs: ${params.regionHeadSupport}, ${selectedRegionHeadSupport}, Codes.SYSTEM_REGION_HEAD_SUPPORT=${Codes.SYSTEM_REGION_HEAD_SUPPORT}"
+        println "selected gps: ${selectedGpsRequired}"
 
         try {
 
@@ -88,6 +91,14 @@ class SettingsController {
                 applicationParamService.updateApplicationParam(Codes.PARAMS_SYSTEM_REGION_HEAD_SUPPORT, ""+selectedRegionHeadSupport)
             }
 
+            //Update Visit GPS Required Enforcement
+            if (selectedGpsRequired != null && !(Codes.SYSTEM_VISIT_GPS_REQUIRED == selectedGpsRequired)) {
+                println "its changed gps"
+
+                Codes.SYSTEM_VISIT_GPS_REQUIRED = selectedGpsRequired
+                applicationParamService.updateApplicationParam(Codes.PARAMS_SYSTEM_VISIT_GPS_REQUIRED, ""+selectedGpsRequired)
+            }
+
             flash.message = message(code: 'settings.parameters.update.success.label')
 
         } catch(Exception ex) {
@@ -102,7 +113,8 @@ class SettingsController {
 
         render view: "parameters", model: [languages: languages, selectedLanguage: currentLanguage.language, errorMessages: errorMessages,
                                            codeGenerators: Codes.SYSTEM_ALL_CODE_GENERATORS, codeGeneratorsRules: codeGenIncrementalRules,
-                                           selectedCodeGenerator: Codes.SYSTEM_CODE_GENERATOR, selectedCodeGeneratorIncRule: Codes.SYSTEM_CODE_GENERATOR_INCREMENTAL_RULE, selectedRegionHeadSupport: selectedRegionHeadSupport ]
+                                           selectedCodeGenerator: Codes.SYSTEM_CODE_GENERATOR, selectedCodeGeneratorIncRule: Codes.SYSTEM_CODE_GENERATOR_INCREMENTAL_RULE,
+                                           selectedRegionHeadSupport: selectedRegionHeadSupport, selectedGpsRequired: selectedGpsRequired]
     }
 
     def customOptions = {

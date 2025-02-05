@@ -458,6 +458,7 @@ class BootStrap {
         def sysCdgn = svc.getConfigValue("${Codes.PARAMS_SYSTEM_CODE_GENERATOR}")
         def sysCgir = svc.getConfigValue("${Codes.PARAMS_SYSTEM_CODE_GENERATOR_INCREMENTAL_RULE}")
         def sysSrhs = svc.getConfigValue("${Codes.PARAMS_SYSTEM_REGION_HEAD_SUPPORT}")
+        def sysVgps = svc.getConfigValue("${Codes.PARAMS_SYSTEM_VISIT_GPS_REQUIRED}")
         def sysPath = svc.getConfigValue("${Codes.PARAMS_SYSTEM_HOMEPATH}")
 
         println "config: ${sysCdgn}"
@@ -473,6 +474,7 @@ class BootStrap {
         aps.addParam(Codes.PARAMS_SYSTEM_CODE_GENERATOR, sysCdgn)
         aps.addParam(Codes.PARAMS_SYSTEM_CODE_GENERATOR_INCREMENTAL_RULE, sysCgir)
         aps.addParam(Codes.PARAMS_SYSTEM_REGION_HEAD_SUPPORT, (sysSrhs!=null) ? sysSrhs.equalsIgnoreCase("true") : false)
+        aps.addParam(Codes.PARAMS_SYSTEM_VISIT_GPS_REQUIRED, (sysVgps!=null) ? sysVgps.equalsIgnoreCase("true") : false)
         aps.addParam(Codes.PARAMS_SYSTEM_HOMEPATH, sysPath)
 
         aps.addParamNullable(RegionLevel.HIERARCHY_1.code, null)
@@ -843,6 +845,7 @@ class BootStrap {
         def valueScg = applicationParamService.getStringValue(Codes.PARAMS_SYSTEM_CODE_GENERATOR)
         def valueSir = applicationParamService.getStringValue(Codes.PARAMS_SYSTEM_CODE_GENERATOR_INCREMENTAL_RULE)
         def valueSrh = applicationParamService.getBooleanValue(Codes.PARAMS_SYSTEM_REGION_HEAD_SUPPORT)
+        def valueVgp = applicationParamService.getBooleanValue(Codes.PARAMS_SYSTEM_VISIT_GPS_REQUIRED)
         def valuePth = applicationParamService.getStringValue(Codes.PARAMS_SYSTEM_HOMEPATH)
 
         Codes.MIN_MOTHER_AGE_VALUE = valueAgm != null ? valueAgm : Codes.MIN_MOTHER_AGE_VALUE
@@ -855,6 +858,7 @@ class BootStrap {
         Codes.SYSTEM_CODE_GENERATOR = !StringUtil.isBlank(valueScg) ? valueScg : Codes.SYSTEM_CODE_GENERATOR
         Codes.SYSTEM_CODE_GENERATOR_INCREMENTAL_RULE = !StringUtil.isBlank(valueSir) ? valueSir : Codes.SYSTEM_CODE_GENERATOR_INCREMENTAL_RULE
         Codes.SYSTEM_REGION_HEAD_SUPPORT = valueSrh != null ? valueSrh : false
+        Codes.SYSTEM_VISIT_GPS_REQUIRED = valueVgp != null ? valueVgp : false
         Codes.SYSTEM_HOMEPATH = !StringUtil.isBlank(valuePth) ? valuePth : Codes.SYSTEM_HOMEPATH
         SystemPath.HOME_PATH = Codes.SYSTEM_HOMEPATH
 

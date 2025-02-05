@@ -79,6 +79,16 @@
 
                     </div>
 
+                    <div class="fieldcontain ${hasErrors(bean: this.parameters, field: 'code', 'error')} ">
+                        <label for="gpsRequired" title="${message(code: 'settings.parameters.visit.gps.required.label')}">
+                            <g:message code="settings.parameters.visit.gps.required.label" />
+                            <span class="required-indicator">*</span>
+                        </label>
+
+                        <g:checkBox name="gpsRequired" value="${selectedGpsRequired}" />
+
+                    </div>
+
                 </fieldset>
                 <fieldset class="buttons">
                     <g:submitButton name="create" class="save" value="${message(code: 'settings.parameters.update.label')}" />

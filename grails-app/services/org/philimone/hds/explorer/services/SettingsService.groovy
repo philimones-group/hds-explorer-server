@@ -44,6 +44,18 @@ class SettingsService {
         return sysRegionHeadSupport && regionSupportsHead;
     }
 
+    boolean getVisitGpsRequired() {
+        def value = applicationParamService.getBooleanValue(Codes.PARAMS_SYSTEM_VISIT_GPS_REQUIRED)
+
+        if (value != null) {
+            Codes.SYSTEM_VISIT_GPS_REQUIRED = value
+        } else {
+            Codes.SYSTEM_VISIT_GPS_REQUIRED = false
+        }
+
+        return value
+    }
+
     void afterUpdateSystemLanguage(){
         coreFormColumnOptionsService.updateColumnOptionLabels()
     }
