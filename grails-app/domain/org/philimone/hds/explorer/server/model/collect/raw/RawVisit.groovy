@@ -17,8 +17,10 @@ class RawVisit {
     String visitLocation
     String visitLocationOther
     String visitReason
+    String visitReasonOther;
     Boolean visitPossible
     String visitNotPossibleReason
+    String otherNotPossibleReason
     Boolean respondentResident
     String respondentRelationship
     String respondentCode
@@ -60,9 +62,11 @@ class RawVisit {
         visitLocation blank: true, nullable: true
         visitLocationOther blank: true, nullable: true
         visitReason blank: true, nullable: true
+        visitReasonOther blank: true, nullable: true
 
         visitPossible nullable: true
         visitNotPossibleReason nullable: true
+        otherNotPossibleReason nullable: true
         respondentResident nullable: true
         respondentRelationship blank: true, nullable: true
         respondentCode blank: true, nullable: true
@@ -106,10 +110,12 @@ class RawVisit {
         visitLocation column: "visit_location"
         visitLocationOther column: "visit_location_other"
         visitReason column: "visit_reason"
+        visitReasonOther column: "visit_reason_other"
         roundNumber column: "round_number"
 
         visitPossible column: "visit_possible"
         visitNotPossibleReason column: "visit_not_possible_reason", enumType: "identity", index: "idx_novisit_reason"
+        otherNotPossibleReason column: "other_not_possible_reason"
         respondentResident column: "respondent_resident"
         respondentRelationship column: "respondent_relationship", index: "idx_respondent_relat"
         respondentCode column: "respondent_code", index: "idx_respondent_code"

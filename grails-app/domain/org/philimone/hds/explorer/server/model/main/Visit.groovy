@@ -17,6 +17,7 @@ class Visit extends CollectableEntity {
 
     LocalDate visitDate
     VisitReason visitReason
+    String visitReasonOther
 
     VisitLocationItem visitLocation
     String visitLocationOther
@@ -25,6 +26,7 @@ class Visit extends CollectableEntity {
 
     Boolean visitPossible
     NoVisitReason visitNotPossibleReason
+    String otherNotPossibleReason
 
     Member respondent
     Boolean respondentResident
@@ -54,11 +56,13 @@ class Visit extends CollectableEntity {
         visitLocation blank: true, nullable: true
         visitLocationOther blank: true, nullable: true
         visitReason blank:true, nullable: true
+        visitReasonOther blank:true, nullable: true
 
         roundNumber min: 0
 
         visitPossible nullable: true
         visitNotPossibleReason nullable: true
+        otherNotPossibleReason nullable: true
 
         respondent nullable: true
         respondentResident nullable: true
@@ -92,11 +96,13 @@ class Visit extends CollectableEntity {
         visitLocation column: "visit_location", enumType: "identity"
         visitLocationOther column: "visit_location_other"
         visitReason column: "visit_reason", enumType: "identity"
+        visitReasonOther column: "visit_reason_other"
 
         roundNumber column: "round_number", index: "idx_round_number"
 
         visitPossible column: "visit_possible"
         visitNotPossibleReason column: "visit_not_possible_reason", enumType: "identity", index: "idx_novisit_reason"
+        otherNotPossibleReason column: "other_not_possible_reason"
 
         respondent column: "respondent_id"
         respondentResident column: "respondent_resident"

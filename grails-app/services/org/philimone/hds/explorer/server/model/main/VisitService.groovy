@@ -246,6 +246,7 @@ class VisitService {
         visit.visitLocation = VisitLocationItem.getFrom(rv.visitLocation)
         visit.visitLocationOther = rv.visitLocationOther
         visit.visitReason = VisitReason.getFrom(rv.visitReason)
+        visit.visitReasonOther = rv.visitReasonOther
 
         visit.roundNumber = rv.roundNumber
         visit.visitPossible = rv.visitPossible
