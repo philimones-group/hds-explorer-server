@@ -123,10 +123,10 @@
                                         ${deathRelationship?.toString()}
                                     </g:link>
 
-                                    <g:form controller="rawDomain" method="POST" style="display:inline;" >
-                                        <g:hiddenField name="id" value="${deathRelationship.id}" />
-                                        <g:actionSubmit class="btn btn-outline-primary" value="${message(code: 'default.button.delete.label')}" action="deleteDeathRelationship" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');" style="margin-left: 10px;" />
-                                    </g:form>
+                                    <g:link class="btn btn-outline-primary" style="margin-left: 10px;" controller="rawDomain" action="deleteDeathRelationship" id="${deathRelationship.id}" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');">
+                                        ${message(code: 'default.button.delete.label')}
+                                    </g:link>
+
                                 </li>
                             </g:each>
                         </ul>
