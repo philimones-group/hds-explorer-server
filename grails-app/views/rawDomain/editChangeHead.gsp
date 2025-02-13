@@ -127,7 +127,7 @@
                                     <g:link class="btn btn-outline-primary" style="margin-left: 10px;" controller="rawDomain" action="deleteChangeHeadRelationship" id="${changeHeadRelationship.id}" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');">
                                         ${message(code: 'default.button.delete.label')}
                                     </g:link>
-                                    
+
                                 </li>
                             </g:each>
                         </ul>
