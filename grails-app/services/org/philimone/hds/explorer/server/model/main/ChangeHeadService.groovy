@@ -307,6 +307,11 @@ class ChangeHeadService {
             errors << errorMessageService.getRawMessage(RawEntity.CHANGE_HEAD_OF_HOUSEHOLD, "validation.field.changehead.head.same.member.error", [changeHead.oldHeadCode], ["newHeadCode", "oldHeadCode"])
         }
 
+        //C10. Check new Relationships existence
+        if (newChangeHeadRelationships == null || newChangeHeadRelationships.empty) {
+            errors << errorMessageService.getRawMessage(RawEntity.CHANGE_HEAD_OF_HOUSEHOLD, "validation.field.changehead.no.relationships.error", [changeHead.oldHeadCode], ["newHeadCode", "oldHeadCode"])
+        }
+
         //Validation part 2
         if (errors.empty){
 

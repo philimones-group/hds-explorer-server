@@ -134,4 +134,9 @@ class GeneralUtil {
         return date.plusDays(days)
     }
 
+    static String getStackTraceText(Exception e) {
+        StringWriter sw = new StringWriter();
+        e.printStackTrace(new PrintWriter(sw))
+        return sw?.toString()
+    }
 }

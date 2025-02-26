@@ -2,6 +2,7 @@ package org.philimone.hds.explorer.services
 
 import grails.gorm.transactions.Transactional
 import net.betainteractive.io.LogOutput
+import net.betainteractive.utilities.GeneralUtil
 import org.philimone.hds.explorer.io.SystemPath
 import org.philimone.hds.explorer.server.model.enums.LogStatus
 import org.philimone.hds.explorer.server.model.enums.ProcessedStatus
@@ -65,7 +66,8 @@ class EventSyncService {
             logStatusValue = LogStatus.ERROR
             processed = 0
             errors = 1
-            output.println(ex.toString())
+            output.println(ex.getMessage())
+            output.println(GeneralUtil.getStackTraceText(ex))
         }
 
         LogReport.withTransaction {
@@ -124,7 +126,8 @@ class EventSyncService {
             logStatusValue = LogStatus.ERROR
             processed = 0
             errors = 1
-            output.println(ex.toString())
+            output.println(ex.getMessage())
+            output.println(GeneralUtil.getStackTraceText(ex))
         }
 
         LogReport.withTransaction {
@@ -184,7 +187,8 @@ class EventSyncService {
             logStatusValue = LogStatus.ERROR
             processed = 0
             errors = 1
-            output.println(ex.toString())
+            output.println(ex.getMessage())
+            output.println(GeneralUtil.getStackTraceText(ex))
         }
 
         LogReport.withTransaction {
@@ -249,7 +253,8 @@ class EventSyncService {
             logStatusValue = LogStatus.ERROR
             processed = 0
             errors = 1
-            output.println(ex.toString())
+            output.println(ex.getMessage())
+            output.println(GeneralUtil.getStackTraceText(ex))
         }
 
         LogReport.withTransaction {
@@ -314,7 +319,8 @@ class EventSyncService {
             logStatusValue = LogStatus.ERROR
             processed = 0
             errors = 1
-            output.println(ex.toString())
+            output.println(ex.getMessage())
+            output.println(GeneralUtil.getStackTraceText(ex))
         }
 
         LogReport.withTransaction {
