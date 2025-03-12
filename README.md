@@ -22,8 +22,10 @@ To get started with HDS-Explorer, simply clone the repository and then from with
    `sdk install grails 5.3.2`   
    * Clone HDS-Explorer repository  
    `git clone https://github.com/philimones-group/hds-explorer-server.git`
-   * Configure the MySQL Database Access (under the cloned directory hds-explorer, import the file **user.sql** to mysql database)  
-   `mysql -u $MYSQL_USER -p < user.sql`
+   * Configure the development environment MySQL Database Access (use the global gradle.properties file located generally under $USER_HOME/.gradle/gradle.properties to set these variables)  
+   `DEV_HDS_EXPLORER_SERVER_DB_URL=jdbc:mysql://localhost/hds_explorer_db?createDatabaseIfNotExist=true&autoReconnect=true&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true`   
+   `DEV_HDS_EXPLORER_SERVER_DB_USER=hds_explorer`   
+   `DEV_HDS_EXPLORER_SERVER_DB_PASS=hds_test`   
    * Create HDS-Explorer resources directory and grant access to your Linux User  
    `sudo mkdir /var/lib/hds-explorer`   
    `sudo chown -R $USER:$USER_GROUP /var/lib/hds-explorer/`  

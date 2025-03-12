@@ -15,7 +15,7 @@ buildscript {
     }
 }
 
-version "1.0.35 build 328"
+version "1.0.35 build 329"
 group "org.philimone.hds.explorer"
 
 apply plugin:"eclipse"
@@ -131,6 +131,11 @@ runCommand {
     systemProperty "spring.devtools.restart.enabled", false
 }
 
+//read development env variables from global gradle.properties
+def databaseUrl = project.hasProperty('DEV_HDS_EXPLORER_SERVER_DB_URL') ? project.getProperty('DEV_HDS_EXPLORER_SERVER_DB_URL') : ''
+def databaseUser = project.hasProperty('DEV_HDS_EXPLORER_SERVER_DB_USER') ? project.getProperty('DEV_HDS_EXPLORER_SERVER_DB_USER') : ''
+def databasePass = project.hasProperty('DEV_HDS_EXPLORER_SERVER_DB_PASS') ? project.getProperty('DEV_HDS_EXPLORER_SERVER_DB_PASS') : ''
+
 bootRun {
     ignoreExitValue true
     jvmArgs(
@@ -141,6 +146,11 @@ bootRun {
     sourceResources sourceSets.main    
     String springProfilesActive = 'spring.profiles.active'
     systemProperty springProfilesActive, System.getProperty(springProfilesActive)
+
+    //set development env variables
+    systemProperty 'DEV_DATABASE_URL', databaseUrl
+    systemProperty 'DEV_DATABASE_USER', databaseUser
+    systemProperty 'DEV_DATABASE_PASS', databasePass
 }
 
 tasks.withType(GroovyCompile) {
