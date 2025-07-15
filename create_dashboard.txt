@@ -27,3 +27,6 @@ This will generate two bundle files: index-bundle-dashboard.js and index-bundle-
 these files will be automatically copied to grails-app/assets directory to be integrated with grails,
 after that you can commit the changes of the output to the main grails project, we could have used webpack but we didnt have the time to configure it
 
+4. Audit and Fix dependencies
+npm audit
+npm audit fix
