@@ -1,0 +1,540 @@
+<?xml version="1.0"?>
+<h:html xmlns="http://www.w3.org/2002/xforms" xmlns:ev="http://www.w3.org/2001/xml-events" xmlns:h="http://www.w3.org/1999/xhtml" xmlns:jr="http://openrosa.org/javarosa" xmlns:orx="http://openrosa.org/xforms" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <h:head>
+    <h:title>HDS Pregnancy Visit Extension</h:title>
+    <model>
+      <itext>
+        <translation lang="Portuguese">
+          <text id="/pregnancy_visit_ext/status/PREGNANT:label">
+            <value>-</value>
+          </text>
+          <text id="/pregnancy_visit_ext/childs:label">
+            <value>Crianças Nascidas</value>
+          </text>
+          <text id="/pregnancy_visit_ext/end:label">
+            <value>-</value>
+          </text>
+          <text id="/pregnancy_visit_ext/childs/child_outcome_type/LBR:label">
+            <value>-</value>
+          </text>
+          <text id="/pregnancy_visit_ext/childs/child_gender/M:label">
+            <value>-</value>
+          </text>
+          <text id="/pregnancy_visit_ext/childs/child_name:label">
+            <value>Nome da criança</value>
+          </text>
+          <text id="/pregnancy_visit_ext/childs/child_outcome_type:label">
+            <value>Tipo de resultado da gravidez</value>
+          </text>
+          <text id="/pregnancy_visit_ext/childs/custom_child_quest1:label">
+            <value>Child's Custom Question 1</value>
+          </text>
+          <text id="/pregnancy_visit_ext/childs/child_status/SBR:label">
+            <value>-</value>
+          </text>
+          <text id="/pregnancy_visit_ext/status/LOST_TRACK:label">
+            <value>-</value>
+          </text>
+          <text id="/pregnancy_visit_ext/start:label">
+            <value>-</value>
+          </text>
+          <text id="/pregnancy_visit_ext/childs/custom_child_quest2:label">
+            <value>Child's Custom Question 2</value>
+          </text>
+          <text id="/pregnancy_visit_ext/mother_code:label">
+            <value>Código da Mãe</value>
+          </text>
+          <text id="/pregnancy_visit_ext/childs/child_gender:label">
+            <value>Sexo da criança</value>
+          </text>
+          <text id="/pregnancy_visit_ext/childs/child_gender/F:label">
+            <value>-</value>
+          </text>
+          <text id="/pregnancy_visit_ext/pregnancy_code:label">
+            <value>Código do Registro de Gravidez</value>
+          </text>
+          <text id="/pregnancy_visit_ext/visit_number:label">
+            <value>Número da visita</value>
+          </text>
+          <text id="/pregnancy_visit_ext/childs/child_status:label">
+            <value>Estado atual da criança</value>
+          </text>
+          <text id="/pregnancy_visit_ext/custom_quest1:label">
+            <value>Custom Question 1</value>
+          </text>
+          <text id="/pregnancy_visit_ext/visit_type/POSTPARTUM:label">
+            <value>-</value>
+          </text>
+          <text id="/pregnancy_visit_ext/childs/child_status/ABT:label">
+            <value>-</value>
+          </text>
+          <text id="/pregnancy_visit_ext/custom_quest2:label">
+            <value>Custom Question 2</value>
+          </text>
+          <text id="/pregnancy_visit_ext/childs/child_code:label">
+            <value>Código da criança</value>
+          </text>
+          <text id="/pregnancy_visit_ext/deviceid:label">
+            <value>-</value>
+          </text>
+          <text id="/pregnancy_visit_ext/visit_type:label">
+            <value>Tipo de Visita</value>
+          </text>
+          <text id="/pregnancy_visit_ext/collected_id:label">
+            <value>Id do Formulário Mãe</value>
+          </text>
+          <text id="/pregnancy_visit_ext/childs/child_status/MIS:label">
+            <value>-</value>
+          </text>
+          <text id="/pregnancy_visit_ext/visit_code:label">
+            <value>Código da Visita</value>
+          </text>
+          <text id="/pregnancy_visit_ext/childs/child_status/ALIVE:label">
+            <value>-</value>
+          </text>
+          <text id="/pregnancy_visit_ext/childs/child_status/DIED_AFTER_BIRTH:label">
+            <value>-</value>
+          </text>
+          <text id="/pregnancy_visit_ext/childs/child_outcome_type/ABT:label">
+            <value>-</value>
+          </text>
+          <text id="/pregnancy_visit_ext/visit_type/ANTEPARTUM:label">
+            <value>-</value>
+          </text>
+          <text id="/pregnancy_visit_ext/status:label">
+            <value>Estado da Gravidez</value>
+          </text>
+          <text id="/pregnancy_visit_ext/status/DELIVERED:label">
+            <value>-</value>
+          </text>
+          <text id="/pregnancy_visit_ext/childs/child_outcome_type/MIS:label">
+            <value>-</value>
+          </text>
+          <text id="/pregnancy_visit_ext/number_of_childs:label">
+            <value>Número de bebês nascidos?</value>
+          </text>
+          <text id="/pregnancy_visit_ext/mother_name:label">
+            <value>Nome da Mãe</value>
+          </text>
+          <text id="/pregnancy_visit_ext/childs/child_outcome_type/SBR:label">
+            <value>-</value>
+          </text>
+        </translation>
+        <translation lang="pt">
+          <text id="/pregnancy_visit_ext/status/PREGNANT:label">
+            <value>Grávida</value>
+          </text>
+          <text id="/pregnancy_visit_ext/childs:label">
+            <value>-</value>
+          </text>
+          <text id="/pregnancy_visit_ext/end:label">
+            <value>-</value>
+          </text>
+          <text id="/pregnancy_visit_ext/custom_quest1:label">
+            <value>-</value>
+          </text>
+          <text id="/pregnancy_visit_ext/childs/child_gender/M:label">
+            <value>Masculino</value>
+          </text>
+          <text id="/pregnancy_visit_ext/childs/child_name:label">
+            <value>-</value>
+          </text>
+          <text id="/pregnancy_visit_ext/childs/child_outcome_type:label">
+            <value>-</value>
+          </text>
+          <text id="/pregnancy_visit_ext/childs/custom_child_quest1:label">
+            <value>-</value>
+          </text>
+          <text id="/pregnancy_visit_ext/childs/child_status/SBR:label">
+            <value>Nado Morto</value>
+          </text>
+          <text id="/pregnancy_visit_ext/status/LOST_TRACK:label">
+            <value>Estado desconhecido/perdido</value>
+          </text>
+          <text id="/pregnancy_visit_ext/start:label">
+            <value>-</value>
+          </text>
+          <text id="/pregnancy_visit_ext/childs/custom_child_quest2:label">
+            <value>-</value>
+          </text>
+          <text id="/pregnancy_visit_ext/mother_code:label">
+            <value>-</value>
+          </text>
+          <text id="/pregnancy_visit_ext/childs/child_gender:label">
+            <value>-</value>
+          </text>
+          <text id="/pregnancy_visit_ext/childs/child_gender/F:label">
+            <value>Feminino</value>
+          </text>
+          <text id="/pregnancy_visit_ext/pregnancy_code:label">
+            <value>-</value>
+          </text>
+          <text id="/pregnancy_visit_ext/visit_number:label">
+            <value>-</value>
+          </text>
+          <text id="/pregnancy_visit_ext/status/DELIVERED:label">
+            <value>Já deu parto</value>
+          </text>
+          <text id="/pregnancy_visit_ext/childs/child_status:label">
+            <value>-</value>
+          </text>
+          <text id="/pregnancy_visit_ext/childs/child_outcome_type/LBR:label">
+            <value>Nascido Vivo</value>
+          </text>
+          <text id="/pregnancy_visit_ext/visit_type/POSTPARTUM:label">
+            <value>Visita Pós-Parto</value>
+          </text>
+          <text id="/pregnancy_visit_ext/childs/child_status/ABT:label">
+            <value>Aborto induzido</value>
+          </text>
+          <text id="/pregnancy_visit_ext/custom_quest2:label">
+            <value>-</value>
+          </text>
+          <text id="/pregnancy_visit_ext/childs/child_code:label">
+            <value>-</value>
+          </text>
+          <text id="/pregnancy_visit_ext/childs/child_outcome_type/ABT:label">
+            <value>Aborto induzido</value>
+          </text>
+          <text id="/pregnancy_visit_ext/visit_type:label">
+            <value>-</value>
+          </text>
+          <text id="/pregnancy_visit_ext/collected_id:label">
+            <value>-</value>
+          </text>
+          <text id="/pregnancy_visit_ext/childs/child_status/MIS:label">
+            <value>Aborto Espontâneo</value>
+          </text>
+          <text id="/pregnancy_visit_ext/visit_code:label">
+            <value>-</value>
+          </text>
+          <text id="/pregnancy_visit_ext/childs/child_status/ALIVE:label">
+            <value>Vivo</value>
+          </text>
+          <text id="/pregnancy_visit_ext/childs/child_status/DIED_AFTER_BIRTH:label">
+            <value>Faleceu após o Nascimento</value>
+          </text>
+          <text id="/pregnancy_visit_ext/deviceid:label">
+            <value>-</value>
+          </text>
+          <text id="/pregnancy_visit_ext/visit_type/ANTEPARTUM:label">
+            <value>Visita Anteparto</value>
+          </text>
+          <text id="/pregnancy_visit_ext/status:label">
+            <value>-</value>
+          </text>
+          <text id="/pregnancy_visit_ext/childs/child_outcome_type/MIS:label">
+            <value>Aborto Espontâneo</value>
+          </text>
+          <text id="/pregnancy_visit_ext/number_of_childs:label">
+            <value>-</value>
+          </text>
+          <text id="/pregnancy_visit_ext/mother_name:label">
+            <value>-</value>
+          </text>
+          <text id="/pregnancy_visit_ext/childs/child_outcome_type/SBR:label">
+            <value>Nado morto</value>
+          </text>
+        </translation>
+        <translation default="true()" lang="English">
+          <text id="/pregnancy_visit_ext/status/PREGNANT:label">
+            <value>Pregnant</value>
+          </text>
+          <text id="/pregnancy_visit_ext/childs:label">
+            <value>Childs</value>
+          </text>
+          <text id="/pregnancy_visit_ext/end:label">
+            <value>-</value>
+          </text>
+          <text id="/pregnancy_visit_ext/custom_quest1:label">
+            <value>Custom Question 1</value>
+          </text>
+          <text id="/pregnancy_visit_ext/childs/child_gender/M:label">
+            <value>Male</value>
+          </text>
+          <text id="/pregnancy_visit_ext/childs/child_name:label">
+            <value>Child's Name</value>
+          </text>
+          <text id="/pregnancy_visit_ext/childs/child_outcome_type:label">
+            <value>Outcome Type</value>
+          </text>
+          <text id="/pregnancy_visit_ext/childs/custom_child_quest1:label">
+            <value>Child's Custom Question 1</value>
+          </text>
+          <text id="/pregnancy_visit_ext/status/LOST_TRACK:label">
+            <value>Lost Track</value>
+          </text>
+          <text id="/pregnancy_visit_ext/childs/child_status/SBR:label">
+            <value>Stillborn</value>
+          </text>
+          <text id="/pregnancy_visit_ext/status/DELIVERED:label">
+            <value>Delivered</value>
+          </text>
+          <text id="/pregnancy_visit_ext/start:label">
+            <value>-</value>
+          </text>
+          <text id="/pregnancy_visit_ext/childs/custom_child_quest2:label">
+            <value>Child's Custom Question 2</value>
+          </text>
+          <text id="/pregnancy_visit_ext/mother_code:label">
+            <value>Mother's Code</value>
+          </text>
+          <text id="/pregnancy_visit_ext/childs/child_gender:label">
+            <value>Child's Gender</value>
+          </text>
+          <text id="/pregnancy_visit_ext/childs/child_gender/F:label">
+            <value>Female</value>
+          </text>
+          <text id="/pregnancy_visit_ext/pregnancy_code:label">
+            <value>Pregnancy Registration Code</value>
+          </text>
+          <text id="/pregnancy_visit_ext/visit_number:label">
+            <value>Visit Number</value>
+          </text>
+          <text id="/pregnancy_visit_ext/childs/child_status:label">
+            <value>Child's New Born Status</value>
+          </text>
+          <text id="/pregnancy_visit_ext/childs/child_outcome_type/LBR:label">
+            <value>Livebirth</value>
+          </text>
+          <text id="/pregnancy_visit_ext/visit_type/POSTPARTUM:label">
+            <value>Postpartum Visit (After Delivery)</value>
+          </text>
+          <text id="/pregnancy_visit_ext/childs/child_status/ABT:label">
+            <value>Abortion</value>
+          </text>
+          <text id="/pregnancy_visit_ext/custom_quest2:label">
+            <value>Custom Question 2</value>
+          </text>
+          <text id="/pregnancy_visit_ext/childs/child_code:label">
+            <value>Child's Code</value>
+          </text>
+          <text id="/pregnancy_visit_ext/deviceid:label">
+            <value>-</value>
+          </text>
+          <text id="/pregnancy_visit_ext/visit_type:label">
+            <value>Visit Type</value>
+          </text>
+          <text id="/pregnancy_visit_ext/collected_id:label">
+            <value>Core Form Id</value>
+          </text>
+          <text id="/pregnancy_visit_ext/childs/child_status/MIS:label">
+            <value>Miscarriage</value>
+          </text>
+          <text id="/pregnancy_visit_ext/visit_code:label">
+            <value>Visit Code</value>
+          </text>
+          <text id="/pregnancy_visit_ext/childs/child_status/ALIVE:label">
+            <value>Alive</value>
+          </text>
+          <text id="/pregnancy_visit_ext/childs/child_status/DIED_AFTER_BIRTH:label">
+            <value>Died After Birth</value>
+          </text>
+          <text id="/pregnancy_visit_ext/childs/child_outcome_type/ABT:label">
+            <value>Abortion</value>
+          </text>
+          <text id="/pregnancy_visit_ext/visit_type/ANTEPARTUM:label">
+            <value>Antepartum Visit (During Pregnancy)</value>
+          </text>
+          <text id="/pregnancy_visit_ext/status:label">
+            <value>Pregnancy Status</value>
+          </text>
+          <text id="/pregnancy_visit_ext/childs/child_outcome_type/MIS:label">
+            <value>Miscarriage</value>
+          </text>
+          <text id="/pregnancy_visit_ext/number_of_childs:label">
+            <value>Number of childs</value>
+          </text>
+          <text id="/pregnancy_visit_ext/mother_name:label">
+            <value>Mother's Name</value>
+          </text>
+          <text id="/pregnancy_visit_ext/childs/child_outcome_type/SBR:label">
+            <value>Stillbirth</value>
+          </text>
+        </translation>
+      </itext>
+      <instance>
+        <pregnancy_visit_ext id="pregnancy_visit_ext" version="1">
+          <start/>
+          <end/>
+          <deviceid/>
+          <collected_id/>
+          <visit_code/>
+          <pregnancy_code/>
+          <mother_code/>
+          <mother_name/>
+          <visit_type/>
+          <visit_number/>
+          <status/>
+          <number_of_childs/>
+          <childs_count/>
+          <childs jr:template="">
+            <child_outcome_type/>
+            <child_code/>
+            <child_name/>
+            <child_gender/>
+            <child_status/>
+            <custom_child_quest1/>
+            <custom_child_quest2/>
+          </childs>
+          <custom_quest1/>
+          <custom_quest2/>
+          <meta>
+            <instanceID/>
+            <instanceName/>
+          </meta>
+        </pregnancy_visit_ext>
+      </instance>
+      <bind jr:preload="timestamp" jr:preloadParams="start" nodeset="/pregnancy_visit_ext/start" required="true()" type="dateTime"/>
+      <bind jr:preload="timestamp" jr:preloadParams="end" nodeset="/pregnancy_visit_ext/end" required="true()" type="dateTime"/>
+      <bind jr:preload="property" jr:preloadParams="deviceid" nodeset="/pregnancy_visit_ext/deviceid" required="true()" type="string"/>
+      <bind nodeset="/pregnancy_visit_ext/collected_id" readonly="true()" required="true()" type="string"/>
+      <bind nodeset="/pregnancy_visit_ext/visit_code" readonly="true()" required="true()" type="string"/>
+      <bind nodeset="/pregnancy_visit_ext/pregnancy_code" readonly="true()" required="true()" type="string"/>
+      <bind nodeset="/pregnancy_visit_ext/mother_code" readonly="true()" required="true()" type="string"/>
+      <bind nodeset="/pregnancy_visit_ext/mother_name" readonly="true()" required="true()" type="string"/>
+      <bind nodeset="/pregnancy_visit_ext/visit_type" readonly="true()" required="true()" type="select1"/>
+      <bind nodeset="/pregnancy_visit_ext/visit_number" readonly="true()" required="true()" type="int"/>
+      <bind nodeset="/pregnancy_visit_ext/status" readonly="true()" required="true()" type="select1"/>
+      <bind nodeset="/pregnancy_visit_ext/number_of_childs" readonly="true()" required="true()" type="int"/>
+      <bind calculate=" /pregnancy_visit_ext/number_of_childs " nodeset="/pregnancy_visit_ext/childs_count" readonly="true()" type="string"/>
+      <bind nodeset="/pregnancy_visit_ext/childs" required="true()"/>
+      <bind nodeset="/pregnancy_visit_ext/childs/child_outcome_type" readonly="true()" required="true()" type="select1"/>
+      <bind nodeset="/pregnancy_visit_ext/childs/child_code" readonly="true()" required="true()" type="string"/>
+      <bind nodeset="/pregnancy_visit_ext/childs/child_name" readonly="true()" required="true()" type="string"/>
+      <bind nodeset="/pregnancy_visit_ext/childs/child_gender" readonly="true()" required="true()" type="select1"/>
+      <bind nodeset="/pregnancy_visit_ext/childs/child_status" type="select1"/>
+      <bind nodeset="/pregnancy_visit_ext/childs/custom_child_quest1" type="string"/>
+      <bind nodeset="/pregnancy_visit_ext/childs/custom_child_quest2" type="string"/>
+      <bind nodeset="/pregnancy_visit_ext/custom_quest1" type="string"/>
+      <bind nodeset="/pregnancy_visit_ext/custom_quest2" type="string"/>
+      <bind calculate="concat('uuid:', uuid())" nodeset="/pregnancy_visit_ext/meta/instanceID" readonly="true()" type="string"/>
+      <bind calculate="concat(&quot;HDS_&quot;, /pregnancy_visit_ext/mother_code ,&quot;_&quot;,&quot;PregVisit_Extension&quot;)" nodeset="/pregnancy_visit_ext/meta/instanceName" type="string"/>
+    </model>
+  </h:head>
+  <h:body>
+    <input ref="/pregnancy_visit_ext/collected_id">
+      <label ref="jr:itext('/pregnancy_visit_ext/collected_id:label')"/>
+    </input>
+    <input ref="/pregnancy_visit_ext/visit_code">
+      <label ref="jr:itext('/pregnancy_visit_ext/visit_code:label')"/>
+    </input>
+    <input ref="/pregnancy_visit_ext/pregnancy_code">
+      <label ref="jr:itext('/pregnancy_visit_ext/pregnancy_code:label')"/>
+    </input>
+    <input ref="/pregnancy_visit_ext/mother_code">
+      <label ref="jr:itext('/pregnancy_visit_ext/mother_code:label')"/>
+    </input>
+    <input ref="/pregnancy_visit_ext/mother_name">
+      <label ref="jr:itext('/pregnancy_visit_ext/mother_name:label')"/>
+    </input>
+    <select1 ref="/pregnancy_visit_ext/visit_type">
+      <label ref="jr:itext('/pregnancy_visit_ext/visit_type:label')"/>
+      <item>
+        <label ref="jr:itext('/pregnancy_visit_ext/visit_type/ANTEPARTUM:label')"/>
+        <value>ANTEPARTUM</value>
+      </item>
+      <item>
+        <label ref="jr:itext('/pregnancy_visit_ext/visit_type/POSTPARTUM:label')"/>
+        <value>POSTPARTUM</value>
+      </item>
+    </select1>
+    <input ref="/pregnancy_visit_ext/visit_number">
+      <label ref="jr:itext('/pregnancy_visit_ext/visit_number:label')"/>
+    </input>
+    <select1 ref="/pregnancy_visit_ext/status">
+      <label ref="jr:itext('/pregnancy_visit_ext/status:label')"/>
+      <item>
+        <label ref="jr:itext('/pregnancy_visit_ext/status/PREGNANT:label')"/>
+        <value>PREGNANT</value>
+      </item>
+      <item>
+        <label ref="jr:itext('/pregnancy_visit_ext/status/DELIVERED:label')"/>
+        <value>DELIVERED</value>
+      </item>
+      <item>
+        <label ref="jr:itext('/pregnancy_visit_ext/status/LOST_TRACK:label')"/>
+        <value>LOST_TRACK</value>
+      </item>
+    </select1>
+    <input ref="/pregnancy_visit_ext/number_of_childs">
+      <label ref="jr:itext('/pregnancy_visit_ext/number_of_childs:label')"/>
+    </input>
+    <group ref="/pregnancy_visit_ext/childs">
+      <label ref="jr:itext('/pregnancy_visit_ext/childs:label')"/>
+      <repeat jr:count=" /pregnancy_visit_ext/childs_count " nodeset="/pregnancy_visit_ext/childs">
+        <select1 ref="/pregnancy_visit_ext/childs/child_outcome_type">
+          <label ref="jr:itext('/pregnancy_visit_ext/childs/child_outcome_type:label')"/>
+          <item>
+            <label ref="jr:itext('/pregnancy_visit_ext/childs/child_outcome_type/LBR:label')"/>
+            <value>LBR</value>
+          </item>
+          <item>
+            <label ref="jr:itext('/pregnancy_visit_ext/childs/child_outcome_type/SBR:label')"/>
+            <value>SBR</value>
+          </item>
+          <item>
+            <label ref="jr:itext('/pregnancy_visit_ext/childs/child_outcome_type/MIS:label')"/>
+            <value>MIS</value>
+          </item>
+          <item>
+            <label ref="jr:itext('/pregnancy_visit_ext/childs/child_outcome_type/ABT:label')"/>
+            <value>ABT</value>
+          </item>
+        </select1>
+        <input ref="/pregnancy_visit_ext/childs/child_code">
+          <label ref="jr:itext('/pregnancy_visit_ext/childs/child_code:label')"/>
+        </input>
+        <input ref="/pregnancy_visit_ext/childs/child_name">
+          <label ref="jr:itext('/pregnancy_visit_ext/childs/child_name:label')"/>
+        </input>
+        <select1 ref="/pregnancy_visit_ext/childs/child_gender">
+          <label ref="jr:itext('/pregnancy_visit_ext/childs/child_gender:label')"/>
+          <item>
+            <label ref="jr:itext('/pregnancy_visit_ext/childs/child_gender/M:label')"/>
+            <value>M</value>
+          </item>
+          <item>
+            <label ref="jr:itext('/pregnancy_visit_ext/childs/child_gender/F:label')"/>
+            <value>F</value>
+          </item>
+        </select1>
+        <select1 ref="/pregnancy_visit_ext/childs/child_status">
+          <label ref="jr:itext('/pregnancy_visit_ext/childs/child_status:label')"/>
+          <item>
+            <label ref="jr:itext('/pregnancy_visit_ext/childs/child_status/ALIVE:label')"/>
+            <value>ALIVE</value>
+          </item>
+          <item>
+            <label ref="jr:itext('/pregnancy_visit_ext/childs/child_status/SBR:label')"/>
+            <value>SBR</value>
+          </item>
+          <item>
+            <label ref="jr:itext('/pregnancy_visit_ext/childs/child_status/MIS:label')"/>
+            <value>MIS</value>
+          </item>
+          <item>
+            <label ref="jr:itext('/pregnancy_visit_ext/childs/child_status/ABT:label')"/>
+            <value>ABT</value>
+          </item>
+          <item>
+            <label ref="jr:itext('/pregnancy_visit_ext/childs/child_status/DIED_AFTER_BIRTH:label')"/>
+            <value>DIED_AFTER_BIRTH</value>
+          </item>
+        </select1>
+        <input ref="/pregnancy_visit_ext/childs/custom_child_quest1">
+          <label ref="jr:itext('/pregnancy_visit_ext/childs/custom_child_quest1:label')"/>
+        </input>
+        <input ref="/pregnancy_visit_ext/childs/custom_child_quest2">
+          <label ref="jr:itext('/pregnancy_visit_ext/childs/custom_child_quest2:label')"/>
+        </input>
+      </repeat>
+    </group>
+    <input ref="/pregnancy_visit_ext/custom_quest1">
+      <label ref="jr:itext('/pregnancy_visit_ext/custom_quest1:label')"/>
+    </input>
+    <input ref="/pregnancy_visit_ext/custom_quest2">
+      <label ref="jr:itext('/pregnancy_visit_ext/custom_quest2:label')"/>
+    </input>
+  </h:body>
+</h:html>

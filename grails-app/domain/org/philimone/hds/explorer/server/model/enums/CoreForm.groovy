@@ -12,6 +12,7 @@ enum CoreForm {
     OUTMIGRATION_FORM ("rawOutMigration", "coreFormExtension.outmigration.label", "out_migration_ext"),
     PREGNANCY_REGISTRATION_FORM ("rawPregnancyRegistration", "coreFormExtension.pregnancyreg.label", "pregnancy_registration_ext"),
     PREGNANCY_OUTCOME_FORM ("rawPregnancyOutcome", "coreFormExtension.pregnancyoutcome.label", "pregnancy_outcome_ext"),
+    PREGNANCY_VISIT_FORM ("rawPregnancyVisit", "coreFormExtension.pregnancyvisit.label", "pregnancy_visit_ext"),
     DEATH_FORM ("rawDeath", "coreFormExtension.death.label", "death_ext"),
     CHANGE_HEAD_FORM ("rawChangeHead", "coreFormExtension.changehead.label", "change_head_ext"),
     INCOMPLETE_VISIT_FORM ("rawIncompleteVisit", "coreFormExtension.incompletevisit.label", "incomplete_visit_ext"),
