@@ -2,7 +2,7 @@
 
 <g:message code="rawDomain.helpers.member.label" /> : <b>${member_code}</b><br>
 <g:message code="rawDomain.helpers.member.name.label" /> : <b>${member_name}</b><br>
-<g:message code="rawDomain.helpers.member.gender.label" /> : <b>${member_gender}</b><br>
+<g:message code="rawDomain.helpers.member.gender.label" /> : <b>${g.message(code: member_gender)}</b><br>
 <g:message code="rawDomain.helpers.member.dob.label" /> : <b>${member_dob}</b><br>
 <h2><g:message code="rawDomain.helpers.member.residencies.label" /></h2>
 

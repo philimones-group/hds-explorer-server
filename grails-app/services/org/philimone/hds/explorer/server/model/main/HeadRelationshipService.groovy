@@ -20,6 +20,7 @@ class HeadRelationshipService {
 
     def householdService
     def memberService
+    def residencyService
     def userService
     def errorMessageService
 
@@ -761,6 +762,9 @@ class HeadRelationshipService {
             headRelationship.head = head
             headRelationship.headCode = head?.code
         }
+
+        //get current residency - household, member, startDate
+        headRelationship.residency = residencyService.getCurrentResidency(headRelationship)
 
         return headRelationship
 

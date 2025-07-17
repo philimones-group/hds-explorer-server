@@ -164,9 +164,9 @@ environments:
   development:
     dataSource:
       dbCreate: none
+      url: ${DEV_DATABASE_URL}
       username: ${DEV_DATABASE_USER}
       password: ${DEV_DATABASE_PASS}
-      url: ${DEV_DATABASE_URL}
       logSql: false
   test:
     dataSource:

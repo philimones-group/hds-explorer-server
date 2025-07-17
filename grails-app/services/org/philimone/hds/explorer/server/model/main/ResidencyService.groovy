@@ -59,6 +59,23 @@ class ResidencyService {
         return residencies.collect { it.member }
     }
 
+    Residency getCurrentResidency(HeadRelationship headRelationship) {
+        Member member = headRelationship?.member
+        Household household = headRelationship?.household
+        LocalDate startDate = headRelationship?.startDate
+
+        if (member != null && member.id != null && household != null && household.id != null){
+            //get residency within residency.startDate and residency.endDate
+            def residencies = Residency.executeQuery("select r from Residency r where r.member.id=?0 and r.household.id=?1 and (r.startDate <= ?2 and (r.endDate is null or r.endDate >= ?2) ) and (r.status <> ?3 or r.status is null) order by r.startDate desc", [member.id, household.id, startDate, ValidatableStatus.TEMPORARILY_INACTIVE], [offset:0, max:1]) // limit 1
+
+            if (residencies != null && residencies.size()>0){
+                return residencies.first()
+            }
+
+        }
+        return null
+    }
+
     boolean hasResidents(Household household) {
         //def countResidencies = Residency.countByHouseholdAndEndTypeAndStatusNotEqual(household, ResidencyEndType.NOT_APPLICABLE, ValidatableStatus.TEMPORARILY_INACTIVE)
         //return countResidencies > 0;

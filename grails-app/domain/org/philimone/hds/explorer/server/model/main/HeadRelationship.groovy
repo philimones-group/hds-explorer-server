@@ -23,6 +23,8 @@ class HeadRelationship extends AuditableEntity {
     HeadRelationshipEndType endType
     LocalDate endDate
 
+    Residency residency
+
     ValidatableStatus status
 
     static constraints = {
@@ -37,6 +39,8 @@ class HeadRelationship extends AuditableEntity {
         startDate nullable: false
         endType nullable: false, blank:true
         endDate nullable: true
+
+        residency nullable: true
 
         status nullable: true
     }
@@ -57,6 +61,8 @@ class HeadRelationship extends AuditableEntity {
         startDate column: "start_date"
         endType column: "end_type", enumType: "identity"
         endDate column: "end_date"
+
+        residency column: "residency_id"
 
         status column: "status", enumType: "identity"
     }

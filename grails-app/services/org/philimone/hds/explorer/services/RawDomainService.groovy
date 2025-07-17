@@ -428,6 +428,7 @@ class RawDomainService {
             headRelationship.startDate = getNextDate(obj.endDate)
             headRelationship.endType = HeadRelationshipEndType.NOT_APPLICABLE //create as non-applicable
             headRelationship.endDate = null
+            headRelationship.residency = obj.residency
             headRelationship.status = ValidatableStatus.ACTIVE
 
             headRelationship.save(flush: true)
@@ -474,6 +475,7 @@ class RawDomainService {
             headRelationship.startDate = obj.startDate
             headRelationship.endType = HeadRelationshipEndType.getFrom(obj.endType.code)
             headRelationship.endDate = obj.endDate
+            headRelationship.residency = obj
             headRelationship.status = obj.status
 
             headRelationship.save(flush: true)
