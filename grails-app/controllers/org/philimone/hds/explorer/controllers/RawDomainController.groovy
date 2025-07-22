@@ -108,6 +108,11 @@ class RawDomainController {
             return
         }
 
+        if (entity == RawEntity.HOUSEHOLD_RELOCATION){
+            redirect action: "editHouseholdRelocation", params: [id: params.id]
+            return
+        }
+
         redirect(controller: "eventSync", action:"showSyncReportDetails", model:[id: errorLog?.logReportFile?.id])
     }
 
@@ -248,6 +253,13 @@ class RawDomainController {
         def dependencyCheckResult = rawDomainService.checkDependencyErrors(errorMessages)
 
         respond RawChangeRegionHead.get(params.id), model: [mode: "edit", errorMessages: errorMessages, dependencyResult: dependencyCheckResult]
+    }
+
+    def editHouseholdRelocation = {
+        def errorMessages = RawErrorLog.findByUuid(params.id)?.messages
+        def dependencyCheckResult = rawDomainService.checkDependencyErrors(errorMessages)
+
+        respond RawHouseholdRelocation.get(params.id), model: [mode: "edit", errorMessages: errorMessages, dependencyResult: dependencyCheckResult]
     }
 
     def updateRegion = {
@@ -787,6 +799,39 @@ class RawDomainController {
 
     }
 
+    def updateHouseholdRelocation = {
+
+        RawHouseholdRelocation rawHouseholdRelocation = RawHouseholdRelocation.get(params.id)
+
+        def reset = false
+
+        if (params.reset){
+            reset = params.reset
+        }
+
+        params.eventDate = StringUtil.toLocalDateFromDate(params.getDate('eventDate'))
+
+        try {
+            bindData(rawHouseholdRelocation, params)
+            rawHouseholdRelocation.save(flush:true)
+
+            if (reset) {
+                //reset the event
+                RawHouseholdRelocation.executeUpdate("update RawHouseholdRelocation r set r.processedStatus=:status where r.id=:rawId", [status: ProcessedStatus.NOT_PROCESSED, rawId: rawHouseholdRelocation.id])
+                RawEvent.executeUpdate("update RawEvent r set r.processed=:status where r.eventId=:rawId", [status: ProcessedStatus.NOT_PROCESSED, rawId: rawHouseholdRelocation.id])
+                RawErrorLog.executeUpdate("delete from RawErrorLog r where r.uuid=?0", [rawHouseholdRelocation.id])
+            }
+
+        } catch (ValidationException e) {
+            respond rawHouseholdRelocation.errors, view:'editHouseholdRelocation', model: [mode: "edit", errorMessages: RawErrorLog.findByUuid(rawHouseholdRelocation.id)?.messages]
+            return
+        }
+
+        flash.message = message(code: 'default.updated.message', args: [message(code: 'rawHouseholdRelocation.label', default: 'Raw Household Relocation'), rawHouseholdRelocation.destinationCode])
+        respond rawHouseholdRelocation, view:"editChangeHead", model: [mode: "show"]
+
+    }
+
     def invalidateRegion = {
         RawRegion rawRegion = RawRegion.get(params.id)
         RawRegion.executeUpdate("update RawRegion r set r.processedStatus=:status where r.id=:rawId", [status: ProcessedStatus.INVALIDATED, rawId: rawRegion.id])
@@ -897,6 +942,14 @@ class RawDomainController {
 
         flash.message = message(code: 'default.updated.message', args: [message(code: 'rawChangeRegionHead.label', default: 'Raw Change Region Head'), rawChangeHead.newHeadCode])
         respond rawChangeHead, view:"editChangeHead", model: [mode: "show"]
+    }
+
+    def invalidateHouseholdRelocation = {
+        RawHouseholdRelocation rawHouseholdRelocation = RawHouseholdRelocation.get(params.id)
+        RawHouseholdRelocation.executeUpdate("update RawHouseholdRelocation r set r.processedStatus=:status where r.id=:rawId", [status: ProcessedStatus.INVALIDATED, rawId: rawHouseholdRelocation.id])
+
+        flash.message = message(code: 'default.updated.message', args: [message(code: 'rawChangeHead.label', default: 'Raw Change Head'), rawHouseholdRelocation.destinationCode])
+        respond rawHouseholdRelocation, view:"editChangeHead", model: [mode: "show"]
     }
 
     def deleteChangeHead = {
@@ -1175,6 +1228,25 @@ class RawDomainController {
 
         //delete errorLog, rawObj
         def rawObj = RawChangeRegionHead.get(params.id)
+        def errorLog = RawErrorLog.findByUuid(params.id)
+        def logReportFileId = errorLog?.logReportFileId
+
+        //delete records
+        try {
+            errorLog.delete(flush: true)
+            rawObj.delete(flush: true)
+
+        } catch(Exception ex) {
+            ex.printStackTrace()
+        }
+        //show report details
+        redirect controller: "eventSync", action: "showSyncReportDetails", id: logReportFileId
+    }
+
+    def deleteHouseholdRelocation = {
+
+        //delete errorLog, rawObj
+        def rawObj = RawHouseholdRelocation.get(params.id)
         def errorLog = RawErrorLog.findByUuid(params.id)
         def logReportFileId = errorLog?.logReportFileId
 

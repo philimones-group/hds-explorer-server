@@ -452,8 +452,9 @@ class HeadRelationshipService {
             errors << errorMessageService.getRawMessage(RawEntity.HEAD_RELATIONSHIP, "validation.field.dob.head.minage.error", [StringUtil.format(member.dob), Codes.MIN_HEAD_AGE_VALUE+""], ["member.dob"])
         }
         //C7. Check Current Head Existence and the new relation is not a head of household - We must have a existent Head of Household in order to create new Relationship with the Head
-        if (!headExists && relationshipType != HeadRelationshipType.HEAD_OF_HOUSEHOLD){
-            errors << errorMessageService.getRawMessage(RawEntity.HEAD_RELATIONSHIP, "validation.field.headRelationship.head.not.exists.error", [headRelationship.householdCode], ["householdCode"])
+        if (!headExists && relationshipType != HeadRelationshipType.HEAD_OF_HOUSEHOLD && !headRelationship.isHouseholdRelocation){
+            println("fake validation ${headRelationship.isHouseholdRelocation}")
+            errors << errorMessageService.getRawMessage(RawEntity.HEAD_RELATIONSHIP, "validation.field.headRelationship.head.not.exists.error", [headRelationship.householdCode, headRelationship.memberCode], ["householdCode"])
         }
 
         //Validation part 2: Previous HeadRelationship against new HeadRelationship
@@ -568,7 +569,7 @@ class HeadRelationshipService {
             errors << errorMessageService.getRawMessage(RawEntity.HEAD_RELATIONSHIP, "validation.field.dob.head.minage.error", [StringUtil.format(member.dob), Codes.MIN_HEAD_AGE_VALUE+""], ["member.dob"])
         }
         //C7. Check Current Head Existence and the new relation is not a head of household - We must have a existent Head of Household in order to create new Relationship with the Head
-        if (!headExists && relationshipType != HeadRelationshipType.HEAD_OF_HOUSEHOLD){
+        if (!headExists && relationshipType != HeadRelationshipType.HEAD_OF_HOUSEHOLD && !headRelationship.isHouseholdRelocation){
             errors << errorMessageService.getRawMessage(RawEntity.HEAD_RELATIONSHIP, "validation.field.headRelationship.head.not.exists.error", [headRelationship.householdCode], ["householdCode"])
         }
 

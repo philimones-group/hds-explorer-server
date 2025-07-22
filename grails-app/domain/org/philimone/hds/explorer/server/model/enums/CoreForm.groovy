@@ -15,7 +15,8 @@ enum CoreForm {
     DEATH_FORM ("rawDeath", "coreFormExtension.death.label", "death_ext"),
     CHANGE_HEAD_FORM ("rawChangeHead", "coreFormExtension.changehead.label", "change_head_ext"),
     INCOMPLETE_VISIT_FORM ("rawIncompleteVisit", "coreFormExtension.incompletevisit.label", "incomplete_visit_ext"),
-    CHANGE_REGION_HEAD_FORM ("rawChangeRegionHead", "coreFormExtension.changeregionhead.label", "change_region_head_ext")
+    CHANGE_REGION_HEAD_FORM ("rawChangeRegionHead", "coreFormExtension.changeregionhead.label", "change_region_head_ext"),
+    HOUSEHOLD_RELOCATION_FORM ("rawHouseholdRelocation", "coreFormExtension.householdrelocation.label", "household_relocation_ext")
 
     String code
     String name

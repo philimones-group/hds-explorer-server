@@ -363,6 +363,7 @@ class EventSyncService {
             list.add(getPregnancyOutcomeStatus())
             list.add(getDeathStatus())
             list.add(getChangeHeadStatus())
+            list.add(getHouseholdRelocationStatus())
             list.add(getIncompleteVisitStatus())
 
             if (settingsService.getRegionHeadSupport()){
@@ -594,6 +595,21 @@ class EventSyncService {
         status.notProcessed = RawChangeHead.countByProcessedStatus(ProcessedStatus.NOT_PROCESSED)
         status.invalidated = RawChangeHead.countByProcessedStatus(ProcessedStatus.INVALIDATED)
         //status.otherCases = RawChangeHead.countByProcessedStatus(ProcessedStatus.)
+
+        return status
+    }
+
+    SyncProcessedStatus getHouseholdRelocationStatus(){
+        SyncProcessedStatus status = new SyncProcessedStatus()
+
+        //total records
+        status.name = 'syncdss.sync.householdrelocation.label'
+        status.totalRecords = -1
+        status.processed = RawHouseholdRelocation.countByProcessedStatus(ProcessedStatus.SUCCESS)
+        status.processedWithError = RawHouseholdRelocation.countByProcessedStatus(ProcessedStatus.ERROR)
+        status.notProcessed = RawHouseholdRelocation.countByProcessedStatus(ProcessedStatus.NOT_PROCESSED)
+        status.invalidated = RawHouseholdRelocation.countByProcessedStatus(ProcessedStatus.INVALIDATED)
+        //status.otherCases = RawHouseholdRelocation.countByProcessedStatus(ProcessedStatus.)
 
         return status
     }

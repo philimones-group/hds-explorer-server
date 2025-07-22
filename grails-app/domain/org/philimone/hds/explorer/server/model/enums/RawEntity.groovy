@@ -20,7 +20,8 @@ enum RawEntity {
     DEATH ("syncdss.sync.death.label", "rawDeath"),
     CHANGE_HEAD_OF_HOUSEHOLD ("syncdss.sync.changehead.label", "rawChangeHead"),
     INCOMPLETE_VISIT ("syncdss.sync.incompletevisit.label", "rawIncompleteVisit"),
-    CHANGE_HEAD_OF_REGION ("syncdss.sync.changeregionhead.label", "rawChangeRegionHead")
+    CHANGE_HEAD_OF_REGION ("syncdss.sync.changeregionhead.label", "rawChangeRegionHead"),
+    HOUSEHOLD_RELOCATION ("syncdss.sync.householdrelocation.label", "rawHouseholdRelocation")
 
     final String name
     final String tag

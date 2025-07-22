@@ -36,4 +36,5 @@ databaseChangeLog = {
     include file: 'alter-raw_death_changehead__relationshop-add-ordinal.groovy'
     include file: 'alter-visit-add-visit_reason_other.groovy'
     include file: 'alter-head_relationship-add-residency-reference.groovy'
+    include file: 'alter-household_relocation_tables.groovy'
 }

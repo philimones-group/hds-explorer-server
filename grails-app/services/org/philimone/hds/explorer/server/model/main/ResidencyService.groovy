@@ -59,6 +59,11 @@ class ResidencyService {
         return residencies.collect { it.member }
     }
 
+    List<String> getCurrentResidentMembersCodes(String householdCode) {
+        def residencies = Residency.executeQuery("select r.memberCode from Residency r where r.household.code=?0 and r.endType=?1 and (r.status <> ?2 or r.status is null) order by r.startDate desc", [householdCode, ResidencyEndType.NOT_APPLICABLE, ValidatableStatus.TEMPORARILY_INACTIVE])
+        return residencies.collect { it }
+    }
+
     Residency getCurrentResidency(HeadRelationship headRelationship) {
         Member member = headRelationship?.member
         Household household = headRelationship?.household

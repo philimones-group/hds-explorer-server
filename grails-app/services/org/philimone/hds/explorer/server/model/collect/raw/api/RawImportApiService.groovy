@@ -1247,6 +1247,72 @@ class RawImportApiService implements DataBinder {
 
     }
 
+    RawParseResult<RawHouseholdRelocation> parseHouseholdRelocation(NodeChild xmlNode) {
+
+        //has a especial handler
+
+        def errors = new ArrayList<RawMessage>()
+        def params = xmlNode.childNodes().collectEntries{[it.name(), it.text()]}
+        def rootnode = xmlNode?.name()
+
+
+        if (!rootnode.equalsIgnoreCase("RawHouseholdRelocation")) {
+            errors << errorMessageService.getRawMessage("validation.field.raw.parsing.rootnode.invalid.error", [rootnode])
+            return new RawParseResult<RawHouseholdRelocation>(null, errors)
+        }
+
+        /* converting non-primitive types must be parsed manually */
+
+        if (xmlNode?.eventDate.size() > 0) {
+            params.eventDate = StringUtil.toLocalDate(xmlNode.eventDate.text())
+
+            if (params.eventDate==null) {
+                errors << errorMessageService.getRawMessage("validation.field.raw.parsing.localdate.error", [xmlNode?.eventDate.text(), "eventDate"])
+            }
+        }
+
+        if (xmlNode?.collectedDate.size() > 0) {
+            params.collectedDate = StringUtil.toLocalDateTimePrecise(xmlNode.collectedDate.text())
+
+            if (params.collectedDate==null) {
+                errors << errorMessageService.getRawMessage("validation.field.raw.parsing.localdatetime.error", [xmlNode?.collectedDate.text(), "collectedDate"])
+            }
+        }
+
+        if (xmlNode?.uploadedDate.size() > 0) {
+            params.uploadedDate = StringUtil.toLocalDateTimePrecise(xmlNode.uploadedDate.text())
+
+            if (params.uploadedDate==null) {
+                errors << errorMessageService.getRawMessage("validation.field.raw.parsing.localdatetime.error", [xmlNode?.uploadedDate.text(), "uploadedDate"])
+            }
+        } else {
+            params.uploadedDate = LocalDateTime.now()
+        }
+
+        /* start and end variables */
+        if (xmlNode.start.size() > 0) {
+            params.collectedStart = StringUtil.toLocalDateTimePrecise(xmlNode.start.text())
+
+            if (params.collectedStart==null) {
+                errors << errorMessageService.getRawMessage("validation.field.raw.parsing.localdatetime.error", [xmlNode?.start.text(), "collectedStart"])
+            }
+        }
+
+        if (xmlNode.end.size() > 0) {
+            params.collectedEnd = StringUtil.toLocalDateTimePrecise(xmlNode.end.text())
+
+            if (params.collectedEnd==null) {
+                errors << errorMessageService.getRawMessage("validation.field.raw.parsing.localdatetime.error", [xmlNode?.end.text(), "collectedEnd"])
+            }
+        }
+
+        def rawInstance = new RawHouseholdRelocation(params)
+        rawInstance.id = params.id
+
+        return new RawParseResult<RawHouseholdRelocation>(rawInstance, errors)
+
+    }
+
     RawParseResult<RawEditRegion> parseEditRegion(NodeChild xmlNode) {
 
         def errors = new ArrayList<RawMessage>()

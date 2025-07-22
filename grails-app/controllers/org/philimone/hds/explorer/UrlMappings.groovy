@@ -91,6 +91,7 @@ class UrlMappings {
         "/api/import/changeheads"(controller: "rawImportApi", action: "changeheads")
         "/api/import/incompletevisits"(controller: "rawImportApi", action: "incompletevisits")
         "/api/import/changeregionheads"(controller: "rawImportApi", action: "changeregionheads")
+        "/api/import/householdrelocations"(controller: "rawImportApi", action: "householdrelocations")
         "/api/import/editregions"(controller: "rawImportApi", action: "editregions")
         "/api/import/edithouseholds"(controller: "rawImportApi", action: "edithouseholds")
         "/api/import/editmembers"(controller: "rawImportApi", action: "editmembers")

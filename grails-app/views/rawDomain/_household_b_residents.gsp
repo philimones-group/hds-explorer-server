@@ -1,16 +1,16 @@
 <tb:toast id="toast_hr_msg" title="Info" message="Test message" position="top_center" />
 
 <br>
-<g:message code="rawDomain.helpers.household.label" /> : <b>${household_code}</b><br>
-<g:if test="${household_name}" >
-    <g:message code="rawDomain.helpers.household.name.label" /> : <b>${household_name}</b><br>
+<g:message code="rawDomain.helpers.household.label" /> : <b>${household_b_code}</b><br>
+<g:if test="${household_b_name}" >
+    <g:message code="rawDomain.helpers.household.name.label" /> : <b>${household_b_name}</b><br>
 </g:if>
 <br>
 
 <h2><g:message code="rawDomain.helpers.member.residencies.label" /></h2>
 
-<tb:tabulator id="householdResidenciesTable" name="householdResidenciesTable" toastid="toast_hr_msg" contextMenu="true"
-              data="${g.createLink(controller: 'rawDomain', action: 'fetchHouseholdCurrentResidenciesList', id: household_code)}" paginationSize="5"
+<tb:tabulator id="householdBResidenciesTable" name="householdBResidenciesTable" toastid="toast_hr_msg" contextMenu="true"
+              data="${g.createLink(controller: 'rawDomain', action: 'fetchHouseholdCurrentResidenciesList', id: household_b_code)}" paginationSize="5"
               update="${createLink(controller: 'rawDomain', action: 'updateResidencyField')}">
 
     <tb:menuBar>
@@ -33,8 +33,8 @@
 </tb:tabulator>
 
 <h2><g:message code="rawDomain.helpers.member.headrelationships.label" /></h2>
-<tb:tabulator id="householdRelationshipsTable" name="householdRelationshipsTable" toastid="toast_hr_msg" contextMenu="true"
-              data="${createLink(controller: 'rawDomain', action: 'fetchHouseholdCurrentHeadRelationshipsList', id: household_code)}" boxed="false" paginationSize="5"
+<tb:tabulator id="householdBRelationshipsTable" name="householdBRelationshipsTable" toastid="toast_hr_msg" contextMenu="true"
+              data="${createLink(controller: 'rawDomain', action: 'fetchHouseholdCurrentHeadRelationshipsList', id: household_b_code)}" boxed="false" paginationSize="5"
               update="${createLink(controller: 'rawDomain', action: 'updateHeadRelationshipField')}">
 
     <tb:menuBar>

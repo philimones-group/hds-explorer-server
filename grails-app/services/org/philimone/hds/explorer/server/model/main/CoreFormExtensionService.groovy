@@ -54,6 +54,7 @@ class CoreFormExtensionService {
         if (form == CoreForm.CHANGE_HEAD_FORM) return getChangeHeadMapping();
         if (form == CoreForm.INCOMPLETE_VISIT_FORM) return getIncVisitMapping();
         if (form == CoreForm.CHANGE_REGION_HEAD_FORM) return getChangeRegionHeadMapping();
+        if (form == CoreForm.HOUSEHOLD_RELOCATION_FORM) return getHouseholdRelocationMapping();
 
         return ""
     }
@@ -255,12 +256,26 @@ class CoreFormExtensionService {
         columnsMap.put("core_form_id", CoreForm.CHANGE_REGION_HEAD_FORM.code)
         columnsMap.put("collected_id", "#id")
         columnsMap.put("region_code", "#regionCode")
-        columnsMap.put("region_name", "regionName")
+        columnsMap.put("region_name", "#regionName")
         columnsMap.put("visit_code", "#visitCode")
         columnsMap.put("old_head_code", "#oldHeadCode")
         columnsMap.put("old_head_name","#oldHeadName")
         columnsMap.put("new_head_code", "#newHeadCode")
         columnsMap.put("new_head_name", "#newHeadName")
+
+        return mapToString(columnsMap)
+    }
+
+    String getHouseholdRelocationMapping() {
+        def columnsMap = new LinkedHashMap()
+
+        columnsMap.put("core_form_id", CoreForm.HOUSEHOLD_RELOCATION_FORM.code)
+        columnsMap.put("collected_id", "#id")
+        columnsMap.put("visit_code", "#visitCode")
+        columnsMap.put("origin_code", "#originCode")
+        columnsMap.put("destination_code", "#destinationCode")
+        columnsMap.put("head_code", "#headCode")
+        columnsMap.put("head_name","#headName")
 
         return mapToString(columnsMap)
     }

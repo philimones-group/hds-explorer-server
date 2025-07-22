@@ -15,6 +15,7 @@ import org.philimone.hds.explorer.server.model.logs.LogReportFile
 import org.philimone.hds.explorer.server.model.main.Death
 import org.philimone.hds.explorer.server.model.main.HeadRelationship
 import org.philimone.hds.explorer.server.model.main.Household
+import org.philimone.hds.explorer.server.model.main.HouseholdRelocation
 import org.philimone.hds.explorer.server.model.main.InMigration
 import org.philimone.hds.explorer.server.model.main.IncompleteVisit
 import org.philimone.hds.explorer.server.model.main.MaritalRelationship
@@ -42,6 +43,7 @@ class RawBatchExecutionService {
     def householdService
     def memberService
     def headRelationshipService
+    def residencyService
     def settingsService
     def errorMessageService
 
@@ -103,6 +105,7 @@ class RawBatchExecutionService {
             RawMaritalRelationship.executeUpdate(  "update RawMaritalRelationship r   set r.processedStatus=:newStatus where r.processedStatus=:currStatus", [currStatus: ProcessedStatus.ERROR, newStatus: ProcessedStatus.NOT_PROCESSED])
             RawChangeHead.executeUpdate(           "update RawChangeHead r            set r.processedStatus=:newStatus where r.processedStatus=:currStatus", [currStatus: ProcessedStatus.ERROR, newStatus: ProcessedStatus.NOT_PROCESSED])
             RawChangeRegionHead.executeUpdate(     "update RawChangeRegionHead r      set r.processedStatus=:newStatus where r.processedStatus=:currStatus", [currStatus: ProcessedStatus.ERROR, newStatus: ProcessedStatus.NOT_PROCESSED])
+            RawHouseholdRelocation.executeUpdate(  "update RawHouseholdRelocation r   set r.processedStatus=:newStatus where r.processedStatus=:currStatus", [currStatus: ProcessedStatus.ERROR, newStatus: ProcessedStatus.NOT_PROCESSED])
 
             RawErrorLog.executeUpdate("delete from RawErrorLog r") //Crazy decision? not that much, if we are going to execute all again we dont need the old errors
         }
@@ -156,6 +159,7 @@ class RawBatchExecutionService {
             RawMaritalRelationship.executeUpdate(  "update RawMaritalRelationship r   set r.processedStatus=:newStatus", [newStatus: ProcessedStatus.NOT_PROCESSED])
             RawChangeHead.executeUpdate(           "update RawChangeHead r            set r.processedStatus=:newStatus", [newStatus: ProcessedStatus.NOT_PROCESSED])
             RawChangeRegionHead.executeUpdate(     "update RawChangeRegionHead r      set r.processedStatus=:newStatus", [newStatus: ProcessedStatus.NOT_PROCESSED])
+            RawHouseholdRelocation.executeUpdate(  "update RawHouseholdRelocation r   set r.processedStatus=:newStatus", [newStatus: ProcessedStatus.NOT_PROCESSED])
 
             RawErrorLog.executeUpdate("delete from RawErrorLog r") //Crazy decision? not that much, if we are going to execute all again we dont need the old errors
         }
@@ -179,6 +183,7 @@ class RawBatchExecutionService {
         collectMemberEnu()
         collectExternalInMigration()
         collectInMigration()
+        collectHouseholdRelocations()
         collectPregnancyRegistration()
         collectPregnancyOutcome()
         collectMaritalRelationshipStart()
@@ -407,6 +412,8 @@ class RawBatchExecutionService {
             case RawEventType.EVENT_CHANGE_HEAD_OF_HOUSEHOLD:     result = executeChangeHead(event, logReportFileId, eventsWithErrors); break
             case RawEventType.EVENT_INCOMPLETE_VISIT:             result = executeIncompleteVisit(event, logReportFileId, eventsWithErrors); break
             case RawEventType.EVENT_CHANGE_HEAD_OF_REGION:        result = executeChangeRegionHead(event, logReportFileId, eventsWithErrors); break
+            case RawEventType.EVENT_HOUSEHOLD_RELOCATION:         result = executeHouseholdRelocation(event, logReportFileId, eventsWithErrors); break
+
         }
 
         //flagging the errors
@@ -578,6 +585,17 @@ class RawBatchExecutionService {
             obj.save(flush:true)
         }
 
+        if (domainObj.domainInstance instanceof RawChangeRegionHead) {
+            def obj = (RawChangeRegionHead) domainObj.domainInstance
+            obj.processedStatus = ProcessedStatus.ERROR
+            obj.save(flush:true)
+        }
+
+        if (domainObj.domainInstance instanceof RawHouseholdRelocation) {
+            def obj = (RawHouseholdRelocation) domainObj.domainInstance
+            obj.processedStatus = ProcessedStatus.ERROR
+            obj.save(flush:true)
+        }
     }
 
     RawEntityObj getEntityOject(RawEvent rawEvent) {
@@ -636,6 +654,10 @@ class RawBatchExecutionService {
             case RawEventType.EVENT_INCOMPLETE_VISIT:
                 def rawObj = RawIncompleteVisit.findById(rawEvent?.eventId)
                 return new RawEntityObj(RawEntity.INCOMPLETE_VISIT, RawDomainObj.attach(rawObj))
+
+            case RawEventType.EVENT_HOUSEHOLD_RELOCATION:
+                def rawObj = RawHouseholdRelocation.findById(rawEvent?.eventId)
+                return new RawEntityObj(RawEntity.HOUSEHOLD_RELOCATION, RawDomainObj.attach(rawObj))
         }
         return obj;
     }
@@ -1360,6 +1382,71 @@ class RawBatchExecutionService {
 
         return null
     }
+
+    RawExecutionResult<HouseholdRelocation> executeHouseholdRelocation(RawEvent rawEvent, String logReportFileId, HashMap<String, RawEvent> eventsWithErrors) {
+        if (rawEvent == null || rawEvent?.isProcessed()) return null
+
+        def rawObj = RawHouseholdRelocation.findById(rawEvent.eventId)
+
+        if (rawObj != null) {
+
+            def dependencyResolved = true
+
+            //check dependencies existence (visit, household(destinationCode))
+            def originHouseholdCode = rawObj.originCode
+            def destinationHouseholdCode = rawObj.destinationCode
+            def visitCode = rawObj.visitCode
+
+            //try to solve household dependency 1
+            def depStatus = solveHouseholdDependency(originHouseholdCode, "originCode", logReportFileId, eventsWithErrors)
+            dependencyResolved = depStatus.solved
+
+            //try to solve household dependency 2
+            def depStatus2 = solveHouseholdDependency(destinationHouseholdCode, "destinationCode", logReportFileId, eventsWithErrors)
+            dependencyResolved = dependencyResolved && depStatus2.solved
+
+            //try to solve visit dependency
+            def depStatus3 = solveVisitDependency(visitCode, "visitCode", logReportFileId, eventsWithErrors)
+            dependencyResolved = dependencyResolved && depStatus3.solved
+
+            //try to solve members dependencies (childCodes - members that will be relocated)
+            def List<RawDependencyStatus> depStatusOthers = []
+            if (!rawEvent.childCodes.isEmpty()) {
+                def codesList = StringUtil.toList(rawEvent.childCodes)
+                codesList.each { memberCode ->
+                    def depStatusOther = solveMemberDependency(memberCode, "childCodes", logReportFileId, eventsWithErrors)
+                    dependencyResolved = dependencyResolved && depStatusOther.solved
+
+                    depStatusOthers.add(depStatusOther)
+                }
+            }
+
+            if (dependencyResolved) {
+                def result = rawExecutionService.createHouseholdRelocation(rawObj, logReportFileId)
+
+                //set event has processed
+                rawEvent.processed = getProcessedStatus(result?.status)
+                rawEvent.save(flush:true)
+
+                return result
+            } else {
+                def errors = new ArrayList<RawMessage>()
+                if (!depStatus.errorMessages.isEmpty()) errors.addAll(depStatus.errorMessages)
+                if (!depStatus2.errorMessages.isEmpty()) errors.addAll(depStatus2.errorMessages)
+                if (!depStatus3.errorMessages.isEmpty()) errors.addAll(depStatus3.errorMessages)
+                depStatusOthers.each {depStatusOther ->
+                    if (!depStatusOther.errorMessages.isEmpty()) errors.addAll(depStatusOther.errorMessages)
+                }
+
+                def result = createRawEventErrorLog(RawEntity.HOUSEHOLD_RELOCATION, rawEvent, RawDomainObj.attach(rawObj), "destinationCode", errors, logReportFileId)
+                return result
+            }
+
+            return null
+        }
+
+        return null
+    }
     
     RawMessage getRegionDependencyError(String regionCode, String columnName) {
         return errorMessageService.getRawMessage(RawEntity.REGION, "validation.dependency.region.not.found", [regionCode, columnName], [columnName])
@@ -1703,6 +1790,29 @@ class RawBatchExecutionService {
             RawEvent.withTransaction {
                 batch.each {
                     new RawEvent(keyDate: it.migrationDate.atStartOfDay(), collectedDate: it.collectedDate, eventType: RawEventType.EVENT_INTERNAL_INMIGRATION, eventOrder: RawMemberOrder.getFromCode(it.headRelationshipType), eventId: it.id, eventHouseholdCode: it.destinationCode, entityCode: it.memberCode).save()
+                }
+            }
+        }
+
+        list.clear()
+        cleanUpGorm()
+
+    }
+
+    def collectHouseholdRelocations() {
+        def list = [] as List<RawHouseholdRelocation>
+
+        RawHouseholdRelocation.withTransaction {
+            list = RawHouseholdRelocation.findAllByProcessedStatus(ProcessedStatus.NOT_PROCESSED, [sort: "eventDate", order: "asc"])
+        }
+
+        list.collate(200).each { batch ->
+            RawEvent.withTransaction {
+                batch.each {
+                    def codes = residencyService.getCurrentResidentMembersCodes(it.originCode)
+                    def event = new RawEvent(keyDate: it.eventDate.atStartOfDay(), collectedDate: it.collectedDate, eventType: RawEventType.EVENT_HOUSEHOLD_RELOCATION, eventOrder: RawMemberOrder.HEAD_OF_HOUSEHOLD, eventId: it.id, eventHouseholdCode: it.destinationCode, entityCode: it.destinationCode)
+                    event.setChildCodesFrom(codes)
+                    event.save()
                 }
             }
         }

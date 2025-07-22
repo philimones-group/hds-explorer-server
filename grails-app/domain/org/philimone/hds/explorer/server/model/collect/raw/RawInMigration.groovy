@@ -41,6 +41,9 @@ class RawInMigration {
 
     boolean postExecution = false
 
+    boolean isHouseholdRelocation = false
+
+    static transients = ['isHouseholdRelocation']
 
     static constraints = {
         id maxSize: 32

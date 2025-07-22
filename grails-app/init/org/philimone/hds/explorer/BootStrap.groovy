@@ -222,6 +222,7 @@ class BootStrap {
             new SecurityMap(url: "/api/import/changeheads", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER},${Role.ROLE_FIELD_WORKER}").save(flush: true)
             new SecurityMap(url: "/api/import/incompletevisits", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER},${Role.ROLE_FIELD_WORKER}").save(flush: true)
             new SecurityMap(url: "/api/import/changeregionheads", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER},${Role.ROLE_FIELD_WORKER}").save(flush: true)
+            new SecurityMap(url: "/api/import/householdrelocations", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER},${Role.ROLE_FIELD_WORKER}").save(flush: true)
             new SecurityMap(url: "/api/import/editregions", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER},${Role.ROLE_FIELD_WORKER}").save(flush: true)
             new SecurityMap(url: "/api/import/edithouseholds", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER},${Role.ROLE_FIELD_WORKER}").save(flush: true)
             new SecurityMap(url: "/api/import/editmembers", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER},${Role.ROLE_FIELD_WORKER}").save(flush: true)
@@ -557,8 +558,9 @@ class BootStrap {
         def core10 = new CoreFormExtension(formName: CoreForm.CHANGE_HEAD_FORM.name, coreForm: CoreForm.CHANGE_HEAD_FORM, formId: CoreForm.CHANGE_HEAD_FORM.code, extFormId: CoreForm.CHANGE_HEAD_FORM.extension, required: true, enabled: false, columnsMapping: svc.getColumnMapping(CoreForm.CHANGE_HEAD_FORM))
         def core11 = new CoreFormExtension(formName: CoreForm.INCOMPLETE_VISIT_FORM.name, coreForm: CoreForm.INCOMPLETE_VISIT_FORM, formId: CoreForm.INCOMPLETE_VISIT_FORM.code, extFormId: CoreForm.INCOMPLETE_VISIT_FORM.extension, required: true, enabled: false, columnsMapping: svc.getColumnMapping(CoreForm.INCOMPLETE_VISIT_FORM))
         def core12 = new CoreFormExtension(formName: CoreForm.CHANGE_REGION_HEAD_FORM.name, coreForm: CoreForm.CHANGE_REGION_HEAD_FORM, formId: CoreForm.CHANGE_REGION_HEAD_FORM.code, extFormId: CoreForm.CHANGE_REGION_HEAD_FORM.extension, required: true, enabled: false, columnsMapping: svc.getColumnMapping(CoreForm.CHANGE_REGION_HEAD_FORM))
+        def core13 = new CoreFormExtension(formName: CoreForm.HOUSEHOLD_RELOCATION_FORM.name, coreForm: CoreForm.HOUSEHOLD_RELOCATION_FORM, formId: CoreForm.HOUSEHOLD_RELOCATION_FORM.code, extFormId: CoreForm.HOUSEHOLD_RELOCATION_FORM.extension, required: true, enabled: false, columnsMapping: svc.getColumnMapping(CoreForm.HOUSEHOLD_RELOCATION_FORM))
 
-        def cores = [core0, core1, core2, core3, core4, core5, core6, core6, core7, core8, core9, core10, core11, core12] as List<CoreFormExtension>
+        def cores = [core0, core1, core2, core3, core4, core5, core6, core6, core7, core8, core9, core10, core11, core12, core13] as List<CoreFormExtension>
 
         for (CoreFormExtension core : cores){
             if (CoreFormExtension.countByFormId(core.formId)==0){

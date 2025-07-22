@@ -5,10 +5,12 @@ import grails.web.mapping.LinkGenerator
 import net.betainteractive.utilities.StringUtil
 import grails.converters.JSON
 import org.philimone.hds.explorer.server.model.enums.BirthPlace
+import org.philimone.hds.explorer.server.model.enums.ChangeHeadReason
 import org.philimone.hds.explorer.server.model.enums.EducationType
 import org.philimone.hds.explorer.server.model.enums.EstimatedDateOfDeliveryType
 import org.philimone.hds.explorer.server.model.enums.Gender
 import org.philimone.hds.explorer.server.model.enums.HeadRelationshipType
+import org.philimone.hds.explorer.server.model.enums.HouseholdRelocationReason
 import org.philimone.hds.explorer.server.model.enums.HouseholdStatus
 import org.philimone.hds.explorer.server.model.enums.IncompleteVisitReason
 import org.philimone.hds.explorer.server.model.enums.MaritalEndStatus
@@ -73,7 +75,6 @@ class DataModelsService {
             "IncompleteVisitReason" : IncompleteVisitReason.values(),
             "MemberStatus" : MemberStatus.values(),
             "NoVisitReason" : NoVisitReason.values(),
-            "PregnancyOutcomeType" : PregnancyOutcomeType.values(),
             "PregnancyStatus" : PregnancyStatus.values(),
             "ProcessedStatus" : ProcessedStatus.values(),
             "RegionLevel" : RegionLevel.values(),
@@ -81,7 +82,9 @@ class DataModelsService {
             "VisitLocationItem" : VisitLocationItem.values(),
             "BirthPlace" : BirthPlace.values(),
             "EducationType" : EducationType.values(),
-            "ReligionType" : ReligionType.values()
+            "ReligionType" : ReligionType.values(),
+            "ChangeHeadReason" : ChangeHeadReason.values(),
+            "HouseholdRelocationReason" : HouseholdRelocationReason.values()
 
     ] as HashMap<String, Enum[]>
 
