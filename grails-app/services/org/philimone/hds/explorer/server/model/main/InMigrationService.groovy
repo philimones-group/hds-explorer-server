@@ -46,9 +46,25 @@ class InMigrationService {
         def errors = new ArrayList<RawMessage>()
 
         try {
+            inMigration.refresh()
             inMigration.delete(flush: true)
         } catch(Exception ex) {
-            errors << errorMessageService.getRawMessage(RawEntity.EXTERNAL_INMIGRATION, "validation.general.database.inmigration.error", [ ex.getMessage() ], [])
+            errors << errorMessageService.getRawMessage(RawEntity.IN_MIGRATION, "validation.general.database.inmigration.error", [ ex.getMessage() ], [])
+            ex.printStackTrace()
+        }
+
+        return errors
+    }
+
+    List<RawMessage> deleteOutMigration(OutMigration outMigration) {
+
+        def errors = new ArrayList<RawMessage>()
+
+        try {
+            outMigration.refresh()
+            outMigration.delete(flush: true)
+        } catch(Exception ex) {
+            errors << errorMessageService.getRawMessage(RawEntity.OUT_MIGRATION, "validation.general.database.outmigration.error", [ ex.getMessage() ], [])
             ex.printStackTrace()
         }
 
@@ -63,6 +79,31 @@ class InMigrationService {
             Residency.executeUpdate("delete from Residency r where r.member.id=?0", [member.id])
         } catch(Exception ex) {
             errors << errorMessageService.getRawMessage(RawEntity.MEMBER, "validation.general.database.residency.error", [ ex.getMessage() ], [])
+            ex.printStackTrace()
+        }
+
+        return errors
+    }
+
+    List<RawMessage> deleteResidency(Residency residency, Residency previousResidency) {
+
+        def errors = new ArrayList<RawMessage>()
+
+        try {
+            residency.delete(flush: true)
+
+            //restore member and previous residency
+            def member = previousResidency.member.refresh()
+            member.endType = ResidencyEndType.NOT_APPLICABLE
+            member.endDate = null;
+            member.save()
+
+            previousResidency.endType = ResidencyEndType.NOT_APPLICABLE
+            previousResidency.endDate = null
+            previousResidency.save()
+
+        } catch(Exception ex) {
+            errors << errorMessageService.getRawMessage(RawEntity.RESIDENCY, "validation.general.database.residency.error", [ ex.getMessage() ], [])
             ex.printStackTrace()
         }
 
@@ -99,26 +140,27 @@ class InMigrationService {
         }
 
         //create from raw data
-        def inmigration = newInMigrationInstance(rawInMigration)
-        def newRawResidency = createNewResidencyFromInMig(inmigration)
-        def rawOutMigration = inmigration.type==InMigrationType.INTERNAL ? createOutMigrationFromInMig(inmigration) : null
+        def inmigrationInstance = newInMigrationInstance(rawInMigration)
+        def newRawResidency = createNewResidencyFromInMig(inmigrationInstance)
+        def rawOutMigration = inmigrationInstance.type==InMigrationType.INTERNAL ? createOutMigrationFromInMig(inmigrationInstance) : null
         def newRawHeadRelationship = createNewRawHeadRelationshipFrom(rawInMigration)
 
-        //1. create inmigration
-        def resultInmigration = inmigration.save(flush:true)
+        OutMigration createdOutMigrationImg = null
+        Residency createdResidency = null
+        HeadRelationship createdHeadRelationship = null
+        def createdInmigration = inmigrationInstance.save(flush:true)  //1. create inmigration
 
         //Validate using Gorm Validations
-        if (inmigration.hasErrors()){
+        if (inmigrationInstance.hasErrors()){
 
-            errors = errorMessageService.getRawMessages(RawEntity.IN_MIGRATION, inmigration)
+            errors = errorMessageService.getRawMessages(RawEntity.IN_MIGRATION, inmigrationInstance)
 
             RawExecutionResult<InMigration> obj = RawExecutionResult.newErrorResult(RawEntity.IN_MIGRATION, errors)
             return obj
         }
 
         //inmigration executed successfully
-        inmigration = resultInmigration
-
+        //inmigrationInstance = createdInmigration
 
         //errors = afterCreateInMigration(inmigration)
         //1. Close Previous Residency with OutMigration if is an INTERNAL
@@ -130,67 +172,72 @@ class InMigrationService {
         if (rawOutMigration != null){
             def resultOutMigIn = outMigrationService.createOutMigration(rawOutMigration)
 
-
             if (resultOutMigIn.status == RawExecutionResult.Status.ERROR) {
                 errors += resultOutMigIn.errorMessages
 
                 //delete the create inmigration - I can only delete it here (because we cant the rollbacks)
-                inmigration.refresh()
-                errors += deleteInMigration(inmigration)
+                createdInmigration.refresh()
+                errors += deleteInMigration(createdInmigration)
 
                 RawExecutionResult<InMigration> obj = RawExecutionResult.newErrorResult(RawEntity.IN_MIGRATION, errors)
                 return obj
             }
+
+            createdOutMigrationImg = resultOutMigIn.domainInstance
         }
 
         //2. Create new Residency
+        def previousResidency = residencyService.getCurrentResidency(createdInmigration.member)
         def resultNewResidency = residencyService.createResidency(newRawResidency)
         if (resultNewResidency != null && resultNewResidency.status == RawExecutionResult.Status.ERROR){
             errors += resultNewResidency.errorMessages
 
             //delete inmigration and outmigration - we need to implement a proper rollback solution
+            errors += deleteInMigration(createdInmigration)
+            errors += deleteOutMigration(createdOutMigrationImg)
 
             RawExecutionResult<InMigration> obj = RawExecutionResult.newErrorResult(RawEntity.IN_MIGRATION, errors)
             return obj
         }
+        createdResidency = resultNewResidency.domainInstance
 
         //3. Create Head Relationship
-        def resultHeadRelationship = headRelationshipService.createHeadRelationship(newRawHeadRelationship)
-        if (resultHeadRelationship != null && resultHeadRelationship.status == RawExecutionResult.Status.ERROR) {
+        def resultNewHeadRelationship = headRelationshipService.createHeadRelationship(newRawHeadRelationship)
+        if (resultNewHeadRelationship != null && resultNewHeadRelationship.status == RawExecutionResult.Status.ERROR) {
 
             //delete member and inmigration
-            errors += resultHeadRelationship.errorMessages
+            errors += resultNewHeadRelationship.errorMessages
 
-            //errors += deleteInMigration(resultMember.domainInstance)
-
-            /*if (isReturningToStudyArea == false) { //its a new member
-                errors += deleteMemberResidencies(resultMember.domainInstance) //delete possible created residency
-                errors += deleteMember(resultMember.domainInstance)
-            }*/
-            //errors = errorMessageService.addPrefixToMessages(errors, "validation.field.inmigration.external.prefix.msg.error", [rawInMigration.id])
+            //delete inmigration and outmigration
+            errors += deleteInMigration(createdInmigration)
+            errors += deleteOutMigration(createdOutMigrationImg)
+            errors += deleteResidency(createdResidency, previousResidency)
 
             RawExecutionResult<InMigration> obj = RawExecutionResult.newErrorResult(RawEntity.IN_MIGRATION, errors)
             return obj
         }
-
+        createdHeadRelationship = resultNewHeadRelationship.domainInstance
 
         //X. update destinationResidency
-        if (resultNewResidency?.domainInstance != null) {
-            def residency = resultNewResidency.domainInstance.refresh()
-            inmigration.destinationResidency = residency
-            inmigration.save(flush:true)
+        if (createdResidency != null) {
+            createdResidency = createdResidency.refresh()
+            createdInmigration.destinationResidency = createdResidency
+            createdInmigration.save(flush:true)
         }
 
         afterNewHouseholdMember(rawInMigration)
 
         //--> take the extensionXml and save to Extension Table
-        def resultExtension = coreExtensionService.insertInMigrationExtension(rawInMigration, resultInmigration)
+        def resultExtension = coreExtensionService.insertInMigrationExtension(rawInMigration, createdInmigration)
         if (resultExtension != null && !resultExtension.success) { //if null - there is no extension to process
             //it supposed to not fail
             println "Failed to insert extension: ${resultExtension.errorMessage}"
         }
 
-        RawExecutionResult<InMigration> obj = RawExecutionResult.newSuccessResult(RawEntity.IN_MIGRATION, inmigration, errors)
+        RawExecutionResult<InMigration> obj = RawExecutionResult.newSuccessResult(RawEntity.IN_MIGRATION, createdInmigration, errors)
+        obj.createdResidencies.add(createdResidency)
+        obj.createdHeadRelationships.add(createdHeadRelationship)
+        obj.createdDomains.put(RawEntity.OUT_MIGRATION, createdOutMigrationImg)
         return obj
     }
 
@@ -502,12 +549,16 @@ class InMigrationService {
     }
 
     private RawHeadRelationship createNewRawHeadRelationshipFrom(RawInMigration rawInMigration){
-        return new RawHeadRelationship(
+        def rawHr = new RawHeadRelationship(
                 memberCode: rawInMigration.memberCode,
                 householdCode: rawInMigration.destinationCode,
                 relationshipType: rawInMigration.headRelationshipType,
                 startType: HeadRelationshipStartType.getFrom(rawInMigration.migrationType).code,
                 startDate: rawInMigration.migrationDate)
+
+        rawHr.isHouseholdRelocation = rawInMigration.isHouseholdRelocation
+
+        return rawHr
     }
 
     private static RawOutMigration createOutMigrationFromInMig(RawInMigration rawInMigration){

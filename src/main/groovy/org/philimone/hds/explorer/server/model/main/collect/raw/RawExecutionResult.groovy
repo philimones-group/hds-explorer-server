@@ -1,7 +1,10 @@
 package org.philimone.hds.explorer.server.model.main.collect.raw
 
 import groovy.transform.CompileStatic
+import org.grails.datastore.gorm.GormEntity
 import org.philimone.hds.explorer.server.model.enums.RawEntity
+import org.philimone.hds.explorer.server.model.main.HeadRelationship
+import org.philimone.hds.explorer.server.model.main.Residency
 
 @CompileStatic
 class RawExecutionResult<D> {
@@ -13,6 +16,13 @@ class RawExecutionResult<D> {
     List<RawMessage> errorMessages = new ArrayList<>();
     D domainInstance //Result of Execution
     RawEntity entity
+
+    //Residencies and Head Relationships created during execution
+    List<Residency> createdResidencies = new ArrayList<>()
+    List<HeadRelationship> createdHeadRelationships = new ArrayList<>();
+
+    //Other Entities created during execution
+    Map<RawEntity, Object> createdDomains = new HashMap<>()
 
     RawExecutionResult(RawEntity entity, Status status, List<RawMessage> errorMessages) {
         this.entity = entity
