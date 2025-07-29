@@ -163,6 +163,12 @@ class CoreExtensionDatabaseService {
                     continue
                 }
 
+                if (coreFormExtension.coreForm == CoreForm.PREGNANCY_VISIT_FORM && forname.equals("childs")) {
+
+                    columnIndex = generateDatabaseModelProcessChildren(coreFormExtension, CoreExtensionService.PREGNANCY_VISIT_CHILD_EXT_TABLE, formDef, element, columnIndex, null, repeatCountColumns)
+                    continue
+                }
+
                 //create repeat datamodel
                 def model = new CoreFormExtensionModel(coreForm: coreFormExtension, extFormId: coreFormExtension.extFormId)
                 model.dbColumnIndex = columnIndex++

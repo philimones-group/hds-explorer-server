@@ -42,6 +42,8 @@ class UrlMappings {
         "/api/export/rounds"(controller:         "syncFiles", action: "rounds")
         "/api/export/visits"(controller:         "syncFiles", action: "visits")
         "/api/export/pregnancies"(controller:         "syncFiles", action: "pregnancyRegistrations")
+        "/api/export/pregnancyoutcomes"(controller:         "syncFiles", action: "pregnancyOutcomes")
+        "/api/export/pregnancyvisits"(controller:         "syncFiles", action: "pregnancyVisits")
         "/api/export/deaths"(controller:         "syncFiles", action: "deaths")
         "/api/export/regionheads"(controller:         "syncFiles", action: "regionheads")
 
@@ -68,6 +70,8 @@ class UrlMappings {
         "/api/export/rounds/zip"(controller:         "syncFiles", action: "roundsZip")
         "/api/export/visits/zip"(controller:         "syncFiles", action: "visitsZip")
         "/api/export/pregnancies/zip"(controller:         "syncFiles", action: "pregnancyRegistrationsZip")
+        "/api/export/pregnancyoutcomes/zip"(controller:         "syncFiles", action: "pregnancyOutcomesZip")
+        "/api/export/pregnancyvisits/zip"(controller:         "syncFiles", action: "pregnancyVisitsZip")
         "/api/export/deaths/zip"(controller:         "syncFiles", action: "deathsZip")
         "/api/export/regionheads/zip"(controller:         "syncFiles", action: "regionheadsZip")
 
@@ -87,6 +91,7 @@ class UrlMappings {
         "/api/import/maritalrelationships"(controller: "rawImportApi", action: "maritalrelationships")
         "/api/import/pregnancyregistrations"(controller: "rawImportApi", action: "pregnancyregistrations")
         "/api/import/pregnancyoutcomes"(controller: "rawImportApi", action: "pregnancyoutcomes")
+        "/api/import/pregnancyvisits"(controller: "rawImportApi", action: "pregnancyvisits")
         "/api/import/deaths"(controller: "rawImportApi", action: "deaths")
         "/api/import/changeheads"(controller: "rawImportApi", action: "changeheads")
         "/api/import/incompletevisits"(controller: "rawImportApi", action: "incompletevisits")

@@ -21,6 +21,7 @@ import java.time.format.DateTimeFormatter
 class CoreExtensionService {
 
     static final PREGNANCY_CHILD_EXT_TABLE = "pregnancy_child_ext"
+    static final PREGNANCY_VISIT_CHILD_EXT_TABLE = "pregnancy_visit_child_ext"
 
     def coreExtensionDatabaseService
 
@@ -203,6 +204,40 @@ class CoreExtensionService {
                 map.put("pregnancy_outcome_ext_id", id)
 
                 def cresult = coreExtensionDatabaseService.executeSqlInsert(PREGNANCY_CHILD_EXT_TABLE, map)
+
+                println "Inserting child extension for (${rawObj.motherCode}) - result=${cresult.success}, msg: ${cresult.keys}"
+            }
+        }
+
+        println "Inserting extension for (${rawObj.motherCode}) - result=${result.success}, msg: ${result.errorMessage}"
+
+        return result
+    }
+
+    CoreExtensionDatabaseService.SqlExecutionResult insertPregnancyVisitExtension(RawPregnancyVisit rawObj, PregnancyVisit finalObj) {
+
+        if (rawObj.extensionForm == null) return null
+
+        //get form extensions
+        def coreFormExt = CoreFormExtension.findByCoreForm(CoreForm.PREGNANCY_VISIT_FORM)
+        if (!coreFormExt?.enabled || coreFormExt?.extFormDefinition == null) return null
+
+        //read xml data to map - in this form we have a special repeat (childs) -> that will be sent to a separated table
+        def instanceMappedValues = getExtraInstanceMappedValues(coreFormExt, ["childs"], coreFormExt.extFormDefinition, rawObj.extensionForm)
+
+        //insert into pregnancy_outcome_ext
+        def result = coreExtensionDatabaseService.executeSqlInsert(coreFormExt.extFormId, instanceMappedValues.mainFormValues)
+
+        //insert into pregnancy_child_ext
+        if (result != null && result.success) {
+            def id = result.keys?.first()
+
+            instanceMappedValues.childFormValues.get("childs").each {map ->
+                //insert secondary key and others
+                map.put("collected_id", finalObj.collectedId)
+                map.put("pregnancy_visit_ext_id", id)
+
+                def cresult = coreExtensionDatabaseService.executeSqlInsert(PREGNANCY_VISIT_CHILD_EXT_TABLE, map)
 
                 println "Inserting child extension for (${rawObj.motherCode}) - result=${cresult.success}, msg: ${cresult.keys}"
             }

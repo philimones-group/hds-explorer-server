@@ -28,6 +28,7 @@ class RawImportApiController {
                              maritalrelationships: "POST",
                              pregnancyregistrations: "POST",
                              pregnancyoutcomes: "POST",
+                             pregnancyvisits: "POST",
                              deaths: "POST",
                              changeheads: "POST",
                              incompletevisits: "POST",
@@ -664,6 +665,55 @@ class RawImportApiController {
 
         if (resultSave.postExecution){ //execute creation
             def result = rawExecutionService.createPregnancyOutcome(resultSave, "")
+
+            if (result.status== RawExecutionResult.Status.ERROR){
+                render text: errorMessageService.getRawMessagesText(result.errorMessages), status: HttpStatus.BAD_REQUEST
+                return
+            }
+        }
+
+        render text: "OK", status: HttpStatus.OK
+    }
+
+    def pregnancyvisits = {
+
+        if (request.format != "xml") {
+            def message = message(code: 'validation.field.raw.xml.invalid.error')
+            render text: message, status:  HttpStatus.BAD_REQUEST // Only XML expected
+            return
+        }
+
+        RawParseResult<RawPregnancyVisit> parseResult = null
+        String xmlContent = request.reader?.text
+        String extensionXml = rawImportApiService.getExtensionXmlText(xmlContent, RawEntity.PREGNANCY_VISIT)
+
+        try {
+            def node = new XmlSlurper().parseText(xmlContent) as NodeChild
+            node = node.children().first() as NodeChild //RawDomain
+
+            parseResult = rawImportApiService.parsePregnancyVisit(node)
+        } catch(Exception ex) {
+            def msg = errorMessageService.getRawMessagesText(ex)
+            render text: msg, status: HttpStatus.BAD_REQUEST
+            return
+        }
+        if (parseResult.hasErrors()) {
+            render text: parseResult.getErrorsText(), status: HttpStatus.BAD_REQUEST
+            return
+        }
+
+        def rawInstance = parseResult.domainInstance
+        rawInstance.extensionForm = extensionXml?.getBytes()
+
+        def resultSave = rawInstance.save(flush: true)
+
+        if (rawInstance.hasErrors()){
+            render text: errorMessageService.getRawMessagesText(rawInstance), status: HttpStatus.BAD_REQUEST
+            return
+        }
+
+        if (resultSave.postExecution){ //execute creation
+            def result = rawExecutionService.createPregnancyVisit(resultSave, "")
 
             if (result.status== RawExecutionResult.Status.ERROR){
                 render text: errorMessageService.getRawMessagesText(result.errorMessages), status: HttpStatus.BAD_REQUEST

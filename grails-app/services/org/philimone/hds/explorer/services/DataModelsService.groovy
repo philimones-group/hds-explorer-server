@@ -5,21 +5,27 @@ import grails.web.mapping.LinkGenerator
 import net.betainteractive.utilities.StringUtil
 import grails.converters.JSON
 import org.philimone.hds.explorer.server.model.enums.BirthPlace
+import org.philimone.hds.explorer.server.model.enums.BreastFeedingStatus
 import org.philimone.hds.explorer.server.model.enums.ChangeHeadReason
 import org.philimone.hds.explorer.server.model.enums.EducationType
 import org.philimone.hds.explorer.server.model.enums.EstimatedDateOfDeliveryType
 import org.philimone.hds.explorer.server.model.enums.Gender
 import org.philimone.hds.explorer.server.model.enums.HeadRelationshipType
+import org.philimone.hds.explorer.server.model.enums.HealthcareProviderType
 import org.philimone.hds.explorer.server.model.enums.HouseholdRelocationReason
 import org.philimone.hds.explorer.server.model.enums.HouseholdStatus
+import org.philimone.hds.explorer.server.model.enums.IllnessSymptoms
+import org.philimone.hds.explorer.server.model.enums.ImmunizationStatus
 import org.philimone.hds.explorer.server.model.enums.IncompleteVisitReason
 import org.philimone.hds.explorer.server.model.enums.MaritalEndStatus
 import org.philimone.hds.explorer.server.model.enums.MaritalStartStatus
 import org.philimone.hds.explorer.server.model.enums.MaritalStatus
 import org.philimone.hds.explorer.server.model.enums.MemberStatus
+import org.philimone.hds.explorer.server.model.enums.NewBornStatus
 import org.philimone.hds.explorer.server.model.enums.NoVisitReason
 import org.philimone.hds.explorer.server.model.enums.PregnancyOutcomeType
 import org.philimone.hds.explorer.server.model.enums.PregnancyStatus
+import org.philimone.hds.explorer.server.model.enums.PregnancyVisitType
 import org.philimone.hds.explorer.server.model.enums.ProcessedStatus
 import org.philimone.hds.explorer.server.model.enums.RawEntity
 import org.philimone.hds.explorer.server.model.enums.RegionLevel
@@ -84,7 +90,14 @@ class DataModelsService {
             "EducationType" : EducationType.values(),
             "ReligionType" : ReligionType.values(),
             "ChangeHeadReason" : ChangeHeadReason.values(),
-            "HouseholdRelocationReason" : HouseholdRelocationReason.values()
+            "HouseholdRelocationReason" : HouseholdRelocationReason.values(),
+            "PregnancyVisitType" : PregnancyVisitType.values(),
+            "HealthcareProviderType" : HealthcareProviderType.values(),
+            "BreastFeedingStatus" : BreastFeedingStatus.values(),
+            "NewBornStatus" : NewBornStatus.values(),
+            "IllnessSymptoms" : IllnessSymptoms.values(),
+            "BreastFeedingStatus" : BreastFeedingStatus.values(),
+            "ImmunizationStatus" : ImmunizationStatus.values()
 
     ] as HashMap<String, Enum[]>
 
@@ -155,6 +168,21 @@ class DataModelsService {
         return objects
     }
 
+    Set<EnumValue> getIllnessSymptomsSetFrom(String commaStringList) {
+        def list = new LinkedHashSet<EnumValue>()
+
+        if (commaStringList != null) {
+            commaStringList.split(",").each {
+                def smp = IllnessSymptoms.getFrom(it)
+                if (smp != null) {
+                    list.add(new EnumValue(id: smp.code, name: message(smp.name)))
+                }
+            }
+        }
+
+        return list
+    }
+
     String getMessage(String enumType, String enumCode) {
         def values = defaultEnumTypes.get(enumType)
         def msg = enumCode
@@ -203,6 +231,20 @@ class DataModelsService {
     class EnumValue {
         String id
         String name
+
+        @Override
+        boolean equals(Object o) {
+            if (o instanceof EnumValue) {
+                def obj = o as EnumValue
+                return obj.id?.equals(this.id)
+            }
+            return false
+        }
+
+        @Override
+        int hashCode() {
+            return 0;
+        }
     }
 
     enum ValuesLookup {
@@ -232,6 +274,6 @@ class DataModelsService {
         static ValuesLookup getFrom(String code) {
             return code==null ? null : MAP.get(code)
         }
-
     }
+
 }

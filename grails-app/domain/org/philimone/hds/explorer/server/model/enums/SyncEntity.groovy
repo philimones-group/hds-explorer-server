@@ -29,9 +29,10 @@ enum SyncEntity {
     OUTMIGRATIONS      (21, "syncEntity.outmigrations.label", "outmigrations"),
     PREGNANCY_REGISTRATIONS (22, "syncEntity.pregnancyRegistrations.label", "pregnancyregistrations"),
     PREGNANCY_OUTCOMES (23, "syncEntity.pregnancyOutcomes.label", "pregnancyoutcomes"),
-    DEATHS             (24, "syncEntity.deaths.label", "deaths"),
-    INCOMPLETE_VISITS  (25, "syncEntity.incomplete_visits.label", "incompletevisits"),
-    REGION_HEADS       (26, "syncEntity.regionheads.label", "regionheads")
+    PREGNANCY_VISITS   (24, "syncEntity.pregnancyVisits.label", "pregnancyvisits"),
+    DEATHS             (25, "syncEntity.deaths.label", "deaths"),
+    INCOMPLETE_VISITS  (26, "syncEntity.incomplete_visits.label", "incompletevisits"),
+    REGION_HEADS       (27, "syncEntity.regionheads.label", "regionheads")
 
     final int code
     final String name

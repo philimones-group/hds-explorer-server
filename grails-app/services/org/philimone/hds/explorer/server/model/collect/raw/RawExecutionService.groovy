@@ -15,6 +15,7 @@ import org.philimone.hds.explorer.server.model.main.Member
 import org.philimone.hds.explorer.server.model.main.OutMigration
 import org.philimone.hds.explorer.server.model.main.PregnancyOutcome
 import org.philimone.hds.explorer.server.model.main.PregnancyRegistration
+import org.philimone.hds.explorer.server.model.main.PregnancyVisit
 import org.philimone.hds.explorer.server.model.main.Region
 import org.philimone.hds.explorer.server.model.main.RegionHeadRelationship
 import org.philimone.hds.explorer.server.model.main.collect.raw.RawExecutionResult
@@ -32,6 +33,7 @@ class RawExecutionService {
     def externalInMigrationService
     def pregnancyRegistrationService
     def pregnancyOutcomeService
+    def pregnancyVisitService
     def maritalRelationshipService
     def inMigrationService
     def outMigrationService
@@ -154,6 +156,29 @@ class RawExecutionService {
         def pregnancyChilds = RawPregnancyChild.findAllByOutcome(rawDomainInstance) //get all childs
 
         def result = pregnancyOutcomeService.createPregnancyOutcome(rawDomainInstance, pregnancyChilds)
+
+        if (result.status == RawExecutionResult.Status.ERROR){
+            //create errorLog
+            def errorLog = new RawErrorLog(uuid: rawDomainInstance.id, entity: result.entity, collectedDate: rawDomainInstance.collectedDate, columnName: "code", code: rawDomainInstance.code)
+            errorLog.uuid = rawDomainInstance.id
+            errorLog.logReportFile = LogReportFile.findById(logReportFileId)
+            errorLog.setMessages(result.errorMessages)
+            errorLog.save(flush:true)
+        }
+
+        rawDomainInstance.refresh()
+        rawDomainInstance.processedStatus = getProcessedStatus(result.status)
+        rawDomainInstance.save(flush:true)
+
+        return result
+
+    }
+
+    RawExecutionResult<PregnancyVisit> createPregnancyVisit(RawPregnancyVisit rawDomainInstance, String logReportFileId){
+
+        def pregnancyChilds = RawPregnancyVisitChild.findAllByPregnancyVisit(rawDomainInstance) //get all childs
+
+        def result = pregnancyVisitService.createPregnancyVisit(rawDomainInstance, pregnancyChilds)
 
         if (result.status == RawExecutionResult.Status.ERROR){
             //create errorLog

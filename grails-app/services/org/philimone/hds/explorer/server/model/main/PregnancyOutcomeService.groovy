@@ -10,13 +10,12 @@ import org.philimone.hds.explorer.server.model.collect.raw.RawPregnancyChild
 import org.philimone.hds.explorer.server.model.collect.raw.RawPregnancyOutcome
 import org.philimone.hds.explorer.server.model.collect.raw.RawResidency
 import org.philimone.hds.explorer.server.model.enums.BirthPlace
-import org.philimone.hds.explorer.server.model.enums.EstimatedDateOfDeliveryType
 import org.philimone.hds.explorer.server.model.enums.Gender
 import org.philimone.hds.explorer.server.model.enums.HeadRelationshipType
 import org.philimone.hds.explorer.server.model.enums.HouseholdStatus
-import org.philimone.hds.explorer.server.model.enums.MaritalStatus
 import org.philimone.hds.explorer.server.model.enums.PregnancyOutcomeType
 import org.philimone.hds.explorer.server.model.enums.PregnancyStatus
+import org.philimone.hds.explorer.server.model.enums.PregnancyVisitType
 import org.philimone.hds.explorer.server.model.enums.RawEntity
 import org.philimone.hds.explorer.server.model.enums.temporal.HeadRelationshipStartType
 import org.philimone.hds.explorer.server.model.enums.temporal.ResidencyEndType
@@ -206,7 +205,7 @@ class PregnancyOutcomeService {
         pregnancyOutcome.numberOfLivebirths = numberOfLivebirths
         pregnancyOutcome.save()
 
-        closePregnancyRegistration(pregnancyOutcome)
+        afterCreatingPregnancyOutcome(pregnancyOutcome)
 
         if (numberOfLivebirths > 0) {
             def household = visit.household
@@ -226,12 +225,23 @@ class PregnancyOutcomeService {
         return obj
     }
 
-    def closePregnancyRegistration(PregnancyOutcome pregnancyOutcome) {
+    def afterCreatingPregnancyOutcome(PregnancyOutcome pregnancyOutcome) {
 
         def pregnancyRegistration = PregnancyRegistration.findByCode(pregnancyOutcome.code)
 
         if (pregnancyRegistration != null) {
             pregnancyRegistration.status = PregnancyStatus.DELIVERED
+
+            pregnancyRegistration.summary_followup_completed = false
+            pregnancyRegistration.summary_antepartum_count = PregnancyVisit.countByCodeAndVisitType(pregnancyOutcome.code, PregnancyVisitType.ANTEPARTUM)
+            pregnancyRegistration.summary_postpartum_count = 0
+            //pregnancyRegistration.summary_last_visit_status = PregnancyStatus.DELIVERED
+            //pregnancyRegistration.summary_last_visit_type = null
+            //pregnancyRegistration.summary_last_visit_date = null
+            //pregnancyRegistration.summary_first_visit_date = null
+            pregnancyRegistration.summary_has_pregnancy_outcome = true
+            pregnancyRegistration.summary_nr_outcomes = pregnancyOutcome.numberOfOutcomes
+
             pregnancyRegistration.save(flush: true)
         } else {
             println "no pregnancy registration to close"

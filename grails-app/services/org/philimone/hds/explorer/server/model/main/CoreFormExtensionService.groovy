@@ -50,6 +50,7 @@ class CoreFormExtensionService {
         if (form == CoreForm.OUTMIGRATION_FORM) return getOutmigrationMapping();
         if (form == CoreForm.PREGNANCY_REGISTRATION_FORM) return getPregRegistrationMapping();
         if (form == CoreForm.PREGNANCY_OUTCOME_FORM) return getPregOutcomeMapping();
+        if (form == CoreForm.PREGNANCY_VISIT_FORM) return getPregVisitMapping();
         if (form == CoreForm.DEATH_FORM) return getDeathMapping();
         if (form == CoreForm.CHANGE_HEAD_FORM) return getChangeHeadMapping();
         if (form == CoreForm.INCOMPLETE_VISIT_FORM) return getIncVisitMapping();
@@ -199,6 +200,34 @@ class CoreFormExtensionService {
         columnsMap.put("childs.child_code", "\$childs.childCode")
         columnsMap.put("childs.child_name", "\$childs.childName")
         columnsMap.put("childs.child_gender", "\$childs.childGender")
+
+
+        return mapToString(columnsMap)
+    }
+
+    String getPregVisitMapping() {
+        def columnsMap = new LinkedHashMap()
+
+        columnsMap.put("core_form_id", CoreForm.PREGNANCY_VISIT_FORM.code)
+        columnsMap.put("collected_id", "#id")
+        columnsMap.put("visit_code", "#visitCode")
+        columnsMap.put("household_code", "Household.code")
+        columnsMap.put("household_name", "Household.name")
+        columnsMap.put("mother_code", "#motherCode")
+        columnsMap.put("mother_name", "#motherName")
+        columnsMap.put("pregnancy_code", "#code")
+        columnsMap.put("visit_type", "#visitType")
+        columnsMap.put("visit_number", "#visitNumber")
+        columnsMap.put("status", "#status")
+        columnsMap.put("number_of_childs", "#numberOfChilds")
+
+
+        //columnsMap.put("childs", "\$load:childs")
+        columnsMap.put("childs.child_outcome_type", "\$childs.outcomeType")
+        columnsMap.put("childs.child_code", "\$childs.childCode")
+        columnsMap.put("childs.child_name", "\$childs.childName")
+        columnsMap.put("childs.child_gender", "\$childs.childGender")
+        columnsMap.put("childs.child_status", "\$childs.childStatus")
 
 
         return mapToString(columnsMap)

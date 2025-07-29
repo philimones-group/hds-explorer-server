@@ -122,6 +122,16 @@ class SyncFilesController {
         render file: file
     }
 
+    def pregnancyOutcomes = {
+        def file = new File(SystemPath.getGeneratedFilesPath() + File.separator + "${SyncEntity.PREGNANCY_OUTCOMES.xmlFilename}")
+        render file: file
+    }
+
+    def pregnancyVisits = {
+        def file = new File(SystemPath.getGeneratedFilesPath() + File.separator + "${SyncEntity.PREGNANCY_VISITS.xmlFilename}")
+        render file: file
+    }
+
     def deaths = {
         def file = new File(SystemPath.getGeneratedFilesPath() + File.separator + "${SyncEntity.DEATHS.xmlFilename}")
         render file: file
@@ -298,6 +308,16 @@ class SyncFilesController {
 
     def pregnancyRegistrationsZip = {
         def file = new File(SystemPath.getGeneratedFilesPath() + File.separator + "${SyncEntity.PREGNANCY_REGISTRATIONS.zipFilename}")
+        render file: file
+    }
+
+    def pregnancyOutcomesZip = {
+        def file = new File(SystemPath.getGeneratedFilesPath() + File.separator + "${SyncEntity.PREGNANCY_OUTCOMES.zipFilename}")
+        render file: file
+    }
+
+    def pregnancyVisitsZip = {
+        def file = new File(SystemPath.getGeneratedFilesPath() + File.separator + "${SyncEntity.PREGNANCY_VISITS.zipFilename}")
         render file: file
     }
 

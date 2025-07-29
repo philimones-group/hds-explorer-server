@@ -25,6 +25,7 @@ class RawDomainController {
 
     def rawDomainService
     def generalUtilitiesService
+    def dataModelsService
 
     def index = {
         //the bootstrap button show dependency error submit - will call the index when clicked, just retrieve the id and edit domain
@@ -90,6 +91,11 @@ class RawDomainController {
 
         if (entity == RawEntity.PREGNANCY_OUTCOME){
             redirect action: "editPregnancyOutcome", params: [id: params.id]
+            return
+        }
+
+        if (entity == RawEntity.PREGNANCY_VISIT){
+            redirect action: "editPregnancyVisit", params: [id: params.id]
             return
         }
 
@@ -226,6 +232,24 @@ class RawDomainController {
         def errorMessages = RawErrorLog.findByUuid(params.id)?.messages
 
         respond obj, model: [mode: "edit", errorMessages: errorMessages]
+    }
+
+    def editPregnancyVisit = {
+        def obj = RawPregnancyVisit.get(params.id)
+        def member = rawDomainService.getBasicMember(obj?.motherCode)
+        def errorMessages = RawErrorLog.findByUuid(params.id)?.messages
+        def dependencyCheckResult = rawDomainService.checkDependencyErrors(errorMessages)
+
+        respond obj, model: [mode: "edit", errorMessages: errorMessages, dependencyResult: dependencyCheckResult, member: member]
+    }
+
+    def editPregnancyVisitChild = {
+        def obj = RawPregnancyVisitChild.get(params.id)
+        def errorMessages = RawErrorLog.findByUuid(params.id)?.messages
+
+        def sympts = dataModelsService.getIllnessSymptomsSetFrom(obj.childIllnessSymptoms) //to handle select multiple
+
+        respond obj, model: [mode: "edit", errorMessages: errorMessages, symptomsList: sympts]
     }
 
     def editMaritalRelationship = {
@@ -678,6 +702,67 @@ class RawDomainController {
 
     }
 
+    def updatePregnancyVisit = {
+
+        RawPregnancyVisit rawPregnancyVisit = RawPregnancyVisit.get(params.id)
+
+        def reset = false
+
+        if (params.reset){
+            reset = params.reset
+        }
+
+        params.visitDate = StringUtil.toLocalDateFromDate(params.getDate('visitDate'))
+
+        try {
+
+            //def previousCode = rawPregnancyVisit.code
+
+            bindData(rawPregnancyVisit, params)
+            rawPregnancyVisit.save(flush:true)
+
+            //if (!previousCode.equalsIgnoreCase(rawPregnancyVisit.code)) {
+                //code changed - we should change also the rawPregnancyRegistration
+                //rawDomainService.updatePregnancyRegistration(rawPregnancyVisit, previousCode)
+            //}
+
+            if (reset) {
+                //reset the event
+                RawPregnancyVisit.executeUpdate("update RawPregnancyVisit r set r.processedStatus=:status where r.id=:rawId", [status: ProcessedStatus.NOT_PROCESSED, rawId: rawPregnancyVisit.id])
+                RawEvent.executeUpdate("update RawEvent r set r.processed=:status where r.eventId=:rawId", [status: ProcessedStatus.NOT_PROCESSED, rawId: rawPregnancyVisit.id])
+                RawErrorLog.executeUpdate("delete from RawErrorLog r where r.uuid=?0", [rawPregnancyVisit.id])
+            }
+
+        } catch (ValidationException e) {
+            respond rawPregnancyVisit.errors, view:'editPregnancyVisit', model: [mode: "edit", errorMessages: RawErrorLog.findByUuid(rawPregnancyVisit.id)?.messages]
+            return
+        }
+
+        flash.message = message(code: 'default.updated.message', args: [message(code: 'rawPregnancyVisit.label', default: 'Raw Pregnancy Outcome'), rawPregnancyVisit.code])
+        respond rawPregnancyVisit, view:"editPregnancyVisit", model: [mode: "show"]
+
+    }
+
+    def updatePregnancyVisitChild = {
+
+        RawPregnancyVisitChild rawPregnancyVisitChild = RawPregnancyVisitChild.get(params.id)
+        RawPregnancyVisit rawPregnancyVisit = rawPregnancyVisitChild.pregnancyVisit
+
+        try {
+
+            bindData(rawPregnancyVisitChild, params)
+            rawPregnancyVisitChild.save(flush:true)
+
+        } catch (ValidationException e) {
+            respond rawPregnancyVisitChild.errors, view:'editPregnancyVisitChild', model: [mode: "edit", errorMessages: RawErrorLog.findByUuid(rawPregnancyVisit?.id)?.messages]
+            return
+        }
+
+        flash.message = message(code: 'default.updated.message', args: [message(code: 'rawPregnancyVisitChild.label', default: 'Raw Pregnancy Visit Child'), rawPregnancyVisitChild.childCode])
+        respond rawPregnancyVisit, view:"editPregnancyVisit", model: [mode: "show"]
+
+    }
+
     def updateMaritalRelationship = {
 
         RawMaritalRelationship rawMaritalRelationship = RawMaritalRelationship.get(params.id)
@@ -918,6 +1003,14 @@ class RawDomainController {
 
         flash.message = message(code: 'default.updated.message', args: [message(code: 'rawPregnancyOutcome.label', default: 'Raw Pregnancy Outcome'), rawPregnancyOutcome.code])
         respond rawPregnancyOutcome, view:"editPregnancyOutcome", model: [mode: "show"]
+    }
+
+    def invalidatePregnancyVisit = {
+        RawPregnancyVisit rawPregnancyVisit = RawPregnancyVisit.get(params.id)
+        RawPregnancyVisit.executeUpdate("update RawPregnancyVisit r set r.processedStatus=:status where r.id=:rawId", [status: ProcessedStatus.INVALIDATED, rawId: rawPregnancyVisit.id])
+
+        flash.message = message(code: 'default.updated.message', args: [message(code: 'rawPregnancyVisit.label', default: 'Raw Pregnancy Visit'), rawPregnancyVisit.code])
+        respond rawPregnancyVisit, view:"editPregnancyVisit", model: [mode: "show"]
     }
 
     def invalidateMaritalRelationship = {
@@ -1190,6 +1283,39 @@ class RawDomainController {
         redirect action: "editPregnancyOutcome", id: parentRawObj?.id
     }
 
+    def deletePregnancyVisit = {
+
+        def rawObj = RawPregnancyVisit.get(params.id)
+        def errorLog = RawErrorLog.findByUuid(params.id)
+        def logReportFileId = errorLog?.logReportFileId
+
+        //delete records
+        try {
+            errorLog.delete(flush: true)
+            RawPregnancyVisitChild.executeUpdate("delete from RawPregnancyVisitChild r where r.pregnancyVisit = :obj", [obj: rawObj])
+            rawObj.delete(flush: true)
+        } catch(Exception ex) {
+            ex.printStackTrace()
+        }
+        //show report details
+        redirect controller: "eventSync", action: "showSyncReportDetails", id: logReportFileId
+    }
+
+    def deletePregnancyVisitChild = {
+
+        def rawObj = RawPregnancyVisitChild.get(params.id)
+        def parentRawObj = rawObj?.pregnancyVisit
+
+        //delete records
+        try {
+            rawObj.delete(flush: true)
+        } catch(Exception ex) {
+            ex.printStackTrace()
+        }
+        //show report details
+        redirect action: "editPregnancyVisit", id: parentRawObj?.id
+    }
+    
     def deletePregnancyRegistration = {
 
         def rawObj = RawPregnancyRegistration.get(params.id)

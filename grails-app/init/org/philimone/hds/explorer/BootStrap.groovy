@@ -188,6 +188,8 @@ class BootStrap {
             new SecurityMap(url: "/api/export/rounds/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER},${Role.ROLE_FIELD_WORKER}").save(flush: true)
             new SecurityMap(url: "/api/export/visits/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER},${Role.ROLE_FIELD_WORKER}").save(flush: true)
             new SecurityMap(url: "/api/export/pregnancies/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER},${Role.ROLE_FIELD_WORKER}").save(flush: true)
+            new SecurityMap(url: "/api/export/pregnancyoutcomes/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER},${Role.ROLE_FIELD_WORKER}").save(flush: true)
+            new SecurityMap(url: "/api/export/pregnancyvisits/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER},${Role.ROLE_FIELD_WORKER}").save(flush: true)
             new SecurityMap(url: "/api/export/deaths/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER},${Role.ROLE_FIELD_WORKER}").save(flush: true)
             new SecurityMap(url: "/api/export/regionheads/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER},${Role.ROLE_FIELD_WORKER}").save(flush: true)
             new SecurityMap(url: "/api/export/stats/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER},${Role.ROLE_FIELD_WORKER}").save(flush: true)
@@ -218,6 +220,7 @@ class BootStrap {
             new SecurityMap(url: "/api/import/maritalrelationships", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER},${Role.ROLE_FIELD_WORKER}").save(flush: true)
             new SecurityMap(url: "/api/import/pregnancyregistrations", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER},${Role.ROLE_FIELD_WORKER}").save(flush: true)
             new SecurityMap(url: "/api/import/pregnancyoutcomes", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER},${Role.ROLE_FIELD_WORKER}").save(flush: true)
+            new SecurityMap(url: "/api/import/pregnancyvisits", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER},${Role.ROLE_FIELD_WORKER}").save(flush: true)
             new SecurityMap(url: "/api/import/deaths", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER},${Role.ROLE_FIELD_WORKER}").save(flush: true)
             new SecurityMap(url: "/api/import/changeheads", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER},${Role.ROLE_FIELD_WORKER}").save(flush: true)
             new SecurityMap(url: "/api/import/incompletevisits", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER},${Role.ROLE_FIELD_WORKER}").save(flush: true)
@@ -454,6 +457,8 @@ class BootStrap {
         def hmaxAge = svc.getConfigValue("${Codes.PARAMS_MIN_AGE_OF_HEAD}")
         def smaxAge = svc.getConfigValue("${Codes.PARAMS_MIN_AGE_OF_SPOUSE}")
         def rminAge = svc.getConfigValue("${Codes.PARAMS_MIN_AGE_OF_RESPONDENT}")
+        def rmaxVap = svc.getConfigValue("${Codes.PARAMS_MAX_ANTEPARTUM_VISITS}")
+        def rmaxVpp = svc.getConfigValue("${Codes.PARAMS_MAX_POSTPARTUM_VISITS}")
         def gndChck = svc.getConfigValue("${Codes.PARAMS_GENDER_CHECKING}")
         def sysLang = svc.getConfigValue("${Codes.PARAMS_SYSTEM_LANGUAGE}")
         def sysCdgn = svc.getConfigValue("${Codes.PARAMS_SYSTEM_CODE_GENERATOR}")
@@ -470,6 +475,8 @@ class BootStrap {
         aps.addParam(Codes.PARAMS_MIN_AGE_OF_HEAD, StringUtil.getInteger(hmaxAge))
         aps.addParam(Codes.PARAMS_MIN_AGE_OF_SPOUSE, StringUtil.getInteger(smaxAge))
         aps.addParam(Codes.PARAMS_MIN_AGE_OF_RESPONDENT, StringUtil.getInteger(rminAge))
+        aps.addParam(Codes.PARAMS_MAX_ANTEPARTUM_VISITS, StringUtil.getInteger(rmaxVap))
+        aps.addParam(Codes.PARAMS_MAX_POSTPARTUM_VISITS, StringUtil.getInteger(rmaxVpp))
         aps.addParam(Codes.PARAMS_GENDER_CHECKING, StringUtil.getBoolean(gndChck))
         aps.addParam(Codes.PARAMS_SYSTEM_LANGUAGE, sysLang) //set default language to english
         aps.addParam(Codes.PARAMS_SYSTEM_CODE_GENERATOR, sysCdgn)
@@ -559,8 +566,9 @@ class BootStrap {
         def core11 = new CoreFormExtension(formName: CoreForm.INCOMPLETE_VISIT_FORM.name, coreForm: CoreForm.INCOMPLETE_VISIT_FORM, formId: CoreForm.INCOMPLETE_VISIT_FORM.code, extFormId: CoreForm.INCOMPLETE_VISIT_FORM.extension, required: true, enabled: false, columnsMapping: svc.getColumnMapping(CoreForm.INCOMPLETE_VISIT_FORM))
         def core12 = new CoreFormExtension(formName: CoreForm.CHANGE_REGION_HEAD_FORM.name, coreForm: CoreForm.CHANGE_REGION_HEAD_FORM, formId: CoreForm.CHANGE_REGION_HEAD_FORM.code, extFormId: CoreForm.CHANGE_REGION_HEAD_FORM.extension, required: true, enabled: false, columnsMapping: svc.getColumnMapping(CoreForm.CHANGE_REGION_HEAD_FORM))
         def core13 = new CoreFormExtension(formName: CoreForm.HOUSEHOLD_RELOCATION_FORM.name, coreForm: CoreForm.HOUSEHOLD_RELOCATION_FORM, formId: CoreForm.HOUSEHOLD_RELOCATION_FORM.code, extFormId: CoreForm.HOUSEHOLD_RELOCATION_FORM.extension, required: true, enabled: false, columnsMapping: svc.getColumnMapping(CoreForm.HOUSEHOLD_RELOCATION_FORM))
+        def core14 = new CoreFormExtension(formName: CoreForm.PREGNANCY_VISIT_FORM.name, coreForm: CoreForm.PREGNANCY_VISIT_FORM, formId: CoreForm.PREGNANCY_VISIT_FORM.code, extFormId: CoreForm.PREGNANCY_VISIT_FORM.extension, required: true, enabled: false, columnsMapping: svc.getColumnMapping(CoreForm.PREGNANCY_VISIT_FORM))
 
-        def cores = [core0, core1, core2, core3, core4, core5, core6, core6, core7, core8, core9, core10, core11, core12, core13] as List<CoreFormExtension>
+        def cores = [core0, core1, core2, core3, core4, core5, core6, core6, core7, core8, core9, core10, core11, core12, core13, core14] as List<CoreFormExtension>
 
         for (CoreFormExtension core : cores){
             if (CoreFormExtension.countByFormId(core.formId)==0){
@@ -571,6 +579,7 @@ class BootStrap {
                 }
 
                 core.save(flush:true)
+                println "${core.formId}: ${core.errors}"
             } else {
                 //update some
                 def cr = CoreFormExtension.findByFormId(core.formId)
@@ -842,6 +851,8 @@ class BootStrap {
         def valueAgh = applicationParamService.getIntegerValue(Codes.PARAMS_MIN_AGE_OF_HEAD)
         def valueAgs = applicationParamService.getIntegerValue(Codes.PARAMS_MIN_AGE_OF_SPOUSE)
         def valueAgr = applicationParamService.getIntegerValue(Codes.PARAMS_MIN_AGE_OF_RESPONDENT)
+        def valueVap = applicationParamService.getIntegerValue(Codes.PARAMS_MAX_ANTEPARTUM_VISITS)
+        def valueVpp = applicationParamService.getIntegerValue(Codes.PARAMS_MAX_POSTPARTUM_VISITS)
         def valueGch = applicationParamService.getBooleanValue(Codes.PARAMS_GENDER_CHECKING)
         def valueSlg = applicationParamService.getStringValue(Codes.PARAMS_SYSTEM_LANGUAGE)
         def valueScg = applicationParamService.getStringValue(Codes.PARAMS_SYSTEM_CODE_GENERATOR)
@@ -855,6 +866,8 @@ class BootStrap {
         Codes.MIN_HEAD_AGE_VALUE =   valueAgh != null ? valueAgh : Codes.MIN_HEAD_AGE_VALUE
         Codes.MIN_SPOUSE_AGE_VALUE = valueAgs != null ? valueAgs : Codes.MIN_SPOUSE_AGE_VALUE
         Codes.MIN_RESPONDENT_AGE_VALUE = valueAgr != null ? valueAgr : Codes.MIN_RESPONDENT_AGE_VALUE
+        Codes.MAX_ANTEPARTUM_VISITS = valueVap != null ? valueVap : Codes.MAX_ANTEPARTUM_VISITS
+        Codes.MAX_POSTPARTUM_VISITS = valueVpp != null ? valueVpp : Codes.MAX_POSTPARTUM_VISITS
         Codes.GENDER_CHECKING =      valueGch != null ? valueGch : Codes.GENDER_CHECKING
         Codes.SYSTEM_LANGUAGE =      !StringUtil.isBlank(valueSlg) ? valueSlg : Codes.SYSTEM_LANGUAGE
         Codes.SYSTEM_CODE_GENERATOR = !StringUtil.isBlank(valueScg) ? valueScg : Codes.SYSTEM_CODE_GENERATOR

@@ -12,12 +12,13 @@ enum RawEventType {
     EVENT_HOUSEHOLD_RELOCATION         (7),
     EVENT_PREGNANCY_REGISTRATION       (8),
     EVENT_PREGNANCY_OUTCOME            (9),
-    EVENT_MARITAL_RELATIONSHIP         (91),
-    EVENT_CHANGE_HEAD_OF_HOUSEHOLD     (92),
-    EVENT_INCOMPLETE_VISIT             (93),
-    EVENT_OUTMIGRATION                 (94),
-    EVENT_DEATH                        (95),
-    EVENT_CHANGE_HEAD_OF_REGION        (96)
+    EVENT_PREGNANCY_VISIT              (91),
+    EVENT_MARITAL_RELATIONSHIP         (92),
+    EVENT_CHANGE_HEAD_OF_HOUSEHOLD     (93),
+    EVENT_INCOMPLETE_VISIT             (94),
+    EVENT_OUTMIGRATION                 (95),
+    EVENT_DEATH                        (96),
+    EVENT_CHANGE_HEAD_OF_REGION        (97)
 
 
     Integer code

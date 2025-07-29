@@ -9,6 +9,7 @@ import org.philimone.hds.explorer.server.model.enums.EstimatedDateOfDeliveryType
 import org.philimone.hds.explorer.server.model.enums.Gender
 import org.philimone.hds.explorer.server.model.enums.MaritalStatus
 import org.philimone.hds.explorer.server.model.enums.PregnancyStatus
+import org.philimone.hds.explorer.server.model.enums.PregnancyVisitType
 import org.philimone.hds.explorer.server.model.enums.RawEntity
 import org.philimone.hds.explorer.server.model.main.collect.raw.RawExecutionResult
 import org.philimone.hds.explorer.server.model.main.collect.raw.RawMessage
@@ -299,6 +300,15 @@ class PregnancyRegistrationService {
         pregnancyRegistration.visit = visit
         pregnancyRegistration.visitCode = pr.visitCode
 
+        pregnancyRegistration.summary_followup_completed = false
+        pregnancyRegistration.summary_antepartum_count = 0
+        pregnancyRegistration.summary_postpartum_count = 0
+        pregnancyRegistration.summary_last_visit_status = null
+        pregnancyRegistration.summary_last_visit_type = null
+        pregnancyRegistration.summary_last_visit_date = null
+        //pregnancyRegistration.summary_first_visit_date = null
+        pregnancyRegistration.summary_has_pregnancy_outcome = false
+        pregnancyRegistration.summary_nr_outcomes = 0
 
         //set collected by info
         pregnancyRegistration.collectedId = pr.id

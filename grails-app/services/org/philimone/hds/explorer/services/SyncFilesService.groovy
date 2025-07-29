@@ -7,6 +7,7 @@ import net.betainteractive.utilities.StringUtil
 import org.philimone.hds.explorer.server.model.authentication.User
 import org.philimone.hds.explorer.io.SystemPath
 import org.philimone.hds.explorer.server.model.enums.FormType
+import org.philimone.hds.explorer.server.model.enums.PregnancyOutcomeType
 import org.philimone.hds.explorer.server.model.enums.PregnancyStatus
 import org.philimone.hds.explorer.server.model.enums.ValidatableStatus
 import org.philimone.hds.explorer.server.model.enums.settings.LogReportCode
@@ -27,8 +28,10 @@ import org.philimone.hds.explorer.server.model.main.InMigration
 import org.philimone.hds.explorer.server.model.main.MaritalRelationship
 import org.philimone.hds.explorer.server.model.main.Member
 import org.philimone.hds.explorer.server.model.main.OutMigration
+import org.philimone.hds.explorer.server.model.main.PregnancyChild
 import org.philimone.hds.explorer.server.model.main.PregnancyOutcome
 import org.philimone.hds.explorer.server.model.main.PregnancyRegistration
+import org.philimone.hds.explorer.server.model.main.PregnancyVisit
 import org.philimone.hds.explorer.server.model.main.RedcapApi
 import org.philimone.hds.explorer.server.model.main.RedcapMapping
 import org.philimone.hds.explorer.server.model.main.Region
@@ -113,11 +116,13 @@ class SyncFilesService {
         generateHeadRelationshipsXML(logReportId)
         generateMaritalRelationshipsXML(logReportId)
         generatePregnancyRegistrationsXML(logReportId)
+        generatePregnancyOutcomesXML(logReportId)
+        generatePregnancyVisitsXML(logReportId)
         generateDeathsXML(logReportId)
         //These events are not needed in the mobile app
         //generateInMigrationsXML(logReportId)
         //generateOutMigrationsXML(logReportId)
-        //generatePregnancyOutcomesXML(logReportId)
+
 
     }
 
@@ -2016,7 +2021,11 @@ class SyncFilesService {
 
     def generatePregnancyOutcomesXML(LogReportCode logReportId) { //read forms
 
-        LogOutput log = generalUtilitiesService.getOutput(SystemPath.getLogsPath(), "generate-exp-pregnancyoutcomes-xml");
+        String filename = SyncEntity.PREGNANCY_OUTCOMES.filename
+        String xmlFilename = SyncEntity.PREGNANCY_OUTCOMES.xmlFilename
+        String zipFilename = SyncEntity.PREGNANCY_OUTCOMES.zipFilename
+
+        LogOutput log = generalUtilitiesService.getOutput(SystemPath.getLogsPath(), "generate-exp-${filename}-xml");
         PrintStream output = log.output
         if (output == null) return;
 
@@ -2030,7 +2039,7 @@ class SyncFilesService {
             def resultPregnancyOutcomes = []
 
             PregnancyOutcome.withTransaction {
-                resultPregnancyOutcomes = PregnancyOutcome.findAll()
+                resultPregnancyOutcomes = PregnancyOutcome.executeQuery("select p.id from PregnancyOutcome p")
             }
 
             DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
@@ -2038,42 +2047,150 @@ class SyncFilesService {
 
             // root elements
             Document doc = docBuilder.newDocument();
-
-            Element rootElement = doc.createElement("pregnancyoutcomes");
+            Element rootElement = doc.createElement("${filename}");
             doc.appendChild(rootElement);
 
             int count = 0;
-            resultPregnancyOutcomes.each { PregnancyOutcome pregnancyoutcome ->
-                count++;
+            resultPregnancyOutcomes.collate(1000).each { batch ->
+                def list = PregnancyOutcome.findAllByIdInList(batch)
+                list.each { PregnancyOutcome pregnancyoutcome ->
+                    count++;
 
-                Element element = createPregnancyOutcome(doc, pregnancyoutcome);
-                rootElement.appendChild(element);
+                    Element element = createPregnancyOutcome(doc, pregnancyoutcome);
+                    rootElement.appendChild(element);
+
+                    if (count % 3000 == 0) {
+                        cleanUpGorm()
+                    }
+                }
             }
 
             // write the content into xml file
             TransformerFactory transformerFactory = TransformerFactory.newInstance();
             Transformer transformer = transformerFactory.newTransformer();
             DOMSource source = new DOMSource(doc);
-            StreamResult result = new StreamResult(new File(SystemPath.getGeneratedFilesPath() + "/pregnancyoutcomes.xml"));
+            StreamResult result = new StreamResult(new File(SystemPath.getGeneratedFilesPath() + "/${xmlFilename}"));
 
             // Output to console for testing
             // StreamResult result = new StreamResult(System.out);
             transformer.transform(source, result);
 
-            System.out.println("File saved! - pregnancyoutcomes.xml");
-            output.println("File saved! - pregnancyoutcomes.xml");
+            System.out.println("File saved! - ${xmlFilename}");
+            output.println("File saved! - ${xmlFilename}");
 
             //zip file
-            ZipMaker zipMaker = new ZipMaker(SystemPath.getGeneratedFilesPath() + "/pregnancyoutcomes.zip")
-            zipMaker.addFile(SystemPath.getGeneratedFilesPath() + "/pregnancyoutcomes.xml")
+            ZipMaker zipMaker = new ZipMaker(SystemPath.getGeneratedFilesPath() + "/${zipFilename}")
+            zipMaker.addFile(SystemPath.getGeneratedFilesPath() + "/${xmlFilename}")
             def b = zipMaker.makeZip()
 
-            println "creating zip - pregnancyoutcomes.zip - success=" + b
+            println "creating zip - ${zipFilename} - success=" + b
 
             processed = 1
 
             //Save number of records
             syncFilesReportService.update(SyncEntity.PREGNANCY_OUTCOMES, count)
+
+        } catch (Exception ex) {
+            ex.printStackTrace()
+            processed = 0
+            errors = 1
+            output.println(ex.toString())
+
+            logStatusValue = LogStatus.ERROR
+        }
+
+        LogReport.withTransaction {
+            LogReport logReport = LogReport.findByReportId(logReportId)
+            LogReportFile reportFile = new LogReportFile(creationDate: LocalDateTime.now(), fileName: log.logFileName, logReport: logReport)
+            reportFile.keyTimestamp = logReport.keyTimestamp
+            reportFile.start = start
+            reportFile.end = LocalDateTime.now()
+            reportFile.creationDate = LocalDateTime.now()
+            reportFile.processedCount = processed
+            reportFile.errorsCount = errors
+
+            logReport.end = LocalDateTime.now()
+            logReport.status = logStatusValue
+            logReport.addToLogFiles(reportFile)
+            logReport.save()
+
+            //println("errors: ${logReport.errors}")
+        }
+
+        output.close();
+
+    }
+
+    def generatePregnancyVisitsXML(LogReportCode logReportId) { //read forms
+
+        String filename = SyncEntity.PREGNANCY_VISITS.filename
+        String xmlFilename = SyncEntity.PREGNANCY_VISITS.xmlFilename
+        String zipFilename = SyncEntity.PREGNANCY_VISITS.zipFilename
+
+        LogOutput log = generalUtilitiesService.getOutput(SystemPath.getLogsPath(), "generate-exp-${filename}-xml");
+        PrintStream output = log.output
+        if (output == null) return;
+
+        def start = LocalDateTime.now();
+        int processed = 0
+        int errors = 0
+        def logStatusValue = LogStatus.FINISHED
+
+        try {
+            //read forms
+            def resultPregnancyVisits = []
+
+            PregnancyVisit.withTransaction {
+                resultPregnancyVisits = PregnancyVisit.executeQuery("select p.id from PregnancyVisit p")
+            }
+
+            DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+
+            // root elements
+            Document doc = docBuilder.newDocument();
+            Element rootElement = doc.createElement("${filename}");
+            doc.appendChild(rootElement);
+
+            int count = 0;
+            resultPregnancyVisits.collate(1000).each { batch ->
+                def list = PregnancyVisit.findAllByIdInList(batch)
+                list.each { PregnancyVisit pregnancyVisit ->
+                    count++;
+
+                    Element element = createPregnancyVisit(doc, pregnancyVisit);
+                    rootElement.appendChild(element);
+
+                    if (count % 3000 == 0) {
+                        cleanUpGorm()
+                    }
+                }
+            }
+
+            // write the content into xml file
+            TransformerFactory transformerFactory = TransformerFactory.newInstance();
+            Transformer transformer = transformerFactory.newTransformer();
+            DOMSource source = new DOMSource(doc);
+            StreamResult result = new StreamResult(new File(SystemPath.getGeneratedFilesPath() + "/${xmlFilename}"));
+
+            // Output to console for testing
+            // StreamResult result = new StreamResult(System.out);
+            transformer.transform(source, result);
+
+            System.out.println("File saved! - ${xmlFilename}");
+            output.println("File saved! - ${xmlFilename}");
+
+            //zip file
+            ZipMaker zipMaker = new ZipMaker(SystemPath.getGeneratedFilesPath() + "/${zipFilename}")
+            zipMaker.addFile(SystemPath.getGeneratedFilesPath() + "/${xmlFilename}")
+            def b = zipMaker.makeZip()
+
+            println "creating zip - ${zipFilename} - success=" + b
+
+            processed = 1
+
+            //Save number of records
+            syncFilesReportService.update(SyncEntity.PREGNANCY_VISITS, count)
 
         } catch (Exception ex) {
             ex.printStackTrace()
@@ -2576,6 +2693,16 @@ class SyncFilesService {
         element.appendChild(createAttributeNonNull(doc, "status", pregnancyregistration.status.code))
         element.appendChild(createAttributeNonNull(doc, "visitCode", pregnancyregistration.visitCode))
 
+        element.appendChild(createAttributeNonNull(doc, "summary_antepartum_count", pregnancyregistration.summary_antepartum_count == null ? "0" : "${pregnancyregistration.summary_antepartum_count}"))
+        element.appendChild(createAttributeNonNull(doc, "summary_postpartum_count", pregnancyregistration.summary_postpartum_count == null ? "0" : "${pregnancyregistration.summary_postpartum_count}"))
+        element.appendChild(createAttributeNonNull(doc, "summary_last_visit_status", pregnancyregistration.summary_last_visit_status == null ? "" : pregnancyregistration.summary_last_visit_status.code))
+        element.appendChild(createAttributeNonNull(doc, "summary_last_visit_type", pregnancyregistration.summary_last_visit_type == null ? "" : pregnancyregistration.summary_last_visit_type.code))
+        element.appendChild(createAttributeNonNull(doc, "summary_last_visit_date", pregnancyregistration.summary_last_visit_date == null ? "" : StringUtil.format(pregnancyregistration.summary_last_visit_date)))
+        element.appendChild(createAttributeNonNull(doc, "summary_first_visit_date", pregnancyregistration.summary_first_visit_date == null ? "" : StringUtil.format(pregnancyregistration.summary_first_visit_date)))
+        element.appendChild(createAttributeNonNull(doc, "summary_has_pregnancy_outcome", pregnancyregistration.summary_has_pregnancy_outcome == null ? "false" : "${pregnancyregistration.summary_has_pregnancy_outcome}"))
+        element.appendChild(createAttributeNonNull(doc, "summary_nr_outcomes", pregnancyregistration.summary_nr_outcomes == null ? "0" : "${pregnancyregistration.summary_nr_outcomes}"))
+        element.appendChild(createAttributeNonNull(doc, "summary_followup_completed", pregnancyregistration.summary_followup_completed == null ? "false" : "${pregnancyregistration.summary_followup_completed}"))
+
         element.appendChild(createAttributeNonNull(doc, "collectedId", pregnancyregistration.collectedId==null ? "" : pregnancyregistration.collectedId))
 
         return element
@@ -2598,6 +2725,16 @@ class SyncFilesService {
         element.appendChild(createAttributeNonNull(doc, "status", PregnancyStatus.DELIVERED.code))
         element.appendChild(createAttributeNonNull(doc, "visitCode", pregnancyoutcome.visitCode))
 
+        element.appendChild(createAttributeNonNull(doc, "summary_antepartum_count", "0"))
+        element.appendChild(createAttributeNonNull(doc, "summary_postpartum_count", "0"))
+        element.appendChild(createAttributeNonNull(doc, "summary_last_visit_status", ""))
+        element.appendChild(createAttributeNonNull(doc, "summary_last_visit_type", ""))
+        element.appendChild(createAttributeNonNull(doc, "summary_last_visit_date", ""))
+        element.appendChild(createAttributeNonNull(doc, "summary_first_visit_date", ""))
+        element.appendChild(createAttributeNonNull(doc, "summary_has_pregnancy_outcome", "true"))
+        element.appendChild(createAttributeNonNull(doc, "summary_nr_outcomes", ""+pregnancyoutcome.numberOfOutcomes))
+        element.appendChild(createAttributeNonNull(doc, "summary_followup_completed", "false"))
+
         element.appendChild(createAttributeNonNull(doc, "collectedId", pregnancyoutcome.collectedId==null ? "" : pregnancyoutcome.collectedId))
 
         return element
@@ -2617,6 +2754,79 @@ class SyncFilesService {
         element.appendChild(createAttributeNonNull(doc, "visitCode", pregnancyoutcome.visitCode))
 
         element.appendChild(createAttributeNonNull(doc, "collectedId", pregnancyoutcome.collectedId==null ? "" : pregnancyoutcome.collectedId))
+
+        // Now export childs
+        Element childsElement = doc.createElement("childs");
+        if (pregnancyoutcome.childs != null && !pregnancyoutcome.childs.isEmpty()) {
+            for (PregnancyChild child : pregnancyoutcome.childs) {
+                Element childElement = doc.createElement("child");
+
+                childElement.appendChild(createAttributeNonNull(doc, "outcomeCode", child.outcomeCode));
+                childElement.appendChild(createAttributeNonNull(doc, "outcomeType", child.outcomeType == null ? "" : child.outcomeType.code));
+                childElement.appendChild(createAttributeNonNull(doc, "childCode", child.childCode == null ? "" : child.childCode));
+                childElement.appendChild(createAttributeNonNull(doc, "childOrdinalPosition", child.childOrdinalPosition == null ? "" : child.childOrdinalPosition.toString()));
+                childElement.appendChild(createAttributeNonNull(doc, "childHeadRelationshipType", child.childHeadRelationship == null ? "" : child.childHeadRelationship?.relationshipType?.code));
+
+                childsElement.appendChild(childElement);
+            }
+        }
+        element.appendChild(childsElement);
+
+        return element
+    }
+
+    private Element createPregnancyVisit(Document doc, PregnancyVisit pregnancyVisit) {
+        Element element = doc.createElement("pregnancyvisit")
+
+        // Basic fields
+        element.appendChild(createAttributeNonNull(doc, "visitCode", pregnancyVisit.visitCode));
+        element.appendChild(createAttributeNonNull(doc, "code", pregnancyVisit.code));
+        element.appendChild(createAttributeNonNull(doc, "motherCode", pregnancyVisit.motherCode));
+        // Status and visit info
+        element.appendChild(createAttributeNonNull(doc, "status", pregnancyVisit.status == null ? "" : pregnancyVisit.status.code));
+        element.appendChild(createAttributeNonNull(doc, "visitNumber", pregnancyVisit.visitNumber == null ? "" : pregnancyVisit.visitNumber.toString()));
+        element.appendChild(createAttributeNonNull(doc, "visitType", pregnancyVisit.visitType == null ? "" : pregnancyVisit.visitType.code));
+        element.appendChild(createAttributeNonNull(doc, "visitDate", pregnancyVisit.visitDate == null ? "" : StringUtil.format(pregnancyVisit.visitDate)));
+        // Antepartum questions
+        element.appendChild(createAttributeNonNull(doc, "weeksGestation", pregnancyVisit.weeksGestation == null ? "" : pregnancyVisit.weeksGestation.toString()));
+        element.appendChild(createAttributeNonNull(doc, "prenatalCareReceived", pregnancyVisit.prenatalCareReceived == null ? "" : pregnancyVisit.prenatalCareReceived.toString()));
+        element.appendChild(createAttributeNonNull(doc, "prenatalCareProvider", pregnancyVisit.prenatalCareProvider == null ? "" : pregnancyVisit.prenatalCareProvider.code));
+        element.appendChild(createAttributeNonNull(doc, "complicationsReported", pregnancyVisit.complicationsReported == null ? "" : pregnancyVisit.complicationsReported.toString()));
+        element.appendChild(createAttributeNonNull(doc, "complicationDetails", pregnancyVisit.complicationDetails == null ? "" : pregnancyVisit.complicationDetails));
+        element.appendChild(createAttributeNonNull(doc, "hasBirthPlan", pregnancyVisit.hasBirthPlan == null ? "" : pregnancyVisit.hasBirthPlan.toString()));
+        element.appendChild(createAttributeNonNull(doc, "expectedBirthPlace", pregnancyVisit.expectedBirthPlace == null ? "" : pregnancyVisit.expectedBirthPlace.code));
+        element.appendChild(createAttributeNonNull(doc, "birthPlaceOther", pregnancyVisit.birthPlaceOther == null ? "" : pregnancyVisit.birthPlaceOther));
+        element.appendChild(createAttributeNonNull(doc, "transportationPlan", pregnancyVisit.transportationPlan == null ? "" : pregnancyVisit.transportationPlan.toString()));
+        element.appendChild(createAttributeNonNull(doc, "financialPreparedness", pregnancyVisit.financialPreparedness == null ? "" : pregnancyVisit.financialPreparedness.toString()));
+        // Postpartum questions
+        element.appendChild(createAttributeNonNull(doc, "postpartumComplications", pregnancyVisit.postpartumComplications == null ? "" : pregnancyVisit.postpartumComplications.toString()));
+        element.appendChild(createAttributeNonNull(doc, "postpartumComplicationDetails", pregnancyVisit.postpartumComplicationDetails == null ? "" : pregnancyVisit.postpartumComplicationDetails));
+        element.appendChild(createAttributeNonNull(doc, "breastfeedingStatus", pregnancyVisit.breastfeedingStatus == null ? "" : pregnancyVisit.breastfeedingStatus.code));
+        element.appendChild(createAttributeNonNull(doc, "resumedDailyActivities", pregnancyVisit.resumedDailyActivities == null ? "" : pregnancyVisit.resumedDailyActivities.toString()));
+        element.appendChild(createAttributeNonNull(doc, "attendedPostpartumCheckup", pregnancyVisit.attendedPostpartumCheckup == null ? "" : pregnancyVisit.attendedPostpartumCheckup.toString()));
+
+        element.appendChild(createAttributeNonNull(doc, "collectedId", pregnancyVisit.collectedId==null ? "" : pregnancyVisit.collectedId))
+
+        // Now export childs
+        Element childsElement = doc.createElement("childs");
+        if (pregnancyVisit.childs != null && !pregnancyVisit.childs.isEmpty()) {
+            for (def child : pregnancyVisit.childs) {
+                Element childElement = doc.createElement("child");
+
+                childElement.appendChild(createAttributeNonNull(doc, "pregnancyCode", child.pregnancyCode));
+                childElement.appendChild(createAttributeNonNull(doc, "outcomeType", child.outcomeType == null ? "" : child.outcomeType.code));
+                childElement.appendChild(createAttributeNonNull(doc, "childCode", child.childCode == null ? "" : child.childCode));
+                childElement.appendChild(createAttributeNonNull(doc, "childStatus", child.childStatus == null ? "" : child.childStatus.code));
+                childElement.appendChild(createAttributeNonNull(doc, "childWeight", child.childWeight == null ? "" : child.childWeight.toString()));
+                childElement.appendChild(createAttributeNonNull(doc, "childIllnessSymptoms", child.childIllnessSymptoms == null ? "" : child.childIllnessSymptoms.collect { it.code }.join(',')));
+                childElement.appendChild(createAttributeNonNull(doc, "childBreastfeedingStatus", child.childBreastfeedingStatus == null ? "" : child.childBreastfeedingStatus.code));
+                childElement.appendChild(createAttributeNonNull(doc, "childImmunizationStatus", child.childImmunizationStatus == null ? "" : child.childImmunizationStatus.code));
+                childElement.appendChild(createAttributeNonNull(doc, "notes", child.notes == null ? "" : child.notes));
+
+                childsElement.appendChild(childElement);
+            }
+        }
+        element.appendChild(childsElement);
 
         return element
     }

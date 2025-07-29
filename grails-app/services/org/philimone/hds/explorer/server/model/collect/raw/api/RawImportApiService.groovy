@@ -931,6 +931,102 @@ class RawImportApiService implements DataBinder {
 
     }
 
+    RawParseResult<RawPregnancyVisit> parsePregnancyVisit(NodeChild xmlNode) {
+
+        //has a especial handler
+
+        def errors = new ArrayList<RawMessage>()
+        def params = [:]
+        def paramsChild = new ArrayList<LinkedHashMap>()
+        def rootnode = xmlNode?.name()
+
+        xmlNode.childNodes().each { Node node ->
+
+            if (node.childNodes().size()>0 && node.name().equalsIgnoreCase("childs")){
+                //println "children ${node.name()}"
+
+                node.childNodes().eachWithIndex { Node child, index ->
+
+                    if (child.name().equalsIgnoreCase("rawPregnancyVisitChild")){
+                        def cparams = [:]
+                        child.childNodes().each { innernode ->
+                            cparams.put(innernode.name(), innernode.text())
+                        }
+
+                        paramsChild.add(cparams)
+                    }
+
+                }
+            } else {
+                params.put(node.name(), node.text())
+            }
+        }
+
+        if (!rootnode.equalsIgnoreCase("RawPregnancyVisit")) {
+            errors << errorMessageService.getRawMessage("validation.field.raw.parsing.rootnode.invalid.error", [rootnode])
+            return new RawParseResult<RawPregnancyVisit>(null, errors)
+        }
+
+        /* converting non-primitive types must be parsed manually */
+
+        if (xmlNode?.visitDate.size() > 0) {
+            params.visitDate = StringUtil.toLocalDate(xmlNode.visitDate.text())
+
+            if (params.visitDate==null) {
+                errors << errorMessageService.getRawMessage("validation.field.raw.parsing.localdate.error", [xmlNode?.visitDate.text(), "visitDate"])
+            }
+        }
+
+        if (xmlNode?.collectedDate.size() > 0) {
+            params.collectedDate = StringUtil.toLocalDateTimePrecise(xmlNode.collectedDate.text())
+
+            if (params.collectedDate==null) {
+                errors << errorMessageService.getRawMessage("validation.field.raw.parsing.localdatetime.error", [xmlNode?.collectedDate.text(), "collectedDate"])
+            }
+        }
+
+        if (xmlNode?.uploadedDate.size() > 0) {
+            params.uploadedDate = StringUtil.toLocalDateTimePrecise(xmlNode.uploadedDate.text())
+
+            if (params.uploadedDate==null) {
+                errors << errorMessageService.getRawMessage("validation.field.raw.parsing.localdatetime.error", [xmlNode?.uploadedDate.text(), "uploadedDate"])
+            }
+        } else {
+            params.uploadedDate = LocalDateTime.now()
+        }
+
+        /* start and end variables */
+        if (xmlNode.start.size() > 0) {
+            params.collectedStart = StringUtil.toLocalDateTimePrecise(xmlNode.start.text())
+
+            if (params.collectedStart==null) {
+                errors << errorMessageService.getRawMessage("validation.field.raw.parsing.localdatetime.error", [xmlNode?.start.text(), "collectedStart"])
+            }
+        }
+
+        if (xmlNode.end.size() > 0) {
+            params.collectedEnd = StringUtil.toLocalDateTimePrecise(xmlNode.end.text())
+
+            if (params.collectedEnd==null) {
+                errors << errorMessageService.getRawMessage("validation.field.raw.parsing.localdatetime.error", [xmlNode?.end.text(), "collectedEnd"])
+            }
+        }
+
+        def rawInstance = new RawPregnancyVisit(params)
+        rawInstance.id = params.id
+
+        if (paramsChild.size() > 0) {
+            paramsChild.each { cparams ->
+                def rawChild = new RawPregnancyVisitChild(cparams)
+                rawChild.pregnancyVisit = rawInstance
+                rawChild.pregnancyCode = rawInstance.code
+                rawInstance.addToChilds(rawChild)
+            }
+        }
+
+        return new RawParseResult<RawPregnancyVisit>(rawInstance, errors)
+    }
+
     RawParseResult<RawDeath> parseDeath(NodeChild xmlNode) {
 
         def errors = new ArrayList<RawMessage>()

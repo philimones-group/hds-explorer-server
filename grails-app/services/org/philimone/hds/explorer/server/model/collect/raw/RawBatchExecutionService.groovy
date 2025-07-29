@@ -23,6 +23,7 @@ import org.philimone.hds.explorer.server.model.main.Member
 import org.philimone.hds.explorer.server.model.main.OutMigration
 import org.philimone.hds.explorer.server.model.main.PregnancyOutcome
 import org.philimone.hds.explorer.server.model.main.PregnancyRegistration
+import org.philimone.hds.explorer.server.model.main.PregnancyVisit
 import org.philimone.hds.explorer.server.model.main.Region
 import org.philimone.hds.explorer.server.model.main.RegionHeadRelationship
 import org.philimone.hds.explorer.server.model.main.Visit
@@ -106,6 +107,7 @@ class RawBatchExecutionService {
             RawChangeHead.executeUpdate(           "update RawChangeHead r            set r.processedStatus=:newStatus where r.processedStatus=:currStatus", [currStatus: ProcessedStatus.ERROR, newStatus: ProcessedStatus.NOT_PROCESSED])
             RawChangeRegionHead.executeUpdate(     "update RawChangeRegionHead r      set r.processedStatus=:newStatus where r.processedStatus=:currStatus", [currStatus: ProcessedStatus.ERROR, newStatus: ProcessedStatus.NOT_PROCESSED])
             RawHouseholdRelocation.executeUpdate(  "update RawHouseholdRelocation r   set r.processedStatus=:newStatus where r.processedStatus=:currStatus", [currStatus: ProcessedStatus.ERROR, newStatus: ProcessedStatus.NOT_PROCESSED])
+            RawPregnancyVisit.executeUpdate(       "update RawPregnancyVisit r        set r.processedStatus=:newStatus where r.processedStatus=:currStatus", [currStatus: ProcessedStatus.ERROR, newStatus: ProcessedStatus.NOT_PROCESSED])
 
             RawErrorLog.executeUpdate("delete from RawErrorLog r") //Crazy decision? not that much, if we are going to execute all again we dont need the old errors
         }
@@ -160,6 +162,7 @@ class RawBatchExecutionService {
             RawChangeHead.executeUpdate(           "update RawChangeHead r            set r.processedStatus=:newStatus", [newStatus: ProcessedStatus.NOT_PROCESSED])
             RawChangeRegionHead.executeUpdate(     "update RawChangeRegionHead r      set r.processedStatus=:newStatus", [newStatus: ProcessedStatus.NOT_PROCESSED])
             RawHouseholdRelocation.executeUpdate(  "update RawHouseholdRelocation r   set r.processedStatus=:newStatus", [newStatus: ProcessedStatus.NOT_PROCESSED])
+            RawPregnancyVisit.executeUpdate(       "update RawPregnancyVisit r        set r.processedStatus=:newStatus", [newStatus: ProcessedStatus.NOT_PROCESSED])
 
             RawErrorLog.executeUpdate("delete from RawErrorLog r") //Crazy decision? not that much, if we are going to execute all again we dont need the old errors
         }
@@ -186,6 +189,7 @@ class RawBatchExecutionService {
         collectHouseholdRelocations()
         collectPregnancyRegistration()
         collectPregnancyOutcome()
+        collectPregnancyVisit()
         collectMaritalRelationshipStart()
         collectMaritalRelationshipEnd()
         collectChangeHoh()
@@ -408,6 +412,7 @@ class RawBatchExecutionService {
             case RawEventType.EVENT_EXTERNAL_INMIGRATION_REENTRY: result = executeExtInmigration(event, logReportFileId, eventsWithErrors); break
             case RawEventType.EVENT_PREGNANCY_REGISTRATION:       result = executePregnancyReg(event, logReportFileId, eventsWithErrors); break
             case RawEventType.EVENT_PREGNANCY_OUTCOME:            result = executePregnancyOutcome(event, logReportFileId, eventsWithErrors); break
+            case RawEventType.EVENT_PREGNANCY_VISIT:              result = executePregnancyVisit(event, logReportFileId, eventsWithErrors); break
             case RawEventType.EVENT_MARITAL_RELATIONSHIP:         result = executeMaritalRelationship(event, logReportFileId, eventsWithErrors); break
             case RawEventType.EVENT_CHANGE_HEAD_OF_HOUSEHOLD:     result = executeChangeHead(event, logReportFileId, eventsWithErrors); break
             case RawEventType.EVENT_INCOMPLETE_VISIT:             result = executeIncompleteVisit(event, logReportFileId, eventsWithErrors); break
@@ -561,6 +566,12 @@ class RawBatchExecutionService {
             obj.save(flush:true)
         }
 
+        if (domainObj.domainInstance instanceof RawPregnancyVisit) {
+            def obj = (RawPregnancyVisit) domainObj.domainInstance
+            obj.processedStatus = ProcessedStatus.ERROR
+            obj.save(flush:true)
+        }
+
         if (domainObj.domainInstance instanceof RawMaritalRelationship) {
             def obj = (RawMaritalRelationship) domainObj.domainInstance
             obj.processedStatus = ProcessedStatus.ERROR
@@ -642,6 +653,10 @@ class RawBatchExecutionService {
             case RawEventType.EVENT_PREGNANCY_OUTCOME:
                 def rawObj = RawPregnancyOutcome.findById(rawEvent?.eventId)
                 return new RawEntityObj(RawEntity.PREGNANCY_OUTCOME, RawDomainObj.attach(rawObj))
+
+            case RawEventType.EVENT_PREGNANCY_VISIT:
+                def rawObj = RawPregnancyVisit.findById(rawEvent?.eventId)
+                return new RawEntityObj(RawEntity.PREGNANCY_VISIT, RawDomainObj.attach(rawObj))
 
             case RawEventType.EVENT_MARITAL_RELATIONSHIP:
                 def rawObj = RawMaritalRelationship.findById(rawEvent?.eventId)
@@ -1164,6 +1179,50 @@ class RawBatchExecutionService {
                 if (!depStatus3.errorMessages.isEmpty()) errors.addAll(depStatus3.errorMessages)
 
                 def result = createRawEventErrorLog(RawEntity.PREGNANCY_OUTCOME, rawEvent, RawDomainObj.attach(rawObj), "code", errors, logReportFileId)
+                return result
+            }
+
+            return null
+        }
+
+        return null
+    }
+
+    RawExecutionResult<PregnancyVisit> executePregnancyVisit(RawEvent rawEvent, String logReportFileId, HashMap<String, RawEvent> eventsWithErrors) {
+        if (rawEvent == null || rawEvent?.isProcessed()) return null
+
+        def rawObj = RawPregnancyVisit.findById(rawEvent.eventId)
+
+        if (rawObj != null) {
+
+            def dependencyResolved = true
+
+            //check dependencies existence (visit, mother, father)
+            def visitCode = rawObj.visitCode
+            def motherCode = rawObj.motherCode
+
+            //try to solve visit dependency
+            def depStatus = solveVisitDependency(visitCode, "visitCode", logReportFileId, eventsWithErrors)
+            dependencyResolved = dependencyResolved && depStatus.solved
+
+            //try to solve member dependency (mother)
+            def depStatus2 = solveMemberDependency(motherCode, "motherCode", logReportFileId, eventsWithErrors)
+            dependencyResolved = dependencyResolved && depStatus2.solved
+
+            if (dependencyResolved) {
+                def result = rawExecutionService.createPregnancyVisit(rawObj, logReportFileId)
+
+                //set event has processed
+                rawEvent.processed = getProcessedStatus(result?.status)
+                rawEvent.save(flush:true)
+
+                return result
+            } else {
+                def errors = new ArrayList<RawMessage>()
+                if (!depStatus.errorMessages.isEmpty()) errors.addAll(depStatus.errorMessages)
+                if (!depStatus2.errorMessages.isEmpty()) errors.addAll(depStatus2.errorMessages)
+
+                def result = createRawEventErrorLog(RawEntity.PREGNANCY_VISIT, rawEvent, RawDomainObj.attach(rawObj), "code", errors, logReportFileId)
                 return result
             }
 
@@ -1875,6 +1934,28 @@ class RawBatchExecutionService {
                 batch.each {
                     def codes = RawPregnancyChild.executeQuery("select p.childCode from RawPregnancyChild p where p.outcome=?0", [it])
                     def event = new RawEvent(keyDate: it.outcomeDate.atStartOfDay(), collectedDate: it.collectedDate, eventType: RawEventType.EVENT_PREGNANCY_OUTCOME, eventId: it.id, eventHouseholdCode: it.visitCode, entityCode: it.code)
+                    event.setChildCodesFrom(codes)
+                    event.save()
+                }
+            }
+        }
+
+        list.clear()
+        cleanUpGorm()
+    }
+
+    def collectPregnancyVisit() {
+        def list = [] as List<RawPregnancyVisit>
+
+        RawPregnancyVisit.withTransaction {
+            list = RawPregnancyVisit.findAllByProcessedStatus(ProcessedStatus.NOT_PROCESSED, [sort: "visitDate", order: "asc"])
+        }
+
+        list.collate(200).each { batch ->
+            RawEvent.withTransaction {
+                batch.each {
+                    def codes = RawPregnancyVisitChild.executeQuery("select p.childCode from RawPregnancyVisitChild p where p.pregnancyVisit=?0", [it])
+                    def event = new RawEvent(keyDate: it.visitDate.atStartOfDay(), collectedDate: it.collectedDate, eventType: RawEventType.EVENT_PREGNANCY_VISIT, eventId: it.id, eventHouseholdCode: it.visitCode, entityCode: it.code)
                     event.setChildCodesFrom(codes)
                     event.save()
                 }

@@ -37,4 +37,6 @@ databaseChangeLog = {
     include file: 'alter-visit-add-visit_reason_other.groovy'
     include file: 'alter-head_relationship-add-residency-reference.groovy'
     include file: 'alter-household_relocation_tables.groovy'
+    include file: 'alter-pregnancy_visit_tables.groovy'
+    include file: 'alter-coreformextension_columns_map_size.groovy'
 }

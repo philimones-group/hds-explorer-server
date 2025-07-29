@@ -30,7 +30,8 @@ class CoreFormExtensionController {
         def formsEnabled = new LinkedHashMap<String, Boolean>()
         def formsRequired = ["region_ext":false, "household_ext":false,  "visit_ext":false, "member_ext":false, "marital_relationship_ext":false,
                      "inmigration_ext":false, "outmigration_ext":false, "pregnancy_registration_ext":false, "pregnancy_outcome_ext":false,
-                     "death_ext":false, "change_head_ext":false, "incomplete_visit_ext":false, "change_region_head_ext":false, "household_relocation_ext":false
+                     "death_ext":false, "change_head_ext":false, "incomplete_visit_ext":false, "change_region_head_ext":false, "household_relocation_ext":false,
+                     "pregnancy_visit_ext":false
         ]
         formsEnabled.putAll(formsRequired)
 
@@ -178,6 +179,11 @@ class CoreFormExtensionController {
 
         if (coreFormExtension.coreForm == CoreForm.PREGNANCY_OUTCOME_FORM) {
             def moreCols = coreExtensionDatabaseService.getDatabaseColumns(CoreExtensionService.PREGNANCY_CHILD_EXT_TABLE)
+            colsList.addAll(moreCols)
+        }
+
+        if (coreFormExtension.coreForm == CoreForm.PREGNANCY_VISIT_FORM) {
+            def moreCols = coreExtensionDatabaseService.getDatabaseColumns(CoreExtensionService.PREGNANCY_VISIT_CHILD_EXT_TABLE)
             colsList.addAll(moreCols)
         }
 

@@ -361,6 +361,7 @@ class EventSyncService {
             list.add(getOutMigrationStatus())
             list.add(getPregnancyRegistrationStatus())
             list.add(getPregnancyOutcomeStatus())
+            list.add(getPregnancyVisitStatus())
             list.add(getDeathStatus())
             list.add(getChangeHeadStatus())
             list.add(getHouseholdRelocationStatus())
@@ -565,6 +566,21 @@ class EventSyncService {
         status.notProcessed = RawPregnancyOutcome.countByProcessedStatus(ProcessedStatus.NOT_PROCESSED)
         status.invalidated = RawPregnancyOutcome.countByProcessedStatus(ProcessedStatus.INVALIDATED)
         //status.otherCases = RawPregnancyOutcome.countByProcessedStatus(ProcessedStatus.)
+
+        return status
+    }
+
+    SyncProcessedStatus getPregnancyVisitStatus(){
+        SyncProcessedStatus status = new SyncProcessedStatus()
+
+        //total records
+        status.name = 'syncdss.sync.pregnancyvisit.label'
+        status.totalRecords = PregnancyVisit.count()
+        status.processed = RawPregnancyVisit.countByProcessedStatus(ProcessedStatus.SUCCESS)
+        status.processedWithError = RawPregnancyVisit.countByProcessedStatus(ProcessedStatus.ERROR)
+        status.notProcessed = RawPregnancyVisit.countByProcessedStatus(ProcessedStatus.NOT_PROCESSED)
+        status.invalidated = RawPregnancyVisit.countByProcessedStatus(ProcessedStatus.INVALIDATED)
+        //status.otherCases = RawPregnancyVisit.countByProcessedStatus(ProcessedStatus.)
 
         return status
     }

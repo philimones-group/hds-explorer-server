@@ -16,6 +16,8 @@ enum RawEntity {
     PREGNANCY_REGISTRATION ("syncdss.sync.pregnancyreg.label", "rawPregnancyRegistration"),
     PREGNANCY_OUTCOME ("syncdss.sync.pregnancyoutcome.label", "rawPregnancyOutcome"),
     PREGNANCY_CHILD ("syncdss.sync.pregnancychild.label", "rawPregnancyChild"),
+    PREGNANCY_VISIT ("syncdss.sync.pregnancyvisit.label", "rawPregnancyVisit"),
+    PREGNANCY_VISIT_CHILD ("syncdss.sync.pregnancyvisitchild.label", "rawPregnancyVisitChild"),
     EXTERNAL_INMIGRATION ("syncdss.sync.externalinmigration.label", "rawExternalInMigration"),
     DEATH ("syncdss.sync.death.label", "rawDeath"),
     CHANGE_HEAD_OF_HOUSEHOLD ("syncdss.sync.changehead.label", "rawChangeHead"),

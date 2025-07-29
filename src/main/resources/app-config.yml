@@ -5,6 +5,8 @@ hds.explorer.constraints.mother.age.min: 12
 hds.explorer.constraints.head.age.min: 12
 hds.explorer.constraints.spouse.age.min: 16
 hds.explorer.constraints.respondent.age.min: 12
+hds.explorer.constraints.pregnancy.antepartum.visits.max: 4
+hds.explorer.constraints.pregnancy.postpartum.visits.max: 4
 hds.explorer.constraints.gender.checking: true
 hds.explorer.system.language: "en"
 hds.explorer.system.codegenerator: "org.philimone.hds.explorer.server.settings.generator.DefaultCodeGenerator"
