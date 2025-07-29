@@ -103,9 +103,11 @@ class GeneralTagLib {
         def propertyName = attrs.property
         def subPropertyName = attrs.subProperty
         def label = attrs.label
+        def value = attrs.value
         def mode = attrs.mode //edit|show/display
         def options = attrs.options
         def nullable = attrs.nullable
+        def multiple = "true".equalsIgnoreCase(attrs.multiple)
         def valueMessage = attrs.valueMessage
         def valueMessagePrefix = attrs.valueMessagePrefix
         def valueMessageEnumType = attrs.valueMessageEnumType
@@ -162,7 +164,7 @@ class GeneralTagLib {
                     def opts = dataModelsService.getEnumValuesArray("${options}")
                     //println "${options}, ${opts}"
 
-                    def propertyValue = beanInstance."${propertyName}"
+                    def propertyValue = (value != null) ? value : beanInstance."${propertyName}"
                     propertyValue = subPropertyName != null ? propertyValue?."${subPropertyName}" : propertyValue
                     def propertyDefaultLabel = StringUtil.removePascalCase(propertyName)
                     def labelText = g.message(code: label, default: propertyDefaultLabel)
@@ -174,11 +176,18 @@ class GeneralTagLib {
 
                     if (nullable != null && "true".equalsIgnoreCase("${nullable}")) {
                         def emptyMap = [null: '']
-                        out << "                ${g.select(name: propertyName, value: propertyValue, optionKey:'id', optionValue:'name', from: opts, noSelection: emptyMap)} \n"
+                        if (multiple){
+                            out << "                ${g.select(name: propertyName, value: propertyValue, optionKey:'id', optionValue:'name', from: opts, noSelection: emptyMap, multiple: 'multiple')} \n"
+                        } else {
+                            out << "                ${g.select(name: propertyName, value: propertyValue, optionKey:'id', optionValue:'name', from: opts, noSelection: emptyMap)} \n"
+                        }
                     } else {
-                        out << "                ${g.select(name: propertyName, value: propertyValue, optionKey:"id", optionValue:"name", from: opts)}\n"
+                        if (multiple) {
+                            out << "                ${g.select(name: propertyName, value: propertyValue, optionKey:"id", optionValue:"name", from: opts, multiple: 'multiple')}\n"
+                        } else {
+                            out << "                ${g.select(name: propertyName, value: propertyValue, optionKey:"id", optionValue:"name", from: opts)}\n"
+                        }
                     }
-
 
                     out << "            </div>\n"
 

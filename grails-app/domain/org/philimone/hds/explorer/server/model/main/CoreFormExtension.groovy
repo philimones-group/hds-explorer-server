@@ -34,7 +34,7 @@ class CoreFormExtension {
         required nullable: false
         enabled nullable: false
 
-        columnsMapping nullable: true, maxSize: 500
+        columnsMapping nullable: true, maxSize: 1000
     }
 
     static mapping = {
