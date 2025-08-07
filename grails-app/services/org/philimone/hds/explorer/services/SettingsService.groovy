@@ -2,8 +2,6 @@ package org.philimone.hds.explorer.services
 
 import grails.gorm.transactions.Transactional
 import org.philimone.hds.explorer.server.model.json.JConstant
-import org.philimone.hds.explorer.server.model.main.CoreFormColumnOptions
-import org.philimone.hds.explorer.server.model.main.CoreFormColumnOptionsService
 import org.philimone.hds.explorer.server.model.main.Region
 import org.philimone.hds.explorer.server.model.settings.Codes
 import org.philimone.hds.explorer.server.settings.generator.CodeGeneratorIncrementalRule
@@ -13,6 +11,7 @@ class SettingsService {
 
     def applicationParamService
     def coreFormColumnOptionsService
+    def generalUtilitiesService
 
     def getCodeGeneratorsIncrementalRules() {
         def incs = CodeGeneratorIncrementalRule.values()
@@ -56,7 +55,20 @@ class SettingsService {
         return value
     }
 
+    JConstant getCurrentSupportedCalendar() {
+        def calendar1 = new JConstant(value: Codes.SYSTEM_SUPPORTED_CALENDAR_GREGORIAN, name: "settings.parameters.calendar.gregorian.label")
+        def calendar2 = new JConstant(value: Codes.SYSTEM_SUPPORTED_CALENDAR_ETHIOPIAN, name: "settings.parameters.calendar.ethiopian.label")
+
+        def selectedEthiopian = applicationParamService.getBooleanValue(Codes.PARAMS_SYSTEM_USE_ETHIOPIAN_CALENDAR)
+
+        return selectedEthiopian ? calendar2 : calendar1
+    }
+
     void afterUpdateSystemLanguage(){
         coreFormColumnOptionsService.updateColumnOptionLabels()
+    }
+
+    void afterUpdateSystemCalendar(){
+
     }
 }

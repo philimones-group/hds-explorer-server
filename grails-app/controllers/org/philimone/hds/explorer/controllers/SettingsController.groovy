@@ -2,6 +2,7 @@ package org.philimone.hds.explorer.controllers
 
 import grails.converters.JSON
 import org.philimone.hds.explorer.server.model.authentication.User
+import org.philimone.hds.explorer.server.model.json.JConstant
 import org.philimone.hds.explorer.server.model.json.JLanguage
 import org.philimone.hds.explorer.server.model.main.CoreFormColumnOptions
 import org.philimone.hds.explorer.server.model.main.Module
@@ -24,11 +25,13 @@ class SettingsController {
     def parameters() {
         List<JLanguage> languages = generalUtilitiesService.getSystemLanguages()
         JLanguage currentLanguage = generalUtilitiesService.getCurrentSystemLanguage()
+        def supportedCalendars = generalUtilitiesService.getSystemSupportedCalendars()
+        def selectedCalendar = settingsService.getCurrentSupportedCalendar()
         def codeGenIncrementalRules = settingsService.codeGeneratorsIncrementalRules
         def regionHeadSupport = settingsService.getRegionHeadSupport()
         def gpsRequired = settingsService.getVisitGpsRequired()
 
-        [languages: languages, selectedLanguage: currentLanguage.language, codeGenerators: Codes.SYSTEM_ALL_CODE_GENERATORS,
+        [languages: languages, selectedLanguage: currentLanguage.language, calendars: supportedCalendars, selectedCalendar: selectedCalendar, codeGenerators: Codes.SYSTEM_ALL_CODE_GENERATORS,
          codeGeneratorsRules: codeGenIncrementalRules, selectedCodeGenerator: Codes.SYSTEM_CODE_GENERATOR, selectedGpsRequired: gpsRequired,
          selectedCodeGeneratorIncRule: Codes.SYSTEM_CODE_GENERATOR_INCREMENTAL_RULE, selectedRegionHeadSupport: regionHeadSupport, errorMessages: new ArrayList<String>()]
     }
@@ -36,14 +39,17 @@ class SettingsController {
     def updateParameters = {
 
         def selectedLanguage = params.systemLanguage
+        def selectedCalendar = params.systemInputCalendar
         def selectedCodeGenerator = params.codeGenerator
         def selectedCodeGeneratorIncRule = params.codeGeneratorIncRule
         def selectedRegionHeadSupport = (params.regionHeadSupport==null ? false : params.regionHeadSupport?.equals("on")) as Boolean
         def selectedGpsRequired = (params.gpsRequired==null ? false : params.gpsRequired?.equals("on")) as Boolean
         def codeGenIncrementalRules = settingsService.codeGeneratorsIncrementalRules
+        def supportedCalendars = generalUtilitiesService.getSystemSupportedCalendars()
         def errorMessages = new ArrayList<String>()
 
         println "selected lng: ${selectedLanguage}"
+        println "selected cal: ${selectedCalendar}"
         println "selected cgn: ${selectedCodeGenerator}"
         println "selected cgr: ${selectedCodeGeneratorIncRule}"
         println "selected rhs: ${params.regionHeadSupport}, ${selectedRegionHeadSupport}, Codes.SYSTEM_REGION_HEAD_SUPPORT=${Codes.SYSTEM_REGION_HEAD_SUPPORT}"
@@ -57,6 +63,17 @@ class SettingsController {
                 applicationParamService.updateApplicationParam(Codes.PARAMS_SYSTEM_LANGUAGE, selectedLanguage)
 
                 settingsService.afterUpdateSystemLanguage()
+            } else {
+                errorMessages << message(code: 'settings.parameters.update.language.error.null.label') + ""
+            }
+
+            //Update System Calendar
+            if (selectedCalendar != null) {
+                def supported = selectedCalendar?.equals(Codes.SYSTEM_SUPPORTED_CALENDAR_ETHIOPIAN)
+                Codes.SYSTEM_USE_ETHIOPIAN_CALENDAR = supported
+                applicationParamService.updateApplicationParam(Codes.PARAMS_SYSTEM_USE_ETHIOPIAN_CALENDAR, ""+Codes.SYSTEM_USE_ETHIOPIAN_CALENDAR)
+
+                settingsService.afterUpdateSystemCalendar()
             } else {
                 errorMessages << message(code: 'settings.parameters.update.language.error.null.label') + ""
             }
@@ -111,8 +128,8 @@ class SettingsController {
 
         println "${errorMessages}"
 
-        render view: "parameters", model: [languages: languages, selectedLanguage: currentLanguage.language, errorMessages: errorMessages,
-                                           codeGenerators: Codes.SYSTEM_ALL_CODE_GENERATORS, codeGeneratorsRules: codeGenIncrementalRules,
+        render view: "parameters", model: [languages: languages, selectedLanguage: currentLanguage.language, calendars: supportedCalendars, selectedCalendar: selectedCalendar,
+                                           errorMessages: errorMessages, codeGenerators: Codes.SYSTEM_ALL_CODE_GENERATORS, codeGeneratorsRules: codeGenIncrementalRules,
                                            selectedCodeGenerator: Codes.SYSTEM_CODE_GENERATOR, selectedCodeGeneratorIncRule: Codes.SYSTEM_CODE_GENERATOR_INCREMENTAL_RULE,
                                            selectedRegionHeadSupport: selectedRegionHeadSupport, selectedGpsRequired: selectedGpsRequired]
     }

@@ -40,6 +40,25 @@
                     </div>
 
                     <div class="fieldcontain ${hasErrors(bean: this.parameters, field: 'code', 'error')} ">
+                        <label for="systemInputCalendar" title="${message(code: 'settings.parameters.calendar.description.label')}">
+                            <g:message code="settings.parameters.calendar.label" />
+                            <span class="required-indicator">*</span>
+                        </label>
+
+                        <select id="systemInputCalendar" name="systemInputCalendar" required="" value="${selectedCalendar}" optionKey="value" optionValue="name" class="many-to-one">
+                            <g:each in="${calendars}" var="cal">
+                                <g:if test="${cal.value?.equals(selectedCalendar.value)}">
+                                    <option value="${cal.value}" selected><g:message code="${cal.name}" /> </option>
+                                </g:if>
+                                <g:else>
+                                    <option value="${cal.value}" ><g:message code="${cal.name}" /></option>
+                                </g:else>
+                            </g:each>
+                        </select>
+
+                    </div>
+
+                    <div class="fieldcontain ${hasErrors(bean: this.parameters, field: 'code', 'error')} ">
                         <label for="codeGenerator" title="${message(code: 'settings.parameters.codegenerator.description.label')}">
                             <g:message code="settings.parameters.codegenerator.label" />
                             <span class="required-indicator">*</span>

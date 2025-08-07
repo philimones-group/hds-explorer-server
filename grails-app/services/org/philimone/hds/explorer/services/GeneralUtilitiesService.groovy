@@ -2,9 +2,11 @@ package org.philimone.hds.explorer.services
 
 import grails.gorm.transactions.Transactional
 import net.betainteractive.io.LogOutput
+import net.betainteractive.utilities.DateUtil
 import net.betainteractive.utilities.StringUtil
 import org.philimone.hds.explorer.server.model.authentication.Notification
 import org.philimone.hds.explorer.server.model.authentication.User
+import org.philimone.hds.explorer.server.model.json.JConstant
 import org.philimone.hds.explorer.server.model.json.JLanguage
 import org.philimone.hds.explorer.server.model.settings.Codes
 import org.springframework.context.i18n.LocaleContextHolder
@@ -146,5 +148,13 @@ class GeneralUtilitiesService {
         return null
     }
 
+    List<JConstant> getSystemSupportedCalendars() {
+        def calendars = new ArrayList<JConstant>()
+
+        calendars.add(new JConstant(value: Codes.SYSTEM_SUPPORTED_CALENDAR_GREGORIAN, name: "settings.parameters.calendar.gregorian.label"))
+        calendars.add(new JConstant(value: Codes.SYSTEM_SUPPORTED_CALENDAR_ETHIOPIAN, name: "settings.parameters.calendar.ethiopian.label"))
+
+        return calendars;
+    }
 
 }
