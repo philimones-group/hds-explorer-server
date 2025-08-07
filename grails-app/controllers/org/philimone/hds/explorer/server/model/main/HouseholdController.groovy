@@ -8,6 +8,7 @@ import org.philimone.hds.explorer.server.model.logs.LogReportFile
 class HouseholdController {
 
     HouseholdService householdService
+    def generalUtilitiesService
 
     static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
 
@@ -102,7 +103,7 @@ class HouseholdController {
     }
 
     def householdList = {
-
+        def dateUtil = generalUtilitiesService.getDateUtil()
         //convert datatables params to gorm params
         def jqdtParams = [:]
         params.each { key, value ->
@@ -164,8 +165,8 @@ class HouseholdController {
              'name':     household.name,
              'headCode': "<a href='${createLink(controller: 'member', action: 'show', id: household?.headMember?.id)}'>${household.headCode==null ? '' : household.headCode}</a>",
              'headName': household.headName,
-             'collectedDate': StringUtil.format(household.collectedDate),
-             'createdDate': StringUtil.format(household.createdDate)
+             'collectedDate': dateUtil.formatYMDHMS(household.collectedDate), //StringUtil.format(household.collectedDate),
+             'createdDate': dateUtil.formatYMDHMS(household.createdDate) //StringUtil.format(household.createdDate)
             ]
         }
 

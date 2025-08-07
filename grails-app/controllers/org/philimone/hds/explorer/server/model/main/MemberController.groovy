@@ -11,6 +11,7 @@ class MemberController {
 
     MemberService memberService
     HouseholdService householdService
+    def generalUtilitiesService
 
     static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
 
@@ -114,6 +115,8 @@ class MemberController {
     }
 
     def memberList = {
+        def dateUtil = generalUtilitiesService.getDateUtil()
+
         //convert datatables params to gorm params
         def jqdtParams = [:]
         params.each { key, value ->
@@ -173,8 +176,8 @@ class MemberController {
              'gender':   message(code: member.gender.name),
              'dob':      StringUtil.formatLocalDate(member.dob),
              'householdCode':"<a href='${createLink(controller: 'household', action: 'show', id: member.household?.id)}'>${member.householdCode}</a>",
-             'collectedDate': StringUtil.formatLocalDateTime(member.collectedDate),
-             'createdDate': StringUtil.formatLocalDateTime(member.createdDate)
+             'collectedDate': dateUtil.formatYMDHMS(member.collectedDate), // StringUtil.formatLocalDateTime(member.collectedDate),
+             'createdDate': dateUtil.formatYMDHMS(member.createdDate) //StringUtil.formatLocalDateTime(member.createdDate)
             ]
         }
 

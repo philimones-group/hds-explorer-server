@@ -67,11 +67,12 @@ class GeneralTagLib {
 
         LocalDate localDate = (date instanceof LocalDate) ? (LocalDate) date : null
         LocalDateTime localDateTime = (date instanceof LocalDateTime) ? (LocalDateTime) date : null
+        def dateUtil = generalUtilitiesService.getDateUtil()
 
         if (localDate != null){
-            output = "${StringUtil.format(localDate, format)}"
+            output = dateUtil.formatYMD(localDate)//"${StringUtil.format(localDate, format)}"
         } else if (localDateTime != null){
-            output = "${StringUtil.format(localDateTime, format)}"
+            output = dateUtil.formatYMDHMS(localDateTime)//"${StringUtil.format(localDateTime, format)}"
         }
 
         out << "${output}"
@@ -85,11 +86,12 @@ class GeneralTagLib {
         if (propertyValue instanceof LocalDate || propertyValue instanceof LocalDateTime) {
             LocalDate localDate = (propertyValue instanceof LocalDate) ? (LocalDate) propertyValue : null
             LocalDateTime localDateTime = (propertyValue instanceof LocalDateTime) ? (LocalDateTime) propertyValue : null
+            def dateUtil = generalUtilitiesService.getDateUtil()
 
             if (localDate != null){
-                return "${StringUtil.format(localDate, "yyyy-MM-dd")}"
+                return dateUtil.formatYMD(localDate) //"${StringUtil.format(localDate, "yyyy-MM-dd")}"
             } else if (localDateTime != null){
-                return "${StringUtil.format(localDateTime, "yyyy-MM-dd HH:mm:ss")}"
+                return dateUtil.formatYMDHMS(localDateTime)//"${StringUtil.format(localDateTime, "yyyy-MM-dd HH:mm:ss")}"
             }
 
         } else {
@@ -245,6 +247,7 @@ class GeneralTagLib {
         def strmessages= messageColumns==null ? "" : messageColumns.replaceAll("\\s+","")
         def columnsList = strcolumns.empty ? new ArrayList<String>() : strcolumns.split(",").toList()
         def messageColsList = strmessages.empty ? new ArrayList<String>() : strmessages.split(",").toList()
+        def dateUtil = generalUtilitiesService.getDateUtil()
 
         println "col objs: " + collectionObjs?.size()
         println "col: ${strcolumns}, ${columns}"
@@ -278,11 +281,11 @@ class GeneralTagLib {
 
                 if (columnValue instanceof LocalDate) {
 
-                    textValue = StringUtil.format(columnValue, "yyyy-MM-dd")
+                    textValue = dateUtil.formatYMD((LocalDate)columnValue)//StringUtil.format(columnValue, "yyyy-MM-dd")
 
                 } else if (columnValue instanceof LocalDateTime) {
 
-                    textValue = StringUtil.format(columnValue, "yyyy-MM-dd HH:mm:ss")
+                    textValue = dateUtil.formatYMDHMS((LocalDateTime)columnValue)//StringUtil.format(columnValue, "yyyy-MM-dd HH:mm:ss")
 
                 } else {
 

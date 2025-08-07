@@ -164,7 +164,7 @@
                             <g:message code="user.createdDate.label" default="Created Date" />
                         </span>
                         <span class="property-value" aria-labelledby="createdDate-label">
-                            <g:fieldValue bean="${this.user}" field="createdDate" />
+                            <bi:dateField bean="${this.user}" property="createdDate" label="user.createdDate.label" mode="show" />
                         </span>
                     </li>
                 </g:if>
@@ -186,7 +186,7 @@
                             <g:message code="user.updatedDate.label" default="Updated Date" />
                         </span>
                         <span class="property-value" aria-labelledby="updatedDate-label">
-                            <g:fieldValue bean="${this.user}" field="updatedDate" />
+                            <bi:dateField bean="${this.user}" property="updatedDate" label="user.updatedDate.label" mode="show" />
                         </span>
                     </li>
                 </g:if>

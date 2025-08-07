@@ -47,6 +47,7 @@ class RawBatchExecutionService {
     def residencyService
     def settingsService
     def errorMessageService
+    def generalUtilitiesService
 
 
     def cleanUpGorm() {
@@ -207,6 +208,8 @@ class RawBatchExecutionService {
 
         println "executing events"
 
+        def dateUtil = generalUtilitiesService.getDateUtil()
+
         //read raw_events ordered by keyDate asc and eventtype asc
 
         def initialEvents = [] //as List<RawEvent> //Regions and Households
@@ -249,7 +252,7 @@ class RawBatchExecutionService {
             batch.each { rawEventId ->
                 RawEvent.withTransaction {
                     def rawEvent = RawEvent.get(rawEventId)
-                    println "event ${rawEvent?.eventId}, date=${StringUtil.format(rawEvent?.keyDate)}, type=${rawEvent?.eventType}, order=${rawEvent?.eventOrder}, code: ${rawEvent?.entityCode}"
+                    println "event ${rawEvent?.eventId}, date=${dateUtil.formatYMDHMS(rawEvent?.keyDate)}, type=${rawEvent?.eventType}, order=${rawEvent?.eventOrder}, code: ${rawEvent?.entityCode}"
                     def result = executeEvent(rawEvent, logReportFileId, eventsWithErrors)
                     //println "event result=${result}, ${result?.status}, ${result?.errorMessages)}"
                 }

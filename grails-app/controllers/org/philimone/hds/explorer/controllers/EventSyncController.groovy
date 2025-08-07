@@ -15,6 +15,7 @@ class EventSyncController {
 
     def eventSyncService
     def dataModelsService
+    def generalUtilitiesService
 
     def index = {
         //def logReports = LogReport.executeQuery("select lr from LogReport lr where lr.group.groupId=?0 order by lr.reportId", [LogGroupCode.GROUP_SYNC_DSS_DATA_FROM_CLIENT])
@@ -176,6 +177,8 @@ class EventSyncController {
     }
 
     def errorLogList = {
+        def dateUtil = generalUtilitiesService.getDateUtil()
+
         //convert datatables params to gorm params
         def jqdtParams = [:]
         params.each { key, value ->
@@ -248,8 +251,8 @@ class EventSyncController {
              'uuid':         errorLog.uuid,
              'column':       errorLog.columnName,
              'code':         errorLog.code,
-             'collectedDate': StringUtil.format(errorLog.collectedDate),
-             'createdDate': StringUtil.format(errorLog.createdDate),
+             'collectedDate': dateUtil.formatYMDHMS(errorLog.collectedDate), // StringUtil.format(errorLog.collectedDate),
+             'createdDate': dateUtil.formatYMDHMS(errorLog.createdDate), //StringUtil.format(errorLog.createdDate),
              'errorMessage': "<td style=\"word-wrap: break-word;\">${errorLog.collapsedMessage}</td>"
             ]
         }

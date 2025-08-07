@@ -157,4 +157,9 @@ class GeneralUtilitiesService {
         return calendars;
     }
 
+    DateUtil getDateUtil(){
+        def isEthiopian = Codes.SYSTEM_USE_ETHIOPIAN_CALENDAR
+        return new DateUtil(isEthiopian ? DateUtil.SupportedCalendar.ETHIOPIAN : DateUtil.SupportedCalendar.GREGORIAN)
+    }
+
 }
