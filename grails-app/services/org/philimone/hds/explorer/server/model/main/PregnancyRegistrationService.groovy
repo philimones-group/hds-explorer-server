@@ -1,6 +1,7 @@
 package org.philimone.hds.explorer.server.model.main
 
 import grails.gorm.transactions.Transactional
+import net.betainteractive.utilities.DateUtil
 import net.betainteractive.utilities.GeneralUtil
 import net.betainteractive.utilities.StringUtil
 import org.philimone.hds.explorer.server.model.collect.raw.RawPregnancyOutcome
@@ -96,6 +97,8 @@ class PregnancyRegistrationService {
     }
 
     ArrayList<RawMessage> validate(RawPregnancyRegistration pregnancyRegistration){
+        def dateUtil = DateUtil.getInstance()
+
         def errors = new ArrayList<RawMessage>()
 
         //code, motherCode, pregMonths, expectedDeliveryDate, status, visitCode
@@ -204,24 +207,24 @@ class PregnancyRegistrationService {
 
         //C3. Check Date is greater than today (recordedDate)
         if (!isBlankRecordedDate && pregnancyRegistration.recordedDate > LocalDate.now()){
-            errors << errorMessageService.getRawMessage(RawEntity.PREGNANCY_REGISTRATION, "validation.field.date.not.greater.today", ["recordedDate", StringUtil.format(pregnancyRegistration.recordedDate)], ["recordedDate"])
+            errors << errorMessageService.getRawMessage(RawEntity.PREGNANCY_REGISTRATION, "validation.field.date.not.greater.today", ["recordedDate", dateUtil.formatYMD(pregnancyRegistration.recordedDate)], ["recordedDate"])
         }
         //C3. Check Date is greater than today (lmpDate)
         if (isPregnant && !isBlankLmpDate && !ignoreBlankLmpDate && pregnancyRegistration.lmpDate > LocalDate.now()){
-            errors << errorMessageService.getRawMessage(RawEntity.PREGNANCY_REGISTRATION, "validation.field.date.not.greater.today", ["lmpDate", StringUtil.format(pregnancyRegistration.lmpDate)], ["lmpDate"])
+            errors << errorMessageService.getRawMessage(RawEntity.PREGNANCY_REGISTRATION, "validation.field.date.not.greater.today", ["lmpDate", dateUtil.formatYMD(pregnancyRegistration.lmpDate)], ["lmpDate"])
         }
 
         //C4. Check Dates is older than Member Date of Birth (recordedDate)
         if (!isBlankRecordedDate && motherExists && pregnancyRegistration.recordedDate < mother.dob){
-            errors << errorMessageService.getRawMessage(RawEntity.PREGNANCY_REGISTRATION, "validation.field.dob.not.greater.date", ["recordedDate", StringUtil.format(mother.dob)], ["dob"])
+            errors << errorMessageService.getRawMessage(RawEntity.PREGNANCY_REGISTRATION, "validation.field.dob.not.greater.date", ["recordedDate", dateUtil.formatYMD(mother.dob)], ["dob"])
         }
         //C4. Check Dates is older than Member Date of Birth (eddDate)
         if (isPregnant && !isBlankEddDate && !ignoreBlankEddDate && motherExists && pregnancyRegistration.eddDate < mother.dob){
-            errors << errorMessageService.getRawMessage(RawEntity.PREGNANCY_REGISTRATION, "validation.field.dob.not.greater.date", ["eddDate", StringUtil.format(mother.dob)], ["dob"])
+            errors << errorMessageService.getRawMessage(RawEntity.PREGNANCY_REGISTRATION, "validation.field.dob.not.greater.date", ["eddDate", dateUtil.formatYMD(mother.dob)], ["dob"])
         }
         //C4. Check Dates is older than Member Date of Birth (lmpDate)
         if (isPregnant && !isBlankLmpDate && !ignoreBlankLmpDate && motherExists && pregnancyRegistration.lmpDate < mother.dob){
-            errors << errorMessageService.getRawMessage(RawEntity.PREGNANCY_REGISTRATION, "validation.field.dob.not.greater.date", ["lmpDate", StringUtil.format(mother.dob)], ["dob"])
+            errors << errorMessageService.getRawMessage(RawEntity.PREGNANCY_REGISTRATION, "validation.field.dob.not.greater.date", ["lmpDate", dateUtil.formatYMD(mother.dob)], ["dob"])
         }
 
         //C5. Validate Enum Options (edd_type)
@@ -245,7 +248,7 @@ class PregnancyRegistrationService {
 
         //C8. Check mother Dob must be greater or equal to 12
         if (motherExists && GeneralUtil.getAge(mother.dob) < Codes.MIN_MOTHER_AGE_VALUE ){
-            errors << errorMessageService.getRawMessage(RawEntity.PREGNANCY_REGISTRATION, "validation.field.pregnancy.registration.age.error", [StringUtil.format(mother.dob), Codes.MIN_MOTHER_AGE_VALUE+""], ["mother.dob"])
+            errors << errorMessageService.getRawMessage(RawEntity.PREGNANCY_REGISTRATION, "validation.field.pregnancy.registration.age.error", [dateUtil.formatYMD(mother.dob), Codes.MIN_MOTHER_AGE_VALUE+""], ["mother.dob"])
         }
 
         //C5. Check CollectedBy User existence

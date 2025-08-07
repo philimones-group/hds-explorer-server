@@ -1,6 +1,7 @@
 package org.philimone.hds.explorer.server.model.main
 
 import grails.gorm.transactions.Transactional
+import net.betainteractive.utilities.DateUtil
 import net.betainteractive.utilities.GeneralUtil
 import net.betainteractive.utilities.StringUtil
 import org.philimone.hds.explorer.server.model.collect.raw.RawHeadRelationship
@@ -357,7 +358,7 @@ class InMigrationService {
         }
         //C4. Check MigrationDate against dateOfBirth
         if (!isBlankMigrationDate && memberExists && rawInMigration.migrationDate < member.dob){
-            errors << errorMessageService.getRawMessage(RawEntity.IN_MIGRATION, "validation.field.inmigration.dob.not.greater.date", [StringUtil.format(rawInMigration.migrationDate)], ["dob"])
+            errors << errorMessageService.getRawMessage(RawEntity.IN_MIGRATION, "validation.field.inmigration.dob.not.greater.date", [DateUtil.getInstance().formatYMD(rawInMigration.migrationDate)], ["dob"])
         }
 
         //CV. Check CollectedBy User existence

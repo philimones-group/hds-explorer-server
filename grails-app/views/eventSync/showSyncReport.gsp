@@ -108,7 +108,7 @@
 
 						<g:if test="${logFileInstance.keyTimestamp != keyGroup}">
 							<tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
-								<td><b>Synched on: ${logFileInstance.start}</b></td>
+								<td><b>Synched on: ${bi.formatDate(date: logFileInstance.start)}</b></td>
 								<td></td>
 								<td></td>
 								<td></td>

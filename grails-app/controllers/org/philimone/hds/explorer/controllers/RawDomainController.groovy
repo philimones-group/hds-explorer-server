@@ -1389,7 +1389,7 @@ class RawDomainController {
     }
 
     def residenciesList = {
-
+        def dateUtil = generalUtilitiesService.getDateUtil()
         //convert datatables params to gorm params
         def jqdtParams = [:]
         params.each { key, value ->
@@ -1446,12 +1446,12 @@ class RawDomainController {
              'code':     residency.memberCode,
              'name':     residency.member.name,
              'gender':   residency.member.gender?.code,
-             'dob':      StringUtil.formatLocalDate(residency.member.dob),
+             'dob':      dateUtil.formatYMD(residency.member.dob),
              'household':       residency.household?.code,
              'startType':       residency.startType?.code,
-             'startDate':       StringUtil.formatLocalDate(residency.startDate),
+             'startDate':       dateUtil.formatYMD(residency.startDate),
              'endType':         residency.endType?.code,
-             'endDate':         StringUtil.formatLocalDate(residency.endDate)
+             'endDate':         dateUtil.formatYMD(residency.endDate)
             ]
         }
 
@@ -1477,7 +1477,7 @@ class RawDomainController {
     }
 
     def headRelationshipsList = {
-
+        def dateUtil = generalUtilitiesService.getDateUtil()
         //convert datatables params to gorm params
         def jqdtParams = [:]
         params.each { key, value ->
@@ -1530,14 +1530,14 @@ class RawDomainController {
              'code':     obj.memberCode,
              'name':     obj.member.name,
              'gender':   obj.member.gender?.code,
-             'dob':      StringUtil.formatLocalDate(obj.member.dob),
+             'dob':      dateUtil.formatYMD(obj.member.dob),
              'household':       obj.household?.code,
              'head':            obj.head?.code,
              'headRelationshipType': obj.relationshipType?.code,
              'startType':       obj.startType?.code,
-             'startDate':       StringUtil.formatLocalDate(obj.startDate),
+             'startDate':       dateUtil.formatYMD(obj.startDate),
              'endType':         obj.endType?.code,
-             'endDate':         StringUtil.formatLocalDate(obj.endDate)
+             'endDate':         dateUtil.formatYMD(obj.endDate)
             ]
         }
 
@@ -1563,6 +1563,8 @@ class RawDomainController {
     }
 
     def maritalRelationshipsList = {
+        def dateUtil = generalUtilitiesService.getDateUtil()
+
         //convert datatables params to gorm params
         def jqdtParams = [:]
         params.each { key, value ->
@@ -1614,9 +1616,9 @@ class RawDomainController {
              'memberB_code':     relationship.memberB_code,
              'isPolygamic':   relationship.isPolygamic==true,
              'startStatus':       relationship.startStatus?.code,
-             'startDate':       StringUtil.formatLocalDate(relationship.startDate),
+             'startDate':       dateUtil.formatYMD(relationship.startDate),
              'endStatus':         relationship.endStatus?.code,
-             'endDate':         StringUtil.formatLocalDate(relationship.endDate)
+             'endDate':         dateUtil.formatYMD(relationship.endDate)
             ]
         }
 
@@ -1645,7 +1647,7 @@ class RawDomainController {
     }
 
     def memberResidenciesList = {
-
+        def dateUtil = generalUtilitiesService.getDateUtil()
         //convert datatables params to gorm params
         def jqdtParams = [:]
         params.each { key, value ->
@@ -1702,12 +1704,12 @@ class RawDomainController {
              'code':     residency.memberCode,
              'name':     residency.member.name,
              'gender':   residency.member.gender?.code,
-             'dob':      StringUtil.formatLocalDate(residency.member.dob),
+             'dob':      dateUtil.formatYMD(residency.member.dob),
              'household':       residency.household?.code,
              'startType':       residency.startType?.code,
-             'startDate':       StringUtil.formatLocalDate(residency.startDate),
+             'startDate':       dateUtil.formatYMD(residency.startDate),
              'endType':         residency.endType?.code,
-             'endDate':         StringUtil.formatLocalDate(residency.endDate)
+             'endDate':         dateUtil.formatYMD(residency.endDate)
             ]
         }
 
@@ -1733,7 +1735,7 @@ class RawDomainController {
     }
 
     def memberHeadRelationshipsList = {
-
+        def dateUtil = generalUtilitiesService.getDateUtil()
         //convert datatables params to gorm params
         def jqdtParams = [:]
         params.each { key, value ->
@@ -1786,14 +1788,14 @@ class RawDomainController {
              'code':     obj.memberCode,
              'name':     obj.member.name,
              'gender':   obj.member.gender?.code,
-             'dob':      StringUtil.formatLocalDate(obj.member.dob),
+             'dob':      dateUtil.formatYMD(obj.member.dob),
              'household':       obj.household?.code,
              'head':            obj.head?.code,
              'headRelationshipType': obj.relationshipType?.code,
              'startType':       obj.startType?.code,
-             'startDate':       StringUtil.formatLocalDate(obj.startDate),
+             'startDate':       dateUtil.formatYMD(obj.startDate),
              'endType':         obj.endType?.code,
-             'endDate':         StringUtil.formatLocalDate(obj.endDate)
+             'endDate':         dateUtil.formatYMD(obj.endDate)
             ]
         }
 
@@ -1819,6 +1821,7 @@ class RawDomainController {
     }
 
     def fetchHouseholdCurrentResidenciesList = {
+        def dateUtil = generalUtilitiesService.getDateUtil()
 
         def household_code = params.id
 
@@ -1838,12 +1841,12 @@ class RawDomainController {
              'code':     obj.memberCode,
              'name':     obj.member.name,
              'gender':   obj.member.gender?.code,
-             'dob':      StringUtil.formatLocalDate(obj.member.dob),
+             'dob':      dateUtil.formatYMD(obj.member.dob),
              'household':       obj.household?.code,
              'startType':       obj.startType?.code,
-             'startDate':       StringUtil.formatLocalDate(obj.startDate),
+             'startDate':       dateUtil.formatYMD(obj.startDate),
              'endType':         obj.endType?.code,
-             'endDate':         StringUtil.formatLocalDate(obj.endDate),
+             'endDate':         dateUtil.formatYMD(obj.endDate),
              'statusText':      generalUtilitiesService.getMessage(obj.status==null ? ValidatableStatus.ACTIVE.name : obj.status.name),
              'status':          rawDomainService.getValidationStatus(obj.status)
             ]
@@ -1855,6 +1858,7 @@ class RawDomainController {
     }
 
     def fetchHouseholdAllHeadRelationshipsList = {
+        def dateUtil = generalUtilitiesService.getDateUtil()
 
         def household_code = params.id
 
@@ -1882,14 +1886,14 @@ class RawDomainController {
              'code':     obj.memberCode,
              'name':     obj.member.name,
              'gender':   obj.member.gender?.code,
-             'dob':      StringUtil.formatLocalDate(obj.member.dob),
+             'dob':      dateUtil.formatYMD(obj.member.dob),
              'household':       obj.household?.code,
              'head':            obj.head?.code,
              'relationshipType': obj.relationshipType?.code,
              'startType':       obj.startType?.code,
-             'startDate':       StringUtil.formatLocalDate(obj.startDate),
+             'startDate':       dateUtil.formatYMD(obj.startDate),
              'endType':         obj.endType?.code,
-             'endDate':         StringUtil.formatLocalDate(obj.endDate),
+             'endDate':         dateUtil.formatYMD(obj.endDate),
              'statusText':      generalUtilitiesService.getMessage(obj.status==null ? ValidatableStatus.ACTIVE.name : obj.status.name),
              'status':          rawDomainService.getValidationStatus(obj.status)
             ]
@@ -1901,6 +1905,7 @@ class RawDomainController {
     }
 
     def fetchHouseholdCurrentHeadRelationshipsList = {
+        def dateUtil = generalUtilitiesService.getDateUtil()
 
         def household_code = params.id
 
@@ -1920,14 +1925,14 @@ class RawDomainController {
              'code':     obj.memberCode,
              'name':     obj.member.name,
              'gender':   obj.member.gender?.code,
-             'dob':      StringUtil.formatLocalDate(obj.member.dob),
+             'dob':      dateUtil.formatYMD(obj.member.dob),
              'household':       obj.household?.code,
              'head':            obj.head?.code,
              'relationshipType': obj.relationshipType?.code,
              'startType':       obj.startType?.code,
-             'startDate':       StringUtil.formatLocalDate(obj.startDate),
+             'startDate':       dateUtil.formatYMD(obj.startDate),
              'endType':         obj.endType?.code,
-             'endDate':         StringUtil.formatLocalDate(obj.endDate),
+             'endDate':         dateUtil.formatYMD(obj.endDate),
              'statusText':      generalUtilitiesService.getMessage(obj.status==null ? ValidatableStatus.ACTIVE.name : obj.status.name),
              'status':          rawDomainService.getValidationStatus(obj.status)
             ]
@@ -1939,6 +1944,7 @@ class RawDomainController {
     }
 
     def fetchMemberResidenciesList = {
+        def dateUtil = generalUtilitiesService.getDateUtil()
 
         def member_code = params.id
 
@@ -1957,12 +1963,12 @@ class RawDomainController {
              'code':     obj.memberCode,
              'name':     obj.member.name,
              'gender':   obj.member.gender?.code,
-             'dob':      StringUtil.formatLocalDate(obj.member.dob),
+             'dob':      dateUtil.formatYMD(obj.member.dob),
              'household':       obj.household?.code,
              'startType':       obj.startType?.code,
-             'startDate':       StringUtil.formatLocalDate(obj.startDate),
+             'startDate':       dateUtil.formatYMD(obj.startDate),
              'endType':         obj.endType?.code,
-             'endDate':         StringUtil.formatLocalDate(obj.endDate),
+             'endDate':         dateUtil.formatYMD(obj.endDate),
              'statusText':      generalUtilitiesService.getMessage(obj.status==null ? ValidatableStatus.ACTIVE.name : obj.status.name),
              'status':          rawDomainService.getValidationStatus(obj.status)
             ]
@@ -1974,6 +1980,7 @@ class RawDomainController {
     }
 
     def fetchMemberHeadRelationshipsList = {
+        def dateUtil = generalUtilitiesService.getDateUtil()
 
         def member_code = params.id
 
@@ -1991,14 +1998,14 @@ class RawDomainController {
              'code':     obj.memberCode,
              'name':     obj.member.name,
              'gender':   obj.member.gender?.code,
-             'dob':      StringUtil.formatLocalDate(obj.member.dob),
+             'dob':      dateUtil.formatYMD(obj.member.dob),
              'household':       obj.household?.code,
              'head':            obj.head?.code,
              'relationshipType': obj.relationshipType?.code,
              'startType':       obj.startType?.code,
-             'startDate':       StringUtil.formatLocalDate(obj.startDate),
+             'startDate':       dateUtil.formatYMD(obj.startDate),
              'endType':         obj.endType?.code,
-             'endDate':         StringUtil.formatLocalDate(obj.endDate),
+             'endDate':         dateUtil.formatYMD(obj.endDate),
              'statusText':      generalUtilitiesService.getMessage(obj.status==null ? ValidatableStatus.ACTIVE.name : obj.status.name),
              'status':          rawDomainService.getValidationStatus(obj.status)
             ]
@@ -2010,6 +2017,7 @@ class RawDomainController {
     }
 
     def fetchMaritalRelationshipsList = {
+        def dateUtil = generalUtilitiesService.getDateUtil()
 
         def member_code = params.id
 
@@ -2030,9 +2038,9 @@ class RawDomainController {
              'memberB_code':     obj.memberB_code,
              'isPolygamic':   obj.isPolygamic==true,
              'startStatus':       obj.startStatus?.code,
-             'startDate':       StringUtil.formatLocalDate(obj.startDate),
+             'startDate':       dateUtil.formatYMD(obj.startDate),
              'endStatus':         obj.endStatus?.code,
-             'endDate':         StringUtil.formatLocalDate(obj.endDate),
+             'endDate':         dateUtil.formatYMD(obj.endDate),
              'statusText':      generalUtilitiesService.getMessage(obj.status==null ? ValidatableStatus.ACTIVE.name : obj.status.name),
              'status':          rawDomainService.getValidationStatus(obj.status)
             ]
@@ -2044,6 +2052,7 @@ class RawDomainController {
     }
 
     def fetchMemberPregnanciesList = {
+        def dateUtil = generalUtilitiesService.getDateUtil()
 
         def member_code = params.id
 
@@ -2061,9 +2070,9 @@ class RawDomainController {
              'code':     obj.code,
              'motherCode':     obj.motherCode,
              'visitCode':     obj.visitCode,
-             'recordedDate':   StringUtil.formatLocalDate(obj.recordedDate),
+             'recordedDate':   dateUtil.formatYMD(obj.recordedDate),
              'pregMonths':      obj.pregMonths,
-             'expectedDeliveryDate':       StringUtil.formatLocalDate(obj.expectedDeliveryDate),
+             'expectedDeliveryDate':       dateUtil.formatYMD(obj.expectedDeliveryDate),
              'status':          generalUtilitiesService.getMessage(obj.status?.name)
             ]
         }
@@ -2073,6 +2082,7 @@ class RawDomainController {
     }
 
     def fetchMemberOutcomesList = {
+        def dateUtil = generalUtilitiesService.getDateUtil()
 
         def member_code = params.id
 
@@ -2093,7 +2103,7 @@ class RawDomainController {
              'code':             obj.code,
              'motherCode':       obj.motherCode,
              'visitCode':        obj.visitCode,
-             'outcomeDate':      StringUtil.formatLocalDate(obj.outcomeDate),
+             'outcomeDate':      dateUtil.formatYMD(obj.outcomeDate),
              'numberOfOutcomes': obj.numberOfOutcomes,
              'childs':           "${childs}"
             ]
@@ -2104,6 +2114,8 @@ class RawDomainController {
     }
 
     def fetchRegionHeadRelationshipsList = {
+        def dateUtil = generalUtilitiesService.getDateUtil()
+
         def region_code = params.id
 
         //def results = HeadRelationship.findAllByHouseholdCodeAndEndType(household_code, HeadRelationshipEndType.NOT_APPLICABLE)
@@ -2122,9 +2134,9 @@ class RawDomainController {
              'head':             obj.head?.code,
              'headName':         obj.head?.name,
              'startType':       obj.startType?.code,
-             'startDate':       StringUtil.formatLocalDate(obj.startDate),
+             'startDate':       dateUtil.formatYMD(obj.startDate),
              'endType':         obj.endType?.code,
-             'endDate':         StringUtil.formatLocalDate(obj.endDate),
+             'endDate':         dateUtil.formatYMD(obj.endDate),
              'statusText':      generalUtilitiesService.getMessage(obj.status==null ? ValidatableStatus.ACTIVE.name : obj.status.name),
              'status':          rawDomainService.getValidationStatus(obj.status)
             ]

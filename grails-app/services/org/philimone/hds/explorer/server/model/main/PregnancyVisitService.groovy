@@ -1,6 +1,7 @@
 package org.philimone.hds.explorer.server.model.main
 
 import grails.gorm.transactions.Transactional
+import net.betainteractive.utilities.DateUtil
 import net.betainteractive.utilities.StringUtil
 import org.philimone.hds.explorer.server.model.collect.raw.*
 import org.philimone.hds.explorer.server.model.enums.*
@@ -156,6 +157,8 @@ class PregnancyVisitService {
     }
 
     ArrayList<RawMessage> validate(RawPregnancyVisit pregnancyVisit, List<RawPregnancyVisitChild> pregnancyChildren){
+        def dateUtil = DateUtil.getInstance()
+
         def errors = new ArrayList<RawMessage>()
 
         //visitCode, code, motherCode, visitType, visitNumber, visitDate, status
@@ -225,12 +228,12 @@ class PregnancyVisitService {
 
         //C3. Check Date is greater than today (outcomeDate)
         if (!isBlankVisitDate && pregnancyVisit.visitDate > LocalDate.now()){
-            errors << errorMessageService.getRawMessage(RawEntity.PREGNANCY_VISIT, "validation.field.date.not.greater.today", ["visitDate", StringUtil.format(pregnancyVisit.visitDate)], ["visitDate"])
+            errors << errorMessageService.getRawMessage(RawEntity.PREGNANCY_VISIT, "validation.field.date.not.greater.today", ["visitDate", dateUtil.formatYMD(pregnancyVisit.visitDate)], ["visitDate"])
         }
 
         //C4. Check Dates is older than Member Date of Birth (outcomeDate)
         if (!isBlankVisitDate && motherExists && pregnancyVisit.visitDate <= mother.dob){
-            errors << errorMessageService.getRawMessage(RawEntity.PREGNANCY_VISIT, "validation.field.dob.not.greater.date", ["visitDate", StringUtil.format(mother.dob)], ["dob"])
+            errors << errorMessageService.getRawMessage(RawEntity.PREGNANCY_VISIT, "validation.field.dob.not.greater.date", ["visitDate", dateUtil.formatYMD(mother.dob)], ["dob"])
         }
 
         //C5. Validate Enum Options (birthPlace)

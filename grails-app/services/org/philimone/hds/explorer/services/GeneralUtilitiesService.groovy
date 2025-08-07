@@ -12,6 +12,7 @@ import org.philimone.hds.explorer.server.model.settings.Codes
 import org.springframework.context.i18n.LocaleContextHolder
 
 import java.text.SimpleDateFormat
+import java.time.LocalDateTime
 
 @Transactional
 class GeneralUtilitiesService {
@@ -105,7 +106,8 @@ class GeneralUtilitiesService {
     }
 
     public String getTimeStr(){
-        return new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss").format(new Date());
+        def now = LocalDateTime.now()
+        return DateUtil.getInstance().formatYMDHMS(now, true) //new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss").format(new Date());
     }
 
 

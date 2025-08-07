@@ -1,6 +1,7 @@
 package org.philimone.hds.explorer.server.model.main
 
 import grails.gorm.transactions.Transactional
+import net.betainteractive.utilities.DateUtil
 import net.betainteractive.utilities.GeneralUtil
 import net.betainteractive.utilities.StringUtil
 import org.philimone.hds.explorer.server.model.collect.raw.RawDeath
@@ -300,7 +301,7 @@ class DeathService {
         }
         //C4. Check DeathDate against dateOfBirth
         if (!isBlankDeathDate && memberExists && rawDeath.deathDate < member.dob){
-            errors << errorMessageService.getRawMessage(RawEntity.DEATH, "validation.field.death.dob.not.greater.date", [StringUtil.format(rawDeath.deathDate)], ["dob"])
+            errors << errorMessageService.getRawMessage(RawEntity.DEATH, "validation.field.death.dob.not.greater.date", [DateUtil.getInstance().formatYMD(rawDeath.deathDate)], ["dob"])
         }
 
         //CV. Check CollectedBy User existence

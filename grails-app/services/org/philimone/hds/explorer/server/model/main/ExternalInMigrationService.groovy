@@ -1,6 +1,7 @@
 package org.philimone.hds.explorer.server.model.main
 
 import grails.gorm.transactions.Transactional
+import net.betainteractive.utilities.DateUtil
 import net.betainteractive.utilities.GeneralUtil
 import net.betainteractive.utilities.StringUtil
 import org.philimone.hds.explorer.server.model.collect.raw.RawExternalInMigration
@@ -124,6 +125,8 @@ class ExternalInMigrationService {
     }
 
     ArrayList<RawMessage> validate(RawExternalInMigration externalInMigration){
+        def dateUtil = DateUtil.getInstance()
+
         def errors = new ArrayList<RawMessage>()
 
         //memberCode, memberName, memberGender, memberDob, memberMotherCode, memberFatherCode, headRelationshipType
@@ -218,7 +221,7 @@ class ExternalInMigrationService {
 
         //C5. Check dob max date
         if (!isBlankMemberDob && externalInMigration.memberDob > LocalDate.now() && !isReturningToStudyArea){
-            errors << errorMessageService.getRawMessage(RawEntity.EXTERNAL_INMIGRATION, "validation.field.date.not.greater.today", ["dob", StringUtil.format(externalInMigration.memberDob)], ["memberDob"])
+            errors << errorMessageService.getRawMessage(RawEntity.EXTERNAL_INMIGRATION, "validation.field.date.not.greater.today", ["dob", dateUtil.formatYMD(externalInMigration.memberDob)], ["memberDob"])
         }
 
         //C4. Check Mother reference existence
@@ -232,11 +235,11 @@ class ExternalInMigrationService {
 
         //C6. Check mother Dob must be greater or equal to 12
         if (!motherUnknown && motherExists && GeneralUtil.getAge(mother.dob)< Codes.MIN_MOTHER_AGE_VALUE ){
-            errors << errorMessageService.getRawMessage(RawEntity.EXTERNAL_INMIGRATION, "validation.field.dob.mother.minage.error", [StringUtil.format(mother.dob), Codes.MIN_MOTHER_AGE_VALUE+""], ["mother.dob"])
+            errors << errorMessageService.getRawMessage(RawEntity.EXTERNAL_INMIGRATION, "validation.field.dob.mother.minage.error", [dateUtil.formatYMD(mother.dob), Codes.MIN_MOTHER_AGE_VALUE+""], ["mother.dob"])
         }
         //C7. Check father Dob must be greater or equal to 12
         if (!fatherUnknown && fatherExists && GeneralUtil.getAge(father.dob)< Codes.MIN_FATHER_AGE_VALUE ){
-            errors << errorMessageService.getRawMessage(RawEntity.EXTERNAL_INMIGRATION, "validation.field.dob.father.minage.error", [StringUtil.format(father.dob), Codes.MIN_FATHER_AGE_VALUE+""], ["father.dob"])
+            errors << errorMessageService.getRawMessage(RawEntity.EXTERNAL_INMIGRATION, "validation.field.dob.father.minage.error", [dateUtil.formatYMD(father.dob), Codes.MIN_FATHER_AGE_VALUE+""], ["father.dob"])
         }
 
         //C8. Check loop on memberCode equals to fatherCode
@@ -312,7 +315,7 @@ class ExternalInMigrationService {
         }
         //C4. Check MigrationDate against dateOfBirth
         if (!isBlankMigrationDate && !isBlankMemberDob && externalInMigration.migrationDate < externalInMigration.memberDob){
-            errors << errorMessageService.getRawMessage(RawEntity.EXTERNAL_INMIGRATION, "validation.field.inmigration.dob.not.greater.date", [StringUtil.format(externalInMigration.migrationDate)], ["memberDob"])
+            errors << errorMessageService.getRawMessage(RawEntity.EXTERNAL_INMIGRATION, "validation.field.inmigration.dob.not.greater.date", [dateUtil.formatYMD(externalInMigration.migrationDate)], ["memberDob"])
         }
 
         //C5. Check CollectedBy User existence

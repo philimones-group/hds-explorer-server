@@ -21,8 +21,14 @@
             <div class="message" role="status">${flash.message}</div>
             </g:if>
 
-            <f:display bean="module" order="code, name, description, createdBy, createdDate, updatedBy, updatedDate" />
-
+            <bi:field bean="${this.module}" property="code"  label="module.code.label" mode="show" />
+            <bi:field bean="${this.module}" property="name" label="module.name.label" mode="show" />
+            <bi:field bean="${this.module}" property="description" label="module.description.label" mode="show" />
+            <bi:field bean="${this.module}" property="createdBy" label="module.createdBy.label" mode="show" />
+            <bi:field bean="${this.module}" property="createdDate" label="module.createdDate.label" mode="show" />
+            <bi:field bean="${this.module}" property="updatedBy" label="module.updatedBy.label" mode="show"  />
+            <bi:field bean="${this.module}" property="updatedDate" label="module.updatedDate.label" mode="show" />
+            
             <g:form resource="${this.module}" method="DELETE">
                 <fieldset class="buttons">
                     <g:link class="edit" action="edit" resource="${this.module}"><g:message code="default.button.edit.label" default="Edit" /></g:link>

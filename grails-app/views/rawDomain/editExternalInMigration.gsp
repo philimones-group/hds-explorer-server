@@ -131,7 +131,7 @@
         <g:set var="member_code" value="${this.rawExternalInMigration.memberCode}" />
         <g:set var="member_name" value="${this.rawExternalInMigration?.memberName}" />
         <g:set var="member_gender" value="${this.rawExternalInMigration?.memberGender}" />
-        <g:set var="member_dob" value="${this.rawExternalInMigration?.memberDob}" />
+        <g:set var="member_dob" value="${bi.formatDate(date: this.rawExternalInMigration?.memberDob)}" />
 
         <fieldset class="buttons">
             <g:if test="${mode == "edit"}">

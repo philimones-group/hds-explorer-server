@@ -1,6 +1,7 @@
 package org.philimone.hds.explorer.server.model.main
 
 import grails.gorm.transactions.Transactional
+import net.betainteractive.utilities.DateUtil
 import net.betainteractive.utilities.GeneralUtil
 import net.betainteractive.utilities.StringUtil
 import org.philimone.hds.explorer.server.model.collect.raw.RawMember
@@ -100,6 +101,8 @@ class MemberService {
     }
 
     ArrayList<RawMessage> validate(RawMember member){
+        def dateUtil = DateUtil.getInstance()
+
         def errors = new ArrayList<RawMessage>()
 
         //code, name, gender, dob, motherCode, fatherCode, maritalStatus, householdCode
@@ -177,7 +180,7 @@ class MemberService {
 
         //C5. Check dob max date
         if (!isNullDob && member.dob > LocalDate.now()){
-            errors << errorMessageService.getRawMessage(RawEntity.MEMBER, "validation.field.date.not.greater.today", ["dob", StringUtil.format(member.dob)], ["dob"])
+            errors << errorMessageService.getRawMessage(RawEntity.MEMBER, "validation.field.date.not.greater.today", ["dob", dateUtil.formatYMD(member.dob)], ["dob"])
         }
 
         //C4. Check Household reference existence
@@ -195,11 +198,11 @@ class MemberService {
 
         //C6. Check mother Dob must be greater or equal to 12
         if (!motherUnknown && motherExists && GeneralUtil.getAge(mother.dob)< Codes.MIN_MOTHER_AGE_VALUE ){
-            errors << errorMessageService.getRawMessage(RawEntity.MEMBER, "validation.field.dob.mother.minage.error", [StringUtil.format(mother.dob), Codes.MIN_MOTHER_AGE_VALUE+""], ["mother.dob"])
+            errors << errorMessageService.getRawMessage(RawEntity.MEMBER, "validation.field.dob.mother.minage.error", [dateUtil.formatYMD(mother.dob), Codes.MIN_MOTHER_AGE_VALUE+""], ["mother.dob"])
         }
         //C7. Check father Dob must be greater or equal to 12
         if (!fatherUnknown && fatherExists && GeneralUtil.getAge(father.dob)< Codes.MIN_FATHER_AGE_VALUE ){
-            errors << errorMessageService.getRawMessage(RawEntity.MEMBER, "validation.field.dob.father.minage.error", [StringUtil.format(father.dob), Codes.MIN_FATHER_AGE_VALUE+""], ["father.dob"])
+            errors << errorMessageService.getRawMessage(RawEntity.MEMBER, "validation.field.dob.father.minage.error", [dateUtil.formatYMD(father.dob), Codes.MIN_FATHER_AGE_VALUE+""], ["father.dob"])
         }
 
         //C9. Check mother Gender

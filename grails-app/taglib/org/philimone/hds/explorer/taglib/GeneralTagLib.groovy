@@ -249,8 +249,8 @@ class GeneralTagLib {
         def messageColsList = strmessages.empty ? new ArrayList<String>() : strmessages.split(",").toList()
         def dateUtil = generalUtilitiesService.getDateUtil()
 
-        println "col objs: " + collectionObjs?.size()
-        println "col: ${strcolumns}, ${columns}"
+        //println "col objs: " + collectionObjs?.size()
+        //println "col: ${strcolumns}, ${columns}"
 
         out << "            <table id=\"${id}\" class=\"display nowrap compact cell-border\">\n"
         out << "                <thead>\n"

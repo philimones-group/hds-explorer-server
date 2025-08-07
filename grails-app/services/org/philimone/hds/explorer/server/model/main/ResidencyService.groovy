@@ -1,6 +1,7 @@
 package org.philimone.hds.explorer.server.model.main
 
 import grails.gorm.transactions.Transactional
+import net.betainteractive.utilities.DateUtil
 import net.betainteractive.utilities.StringUtil
 import org.philimone.hds.explorer.server.model.collect.raw.RawResidency
 import org.philimone.hds.explorer.server.model.enums.RawEntity
@@ -299,6 +300,8 @@ class ResidencyService {
     }
 
     ArrayList<RawMessage> validateCreateResidency(RawResidency residency){
+        def dateUtil = DateUtil.getInstance()
+
         def errors = new ArrayList<RawMessage>()
 
         def isBlankMemberCode = StringUtil.isBlank(residency.memberCode)
@@ -344,7 +347,7 @@ class ResidencyService {
         }
         //C6. Check Dates against DOB
         if (!isNullStartDate && memberExists && residency.startDate < member.dob){
-            errors << errorMessageService.getRawMessage(RawEntity.RESIDENCY, "validation.field.dob.not.greater.date", ["residency.startDate", StringUtil.format(member.dob)], ["startDate","member.dob"])
+            errors << errorMessageService.getRawMessage(RawEntity.RESIDENCY, "validation.field.dob.not.greater.date", ["residency.startDate", dateUtil.formatYMD(member.dob)], ["startDate","member.dob"])
         }
 
         //Validation part 2: Previous Residency against new Residency
@@ -384,6 +387,8 @@ class ResidencyService {
     }
 
     ArrayList<RawMessage> validateCreateResidency(Residency previousFakeResidency, RawResidency residency){
+        def dateUtil = DateUtil.getInstance()
+
         def errors = new ArrayList<RawMessage>()
 
         def isBlankMemberCode = StringUtil.isBlank(residency.memberCode)
@@ -429,7 +434,7 @@ class ResidencyService {
         }
         //C6. Check Dates against DOB
         if (!isNullStartDate && memberExists && residency.startDate < member.dob){
-            errors << errorMessageService.getRawMessage(RawEntity.RESIDENCY, "validation.field.dob.not.greater.date", ["residency.startDate", StringUtil.format(member.dob)], ["startDate","member.dob"])
+            errors << errorMessageService.getRawMessage(RawEntity.RESIDENCY, "validation.field.dob.not.greater.date", ["residency.startDate", dateUtil.formatYMD(member.dob)], ["startDate","member.dob"])
         }
 
         //Validation part 2: Previous Residency against new Residency
@@ -469,6 +474,8 @@ class ResidencyService {
     }
 
     ArrayList<RawMessage> validateCloseResidency(RawResidency residency){
+        def dateUtil = DateUtil.getInstance()
+
         def errors = new ArrayList<RawMessage>()
 
         def isBlankMemberCode = StringUtil.isBlank(residency.memberCode)
@@ -514,7 +521,7 @@ class ResidencyService {
         }
         //C6. Check Dates against DOB
         if (!isNullEndDate && memberExists && residency.endDate < member.dob){
-            errors << errorMessageService.getRawMessage(RawEntity.RESIDENCY, "validation.field.dob.not.greater.date", ["residency.endDate", StringUtil.format(member.dob)], ["endDate","member.dob"])
+            errors << errorMessageService.getRawMessage(RawEntity.RESIDENCY, "validation.field.dob.not.greater.date", ["residency.endDate", dateUtil.formatYMD(member.dob)], ["endDate","member.dob"])
         }
 
         //Validation part 2: Previous Residency against new Residency
@@ -537,7 +544,7 @@ class ResidencyService {
 
             //C6. Check If endDate is before or equal to startDate
             if (currentResidency.startDate > endDate){ //RECHECK THIS WITH >=
-                errors << errorMessageService.getRawMessage(RawEntity.RESIDENCY, "validation.field.residency.enddate.before.startdate.error", [currentResidency.id, StringUtil.format(endDate), StringUtil.format(currentResidency.startDate)], ["currentResidency.startDate", "new.endDate"])
+                errors << errorMessageService.getRawMessage(RawEntity.RESIDENCY, "validation.field.residency.enddate.before.startdate.error", [currentResidency.id, dateUtil.formatYMD(endDate), dateUtil.formatYMD(currentResidency.startDate)], ["currentResidency.startDate", "new.endDate"])
             }
 
         }

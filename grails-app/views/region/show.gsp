@@ -121,7 +121,7 @@
                             <g:message code="region.createdDate.label" default="Created Date" />
                         </span>
                         <span class="property-value" aria-labelledby="createdDate-label">
-                            <bi:dateField bean="${this.region}" property="createdDate" label="region.createdDate.label" mode="show" />
+                            <bi:formatDate date="${this.region.createdDate}" mode="show" />
                         </span>
                     </li>
                 </g:if>
@@ -143,7 +143,7 @@
                             <g:message code="region.updatedDate.label" default="Updated Date" />
                         </span>
                         <span class="property-value" aria-labelledby="updatedDate-label">
-                            <bi:dateField bean="${this.region}" property="updatedDate" label="region.updatedDate.label" mode="show" />
+                            <bi:formatDate date="${this.region.updatedDate}" mode="show" />
                         </span>
                     </li>
                 </g:if>

@@ -1,6 +1,7 @@
 package org.philimone.hds.explorer.server.model.main
 
 import grails.gorm.transactions.Transactional
+import net.betainteractive.utilities.DateUtil
 import net.betainteractive.utilities.GeneralUtil
 import net.betainteractive.utilities.StringUtil
 import org.philimone.hds.explorer.server.model.collect.raw.RawMaritalRelationship
@@ -410,6 +411,8 @@ class MaritalRelationshipService {
     }
 
     ArrayList<RawMessage> validateCreateMaritalRelationship(RawMaritalRelationship maritalRelationship){
+        def dateUtil = DateUtil.getInstance()
+
         def errors = new ArrayList<RawMessage>()
 
         def isBlankMemberACode = StringUtil.isBlank(maritalRelationship.memberA)
@@ -452,24 +455,24 @@ class MaritalRelationshipService {
         }
         //C5. Check startdate max date
         if (!isNullStartDate && maritalRelationship.startDate > LocalDate.now()){
-            errors << errorMessageService.getRawMessage(RawEntity.MARITAL_RELATIONSHIP, "validation.field.date.not.greater.today", [StringUtil.format(maritalRelationship.startDate)], ["startDate"])
+            errors << errorMessageService.getRawMessage(RawEntity.MARITAL_RELATIONSHIP, "validation.field.date.not.greater.today", [dateUtil.formatYMD(maritalRelationship.startDate)], ["startDate"])
         }
         //C6. Check Dates against DOB
         if (!isNullStartDate && memberAExists && memberBExists){
             if (maritalRelationship.startDate < memberA.dob){
-                errors << errorMessageService.getRawMessage(RawEntity.MARITAL_RELATIONSHIP, "validation.field.dob.not.greater.date", ["maritalRelationship.startDate", StringUtil.format(memberA.dob)], ["startDate","memberA.dob"])
+                errors << errorMessageService.getRawMessage(RawEntity.MARITAL_RELATIONSHIP, "validation.field.dob.not.greater.date", ["maritalRelationship.startDate", dateUtil.formatYMD(memberA.dob)], ["startDate","memberA.dob"])
             }
             if (maritalRelationship.startDate < memberB.dob){
-                errors << errorMessageService.getRawMessage(RawEntity.MARITAL_RELATIONSHIP, "validation.field.dob.not.greater.date", ["maritalRelationship.startDate", StringUtil.format(memberB.dob)], ["startDate","memberB.dob"])
+                errors << errorMessageService.getRawMessage(RawEntity.MARITAL_RELATIONSHIP, "validation.field.dob.not.greater.date", ["maritalRelationship.startDate", dateUtil.formatYMD(memberB.dob)], ["startDate","memberB.dob"])
             }
         }
         //C7. Check Age of Member A
         if (memberAExists && GeneralUtil.getAge(memberA.dob)< Codes.MIN_SPOUSE_AGE_VALUE ){
-            errors << errorMessageService.getRawMessage(RawEntity.MARITAL_RELATIONSHIP, "validation.field.dob.spouse.minage.error", [StringUtil.format(memberA.dob), Codes.MIN_SPOUSE_AGE_VALUE+""], ["member.dob"])
+            errors << errorMessageService.getRawMessage(RawEntity.MARITAL_RELATIONSHIP, "validation.field.dob.spouse.minage.error", [dateUtil.formatYMD(memberA.dob), Codes.MIN_SPOUSE_AGE_VALUE+""], ["member.dob"])
         }
         //C7. Check Age of Member B
         if (memberBExists && GeneralUtil.getAge(memberB.dob)< Codes.MIN_SPOUSE_AGE_VALUE ){
-            errors << errorMessageService.getRawMessage(RawEntity.MARITAL_RELATIONSHIP, "validation.field.dob.spouse.minage.error", [StringUtil.format(memberB.dob), Codes.MIN_SPOUSE_AGE_VALUE+""], ["member.dob"])
+            errors << errorMessageService.getRawMessage(RawEntity.MARITAL_RELATIONSHIP, "validation.field.dob.spouse.minage.error", [dateUtil.formatYMD(memberB.dob), Codes.MIN_SPOUSE_AGE_VALUE+""], ["member.dob"])
         }
         //C8. Check Gender as Optional
         if (Codes.GENDER_CHECKING && memberAExists && memberBExists){
@@ -522,6 +525,8 @@ class MaritalRelationshipService {
     }
 
     ArrayList<RawMessage> validateCloseMaritalRelationship(RawMaritalRelationship maritalRelationship){
+        def dateUtil = DateUtil.getInstance()
+
         def errors = new ArrayList<RawMessage>()
 
 
@@ -570,10 +575,10 @@ class MaritalRelationshipService {
         //C6. Check Dates against DOB
         if (!isNullEndDate && memberAExists && memberBExists){
             if (maritalRelationship.endDate < memberA.dob){
-                errors << errorMessageService.getRawMessage(RawEntity.MARITAL_RELATIONSHIP, "validation.field.dob.not.greater.date", ["maritalRelationship.endDate", StringUtil.format(memberA.dob)], ["endDate","memberA.dob"])
+                errors << errorMessageService.getRawMessage(RawEntity.MARITAL_RELATIONSHIP, "validation.field.dob.not.greater.date", ["maritalRelationship.endDate", dateUtil.formatYMD(memberA.dob)], ["endDate","memberA.dob"])
             }
             if (maritalRelationship.endDate < memberB.dob){
-                errors << errorMessageService.getRawMessage(RawEntity.MARITAL_RELATIONSHIP, "validation.field.dob.not.greater.date", ["maritalRelationship.endDate", StringUtil.format(memberB.dob)], ["endDate","memberB.dob"])
+                errors << errorMessageService.getRawMessage(RawEntity.MARITAL_RELATIONSHIP, "validation.field.dob.not.greater.date", ["maritalRelationship.endDate", dateUtil.formatYMD(memberB.dob)], ["endDate","memberB.dob"])
             }
         }
 

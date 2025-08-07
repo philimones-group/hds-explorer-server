@@ -1,6 +1,7 @@
 package org.philimone.hds.explorer.server.model.main
 
 import grails.gorm.transactions.Transactional
+import net.betainteractive.utilities.DateUtil
 import net.betainteractive.utilities.GeneralUtil
 import net.betainteractive.utilities.StringUtil
 import org.philimone.hds.explorer.server.model.collect.raw.RawChangeRegionHead
@@ -194,6 +195,7 @@ class ChangeRegionHeadService {
     }
 
     ArrayList<RawMessage> validate(RawChangeRegionHead changeHead) {
+        def dateUtil = DateUtil.getInstance()
 
         //visitCode - must exists
         //regionCode - must exists
@@ -260,11 +262,11 @@ class ChangeRegionHeadService {
         }
         //C5.2. Check eventDate Dates against DOB (for the new head of household)
         if (!isBlankEventDate && newHeadExists && changeHead.eventDate < newHead.dob){
-            errors << errorMessageService.getRawMessage(RawEntity.CHANGE_HEAD_OF_REGION, "validation.field.dob.not.greater.date", ["changeHead.eventDate", StringUtil.format(newHead.dob)], ["eventDate","member.dob"])
+            errors << errorMessageService.getRawMessage(RawEntity.CHANGE_HEAD_OF_REGION, "validation.field.dob.not.greater.date", ["changeHead.eventDate", dateUtil.formatYMD(newHead.dob)], ["eventDate","member.dob"])
         }
         //C6. Check Age of the new head of Household
         if (newHeadExists && GeneralUtil.getAge(newHead.dob) < Codes.MIN_HEAD_AGE_VALUE){
-            errors << errorMessageService.getRawMessage(RawEntity.CHANGE_HEAD_OF_REGION, "validation.field.changeregionhead.dob.head.minage.error", [StringUtil.format(newHead.dob), Codes.MIN_HEAD_AGE_VALUE+""], ["member.dob"])
+            errors << errorMessageService.getRawMessage(RawEntity.CHANGE_HEAD_OF_REGION, "validation.field.changeregionhead.dob.head.minage.error", [dateUtil.formatYMD(newHead.dob), Codes.MIN_HEAD_AGE_VALUE+""], ["member.dob"])
         }
 
         //C7. Check If the Current Head is the Old Head

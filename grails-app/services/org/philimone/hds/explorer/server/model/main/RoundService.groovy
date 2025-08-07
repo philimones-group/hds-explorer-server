@@ -1,6 +1,7 @@
 package org.philimone.hds.explorer.server.model.main
 
 import grails.gorm.transactions.Transactional
+import net.betainteractive.utilities.DateUtil
 import net.betainteractive.utilities.StringUtil
 import org.philimone.hds.explorer.server.model.enums.RawEntity
 import org.philimone.hds.explorer.server.model.main.collect.raw.RawExecutionResult
@@ -126,6 +127,9 @@ println "domain errors: ${errors}"
     }
 
     ArrayList<RawMessage> validate(Round round){
+
+        def dateUtil = DateUtil.getInstance()
+
         def errors = new ArrayList<RawMessage>()
 
         //code, householdCode, visitDate, visitLocation, visitLocationOther, roundNumber, respondentCode, hasInterpreter, interpreterName, gpsAccuracy, gpsAltitude, gpsLatitude, gpsLongitude
@@ -167,7 +171,7 @@ println "domain errors: ${errors}"
             errors << errorMessageService.getRawMessage(RawEntity.ROUND, "validation.field.date.not.greater.today", [round.endDate], ["endDate"])
         }*/
         if (!isBlankStartDate && !isBlankEndDate && (round.startDate > round.endDate)){
-            errors << errorMessageService.getRawMessage(RawEntity.ROUND, "validation.field.startdate.not.greater.enddate", [StringUtil.format(round.startDate), StringUtil.format(round.endDate)], ["startDate","endDate"])
+            errors << errorMessageService.getRawMessage(RawEntity.ROUND, "validation.field.startdate.not.greater.enddate", [dateUtil.formatYMD(round.startDate), dateUtil.formatYMD(round.endDate)], ["startDate","endDate"])
         }
 
         if (errors.size()==0){//no errors
@@ -178,12 +182,12 @@ println "domain errors: ${errors}"
 
             if (roundsStarts.size() > 0) { //we have overlapping dates with startDate
                 def rounds = roundsStarts.collect { it.roundNumber }
-                errors << errorMessageService.getRawMessage(RawEntity.ROUND, "validation.field.round.startdate.overlaps.error", [StringUtil.format(round.startDate), ""+rounds+""], ["startDate"])
+                errors << errorMessageService.getRawMessage(RawEntity.ROUND, "validation.field.round.startdate.overlaps.error", [dateUtil.formatYMD(round.startDate), ""+rounds+""], ["startDate"])
             }
 
             if (roundsEnds.size() > 0) { //we have overlapping dates with endDate
                 def rounds = roundsEnds.collect { it.roundNumber }
-                errors << errorMessageService.getRawMessage(RawEntity.ROUND, "validation.field.round.enddate.overlaps.error", [StringUtil.format(round.endDate), ""+rounds+""], ["endDate"])
+                errors << errorMessageService.getRawMessage(RawEntity.ROUND, "validation.field.round.enddate.overlaps.error", [dateUtil.formatYMD(round.endDate), ""+rounds+""], ["endDate"])
             }
         }
 

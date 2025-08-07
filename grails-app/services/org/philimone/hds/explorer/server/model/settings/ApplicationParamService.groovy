@@ -1,6 +1,7 @@
 package org.philimone.hds.explorer.server.model.settings
 
 import grails.gorm.transactions.Transactional
+import net.betainteractive.utilities.DateUtil
 import net.betainteractive.utilities.GeneralUtil
 import net.betainteractive.utilities.StringUtil
 import org.philimone.hds.explorer.server.model.enums.settings.ApplicationParamType
@@ -52,17 +53,17 @@ class ApplicationParamService {
     }
 
     def ApplicationParam addParam(String name, Date value) {
-        def param = new ApplicationParam(name: name, type: ApplicationParamType.DATE, value: StringUtil.format(value, "yyyy-MM-dd HH:mm:ss" ))
+        def param = new ApplicationParam(name: name, type: ApplicationParamType.DATE, value: DateUtil.getInstance().formatYMDHMS(value)) //, "yyyy-MM-dd HH:mm:ss" ))
         addApplicationParam(param)
     }
 
     def ApplicationParam addParam(String name, LocalDate value) {
-        def param = new ApplicationParam(name: name, type: ApplicationParamType.DATE, value: StringUtil.format(value))
+        def param = new ApplicationParam(name: name, type: ApplicationParamType.DATE, value: DateUtil.getInstance().formatYMD(value))
         addApplicationParam(param)
     }
 
     def ApplicationParam addParam(String name, LocalDateTime value) {
-        def param = new ApplicationParam(name: name, type: ApplicationParamType.DATE, value: StringUtil.format(value))
+        def param = new ApplicationParam(name: name, type: ApplicationParamType.DATE, value: DateUtil.getInstance().formatYMD(value))
         addApplicationParam(param)
     }
 

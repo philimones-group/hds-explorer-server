@@ -1,6 +1,7 @@
 package org.philimone.hds.explorer.server.model.main
 
 import grails.gorm.transactions.Transactional
+import net.betainteractive.utilities.DateUtil
 import net.betainteractive.utilities.GeneralUtil
 import net.betainteractive.utilities.StringUtil
 import org.philimone.hds.explorer.server.model.collect.raw.RawHeadRelationship
@@ -392,6 +393,8 @@ class HeadRelationshipService {
     }
 
     ArrayList<RawMessage> validateCreateHeadRelationship(RawHeadRelationship headRelationship, HeadRelationship fakePreviousHeadRelationship, HeadRelationship fakePreviousHouseholdHead){
+        def dateUtil = DateUtil.getInstance()
+
         def errors = new ArrayList<RawMessage>()
 
         def isBlankMemberCode = StringUtil.isBlank(headRelationship.memberCode)
@@ -445,11 +448,11 @@ class HeadRelationshipService {
         }
         //C5.2. Check Dates against DOB
         if (!isNullStartDate && memberExists && headRelationship.startDate < member.dob){
-            errors << errorMessageService.getRawMessage(RawEntity.HEAD_RELATIONSHIP, "validation.field.dob.not.greater.date", ["headRelationship.startDate", StringUtil.format(member.dob)], ["startDate","member.dob"])
+            errors << errorMessageService.getRawMessage(RawEntity.HEAD_RELATIONSHIP, "validation.field.dob.not.greater.date", ["headRelationship.startDate", dateUtil.formatYMD(member.dob)], ["startDate","member.dob"])
         }
         //C6. Check Age of Head of Household
         if (memberExists && (relationshipType == HeadRelationshipType.HEAD_OF_HOUSEHOLD && GeneralUtil.getAge(member.dob)< Codes.MIN_HEAD_AGE_VALUE )){
-            errors << errorMessageService.getRawMessage(RawEntity.HEAD_RELATIONSHIP, "validation.field.dob.head.minage.error", [StringUtil.format(member.dob), Codes.MIN_HEAD_AGE_VALUE+""], ["member.dob"])
+            errors << errorMessageService.getRawMessage(RawEntity.HEAD_RELATIONSHIP, "validation.field.dob.head.minage.error", [dateUtil.formatYMD(member.dob), Codes.MIN_HEAD_AGE_VALUE+""], ["member.dob"])
         }
         //C7. Check Current Head Existence and the new relation is not a head of household - We must have a existent Head of Household in order to create new Relationship with the Head
         if (!headExists && relationshipType != HeadRelationshipType.HEAD_OF_HOUSEHOLD && !headRelationship.isHouseholdRelocation){
@@ -509,6 +512,8 @@ class HeadRelationshipService {
     }
 
     ArrayList<RawMessage> validateCreateHeadRelationship(RawHeadRelationship headRelationship){
+        def dateUtil = DateUtil.getInstance()
+
         def errors = new ArrayList<RawMessage>()
 
         def isBlankMemberCode = StringUtil.isBlank(headRelationship.memberCode)
@@ -562,11 +567,11 @@ class HeadRelationshipService {
         }
         //C5.2. Check Dates against DOB
         if (!isNullStartDate && memberExists && headRelationship.startDate < member.dob){
-            errors << errorMessageService.getRawMessage(RawEntity.HEAD_RELATIONSHIP, "validation.field.dob.not.greater.date", ["headRelationship.startDate", StringUtil.format(member.dob)], ["startDate","member.dob"])
+            errors << errorMessageService.getRawMessage(RawEntity.HEAD_RELATIONSHIP, "validation.field.dob.not.greater.date", ["headRelationship.startDate", dateUtil.formatYMD(member.dob)], ["startDate","member.dob"])
         }
         //C6. Check Age of Head of Household
         if (memberExists && (relationshipType == HeadRelationshipType.HEAD_OF_HOUSEHOLD && GeneralUtil.getAge(member.dob)< Codes.MIN_HEAD_AGE_VALUE )){
-            errors << errorMessageService.getRawMessage(RawEntity.HEAD_RELATIONSHIP, "validation.field.dob.head.minage.error", [StringUtil.format(member.dob), Codes.MIN_HEAD_AGE_VALUE+""], ["member.dob"])
+            errors << errorMessageService.getRawMessage(RawEntity.HEAD_RELATIONSHIP, "validation.field.dob.head.minage.error", [dateUtil.formatYMD(member.dob), Codes.MIN_HEAD_AGE_VALUE+""], ["member.dob"])
         }
         //C7. Check Current Head Existence and the new relation is not a head of household - We must have a existent Head of Household in order to create new Relationship with the Head
         if (!headExists && relationshipType != HeadRelationshipType.HEAD_OF_HOUSEHOLD && !headRelationship.isHouseholdRelocation){
@@ -625,6 +630,8 @@ class HeadRelationshipService {
     }
 
     ArrayList<RawMessage> validateCloseHeadRelationship(RawHeadRelationship headRelationship){
+        def dateUtil = DateUtil.getInstance()
+
         def errors = new ArrayList<RawMessage>()
 
         def isBlankMemberCode = StringUtil.isBlank(headRelationship.memberCode)
@@ -670,7 +677,7 @@ class HeadRelationshipService {
         }
         //C6. Check Dates against DOB
         if (!isNullEndDate && memberExists && headRelationship.endDate < member.dob){
-            errors << errorMessageService.getRawMessage(RawEntity.HEAD_RELATIONSHIP, "validation.field.dob.not.greater.date", ["headRelationship.endDate", StringUtil.format(member.dob)], ["endDate","member.dob"])
+            errors << errorMessageService.getRawMessage(RawEntity.HEAD_RELATIONSHIP, "validation.field.dob.not.greater.date", ["headRelationship.endDate", dateUtil.formatYMD(member.dob)], ["endDate","member.dob"])
         }
 
         //Validation part 2: Previous HeadRelationship against new HeadRelationship
@@ -693,7 +700,7 @@ class HeadRelationshipService {
 
             //C6. Check If endDate is before or equal to startDate
             if (currentHeadRelationship.startDate > endDate){ //RECHECK THIS WITH >=
-                errors << errorMessageService.getRawMessage(RawEntity.HEAD_RELATIONSHIP, "validation.field.headRelationship.enddate.before.startdate.error", [currentHeadRelationship.id, StringUtil.format(endDate), StringUtil.format(currentHeadRelationship.startDate)], ["currentHeadRelationship.startDate", "new.endDate"])
+                errors << errorMessageService.getRawMessage(RawEntity.HEAD_RELATIONSHIP, "validation.field.headRelationship.enddate.before.startdate.error", [currentHeadRelationship.id, dateUtil.formatYMD(endDate), dateUtil.formatYMD(currentHeadRelationship.startDate)], ["currentHeadRelationship.startDate", "new.endDate"])
             }
 
         }

@@ -17,6 +17,7 @@ class RegionController {
     ModuleService moduleService
     def dataModelsService
     def applicationParamService
+    def generalUtilitiesService
 
     //static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
 
@@ -214,6 +215,8 @@ class RegionController {
     }
 
     def regionList = {
+        def dateUtil = generalUtilitiesService.getDateUtil()
+
         //convert datatables params to gorm params
         def jqdtParams = [:]
         params.each { key, value ->
@@ -276,7 +279,7 @@ class RegionController {
              'head':           obj.head ? "${obj.head?.code} - ${obj.head?.name}" : "",
              'parent':         "<a href='${createLink(controller: 'region', action: 'show', id: obj.parent?.id)}'>${obj}</a>",
              'createdBy':      obj.createdBy?.getFullname(),
-             'createdDate':    StringUtil.formatLocalDateTime(obj.createdDate)
+             'createdDate':    dateUtil.formatYMDHMS(obj.createdDate) // StringUtil.formatLocalDateTime(obj.createdDate)
             ]
         }
 

@@ -1,6 +1,7 @@
 package org.philimone.hds.explorer.server.model.main
 
 import grails.gorm.transactions.Transactional
+import net.betainteractive.utilities.DateUtil
 import net.betainteractive.utilities.GeneralUtil
 import net.betainteractive.utilities.StringUtil
 import org.philimone.hds.explorer.server.model.collect.raw.RawMemberEnu
@@ -208,6 +209,8 @@ class MemberEnumerationService {
     }
 
     ArrayList<RawMessage> validate(RawMemberEnu memberEnu){
+        def dateUtil = DateUtil.getInstance()
+
         def errors = new ArrayList<RawMessage>()
 
         //code, name, gender, dob, motherCode, fatherCode, headRelationshipType
@@ -295,7 +298,7 @@ class MemberEnumerationService {
 
         //C5. Check dob max date
         if (!isBlankDob && memberEnu.dob > LocalDate.now()){
-            errors << errorMessageService.getRawMessage(RawEntity.MEMBER_ENUMERATION, "validation.field.date.not.greater.today", ["dob", StringUtil.format(memberEnu.dob)], ["dob"])
+            errors << errorMessageService.getRawMessage(RawEntity.MEMBER_ENUMERATION, "validation.field.date.not.greater.today", ["dob", dateUtil.formatYMD(memberEnu.dob)], ["dob"])
         }
 
         //C4. Check Mother reference existence
@@ -309,11 +312,11 @@ class MemberEnumerationService {
 
         //C6. Check mother Dob must be greater or equal to 12
         if (!motherUnknown && motherExists && GeneralUtil.getAge(mother.dob)< Codes.MIN_MOTHER_AGE_VALUE ){
-            errors << errorMessageService.getRawMessage(RawEntity.MEMBER_ENUMERATION, "validation.field.dob.mother.minage.error", [StringUtil.format(mother.dob), Codes.MIN_MOTHER_AGE_VALUE+""], ["mother.dob"])
+            errors << errorMessageService.getRawMessage(RawEntity.MEMBER_ENUMERATION, "validation.field.dob.mother.minage.error", [dateUtil.formatYMD(mother.dob), Codes.MIN_MOTHER_AGE_VALUE+""], ["mother.dob"])
         }
         //C7. Check father Dob must be greater or equal to 12
         if (!fatherUnknown && fatherExists && GeneralUtil.getAge(father.dob)< Codes.MIN_FATHER_AGE_VALUE ){
-            errors << errorMessageService.getRawMessage(RawEntity.MEMBER_ENUMERATION, "validation.field.dob.father.minage.error", [StringUtil.format(father.dob), Codes.MIN_FATHER_AGE_VALUE+""], ["father.dob"])
+            errors << errorMessageService.getRawMessage(RawEntity.MEMBER_ENUMERATION, "validation.field.dob.father.minage.error", [dateUtil.formatYMD(father.dob), Codes.MIN_FATHER_AGE_VALUE+""], ["father.dob"])
         }
 
         //C9. Check mother Gender
@@ -373,7 +376,7 @@ class MemberEnumerationService {
         }
         //C4. Check residencyStartDate against dateOfBirth
         if (!isBlankResidencyStartDate && !isBlankDob && memberEnu.residencyStartDate < memberEnu.dob){
-            errors << errorMessageService.getRawMessage(RawEntity.MEMBER_ENUMERATION, "validation.field.member.enumeration.dob.not.greater.date", [StringUtil.format(memberEnu.residencyStartDate)], ["memberDob"])
+            errors << errorMessageService.getRawMessage(RawEntity.MEMBER_ENUMERATION, "validation.field.member.enumeration.dob.not.greater.date", [dateUtil.formatYMD(memberEnu.residencyStartDate)], ["memberDob"])
         }
 
         //C5. Check CollectedBy User existence

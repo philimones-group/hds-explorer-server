@@ -61,7 +61,7 @@
             <g:set var="member_code" value="${this.member?.code}" />
             <g:set var="member_name" value="${this.member?.name}" />
             <g:set var="member_gender" value="${this.member?.gender}" />
-            <g:set var="member_dob" value="${this.member?.dob}" />
+            <g:set var="member_dob" value="${bi.formatDate(date: this.member?.dob)}" />
 
             <g:form resource="${this.member}" method="DELETE">
                 <fieldset class="buttons">

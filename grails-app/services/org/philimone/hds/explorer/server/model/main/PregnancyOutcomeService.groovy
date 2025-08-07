@@ -1,6 +1,7 @@
 package org.philimone.hds.explorer.server.model.main
 
 import grails.gorm.transactions.Transactional
+import net.betainteractive.utilities.DateUtil
 import net.betainteractive.utilities.GeneralUtil
 import net.betainteractive.utilities.StringUtil
 import org.philimone.hds.explorer.server.model.collect.raw.RawDeath
@@ -249,6 +250,8 @@ class PregnancyOutcomeService {
     }
 
     ArrayList<RawMessage> validate(RawPregnancyOutcome pregnancyOutcome, List<RawPregnancyChild> pregnancyChildren){
+        def dateUtil = DateUtil.getInstance()
+
         def errors = new ArrayList<RawMessage>()
 
         //code, motherCode, fatherCode, numberOfOutcomes, outcomeDate, birthPlace, birthPlaceOther, visitCode
@@ -332,12 +335,12 @@ class PregnancyOutcomeService {
 
         //C3. Check Date is greater than today (outcomeDate)
         if (!isBlankOutcomeDate && pregnancyOutcome.outcomeDate > LocalDate.now()){
-            errors << errorMessageService.getRawMessage(RawEntity.PREGNANCY_OUTCOME, "validation.field.date.not.greater.today", ["outcomeDate", StringUtil.format(pregnancyOutcome.outcomeDate)], ["outcomeDate"])
+            errors << errorMessageService.getRawMessage(RawEntity.PREGNANCY_OUTCOME, "validation.field.date.not.greater.today", ["outcomeDate", dateUtil.formatYMD(pregnancyOutcome.outcomeDate)], ["outcomeDate"])
         }
 
         //C4. Check Dates is older than Member Date of Birth (outcomeDate)
         if (!isBlankOutcomeDate && motherExists && pregnancyOutcome.outcomeDate <= mother.dob){
-            errors << errorMessageService.getRawMessage(RawEntity.PREGNANCY_OUTCOME, "validation.field.dob.not.greater.date", ["outcomeDate", StringUtil.format(mother.dob)], ["dob"])
+            errors << errorMessageService.getRawMessage(RawEntity.PREGNANCY_OUTCOME, "validation.field.dob.not.greater.date", ["outcomeDate", dateUtil.formatYMD(mother.dob)], ["dob"])
         }
 
         //C5. Validate Enum Options (birthPlace)
@@ -357,7 +360,7 @@ class PregnancyOutcomeService {
 
         //C7. Check mother Dob must be greater or equal to 12
         if (motherExists && GeneralUtil.getAge(mother.dob) < Codes.MIN_MOTHER_AGE_VALUE ){
-            errors << errorMessageService.getRawMessage(RawEntity.PREGNANCY_OUTCOME, "validation.field.pregnancy.outcome.age.error", [StringUtil.format(mother.dob), Codes.MIN_MOTHER_AGE_VALUE+""], ["mother.dob"])
+            errors << errorMessageService.getRawMessage(RawEntity.PREGNANCY_OUTCOME, "validation.field.pregnancy.outcome.age.error", [dateUtil.formatYMD(mother.dob), Codes.MIN_MOTHER_AGE_VALUE+""], ["mother.dob"])
         }
 
         //C8. Check Number of Outcomes
