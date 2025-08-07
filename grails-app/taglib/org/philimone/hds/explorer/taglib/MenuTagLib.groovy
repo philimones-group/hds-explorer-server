@@ -11,7 +11,7 @@ class MenuTagLib {
 
     def generalUtilitiesService
 
-    List<Locale> locales = [new Locale("pt", ), Locale.ENGLISH, Locale.FRENCH]
+    List<Locale> locales = [new Locale("pt", ), Locale.ENGLISH, Locale.FRENCH, new Locale("am",)]
 
     /*Menu*/
     def menuBar = {attrs, body ->

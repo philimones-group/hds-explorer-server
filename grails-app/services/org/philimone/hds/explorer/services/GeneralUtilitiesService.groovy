@@ -19,7 +19,7 @@ class GeneralUtilitiesService {
     def applicationParamService
     def grailsApplication
 
-    def List<Locale> locales = [new Locale("pt", ), Locale.ENGLISH, Locale.FRENCH]
+    def List<Locale> locales = [new Locale("pt", ), Locale.ENGLISH, Locale.FRENCH, new Locale("am",)]
 
     def boolean isUsingMailService(){
         return grailsApplication.config.getProperty("hds.explorer.mail.configured", String.class)
