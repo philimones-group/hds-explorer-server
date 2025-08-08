@@ -878,3 +878,9 @@ img.grails-logo {
     background-position: right center !important; /* Ensure the spinner is placed at the right */
     background-repeat: no-repeat !important; /* Prevent the image from repeating */
 }
+
+/* Set KW DatePicker calendar at the top - special when is inside a bootstrap modal dialog */
+.calendars-popup,
+.calendars {
+    z-index: 20000 !important; /* any number > 1050 works */
+}

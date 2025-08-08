@@ -3,6 +3,8 @@ package org.philimone.hds.explorer.taglib
 
 import groovy.json.JsonSlurper
 import net.betainteractive.utilities.StringUtil
+import org.philimone.hds.explorer.server.model.settings.Codes
+import org.springframework.context.i18n.LocaleContextHolder
 
 class TabulatorTagLib {
 
@@ -41,13 +43,16 @@ class TabulatorTagLib {
 
     def tabulator = { attrs, body ->
 
+        def locale = LocaleContextHolder.locale
+        def lang = locale.language
+        lang = lang?.equals("pt") ? "pt-BR" : lang
+        def regional_lang = lang?.equals("en") ? "" : lang
+
         def dataUrl = attrs.data
         def boxed = attrs.boxed
         def contextMenu = attrs.contextMenu
         def paginationSize = attrs.paginationSize
         def hasPopupMenu = contextMenu != null ? "true".equalsIgnoreCase(contextMenu) : false
-
-
 
         def errlabel = attrs.errlabel
         def inflabel = attrs.inflabel
@@ -169,6 +174,86 @@ class TabulatorTagLib {
             out << "\n"
             out << "            return editor.get(0);\n"
             out << "        };\n\n"
+
+            //Create a KW DatePicker Editor
+            out << "        //DatePicker Editor for Tabulator\n"
+            out << "        function tabulatorDatePickerEditor(cell, onRendered, success, cancel) {\n" +
+                   "            const input = document.createElement(\"input\");\n" +
+                   "            input.type = \"text\";\n" +
+                   "            input.style.width = \"100%\";\n\n" +
+                   "            // Initialize with existing value (Gregorian string)\n" +
+                   "            const gregDate = cell.getValue();\n"
+
+            if (Codes.SYSTEM_USE_ETHIOPIAN_CALENDAR) {
+                out << "            if (gregDate) input.value = gregDate;" //formatToEthiopian(gregDate);\n\n"
+            } else {
+                out << "            if (gregDate) input.value = gregDate;\n\n"
+            }
+
+            out << "            onRendered(() => {\n"
+
+            //mutable part
+            if (Codes.SYSTEM_USE_ETHIOPIAN_CALENDAR) {
+                out << "                const gregCalendar = \$.calendars.instance('gregorian');\n"
+                out << "                \$(input).calendarsPicker(\$.extend({\n" +
+                        "                    calendar: \$.calendars.instance('ethiopian', '${lang}'),\n" +
+                        "                    dateFormat: 'yyyy-mm-dd EC',\n" +
+                        "                    altFormat: 'yyyy-mm-dd',\n" +
+                        "                    onSelect: function (dates) {\n" +
+                        "                        if (dates.length > 0) {\n" +
+                        "                            const ethDate = dates[0];\n" +
+                        "                            const gregDate = gregCalendar.fromJD(ethDate.toJD());\n" +
+                        "                            const formatted = gregCalendar.formatDate('yyyy-mm-dd', gregDate);\n" +
+                        "\n" +
+                        "                            success(formatted); // send Gregorian to Tabulator\n" +
+                        "                        }\n" +
+                        "                    },\n"
+            } else {
+                out << "                const gregCalendar = \$.calendars.instance('gregorian', '${lang}');\n"
+                out << "                \$(input).calendarsPicker(\$.extend({\n" +
+                       "                    calendar: gregCalendar,\n" +
+                       "                    dateFormat: 'yyyy-mm-dd',\n" +
+                       "                    onSelect: function (dates) {\n" +
+                       "                        if (dates.length > 0) {\n" +
+                       "                            const gregDate = dates[0];\n" +
+                       "                            const formatted = gregCalendar.formatDate('yyyy-mm-dd', gregDate);\n" +
+                       "\n" +
+                       "                            success(formatted); // send Gregorian to Tabulator\n" +
+                       "                        }\n" +
+                       "                    },\n"
+            }
+
+            out << "                    showOn: 'focus',\n" +
+                   "                    popupContainer: \$('body'),\n" +
+                   "                    onShow: function(picker, inst) {\n" +
+                   "                        const rect = this.getBoundingClientRect();\n\n" +
+                   "                        picker.css({\n" +
+                   "                            position: 'fixed',\n" +
+                   "                            top:  (rect.bottom + 4) + 'px',\n" +
+                   "                            left: rect.left + 'px'\n" +
+                   "                        });\n" +
+                   "                        return picker; \n" +
+                   "                    }\n" +
+                   "                }, \$.calendarsPicker.regionalOptions['${regional_lang}']));\n\n" + //finishes calendarPicker
+                   "            });\n\n" //finishes onRendered
+
+            //finishes function tabulatorDatePickerEditor...
+            out << "            return input;\n" +
+                   "        }\n\n"
+
+            out << "        function formatToEthiopian(gregDateStr) {\n" +
+                   "            if (!gregDateStr) return \"\";\n" +
+                   "\n" +
+                   "            const gregCalendar = \$.calendars.instance('gregorian');\n" +
+                   "            const ethCalendar = \$.calendars.instance('ethiopian');\n" +
+                   "\n" +
+                   "            const parts = gregDateStr.split(\"-\");\n" +
+                   "            const gregDate = gregCalendar.newDate(parseInt(parts[0]), parseInt(parts[1]), parseInt(parts[2]));\n" +
+                   "            const jd = gregDate.toJD();\n" +
+                   "            const ethDate = ethCalendar.fromJD(jd);\n" +
+                   "\n" +
+                   "            return ethCalendar.formatDate('yyyy-mm-dd', ethDate) + \" EC\";\n" +
+                   "        }\n\n\n"
 
             //create menu for adding and deleting rows
             out << "        var toast = \$(\"#${attrs.toastid}\");\n"
@@ -316,7 +401,7 @@ class TabulatorTagLib {
                 def formatter = obj.formatter != null ? "${obj.formatter}" : null
                 def link = obj.link != null ? "${obj.link}" : ""
 
-                def final_cedit = StringUtil.isBlank(cedit) ? "" : cedit.equalsIgnoreCase("autocomplete") ? "tabulatorAutocompleteEditor" : "'${cedit}'"
+                def final_cedit = StringUtil.isBlank(cedit) ? "" : cedit.equalsIgnoreCase("autocomplete") ? "tabulatorAutocompleteEditor" : cedit.equalsIgnoreCase("date") ? "tabulatorDatePickerEditor" : "'${cedit}'"
                 def cedittext = StringUtil.isBlank(cedit) ? "" : ", editor:${final_cedit}"
                 def ceditoptstext = ""
                 def hzaligntext = StringUtil.isBlank(hzalign) ? "" : ", ${hzalign}"
@@ -336,6 +421,12 @@ class TabulatorTagLib {
                     displaytext = ", formatter:function(cell, formatterParams, onRendered){ return \"<a href='${link}/\" + cell.getValue() + \"'>\" + cell.getValue() + \"</a>\"; }"
                 }
 
+                if (cedit.equalsIgnoreCase("date")){
+                    if (Codes.SYSTEM_USE_ETHIOPIAN_CALENDAR) {
+                        displaytext = ", formatter:function(cell, formatterParams, onRendered){ const value = cell.getValue(); return formatToEthiopian(value); }"
+                    }
+                }
+
                 if (!StringUtil.isBlank(cedit)) {
 
                     ceditoptstext = ", editorParams:{\n"
@@ -345,7 +436,7 @@ class TabulatorTagLib {
                         ceditoptstext += "                      values:${opts}\n"
 
                     } else if (cedit.equalsIgnoreCase("date")) {
-                        ceditoptstext += "                      format:\"yyyy-MM-dd\""
+                        //ceditoptstext += "                      format:\"yyyy-MM-dd\"" //WE DONT NEED IT NOW BEACUSE WE ARE USING FORMATTER
 
                     } else if (cedit.equalsIgnoreCase("autocomplete")) {
 
@@ -372,7 +463,7 @@ class TabulatorTagLib {
                 }
 
 
-                out << "                 {title:'${clabel}', field:'${cname}'${cedittext}${hzaligntext}${vtaligntext}, headerHozAlign:'center'${formattertext}${displaytext}${ceditoptstext}}${i+1==columnsJson.size() ? '' : ','}\n"
+                out << "                 {title:'${clabel?.encodeAsJavaScript()}', field:'${cname}'${cedittext}${hzaligntext}${vtaligntext}, headerHozAlign:'center'${formattertext}${displaytext}${ceditoptstext}}${i+1==columnsJson.size() ? '' : ','}\n"
 
                 // Do something with the values
                 //println "Name: $cname, Label: $clabel"
