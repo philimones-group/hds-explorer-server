@@ -52,6 +52,7 @@
     <tb:tabulatorResources />
     <tb:luxonResources/>
     <tb:jquiResources/>
+    <bi:kwCalendarResources/>
 </head>
 <body>
 

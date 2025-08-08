@@ -47,6 +47,8 @@
         }
 
     </style>
+
+    <bi:kwCalendarResources/>
 </head>
 <body>
 

@@ -49,6 +49,7 @@
     </style>
 
     <tb:tabulatorResources />
+    <bi:kwCalendarResources/>
 </head>
 <body>
 

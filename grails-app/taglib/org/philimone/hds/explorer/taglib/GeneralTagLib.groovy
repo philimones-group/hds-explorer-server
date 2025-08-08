@@ -2,7 +2,7 @@ package org.philimone.hds.explorer.taglib
 
 import net.betainteractive.utilities.StringUtil
 import org.philimone.hds.explorer.server.model.settings.Codes
-
+import org.springframework.context.i18n.LocaleContextHolder
 import java.time.LocalDate
 import java.time.LocalDateTime
 
@@ -95,7 +95,7 @@ class GeneralTagLib {
             }
 
         } else {
-            return "${propertyValue}"
+            return propertyValue==null ? "" : "${propertyValue}"
         }
     }
 
@@ -222,16 +222,95 @@ class GeneralTagLib {
             out << "                ${propertyValue==null ? '' : objValue} \n"
             out << "            </div>\n"
         } else {
-            def toDate = getDateValue(propertyValue)
+            //def toDate = getDateValue(propertyValue)
+            def objValue = getObjectValue(propertyValue)
+
+            loadDatePicker(propertyName)
 
             out << "            <div class=\"fieldcontain required\">\n"
             out << "                <label for=\"${propertyName}\">\n"
             out << "                    ${labelText}\n"
             out << "                </label>\n"
-            out << "                ${g.datePicker(name: propertyName, precision: 'day', value: toDate)} \n"
+            //out << "                ${g.datePicker(name: propertyName, precision: 'day', value: toDate)} \n"
+            out << "                    <input type=\"text\" id=\"${propertyName}Obj\" readonly=\"readonly\" size=\"20\" value=\"${objValue}\" />\n"
+            out << "                    <input type=\"hidden\" name=\"${propertyName}\" value=\"date.struct\" />\n"
+            out << "                    <input type=\"hidden\" name=\"${propertyName}_day\"   id=\"${propertyName}_day\" />\n"
+            out << "                    <input type=\"hidden\" name=\"${propertyName}_month\" id=\"${propertyName}_month\" />\n"
+            out << "                    <input type=\"hidden\" name=\"${propertyName}_year\"  id=\"${propertyName}_year\" />"
+
             out << "            </div>\n"
         }
 
+    }
+
+    def loadDatePicker(def propertyName) {
+        def locale = LocaleContextHolder.locale
+        def lang = locale.language
+        lang = lang?.equals("pt") ? "pt-BR" : lang
+        def regional_lang = lang?.equals("en") ? "" : lang
+
+        //println "lang: ${lang}"
+
+        out << "<script type=\"text/javascript\">\n"
+        out << "    \$(document).ready(function () {\n"
+        //out << "        \$.localise(['jquery.calendars', 'jquery.calendars.picker'], '${lang}');"
+        if (Codes.SYSTEM_USE_ETHIOPIAN_CALENDAR) {
+            //generate ethiopian
+            out << "                var gregCalendar = \$.calendars.instance('gregorian');\n" +
+                   "                \$('#${propertyName}Obj').calendarsPicker(\$.extend({\n" +
+                   "                    calendar: \$.calendars.instance('ethiopian', '${lang}'),\n" +
+                   "                    dateFormat: 'yyyy-mm-dd EC',\n" +
+                   "                    altField: '#${propertyName}',\n" +
+                   "                    altFormat: 'yyyy-mm-dd',\n" +
+                   "                    showTrigger: '<button type=\"button\" class=\"trigger\">...</button>',\n" +
+                   "                    onSelect: function(date) {\n" +
+                   "                        let ethDate = date[0]; // Ethiopian date object\n" +
+                   "                        let julDate = ethDate.toJD(); // convert to Julian Day\n" +
+                   "                        let gregDate = gregCalendar.fromJD(julDate); // convert to Gregorian\n" +
+                   "                        let formatted = gregCalendar.formatDate('yyyy-mm-dd', gregDate);\n" +
+                   "\n" +
+                   "                        \$('#${propertyName}_year').val(gregDate._year);\n" +
+                   "                        \$('#${propertyName}_month').val(gregDate._month);\n" +
+                   "                        \$('#${propertyName}_day').val(gregDate._day);\n" +
+                   "                        console.log('Selected Ethiopian date: ', formatted);\n" +
+                   "                    }\n" +
+                   "                }, \$.calendarsPicker.regionalOptions['${regional_lang}']));"
+        } else {
+            //generate gregorian
+            out << "                var gregCalendar = \$.calendars.instance('gregorian', '${lang}');\n" +
+                   "                \$('#${propertyName}Obj').calendarsPicker(\$.extend({\n" +
+                   "                    calendar: gregCalendar,\n" +
+                   "                    dateFormat: 'yyyy-mm-dd',\n" +
+                   "                    showTrigger: '<button type=\"button\" class=\"trigger\">...</button>',\n" +
+                   "                    onSelect: function(date) {\n" +
+                   "                        let gregDate = date[0]; // Gregorian date object\n" +
+                   "                        let formatted = gregCalendar.formatDate('yyyy-mm-dd', gregDate);\n" +
+                   "\n" +
+                   "                        \$('#${propertyName}_year').val(gregDate._year);\n" +
+                   "                        \$('#${propertyName}_month').val(gregDate._month);\n" +
+                   "                        \$('#${propertyName}_day').val(gregDate._day);\n" +
+                   "                        console.log('Selected Gregorian date: ', formatted);\n" +
+                   "                    }\n" +
+                   "                }, \$.calendarsPicker.regionalOptions['${regional_lang}']));"
+        }
+        //out << "        \$.calendarsPicker.regionalOptions['fr'];\n"
+
+        out << "    });\n"
+        out << "</script>\n"
+    }
+
+    def kwCalendarResources = {
+        //out << "        " + asset.stylesheet(src: "ui-pepper-grinder.calendars.picker.css") + "\n"
+        out << "        " + asset.stylesheet(src: "smoothness.calendars.picker.css") + "\n"
+        //out << "        " + asset.stylesheet(src: "humanity.calendars.picker.css") + "\n"
+        //out << "        " + asset.stylesheet(src: "jquery.calendars.picker.css") + "\n"
+        out << "        " + asset.javascript(src: "jquery.plugin.min.js") + "\n"
+        out << "        " + asset.javascript(src: "jquery.calendars.min.js") + "\n"
+        out << "        " + asset.javascript(src: "jquery.calendars.plus.min.js") + "\n"
+        out << "        " + asset.javascript(src: "jquery.calendars.picker.min.js") + "\n"
+        out << "        " + asset.javascript(src: "jquery.calendars.ethiopian.min.js") + "\n"
+        out << "        " + asset.javascript(src: "jquery.calendars.lang.min.js") + "\n"
+        out << "        " + asset.javascript(src: "jquery.calendars.picker.lang.min.js") + "\n"
     }
 
     def tableList = { attrs, body ->

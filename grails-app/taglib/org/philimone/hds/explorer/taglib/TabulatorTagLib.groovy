@@ -25,6 +25,20 @@ class TabulatorTagLib {
         out << "        " + asset.javascript(src: "jquery-ui.min.js") + "\n"
     }
 
+    def kwCalendarResources = {
+        //out << "        " + asset.stylesheet(src: "ui-pepper-grinder.calendars.picker.css") + "\n"
+        out << "        " + asset.stylesheet(src: "smoothness.calendars.picker.css") + "\n"
+        //out << "        " + asset.stylesheet(src: "humanity.calendars.picker.css") + "\n"
+        //out << "        " + asset.stylesheet(src: "jquery.calendars.picker.css") + "\n"
+        out << "        " + asset.javascript(src: "jquery.plugin.min.js") + "\n"
+        out << "        " + asset.javascript(src: "jquery.calendars.min.js") + "\n"
+        out << "        " + asset.javascript(src: "jquery.calendars.plus.min.js") + "\n"
+        out << "        " + asset.javascript(src: "jquery.calendars.picker.min.js") + "\n"
+        out << "        " + asset.javascript(src: "jquery.calendars.ethiopian.min.js") + "\n"
+        out << "        " + asset.javascript(src: "jquery.calendars.lang.min.js") + "\n"
+        out << "        " + asset.javascript(src: "jquery.calendars.picker.lang.min.js") + "\n"
+    }
+
     def tabulator = { attrs, body ->
 
         def dataUrl = attrs.data

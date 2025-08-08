@@ -4,6 +4,7 @@
         <meta name="layout" content="main" />
         <g:set var="entityName" value="${message(code: 'round.label', default: 'Round')}" />
         <title><g:message code="round.add.label" args="[entityName]" /></title>
+        <bi:kwCalendarResources/>
     </head>
     <body>
         <a href="#create-round" class="skip" tabindex="-1"><g:message code="default.link.skip.label" default="Skip to content&hellip;"/></a>
@@ -31,8 +32,11 @@
                 <fieldset class="form">
                     <g:hiddenField name="roundNumber" value="${this.round?.roundNumber}" />
                     <bi:field bean="${round}" property="roundNumber" label="round.roundNumber.label" mode="show" />
-                    <bi:dateField bean="${round}" property="startDate" label="round.startDate.label" />
-                    <bi:dateField bean="${round}" property="endDate" label="round.endDate.label" />
+
+                    <bi:dateField bean="${round}" property="startDate" label="round.startDate.label" mode="edit" />
+
+                    <bi:dateField bean="${round}" property="endDate" label="round.endDate.label" mode="edit" />
+
                     <f:field bean="round" property="description" />
                 </fieldset>
                 <fieldset class="buttons">
