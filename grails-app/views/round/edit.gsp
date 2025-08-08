@@ -31,12 +31,15 @@
             </g:if>
 
             <g:form resource="${this.round}" method="PUT">
-                <g:hiddenField name="version" value="${this.round?.version}" />
                 <fieldset class="form">
+                    <g:hiddenField name="version" value="${this.round?.version}" />
                     <g:hiddenField name="roundNumber" value="${this.round?.roundNumber}" />
                     <bi:field bean="${round}" property="roundNumber" label="round.roundNumber.label" mode="show" />
+
                     <bi:dateField bean="${round}" property="startDate" label="round.startDate.label" mode="edit"/>
+
                     <bi:dateField bean="${round}" property="endDate" label="round.endDate.label" mode="edit"/>
+
                     <f:field bean="round" property="description" />
                 </fieldset>
                 <fieldset class="buttons">

@@ -1841,12 +1841,12 @@ class RawDomainController {
              'code':     obj.memberCode,
              'name':     obj.member.name,
              'gender':   obj.member.gender?.code,
-             'dob':      dateUtil.formatYMD(obj.member.dob),
+             'dob':      StringUtil.formatYMD(obj.member.dob),
              'household':       obj.household?.code,
              'startType':       obj.startType?.code,
-             'startDate':       dateUtil.formatYMD(obj.startDate),
+             'startDate':       StringUtil.formatYMD(obj.startDate),
              'endType':         obj.endType?.code,
-             'endDate':         dateUtil.formatYMD(obj.endDate),
+             'endDate':         StringUtil.formatYMD(obj.endDate),
              'statusText':      generalUtilitiesService.getMessage(obj.status==null ? ValidatableStatus.ACTIVE.name : obj.status.name),
              'status':          rawDomainService.getValidationStatus(obj.status)
             ]
@@ -1886,14 +1886,14 @@ class RawDomainController {
              'code':     obj.memberCode,
              'name':     obj.member.name,
              'gender':   obj.member.gender?.code,
-             'dob':      dateUtil.formatYMD(obj.member.dob),
+             'dob':      StringUtil.formatYMD(obj.member.dob),
              'household':       obj.household?.code,
              'head':            obj.head?.code,
              'relationshipType': obj.relationshipType?.code,
              'startType':       obj.startType?.code,
-             'startDate':       dateUtil.formatYMD(obj.startDate),
+             'startDate':       StringUtil.formatYMD(obj.startDate),
              'endType':         obj.endType?.code,
-             'endDate':         dateUtil.formatYMD(obj.endDate),
+             'endDate':         StringUtil.formatYMD(obj.endDate),
              'statusText':      generalUtilitiesService.getMessage(obj.status==null ? ValidatableStatus.ACTIVE.name : obj.status.name),
              'status':          rawDomainService.getValidationStatus(obj.status)
             ]
@@ -1925,14 +1925,14 @@ class RawDomainController {
              'code':     obj.memberCode,
              'name':     obj.member.name,
              'gender':   obj.member.gender?.code,
-             'dob':      dateUtil.formatYMD(obj.member.dob),
+             'dob':      StringUtil.formatYMD(obj.member.dob),
              'household':       obj.household?.code,
              'head':            obj.head?.code,
              'relationshipType': obj.relationshipType?.code,
              'startType':       obj.startType?.code,
-             'startDate':       dateUtil.formatYMD(obj.startDate),
+             'startDate':       StringUtil.formatYMD(obj.startDate),
              'endType':         obj.endType?.code,
-             'endDate':         dateUtil.formatYMD(obj.endDate),
+             'endDate':         StringUtil.formatYMD(obj.endDate),
              'statusText':      generalUtilitiesService.getMessage(obj.status==null ? ValidatableStatus.ACTIVE.name : obj.status.name),
              'status':          rawDomainService.getValidationStatus(obj.status)
             ]
@@ -1963,12 +1963,12 @@ class RawDomainController {
              'code':     obj.memberCode,
              'name':     obj.member.name,
              'gender':   obj.member.gender?.code,
-             'dob':      dateUtil.formatYMD(obj.member.dob),
+             'dob':      StringUtil.formatYMD(obj.member.dob),
              'household':       obj.household?.code,
              'startType':       obj.startType?.code,
-             'startDate':       dateUtil.formatYMD(obj.startDate),
+             'startDate':       StringUtil.formatYMD(obj.startDate), //must come in gregorian
              'endType':         obj.endType?.code,
-             'endDate':         dateUtil.formatYMD(obj.endDate),
+             'endDate':         StringUtil.formatYMD(obj.endDate),
              'statusText':      generalUtilitiesService.getMessage(obj.status==null ? ValidatableStatus.ACTIVE.name : obj.status.name),
              'status':          rawDomainService.getValidationStatus(obj.status)
             ]
@@ -1998,14 +1998,14 @@ class RawDomainController {
              'code':     obj.memberCode,
              'name':     obj.member.name,
              'gender':   obj.member.gender?.code,
-             'dob':      dateUtil.formatYMD(obj.member.dob),
+             'dob':      StringUtil.formatYMD(obj.member.dob),
              'household':       obj.household?.code,
              'head':            obj.head?.code,
              'relationshipType': obj.relationshipType?.code,
              'startType':       obj.startType?.code,
-             'startDate':       dateUtil.formatYMD(obj.startDate),
+             'startDate':       StringUtil.formatYMD(obj.startDate),
              'endType':         obj.endType?.code,
-             'endDate':         dateUtil.formatYMD(obj.endDate),
+             'endDate':         StringUtil.formatYMD(obj.endDate),
              'statusText':      generalUtilitiesService.getMessage(obj.status==null ? ValidatableStatus.ACTIVE.name : obj.status.name),
              'status':          rawDomainService.getValidationStatus(obj.status)
             ]
@@ -2038,9 +2038,9 @@ class RawDomainController {
              'memberB_code':     obj.memberB_code,
              'isPolygamic':   obj.isPolygamic==true,
              'startStatus':       obj.startStatus?.code,
-             'startDate':       dateUtil.formatYMD(obj.startDate),
+             'startDate':       StringUtil.formatYMD(obj.startDate),
              'endStatus':         obj.endStatus?.code,
-             'endDate':         dateUtil.formatYMD(obj.endDate),
+             'endDate':         StringUtil.formatYMD(obj.endDate),
              'statusText':      generalUtilitiesService.getMessage(obj.status==null ? ValidatableStatus.ACTIVE.name : obj.status.name),
              'status':          rawDomainService.getValidationStatus(obj.status)
             ]
@@ -2070,9 +2070,9 @@ class RawDomainController {
              'code':     obj.code,
              'motherCode':     obj.motherCode,
              'visitCode':     obj.visitCode,
-             'recordedDate':   dateUtil.formatYMD(obj.recordedDate),
+             'recordedDate':   StringUtil.formatYMD(obj.recordedDate),
              'pregMonths':      obj.pregMonths,
-             'expectedDeliveryDate':       dateUtil.formatYMD(obj.expectedDeliveryDate),
+             'expectedDeliveryDate':       StringUtil.formatYMD(obj.expectedDeliveryDate),
              'status':          generalUtilitiesService.getMessage(obj.status?.name)
             ]
         }
@@ -2103,7 +2103,7 @@ class RawDomainController {
              'code':             obj.code,
              'motherCode':       obj.motherCode,
              'visitCode':        obj.visitCode,
-             'outcomeDate':      dateUtil.formatYMD(obj.outcomeDate),
+             'outcomeDate':      StringUtil.formatYMD(obj.outcomeDate),
              'numberOfOutcomes': obj.numberOfOutcomes,
              'childs':           "${childs}"
             ]
@@ -2134,9 +2134,9 @@ class RawDomainController {
              'head':             obj.head?.code,
              'headName':         obj.head?.name,
              'startType':       obj.startType?.code,
-             'startDate':       dateUtil.formatYMD(obj.startDate),
+             'startDate':       StringUtil.formatYMD(obj.startDate),
              'endType':         obj.endType?.code,
-             'endDate':         dateUtil.formatYMD(obj.endDate),
+             'endDate':         StringUtil.formatYMD(obj.endDate),
              'statusText':      generalUtilitiesService.getMessage(obj.status==null ? ValidatableStatus.ACTIVE.name : obj.status.name),
              'status':          rawDomainService.getValidationStatus(obj.status)
             ]

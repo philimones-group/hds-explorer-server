@@ -414,6 +414,12 @@ public class StringUtil {
         return date.format(DateTimeFormatter.ISO_LOCAL_DATE);
     }
 
+    public static String formatYMD(LocalDate date){
+        if (date == null) return "";
+        //"yyyy-MM-dd"
+        return date.format(DateTimeFormatter.ISO_LOCAL_DATE);
+    }
+
     public static String formatLocalDate(LocalDate date){
         if (date == null) return "";
         //"yyyy-MM-dd"

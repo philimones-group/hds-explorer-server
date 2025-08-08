@@ -89,6 +89,11 @@ class RoundController {
 
             round.save(flush:true)
 
+            if (round.hasErrors()){
+                respond round.errors, view:'edit'
+                return
+            }
+
             println "errors: ${round.errors}"
 
         } catch (ValidationException e) {

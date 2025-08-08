@@ -185,11 +185,11 @@ class TabulatorTagLib {
                    "            const gregDate = cell.getValue();\n"
 
             if (Codes.SYSTEM_USE_ETHIOPIAN_CALENDAR) {
-                out << "            if (gregDate) input.value = gregDate;" //formatToEthiopian(gregDate);\n\n"
+                out << "            if (gregDate) input.value = formatToEthiopian(gregDate);\n\n"
             } else {
                 out << "            if (gregDate) input.value = gregDate;\n\n"
             }
-
+            
             out << "            onRendered(() => {\n"
 
             //mutable part
@@ -199,6 +199,7 @@ class TabulatorTagLib {
                         "                    calendar: \$.calendars.instance('ethiopian', '${lang}'),\n" +
                         "                    dateFormat: 'yyyy-mm-dd EC',\n" +
                         "                    altFormat: 'yyyy-mm-dd',\n" +
+                        "                    altField: 'yyyy-mm-dd',\n" +
                         "                    onSelect: function (dates) {\n" +
                         "                        if (dates.length > 0) {\n" +
                         "                            const ethDate = dates[0];\n" +
