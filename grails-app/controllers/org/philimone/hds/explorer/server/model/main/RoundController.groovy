@@ -111,12 +111,20 @@ class RoundController {
     }
 
     def delete(String id) {
-        if (id == null) {
+        def round = Round.findById(id)
+
+        if (id == null || round == null) {
             notFound()
             return
         }
 
-        roundService.delete(id)
+        if (Visit.countByRoundNumber(round.roundNumber) > 0) {
+            flash.error = message(code: 'validation.field.round.delete.visit.exists')
+            respond round.errors, view: "show"
+            return
+        }
+
+        round.delete(flush: true)
 
         request.withFormat {
             form multipartForm {

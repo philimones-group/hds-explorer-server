@@ -33,7 +33,7 @@ class RoundService {
 
     void delete(Serializable id){
         //do not delete anything
-        //Round.get(id).delete(flush: true)
+        Round.get(id).delete(flush: true)
     }
 
     Round save(Round round){

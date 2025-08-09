@@ -9,6 +9,7 @@
         <tb:tabulatorResources/>
         <tb:luxonResources/>
         <tb:jquiResources/>
+        <tb:kwCalendarResources/>
     </head>
     <body>
         <a href="#show-household" class="skip" tabindex="-1"><g:message code="default.link.skip.label" default="Skip to content&hellip;"/></a>

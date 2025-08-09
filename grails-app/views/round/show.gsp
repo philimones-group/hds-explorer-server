@@ -20,6 +20,12 @@
             <div class="message" role="status">${flash.message}</div>
             </g:if>
 
+            <g:if test="${flash.error}">
+                <ul class="errors" role="alert">
+                    <li>${flash.error}</li>
+                </ul>
+            </g:if>
+
             <bi:field bean="${round}" property="roundNumber"  label="round.roundNumber.label" mode="show" />
             <bi:field bean="${round}" property="startDate" label="round.startDate.label" mode="show" />
             <bi:field bean="${round}" property="endDate" label="round.endDate.label" mode="show" />
@@ -32,6 +38,7 @@
             <g:form resource="${this.round}" method="DELETE">
                 <fieldset class="buttons">
                     <g:link class="edit" action="edit" resource="${this.round}"><g:message code="round.edit.button.label" default="Edit" /></g:link>
+                    <input class="delete" type="submit" value="${message(code: 'default.button.delete.label', default: 'Delete')}" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');" />
                 </fieldset>
             </g:form>
         </div>
