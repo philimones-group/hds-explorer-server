@@ -1,8 +1,11 @@
 package org.philimone.hds.explorer.services
 
+import com.ibm.icu.util.EthiopicCalendar
 import grails.gorm.transactions.Transactional
 import net.betainteractive.io.LogOutput
+import net.betainteractive.utilities.DateUtil
 import net.betainteractive.utilities.GeneralUtil
+import net.betainteractive.utilities.StringUtil
 import org.philimone.hds.explorer.io.SystemPath
 import org.philimone.hds.explorer.server.model.enums.LogStatus
 import org.philimone.hds.explorer.server.model.enums.ProcessedStatus
@@ -658,5 +661,65 @@ class EventSyncService {
         //status.otherCases = RawChangeRegionHead.countByProcessedStatus(ProcessedStatus.)
 
         return status
+    }
+
+    String toGregorianSearchDate(String ethiopianInputToken) {
+        //println "tk: ${ethiopianInputToken}"
+        if (StringUtil.isBlank(ethiopianInputToken) || ethiopianInputToken?.length() < 3) return null //start searcing when they are 4 digits
+
+        def t = ethiopianInputToken.trim().replaceAll('\\s*EC$', "") // drop trailing "EC"
+        def mFull = t =~ /^(?<y>\d{4})-(?<m>\d{1,2})-(?<d>\d{1,2})(?:[ T](?<hh>\d{1,2})(?::(?<mm>\d{1,2}))?(?::(?<ss>\d{1,2}))?)?$/
+        def mMonth = t =~ /^(?<y>\d{4})-(?<m>\d{1,2})$/
+        def mYear = t =~ /^(?<y>\d{4})$/
+
+        if (mFull.matches()) {
+            int y = mFull.group('y') as int
+            int M = (mFull.group('m') ?: "1") as int
+            int d = (mFull.group('d') ?: "1") as int
+            Integer hh = mFull.group('hh')?.toInteger()
+            Integer mm = mFull.group('mm')?.toInteger()
+            Integer ss = mFull.group('ss')?.toInteger()
+
+            if (hh!=null) {
+                // Exact second range (or minute/hour if partial)
+                def ethCal = new EthiopicCalendar(); startCal.set(y, M-1, d, hh, mm?:0, ss?:0)
+                def date = DateUtil.toLocalDateTime(ethCal)
+
+                if (hh == null && mm == null && ss == null) return DateUtil.format(date, "yyyy-MM-dd")
+                if (mm == null && ss == null) return DateUtil.format(date, "yyyy-MM-dd HH")
+                if (ss == null) return DateUtil.format(date, "yyyy-MM-dd HH:mm")
+
+                return DateUtil.format(date, "yyyy-MM-dd HH:mm:ss")
+
+            } else {
+                // Whole day
+                def ethCal = new EthiopicCalendar();
+                ethCal.set(y, M-1, d, 0, 0, 0)
+                def date = DateUtil.toLocalDateTime(ethCal)
+                return DateUtil.format(date, "yyyy-MM-dd")
+            }
+        }
+
+        if (mMonth.matches()) {
+            int y = mMonth.group('y') as int
+            int M = mMonth.group('m') as int
+            // Days in Ethiopic month (Pagume 5/6 handled by roll to next month -1s)
+            def ethCal = new EthiopicCalendar();
+            ethCal.set(y, M-1, 1, 0, 0, 0)
+            def date = DateUtil.toLocalDateTime(ethCal)
+
+            return DateUtil.format(date, "yyyy-MM")
+        }
+
+        if (mYear.matches()) {
+            int y = mYear.group('y') as int
+            def ethCal = new EthiopicCalendar();
+            ethCal.set(y, 0, 1, 0, 0, 0)
+            def date = DateUtil.toLocalDateTime(ethCal)
+            return "${DateUtil.format(date, "yyyy")}"
+        }
+
+        //println("${t} matches full=${mFull.matches()}, month=${mMonth.matches()}, year=${mYear.matches()}")
+        return null
     }
 }

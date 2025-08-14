@@ -1,5 +1,6 @@
 package org.philimone.hds.explorer.controllers
 
+import net.betainteractive.utilities.DateUtil
 import net.betainteractive.utilities.StringUtil
 import grails.converters.JSON
 import org.philimone.hds.explorer.server.model.collect.raw.RawErrorLog
@@ -8,6 +9,7 @@ import org.philimone.hds.explorer.server.model.enums.settings.LogGroupCode
 import org.philimone.hds.explorer.server.model.enums.settings.LogReportCode
 import org.philimone.hds.explorer.server.model.logs.LogReport
 import org.philimone.hds.explorer.server.model.logs.LogReportFile
+import org.philimone.hds.explorer.server.model.settings.Codes
 
 import java.time.LocalDateTime
 
@@ -210,7 +212,12 @@ class EventSyncController {
         //FILTERS - if not null will filter
         def search_filter = (params_search != null && !"${params_search}".empty) ? "%${params_search}%" : null
         def date_search_filter = StringUtil.isBlank(search_filter) ? null : search_filter.replace(":", "%")
+        def formattedEthDate = Codes.SYSTEM_USE_ETHIOPIAN_CALENDAR ? eventSyncService.toGregorianSearchDate(params_search) : null //gets the possible date range
         def entitiesList = dataModelsService.findRawEntitiesLike("${params_search}")
+
+        if (formattedEthDate != null) {
+            date_search_filter = formattedEthDate.replace(":", "%") + "%"
+        }
 
         def filterer = {
             eq ('logReportFile', logReportFileInstance)
@@ -219,7 +226,7 @@ class EventSyncController {
                 if (search_filter) ilike 'uuid', search_filter
                 if (search_filter) ilike 'code', search_filter
                 if (search_filter) ilike 'columnName', search_filter
-                if (date_search_filter) sqlRestriction("DATE_FORMAT(collected_date, '%Y-%m-%d %H:%m:%s') like '${date_search_filter}'")
+                if (date_search_filter) sqlRestriction("DATE_FORMAT(collected_date, '%Y-%m-%d %H:%i:%s') like '${date_search_filter}'")
                 if (search_filter) ilike 'message', search_filter
             }
             //def errorLogs = RawErrorLog.findAllByLogReportFile(logReportFile, [sort: "createdDate", order: "asc"])

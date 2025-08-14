@@ -61,6 +61,18 @@ class DateUtil {
         }
     }
 
+    static String format(LocalDate date, String format) {
+        if (date == null) return null;
+
+        return date.format(DateTimeFormatter.ofPattern(format))
+    }
+
+    static String format(LocalDateTime date, String format) {
+        if (date == null) return null;
+
+        return date.format(DateTimeFormatter.ofPattern(format))
+    }
+
     /* ========== Ethiopian Calendar Formatters ========== */
 
     static String formatEthiopianYMD(LocalDate date) {
@@ -165,4 +177,9 @@ class DateUtil {
             return null
         }
     }
+
+    static LocalDateTime toLocalDateTime(EthiopicCalendar calendar) {
+        return calendar?.getTime()?.toInstant()?.atZone(ZoneId.systemDefault())?.toLocalDateTime();
+    }
+
 }
