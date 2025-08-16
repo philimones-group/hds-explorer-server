@@ -39,4 +39,5 @@ databaseChangeLog = {
     include file: 'alter-household_relocation_tables.groovy'
     include file: 'alter-pregnancy_visit_tables.groovy'
     include file: 'alter-coreformextension_columns_map_size.groovy'
+    include file: 'update-changehead_reason-data-20250816.groovy'
 }

@@ -6,6 +6,7 @@ enum ChangeHeadReason {
     */
     RESIDENCY_CHANGE ("RESIDENCY_CHANGE", "changeHeadReason.residency_change"),
     OLD_AGE          ("OLD_AGE", "changeHeadReason.old_age"),
+    HEAD_OUTMIGRATING("HEAD_OUTMIGRATING", "changeHeadReason.head_outmigrating"),
     DIVORCE          ("DIVORCE", "changeHeadReason.divorce"),
     WORK             ("WORK", "changeHeadReason.work"),
     HEALTH_REASONS   ("HEALTH_REASONS", "changeHeadReason.health_reasons"),

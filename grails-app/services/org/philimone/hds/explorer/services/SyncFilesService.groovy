@@ -787,7 +787,15 @@ class SyncFilesService {
                     if (it.enabled) {
                         //it.formName
                         //it.columnName
-                        def list = CoreFormColumnOptions.findAllByColumnCode(it.columnCode, [sort:"id", order:"asc"])
+                        //def list = CoreFormColumnOptions.findAllByColumnCode(it.columnCode, [sort:"id", order:"asc"])
+                        def columnCode = it.columnCode
+                        def list = CoreFormColumnOptions.createCriteria().list {
+                            eq("columnCode", columnCode)
+                            order("columnCode", "asc")
+                            order("columnName", "asc")
+                            order("ordinal", "asc")
+                        }
+
 
                         def allList = resultOptions.get(it.formName)
                         if (allList != null) {
