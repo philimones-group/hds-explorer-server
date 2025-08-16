@@ -12,6 +12,7 @@ import org.philimone.hds.explorer.server.model.enums.temporal.ResidencyEndType
 import org.philimone.hds.explorer.server.model.enums.temporal.ResidencyStartType
 import org.philimone.hds.explorer.server.model.main.collect.raw.RawExecutionResult
 import org.philimone.hds.explorer.server.model.main.collect.raw.RawMessage
+import org.philimone.hds.explorer.server.model.settings.Codes
 
 import java.time.LocalDate
 
@@ -96,6 +97,36 @@ class ResidencyService {
 
         def residencies = Residency.executeQuery("select r.id from Residency r where r.household=?0 and r.endType=?1 and (r.status <> ?2 or r.status is null) order by r.startDate desc", [household, ResidencyEndType.NOT_APPLICABLE, ValidatableStatus.TEMPORARILY_INACTIVE])
         return residencies.size() == 1
+    }
+
+    boolean hasOnlyMinorsLeftInHousehold(Household household, Member deadMember) {
+
+        //get residents and exclude the deadMember
+        def residencies = Residency.executeQuery("select r.id from Residency r where r.household=?0 and r.endType=?1 and r.member.code!=?2 and (r.status <> ?3 or r.status is null) order by r.startDate desc", [household, ResidencyEndType.NOT_APPLICABLE, deadMember.code, ValidatableStatus.TEMPORARILY_INACTIVE])
+
+        def allminors = residencies.size() > 0
+
+        residencies.each {
+            def residency = Residency.get(it)
+            allminors = allminors && residency.member?.age < Codes.MIN_HEAD_AGE_VALUE
+        }
+
+        return allminors
+    }
+
+    boolean hasOnlyMinorsLeftInHousehold(Household household) {
+
+        //get residents and exclude the deadMember
+        def residencies = Residency.executeQuery("select r.id from Residency r where r.household=?0 and r.endType=?1 and (r.status <> ?2 or r.status is null) order by r.startDate desc", [household, ResidencyEndType.NOT_APPLICABLE, ValidatableStatus.TEMPORARILY_INACTIVE])
+
+        def allminors = residencies.size() > 0
+
+        residencies.each {
+            def residency = Residency.get(it)
+            allminors = allminors && residency.member?.age < Codes.MIN_HEAD_AGE_VALUE
+        }
+
+        return allminors
     }
 
     boolean isFirstEntry(Member member) {

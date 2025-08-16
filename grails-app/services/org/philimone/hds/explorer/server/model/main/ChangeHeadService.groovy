@@ -32,6 +32,7 @@ class ChangeHeadService {
     def memberService
     def headRelationshipService
     def visitService
+    def residencyService
     def coreExtensionService
     def userService
     def errorMessageService
@@ -131,7 +132,12 @@ class ChangeHeadService {
     RawExecutionResult<HeadRelationship> createChangeHead(RawChangeHead changeHead, List<RawChangeHeadRelationship> changeHeadRelationships) {
         /* Run Checks and Validations */
 
-        def errors = validate(changeHead, changeHeadRelationships)
+        //get current data
+        def household = householdService.getHousehold(changeHead.householdCode)
+        def currentHeadOfHousehold = memberService.getMember(changeHead.oldHeadCode)
+        def onlyMinorsLeftToBeHead = residencyService.hasOnlyMinorsLeftInHousehold(household, currentHeadOfHousehold)
+
+        def errors = validate(changeHead, changeHeadRelationships, onlyMinorsLeftToBeHead)
 
         if (!errors.isEmpty()){
             //create result and close
@@ -139,9 +145,6 @@ class ChangeHeadService {
             return obj
         }
 
-        //get current data
-        def household = householdService.getHousehold(changeHead.householdCode)
-        def currentHeadOfHousehold = memberService.getMember(changeHead.oldHeadCode)
         //def currentHeadRelationship = headRelationshipService.getLastHeadOfHouseholdRelationship(household) //the list below contains this relationship
         def currentHeadRelationships = headRelationshipService.getCurrentHeadRelationships(household)
         def eventDate = GeneralUtil.addDaysToDate(changeHead.eventDate, -1)  //the day of moving will be set 1 day before changing head - the last day the member was related to the current head of household
@@ -174,7 +177,7 @@ class ChangeHeadService {
         //create relationships with the new head of household
         if (errors.empty) {
             newRawHeadRelationships.each {
-                def result = headRelationshipService.createHeadRelationship(it)
+                def result = headRelationshipService.createHeadRelationship(it, onlyMinorsLeftToBeHead)
 
                 if (result.status==RawExecutionResult.Status.ERROR) {
 
@@ -218,7 +221,7 @@ class ChangeHeadService {
         return obj
     }
 
-    ArrayList<RawMessage> validate(RawChangeHead changeHead, List<RawChangeHeadRelationship> newChangeHeadRelationships) {
+    ArrayList<RawMessage> validate(RawChangeHead changeHead, List<RawChangeHeadRelationship> newChangeHeadRelationships, def onlyMinorsLeftToBeHead = false) {
         def dateUtil = DateUtil.getInstance()
 
         //visitCode - must exists
@@ -290,7 +293,7 @@ class ChangeHeadService {
             errors << errorMessageService.getRawMessage(RawEntity.CHANGE_HEAD_OF_HOUSEHOLD, "validation.field.dob.not.greater.date", ["changeHead.eventDate", dateUtil.formatYMD(newHead.dob)], ["eventDate","member.dob"])
         }
         //C6. Check Age of the new head of Household
-        if (newHeadExists && GeneralUtil.getAge(newHead.dob) < Codes.MIN_HEAD_AGE_VALUE){
+        if (newHeadExists && newHead.age < Codes.MIN_HEAD_AGE_VALUE && !onlyMinorsLeftToBeHead){
             errors << errorMessageService.getRawMessage(RawEntity.CHANGE_HEAD_OF_HOUSEHOLD, "validation.field.dob.head.minage.error", [dateUtil.formatYMD(newHead.dob), Codes.MIN_HEAD_AGE_VALUE+""], ["member.dob"])
         }
 
@@ -356,7 +359,7 @@ class ChangeHeadService {
                     fakeCurrentRelationship.endType = HeadRelationshipEndType.CHANGE_OF_HEAD_OF_HOUSEHOLD
                     fakeCurrentRelationship.endDate = eventDate
 
-                    def innerErrors = headRelationshipService.validateCreateHeadRelationship(rawHeadRelationship, fakeCurrentRelationship, fakeOldHeadRelationship)
+                    def innerErrors = headRelationshipService.validateCreateHeadRelationship(rawHeadRelationship, fakeCurrentRelationship, fakeOldHeadRelationship, onlyMinorsLeftToBeHead)
                     errors += errorMessageService.addPrefixToMessages(innerErrors, "validation.field.changehead.prefix.msg.error", [changeHead.id])
 
                     if (innerErrors.size() == 0 && rawHeadRelationship.relationshipType==HeadRelationshipType.HEAD_OF_HOUSEHOLD.code){

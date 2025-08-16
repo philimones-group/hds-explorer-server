@@ -55,7 +55,7 @@ class DeathService {
         return Death.findByMember(member)
     }
 
-    List<RawMessage> afterDeathRegistered(Death death, RawDeath rawDeath){
+    List<RawMessage> afterDeathRegistered(Death death, RawDeath rawDeath, def hasOnlyMinorsLeftInHousehold = false){
         //1. closeResidency, closeHeadRelationship, closeMaritalRelationship
         //2. Update Member residencyStatus, maritalStatus
 
@@ -81,11 +81,18 @@ class DeathService {
         * 2. Find Opened HeadRelationships and try to close then
         * */
 
+        Residency closedResidency = null
+        HeadRelationship closedHeadRelationship = null
+        List<MaritalRelationship> closedMaritalRelationships = []
+        List<HeadRelationship> closedHeadRelationships = []
+        List<HeadRelationship> createdHeadRelationships = []
+
         // Closing the Residency with Death
         if (residency != null && residency.endType == ResidencyEndType.NOT_APPLICABLE.code){ //must be opened
             residency.endType = ResidencyEndType.DEATH.code
             residency.endDate = death.deathDate
             def result = residencyService.closeResidency(residency)
+            closedResidency = result.domainInstance
             errors += result.errorMessages
         }
 
@@ -94,42 +101,23 @@ class DeathService {
             headRelationship.endType = HeadRelationshipEndType.DEATH.code
             headRelationship.endDate = death.deathDate
             def result = headRelationshipService.closeHeadRelationship(headRelationship)
+            closedHeadRelationship = result.domainInstance
             errors += result.errorMessages
         }
 
         // Closing MaritalRelationship with WIDOWED
         maritalRelationships.each { maritalRelationship ->
             if (maritalRelationship != null){
-                println "member[${death.memberCode}] is dead, we are dealing with his maritalrelationship endtype=${maritalRelationship.endStatus}"
+                //println "member[${death.memberCode}] is dead, we are dealing with his maritalrelationship endtype=${maritalRelationship.endStatus}"
                 if (maritalRelationship.endStatus == MaritalEndStatus.NOT_APPLICABLE.code){
                     maritalRelationship.endStatus = MaritalEndStatus.WIDOWED.code
                     maritalRelationship.endDate = death.deathDate
 
                     def result = maritalRelationshipService.closeMaritalRelationship(maritalRelationship)
+                    if (result.domainInstance != null) closedMaritalRelationships.add(result.domainInstance)
                     errors += result.errorMessages
 
-                } /*else if (maritalRelationship.endStatus == MaritalEndStatus.WIDOWED.code){ //one of them already died
-                    //the idea is to set the correct members maritalStatus
-
-                    def memberA = maritalRelationship.memberA==member.code ? member : memberService.getMember(maritalRelationship.memberA)
-                    def memberB = maritalRelationship.memberB==member.code ? member : memberService.getMember(maritalRelationship.memberB)
-                    def deathA = getDeath(memberA)
-                    def deathB = getDeath(memberB)
-                    //println "member[${death.memberCode}] relationship already closed! mantain old status[${maritalRelationship.startStatus}] = ${(deathA != null && deathB != null)}, ${(GeneralUtil.dateEquals(deathA.deathDate, deathB.deathDate))}, ${GeneralUtil.dateEquals(maritalRelationship.endDate, deathA.deathDate)}"
-                    //println "ma=${memberA.code},mb=${memberB.code}, dates, d.a.date=${StringUtil.format(deathA.deathDate,true)}, d.b.date=${StringUtil.format(deathB.deathDate,true)}, mr.e.date=${StringUtil.format(maritalRelationship.endDate,true)}"
-                    //println "ma=${memberA.code},mb=${memberB.code}, dates, d.a.date=${deathA.deathDate.getTime()}, d.b.date=${deathB.deathDate.getTime()}, mr.e.date=${StringUtil.format(maritalRelationship.endDate)}"
-
-                    if ((deathA != null && deathB != null) && (deathA.deathDate == deathB.deathDate) && (maritalRelationship.endDate == deathA.deathDate)) { //both died in the same die while in sort of a relationship
-                        def startStatus = MaritalStartStatus.getFrom(maritalRelationship.startStatus)
-                        def marStatus = maritalRelationshipService.getMaritalStatusFromStartStatus(startStatus)
-
-                        //set the maritalStatus as the same when they started the relationship, so that we preserve the last maritalStatus before they death (it cant be WID - because they died in the same date)
-                        memberA.maritalStatus = marStatus
-                        memberB.maritalStatus = marStatus
-                        memberA.save(flush:true)
-                        memberB.save(flush:true)
-                    }
-                }*/
+                }
             }
         }
 
@@ -147,23 +135,56 @@ class DeathService {
                     rawHr.endType = HeadRelationshipEndType.DEATH_OF_HEAD_OF_HOUSEHOLD.code
                     rawHr.endDate = death.deathDate
                     def result = headRelationshipService.closeHeadRelationship(rawHr)
+                    if (result.domainInstance != null) closedHeadRelationships.add(result.domainInstance)
                     errors += result.errorMessages
                 }
             }
         }
 
         //Create new Head Relationships
-        def rawDeathRelationships = RawDeathRelationship.findAllByDeath(rawDeath)
+        def rawDeathRelationships = RawDeathRelationship.findAllByDeath(rawDeath);
         if (isHeadOfHousehold && rawDeathRelationships.size()>0) {
             def newRelationships = createRawHeadRelationships(rawDeathRelationships)
-
             newRelationships.each {
-                def result = headRelationshipService.createHeadRelationship(it)
+                def result = headRelationshipService.createHeadRelationship(it, hasOnlyMinorsLeftInHousehold)
+                if (result.domainInstance != null) createdHeadRelationships.add(result.domainInstance)
 
                 if (result.status==RawExecutionResult.Status.ERROR) {
                     def innerErrors = result.errorMessages
                     errors += errorMessageService.addPrefixToMessages(innerErrors, "validation.field.death.prefix.msg.error", [rawDeath.id])
                 }
+            }
+        }
+
+        if (!errors.isEmpty()) {
+            //Roolback data
+            //Residency closedResidency = null
+            if (closedResidency != null) {
+                closedResidency.endType = ResidencyEndType.NOT_APPLICABLE
+                closedResidency.endDate = null
+                closedResidency.save(flush:true)
+            }
+            //HeadRelationship closedHeadRelationship = null
+            if (closedHeadRelationship != null) {
+                closedHeadRelationship.endType = HeadRelationshipEndType.NOT_APPLICABLE
+                closedHeadRelationship.endDate = null
+                closedHeadRelationship.save(flush:true)
+            }
+            //List<MaritalRelationship> closedMaritalRelationships = []
+            closedMaritalRelationships.each { closed ->
+                closed.endStatus = MaritalEndStatus.NOT_APPLICABLE
+                closed.endDate = null
+                closed.save(flush:true)
+            }
+            //List<HeadRelationship> closedHeadRelationships = []
+            closedHeadRelationships.each { closed ->
+                closed.endType = HeadRelationshipEndType.NOT_APPLICABLE
+                closed.endDate = null
+                closed.save(flush:true)
+            }
+            //List<HeadRelationship> createdHeadRelationships = []
+            createdHeadRelationships.each {
+                it.delete(flush: true)
             }
         }
 
@@ -204,8 +225,12 @@ class DeathService {
     RawExecutionResult<Death> createDeath(RawDeath rawDeath) {
 
         /* Run Checks and Validations */
+        def visit = visitService.getVisit(rawDeath.visitCode)
+        def household = visit?.household
+        def member = memberService.getMember(rawDeath.memberCode)
+        def hasOnlyMinorsLeftInHousehold = residencyService.hasOnlyMinorsLeftInHousehold(household, member)
 
-        def errors = validate(rawDeath)
+        def errors = validate(rawDeath, hasOnlyMinorsLeftInHousehold)
 
         if (!errors.isEmpty()){
             //create result and close
@@ -231,11 +256,22 @@ class DeathService {
         //1. closeResidency, closeHeadRelationship, closeMaritalRelationship
         //2. Update Member residencyStatus, maritalStatus
 
-        errors = afterDeathRegistered(death, rawDeath)
+        errors = afterDeathRegistered(death, rawDeath, hasOnlyMinorsLeftInHousehold)
+
+        if (!errors.isEmpty()){
+
+            //RoolBack
+            //1. Delete Death
+            if (death != null) {
+                death.delete(flush: true)
+            }
+
+            //create result and close
+            RawExecutionResult<Death> obj = RawExecutionResult.newErrorResult(RawEntity.DEATH, errors)
+            return obj
+        }
 
         //Set Vacant if no members in the household
-        def visit = visitService.getVisit(rawDeath.visitCode)
-        def household = visit?.household
         householdService.setHouseholdStatusVacant(household)
 
         //--> take the extensionXml and save to Extension Table
@@ -249,7 +285,7 @@ class DeathService {
         return obj
     }
 
-    ArrayList<RawMessage> validate(RawDeath rawDeath){
+    ArrayList<RawMessage> validate(RawDeath rawDeath, def hasOnlyMinorsLeftInHousehold = false){
         def errors = new ArrayList<RawMessage>()
 
         //visitCode, memberCode, deathDate, deathCause, deathPlace
@@ -407,7 +443,7 @@ class DeathService {
                         fakeCurrentRelationship.endDate = rawDeath.deathDate
 
                         //ignore head of households (its unusual to have relationshipType=HEAD here)
-                        def innerErrors = headRelationshipService.validateCreateHeadRelationship(rawHeadRelationship, fakeCurrentRelationship, fakeHeadOfHouseholdRelationship)
+                        def innerErrors = headRelationshipService.validateCreateHeadRelationship(rawHeadRelationship, fakeCurrentRelationship, fakeHeadOfHouseholdRelationship, hasOnlyMinorsLeftInHousehold)
                         errors += errorMessageService.addPrefixToMessages(innerErrors, "validation.field.death.prefix.msg.error", [rawDeath.id])
 
                         //If no ERRORS and we were dealing with the NEW HEAD OF HOUSEHOLD, we will update the fakeHeadOfHouseholdRelationship with the recently validated rawHeadRelationship

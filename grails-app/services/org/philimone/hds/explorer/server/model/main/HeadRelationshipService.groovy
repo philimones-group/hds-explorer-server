@@ -325,11 +325,11 @@ class HeadRelationshipService {
     //</editor-fold>
 
     //<editor-fold desc="HeadRelationship Factory/Manager Methods">
-    RawExecutionResult<HeadRelationship> createHeadRelationship(RawHeadRelationship rawHeadRelationship) {
+    RawExecutionResult<HeadRelationship> createHeadRelationship(RawHeadRelationship rawHeadRelationship, def hasOnlyMinorsLeftInHousehold = false) {
 
         /* Run Checks and Validations */
 
-        def errors = validateCreateHeadRelationship(rawHeadRelationship)
+        def errors = validateCreateHeadRelationship(rawHeadRelationship, hasOnlyMinorsLeftInHousehold)
 
         if (!errors.isEmpty()){
             //create result and close
@@ -392,7 +392,7 @@ class HeadRelationshipService {
         return obj
     }
 
-    ArrayList<RawMessage> validateCreateHeadRelationship(RawHeadRelationship headRelationship, HeadRelationship fakePreviousHeadRelationship, HeadRelationship fakePreviousHouseholdHead){
+    ArrayList<RawMessage> validateCreateHeadRelationship(RawHeadRelationship headRelationship, HeadRelationship fakePreviousHeadRelationship, HeadRelationship fakePreviousHouseholdHead, def hasOnlyMinorsLeftInHousehold = false){
         def dateUtil = DateUtil.getInstance()
 
         def errors = new ArrayList<RawMessage>()
@@ -451,7 +451,7 @@ class HeadRelationshipService {
             errors << errorMessageService.getRawMessage(RawEntity.HEAD_RELATIONSHIP, "validation.field.dob.not.greater.date", ["headRelationship.startDate", dateUtil.formatYMD(member.dob)], ["startDate","member.dob"])
         }
         //C6. Check Age of Head of Household
-        if (memberExists && (relationshipType == HeadRelationshipType.HEAD_OF_HOUSEHOLD && GeneralUtil.getAge(member.dob)< Codes.MIN_HEAD_AGE_VALUE )){
+        if (memberExists && (relationshipType == HeadRelationshipType.HEAD_OF_HOUSEHOLD && member.age < Codes.MIN_HEAD_AGE_VALUE ) && !hasOnlyMinorsLeftInHousehold){
             errors << errorMessageService.getRawMessage(RawEntity.HEAD_RELATIONSHIP, "validation.field.dob.head.minage.error", [dateUtil.formatYMD(member.dob), Codes.MIN_HEAD_AGE_VALUE+""], ["member.dob"])
         }
         //C7. Check Current Head Existence and the new relation is not a head of household - We must have a existent Head of Household in order to create new Relationship with the Head
@@ -511,7 +511,7 @@ class HeadRelationshipService {
         return errors
     }
 
-    ArrayList<RawMessage> validateCreateHeadRelationship(RawHeadRelationship headRelationship){
+    ArrayList<RawMessage> validateCreateHeadRelationship(RawHeadRelationship headRelationship, def hasOnlyMinorsLeftInHousehold = false){
         def dateUtil = DateUtil.getInstance()
 
         def errors = new ArrayList<RawMessage>()
@@ -570,7 +570,7 @@ class HeadRelationshipService {
             errors << errorMessageService.getRawMessage(RawEntity.HEAD_RELATIONSHIP, "validation.field.dob.not.greater.date", ["headRelationship.startDate", dateUtil.formatYMD(member.dob)], ["startDate","member.dob"])
         }
         //C6. Check Age of Head of Household
-        if (memberExists && (relationshipType == HeadRelationshipType.HEAD_OF_HOUSEHOLD && GeneralUtil.getAge(member.dob)< Codes.MIN_HEAD_AGE_VALUE )){
+        if (memberExists && (relationshipType == HeadRelationshipType.HEAD_OF_HOUSEHOLD && member.age < Codes.MIN_HEAD_AGE_VALUE ) && !hasOnlyMinorsLeftInHousehold){
             errors << errorMessageService.getRawMessage(RawEntity.HEAD_RELATIONSHIP, "validation.field.dob.head.minage.error", [dateUtil.formatYMD(member.dob), Codes.MIN_HEAD_AGE_VALUE+""], ["member.dob"])
         }
         //C7. Check Current Head Existence and the new relation is not a head of household - We must have a existent Head of Household in order to create new Relationship with the Head
