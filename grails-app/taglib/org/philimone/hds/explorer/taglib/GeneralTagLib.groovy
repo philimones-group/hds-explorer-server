@@ -1,5 +1,6 @@
 package org.philimone.hds.explorer.taglib
 
+import net.betainteractive.utilities.DateUtil
 import net.betainteractive.utilities.StringUtil
 import org.philimone.hds.explorer.server.model.settings.Codes
 import org.springframework.context.i18n.LocaleContextHolder
@@ -119,7 +120,7 @@ class GeneralTagLib {
 
             def propertyValue = beanInstance."${propertyName}"
             propertyValue = subPropertyName != null ? propertyValue?."${subPropertyName}" : propertyValue
-            def propertyDefaultLabel = StringUtil.removePascalCase(propertyName)
+            def propertyDefaultLabel = subPropertyName != null ? StringUtil.removePascalCase(subPropertyName) : StringUtil.removePascalCase(propertyName)
             def labelText = g.message(code: label, default: propertyDefaultLabel)
             def objValue = getObjectValue(propertyValue)
 
@@ -227,6 +228,8 @@ class GeneralTagLib {
 
             loadDatePicker(propertyName)
 
+            def dateValue = DateUtil.toLocalDate(objValue)
+
             out << "            <div class=\"fieldcontain required\">\n"
             out << "                <label for=\"${propertyName}\">\n"
             out << "                    ${labelText}\n"
@@ -234,10 +237,9 @@ class GeneralTagLib {
             //out << "                ${g.datePicker(name: propertyName, precision: 'day', value: toDate)} \n"
             out << "                    <input type=\"text\" id=\"${propertyName}Obj\" readonly=\"readonly\" size=\"20\" value=\"${objValue}\" />\n"
             out << "                    <input type=\"hidden\" name=\"${propertyName}\" value=\"date.struct\" />\n"
-            out << "                    <input type=\"hidden\" name=\"${propertyName}_day\"   id=\"${propertyName}_day\" />\n"
-            out << "                    <input type=\"hidden\" name=\"${propertyName}_month\" id=\"${propertyName}_month\" />\n"
-            out << "                    <input type=\"hidden\" name=\"${propertyName}_year\"  id=\"${propertyName}_year\" />"
-
+            out << "                    <input type=\"hidden\" name=\"${propertyName}_day\"   id=\"${propertyName}_day\" value=\"${dateValue == null ? '' : dateValue.getDayOfMonth()+''}\" />\n"
+            out << "                    <input type=\"hidden\" name=\"${propertyName}_month\" id=\"${propertyName}_month\" value=\"${dateValue == null ? '' : dateValue.getMonthValue() + ''}\"/>\n"
+            out << "                    <input type=\"hidden\" name=\"${propertyName}_year\"  id=\"${propertyName}_year\" value=\"${dateValue == null ? '' : dateValue.getYear() + ''}\"/>"
             out << "            </div>\n"
         }
 
