@@ -12,8 +12,10 @@ import org.philimone.hds.explorer.server.model.enums.EstimatedDateOfDeliveryType
 import org.philimone.hds.explorer.server.model.enums.Gender
 import org.philimone.hds.explorer.server.model.enums.HeadRelationshipType
 import org.philimone.hds.explorer.server.model.enums.HealthcareProviderType
+import org.philimone.hds.explorer.server.model.enums.HouseholdInstitutionType
 import org.philimone.hds.explorer.server.model.enums.HouseholdRelocationReason
 import org.philimone.hds.explorer.server.model.enums.HouseholdStatus
+import org.philimone.hds.explorer.server.model.enums.HouseholdType
 import org.philimone.hds.explorer.server.model.enums.IllnessSymptoms
 import org.philimone.hds.explorer.server.model.enums.ImmunizationStatus
 import org.philimone.hds.explorer.server.model.enums.IncompleteVisitReason
@@ -27,6 +29,9 @@ import org.philimone.hds.explorer.server.model.enums.PregnancyOutcomeType
 import org.philimone.hds.explorer.server.model.enums.PregnancyStatus
 import org.philimone.hds.explorer.server.model.enums.PregnancyVisitType
 import org.philimone.hds.explorer.server.model.enums.ProcessedStatus
+import org.philimone.hds.explorer.server.model.enums.ProxyHeadChangeReason
+import org.philimone.hds.explorer.server.model.enums.ProxyHeadRole
+import org.philimone.hds.explorer.server.model.enums.ProxyHeadType
 import org.philimone.hds.explorer.server.model.enums.RawEntity
 import org.philimone.hds.explorer.server.model.enums.RegionLevel
 import org.philimone.hds.explorer.server.model.enums.ReligionType
@@ -96,8 +101,12 @@ class DataModelsService {
             "BreastFeedingStatus" : BreastFeedingStatus.values(),
             "NewBornStatus" : NewBornStatus.values(),
             "IllnessSymptoms" : IllnessSymptoms.values(),
-            "BreastFeedingStatus" : BreastFeedingStatus.values(),
-            "ImmunizationStatus" : ImmunizationStatus.values()
+            "ImmunizationStatus" : ImmunizationStatus.values(),
+            "HouseholdType" : HouseholdType.values(),
+            "HouseholdInstitutionType" : HouseholdInstitutionType.values(),
+            "ProxyHeadType" : ProxyHeadType.values(),
+            "ProxyHeadRole" : ProxyHeadRole.values(),
+            "ProxyHeadChangeReason" : ProxyHeadChangeReason.values(),
 
     ] as HashMap<String, Enum[]>
 

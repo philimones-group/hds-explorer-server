@@ -4,7 +4,9 @@ import grails.gorm.transactions.Transactional
 import net.betainteractive.utilities.StringUtil
 import org.philimone.hds.explorer.server.model.authentication.User
 import org.philimone.hds.explorer.server.model.collect.raw.RawHousehold
+import org.philimone.hds.explorer.server.model.enums.HouseholdInstitutionType
 import org.philimone.hds.explorer.server.model.enums.HouseholdStatus
+import org.philimone.hds.explorer.server.model.enums.HouseholdType
 import org.philimone.hds.explorer.server.model.enums.RawEntity
 import org.philimone.hds.explorer.server.model.enums.temporal.ResidencyEndType
 import org.philimone.hds.explorer.server.model.main.collect.raw.RawExecutionResult
@@ -223,6 +225,9 @@ class HouseholdService {
         household.region = rh.regionCode
         //household.headCode = rh.headCode
         //household.headName = rh.headName
+        household.type = HouseholdType.getFrom(rh.householdType)
+        household.institutionType = HouseholdInstitutionType.getFrom(rh.institutionType)
+        household.institutionTypeOther = rh.institutionTypeOther
 
         household.parentRegion = hierarchies.region
         //household.headMember = memberService.getVisit(rh.headCode)

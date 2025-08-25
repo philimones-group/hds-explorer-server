@@ -11,6 +11,7 @@ import org.philimone.hds.explorer.server.model.collect.raw.RawResidency
 import org.philimone.hds.explorer.server.model.enums.Gender
 import org.philimone.hds.explorer.server.model.enums.HeadRelationshipType
 import org.philimone.hds.explorer.server.model.enums.HouseholdStatus
+import org.philimone.hds.explorer.server.model.enums.HouseholdType
 import org.philimone.hds.explorer.server.model.enums.RawEntity
 import org.philimone.hds.explorer.server.model.enums.temporal.HeadRelationshipEndType
 import org.philimone.hds.explorer.server.model.enums.temporal.HeadRelationshipStartType
@@ -99,12 +100,15 @@ class MemberEnumerationService {
         def newRawResidency =  createNewResidencyFrom(rawMemberEnu)
         def newRawHeadRelationship = createNewRawHeadRelationshipFrom(rawMemberEnu)
 
+        def visit = visitService.getVisit(rawMemberEnu.visitCode)
+        def household = householdService.getHousehold(visit.householdCode)
+        def isInstitutionalHousehold = household?.type == HouseholdType.INSTITUTIONAL
 
         //create member and execute inmigration
         def resultMember = memberService.createMember(newRawMember)
         def resultResidency = residencyService.createResidency(newRawResidency)
-        def resultHeadRelationship = headRelationshipService.createHeadRelationship(newRawHeadRelationship)
-        def visit = visitService.getVisit(rawMemberEnu.visitCode)
+        def resultHeadRelationship = isInstitutionalHousehold ? null : headRelationshipService.createHeadRelationship(newRawHeadRelationship)
+
 
         //Couldnt create Member
         if (resultMember.status == RawExecutionResult.Status.ERROR) {
@@ -132,7 +136,7 @@ class MemberEnumerationService {
             return obj
         }
 
-        if (resultMember?.domainInstance != null && resultHeadRelationship.status == RawExecutionResult.Status.ERROR) {
+        if (resultMember?.domainInstance != null && resultHeadRelationship?.status == RawExecutionResult.Status.ERROR) {
 
             //delete member and inmigration
             errors += resultHeadRelationship.errorMessages
@@ -243,6 +247,7 @@ class MemberEnumerationService {
 
         def householdExists = household != null
         def visitExists = visit != null
+        def isInstitutionalHousehold = household?.type == HouseholdType.INSTITUTIONAL
 
         
         //C1. Check Blank Fields (visitCode)
@@ -274,7 +279,7 @@ class MemberEnumerationService {
             errors << errorMessageService.getRawMessage(RawEntity.MEMBER_ENUMERATION, "validation.field.blank", ["fatherCode"], ["fatherCode"])
         }
         //C1. Check Blank Fields (headRelationshipType)
-        if (isBlankHeadRelationshipType){
+        if (!isInstitutionalHousehold && isBlankHeadRelationshipType){
             errors << errorMessageService.getRawMessage(RawEntity.MEMBER_ENUMERATION, "validation.field.blank", ["headRelationshipType"], ["headRelationshipType"])
         }
 
@@ -292,7 +297,7 @@ class MemberEnumerationService {
             errors << errorMessageService.getRawMessage(RawEntity.MEMBER_ENUMERATION, "validation.field.enum.choices.error", [memberEnu.gender, "gender"], ["gender"])
         }
         //C12. Validate Enum Options (headRelationshipType)
-        if (!isBlankHeadRelationshipType && HeadRelationshipType.getFrom(memberEnu.headRelationshipType)==null){
+        if (!isInstitutionalHousehold && !isBlankHeadRelationshipType && HeadRelationshipType.getFrom(memberEnu.headRelationshipType)==null){
             errors << errorMessageService.getRawMessage(RawEntity.MEMBER_ENUMERATION, "validation.field.enum.choices.error", [memberEnu.headRelationshipType, "headRelationshipType"], ["headRelationshipType"])
         }
 
@@ -352,7 +357,7 @@ class MemberEnumerationService {
         }
 
         //C6. Validate headRelationshipType Enum Options
-        if (!isBlankHeadRelationshipType && headRelationshipType==null){
+        if (!isInstitutionalHousehold && !isBlankHeadRelationshipType && headRelationshipType==null){
             errors << errorMessageService.getRawMessage(RawEntity.MEMBER_ENUMERATION, "validation.field.enum.choices.error", [memberEnu.headRelationshipType, "headRelationshipType"], ["headRelationshipType"])
         }
 

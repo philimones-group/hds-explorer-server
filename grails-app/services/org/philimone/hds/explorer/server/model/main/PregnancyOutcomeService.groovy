@@ -14,6 +14,7 @@ import org.philimone.hds.explorer.server.model.enums.BirthPlace
 import org.philimone.hds.explorer.server.model.enums.Gender
 import org.philimone.hds.explorer.server.model.enums.HeadRelationshipType
 import org.philimone.hds.explorer.server.model.enums.HouseholdStatus
+import org.philimone.hds.explorer.server.model.enums.HouseholdType
 import org.philimone.hds.explorer.server.model.enums.PregnancyOutcomeType
 import org.philimone.hds.explorer.server.model.enums.PregnancyStatus
 import org.philimone.hds.explorer.server.model.enums.PregnancyVisitType
@@ -83,6 +84,7 @@ class PregnancyOutcomeService {
         def outcomeDate = pregnancyOutcome.outcomeDate
         def childPacks = new ArrayList<ChildPack>()
         def numberOfLivebirths = 0
+        def isInstitutionalHousehold = motherResidency?.type == HouseholdType.INSTITUTIONAL
 
         def result = pregnancyOutcome.save(flush:true)
 
@@ -119,7 +121,7 @@ class PregnancyOutcomeService {
             //create main domain from raw domains using specific services
             def resultMember =  memberService.createMember(rawMember)
             def resultResidency =  residencyService.createResidency(rawResidency)
-            def resultHeadRelationship = headRelationshipService.createHeadRelationship(rawHeadRelationship)
+            def resultHeadRelationship = isInstitutionalHousehold ? null : headRelationshipService.createHeadRelationship(rawHeadRelationship)
             def resultDeath = null as RawExecutionResult<Death>
 
             if (outcomeType != PregnancyOutcomeType.LIVEBIRTH){
@@ -130,7 +132,7 @@ class PregnancyOutcomeService {
             //get the result domains (can be null values - if it didnt save)
             childPack.member = resultMember.domainInstance
             childPack.residency = resultResidency.domainInstance
-            childPack.headRelationship = resultHeadRelationship.domainInstance
+            childPack.headRelationship = resultHeadRelationship?.domainInstance
             childPack.death = resultDeath?.domainInstance
 
             //concatenate all errors
@@ -278,6 +280,8 @@ class PregnancyOutcomeService {
         def fatherExists = father != null
         def visitExists = visit != null
 
+        def isInstitutionalHousehold = household?.type == HouseholdType.INSTITUTIONAL
+
         //fields we want be checking for now
         isBlankBirthPlace = false
         isBlankBirthPlaceOther = false
@@ -407,7 +411,7 @@ class PregnancyOutcomeService {
             }
 
             pregnancyChildren.each { rawChild ->
-                errors += validate(rawChild)
+                errors += validate(rawChild, isInstitutionalHousehold)
             }
 
         }
@@ -416,7 +420,7 @@ class PregnancyOutcomeService {
         return errors
     }
 
-    ArrayList<RawMessage> validate(RawPregnancyChild pregnancyChild) {
+    ArrayList<RawMessage> validate(RawPregnancyChild pregnancyChild, boolean isInstitutionalHousehold) {
 
         def errors = new ArrayList<RawMessage>()
 
@@ -452,7 +456,7 @@ class PregnancyOutcomeService {
         if (isBlankChildOrdinal){
             errors << errorMessageService.getRawMessage(RawEntity.PREGNANCY_CHILD, "validation.field.blank", ["childOrdinalPosition"], ["childOrdinalPosition"])
         }
-        if (isBlankHeadRelatType){
+        if (!isInstitutionalHousehold && isBlankHeadRelatType){
             errors << errorMessageService.getRawMessage(RawEntity.PREGNANCY_CHILD, "validation.field.blank", ["child.headRelationshipType"], ["headRelationshipType"])
         }
 
@@ -465,7 +469,7 @@ class PregnancyOutcomeService {
             errors << errorMessageService.getRawMessage(RawEntity.PREGNANCY_CHILD, "validation.field.enum.choices.error", [pregnancyChild.childGender, "childGender"], ["childGender"])
         }
         //5. Check HeadRelationshipType enum string
-        if (!isBlankHeadRelatType && headRelationshipType==null){
+        if (!isInstitutionalHousehold && !isBlankHeadRelatType && headRelationshipType==null){
             errors << errorMessageService.getRawMessage(RawEntity.PREGNANCY_CHILD, "validation.field.enum.choices.error", [pregnancyChild.headRelationshipType, "child.headRelationshipType"], ["child.headRelationshipType"])
         }
 

@@ -11,6 +11,7 @@ import org.philimone.hds.explorer.server.model.collect.raw.RawResidency
 import org.philimone.hds.explorer.server.model.enums.Gender
 import org.philimone.hds.explorer.server.model.enums.HeadRelationshipType
 import org.philimone.hds.explorer.server.model.enums.HouseholdStatus
+import org.philimone.hds.explorer.server.model.enums.HouseholdType
 import org.philimone.hds.explorer.server.model.enums.MaritalStatus
 import org.philimone.hds.explorer.server.model.enums.RawEntity
 import org.philimone.hds.explorer.server.model.enums.temporal.ExternalInMigrationType
@@ -151,6 +152,9 @@ class InMigrationService {
         HeadRelationship createdHeadRelationship = null
         def createdInmigration = inmigrationInstance.save(flush:true)  //1. create inmigration
 
+        def household = householdService.getHousehold(inmigrationInstance?.visit?.householdCode)
+        def isInstitutionalHousehold = household?.type == HouseholdType.INSTITUTIONAL
+
         //Validate using Gorm Validations
         if (inmigrationInstance.hasErrors()){
 
@@ -203,21 +207,25 @@ class InMigrationService {
         createdResidency = resultNewResidency.domainInstance
 
         //3. Create Head Relationship
-        def resultNewHeadRelationship = headRelationshipService.createHeadRelationship(newRawHeadRelationship)
-        if (resultNewHeadRelationship != null && resultNewHeadRelationship.status == RawExecutionResult.Status.ERROR) {
+        def resultNewHeadRelationship = null as RawExecutionResult<HeadRelationship>
 
-            //delete member and inmigration
-            errors += resultNewHeadRelationship.errorMessages
+        if (!isInstitutionalHousehold) {
+            resultNewHeadRelationship = headRelationshipService.createHeadRelationship(newRawHeadRelationship)
+            if (resultNewHeadRelationship != null && resultNewHeadRelationship.status == RawExecutionResult.Status.ERROR) {
 
-            //delete inmigration and outmigration
-            errors += deleteInMigration(createdInmigration)
-            errors += deleteOutMigration(createdOutMigrationImg)
-            errors += deleteResidency(createdResidency, previousResidency)
+                //delete member and inmigration
+                errors += resultNewHeadRelationship.errorMessages
 
-            RawExecutionResult<InMigration> obj = RawExecutionResult.newErrorResult(RawEntity.IN_MIGRATION, errors)
-            return obj
+                //delete inmigration and outmigration
+                errors += deleteInMigration(createdInmigration)
+                errors += deleteOutMigration(createdOutMigrationImg)
+                errors += deleteResidency(createdResidency, previousResidency)
+
+                RawExecutionResult<InMigration> obj = RawExecutionResult.newErrorResult(RawEntity.IN_MIGRATION, errors)
+                return obj
+            }
+            createdHeadRelationship = resultNewHeadRelationship?.domainInstance
         }
-        createdHeadRelationship = resultNewHeadRelationship.domainInstance
 
         //X. update destinationResidency
         if (createdResidency != null) {
@@ -288,6 +296,7 @@ class InMigrationService {
         def destinationExists = destination != null
         def memberExists = member != null
         def visitExists = visit != null
+        def isInstitutionalHousehold = destination?.type == HouseholdType.INSTITUTIONAL
 
         //C1. Check Blank Fields (visitCode)
         if (isBlankVisitCode){
@@ -302,7 +311,7 @@ class InMigrationService {
             errors << errorMessageService.getRawMessage(RawEntity.IN_MIGRATION, "validation.field.blank", ["migrationType"], ["migrationType"])
         }
         //C1. Check Blank Fields (headRelationshipType)
-        if (isBlankHeadRelationshipType){
+        if (!isInstitutionalHousehold && isBlankHeadRelationshipType){
             errors << errorMessageService.getRawMessage(RawEntity.IN_MIGRATION, "validation.field.blank", ["headRelationshipType"], ["headRelationshipType"])
         }
         //C1. Check Blank Fields (destinationCode)
@@ -327,7 +336,7 @@ class InMigrationService {
         }
 
         //C12. Validate Enum Options (headRelationshipType)
-        if (!isBlankHeadRelationshipType && HeadRelationshipType.getFrom(rawInMigration.headRelationshipType)==null){
+        if (!isInstitutionalHousehold && !isBlankHeadRelationshipType && HeadRelationshipType.getFrom(rawInMigration.headRelationshipType)==null){
             errors << errorMessageService.getRawMessage(RawEntity.IN_MIGRATION, "validation.field.enum.choices.error", [rawInMigration.headRelationshipType, "headRelationshipType"], ["headRelationshipType"])
         }
 
@@ -431,8 +440,6 @@ class InMigrationService {
 
             }
 
-
-
             //Try create/close
 
             if (migrationType==InMigrationType.INTERNAL){
@@ -456,7 +463,11 @@ class InMigrationService {
                     def fakeCurrentHead = headRelationshipService.createFakeHeadRelationship(currentHead)
                     def fakeClosedHeadRelationship = createFakeClosedHeadRelationship(currentHeadRelationship, HeadRelationshipEndType.INTERNAL_OUTMIGRATION, rawOutMigration.migrationDate) //its simulating a outmigrationof the member
                     //def fakeClosedHouseholdHead = createFakeClosedHeadRelationship(currentHead, HeadRelationshipEndType.INTERNAL_OUTMIGRATION, rawOutMigration.migrationDate) //we should not fake the closed head, if yes why???
-                    def innerErrors1 = headRelationshipService.validateCreateHeadRelationship(newRawHeadRelationship, fakeClosedHeadRelationship, fakeCurrentHead)
+                    def innerErrors1 = new ArrayList<RawMessage>()
+
+                    if (!isInstitutionalHousehold) { //institutional households dont have head relationships
+                        innerErrors1 = headRelationshipService.validateCreateHeadRelationship(newRawHeadRelationship, fakeClosedHeadRelationship, fakeCurrentHead)
+                    }
 
                     if (innerErrors1.size()>0){
                         errors += errorMessageService.addPrefixToMessages(innerErrors1, "validation.field.inmigration.prefix.msg.error", [rawInMigration.id])
@@ -470,7 +481,12 @@ class InMigrationService {
                 errors += residencyService.validateCreateResidency(newRawResidency)
 
                 //if it is a external inmigration reentry - already has an outmigration - and if entry dont have any - just validate the creation of head relationship
-                def innerErrors1 = headRelationshipService.validateCreateHeadRelationship(newRawHeadRelationship)
+                def innerErrors1 = new ArrayList<RawMessage>()
+
+                if (!isInstitutionalHousehold) { //institutional households dont have head relationships
+                    innerErrors1 = headRelationshipService.validateCreateHeadRelationship(newRawHeadRelationship)
+                }
+
                 if (innerErrors1.size()>0){
                     errors += errorMessageService.addPrefixToMessages(innerErrors1, "validation.field.inmigration.prefix.msg.error", [rawInMigration.id])
                 }

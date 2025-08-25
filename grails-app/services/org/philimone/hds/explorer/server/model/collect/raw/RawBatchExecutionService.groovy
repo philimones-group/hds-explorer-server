@@ -1,10 +1,10 @@
 package org.philimone.hds.explorer.server.model.collect.raw
 
-import groovy.json.JsonSlurper
+
 import net.betainteractive.utilities.StringUtil
 import org.hibernate.SessionFactory
 import org.philimone.hds.explorer.server.model.collect.raw.aggregate.RawEvent
-import org.philimone.hds.explorer.server.model.enums.HeadRelationshipType
+import org.philimone.hds.explorer.server.model.enums.HouseholdType
 import org.philimone.hds.explorer.server.model.enums.ProcessedStatus
 import org.philimone.hds.explorer.server.model.enums.RawEntity
 import org.philimone.hds.explorer.server.model.enums.RawEventType
@@ -15,6 +15,7 @@ import org.philimone.hds.explorer.server.model.logs.LogReportFile
 import org.philimone.hds.explorer.server.model.main.Death
 import org.philimone.hds.explorer.server.model.main.HeadRelationship
 import org.philimone.hds.explorer.server.model.main.Household
+import org.philimone.hds.explorer.server.model.main.HouseholdProxyHead
 import org.philimone.hds.explorer.server.model.main.HouseholdRelocation
 import org.philimone.hds.explorer.server.model.main.InMigration
 import org.philimone.hds.explorer.server.model.main.IncompleteVisit
@@ -109,6 +110,7 @@ class RawBatchExecutionService {
             RawChangeRegionHead.executeUpdate(     "update RawChangeRegionHead r      set r.processedStatus=:newStatus where r.processedStatus=:currStatus", [currStatus: ProcessedStatus.ERROR, newStatus: ProcessedStatus.NOT_PROCESSED])
             RawHouseholdRelocation.executeUpdate(  "update RawHouseholdRelocation r   set r.processedStatus=:newStatus where r.processedStatus=:currStatus", [currStatus: ProcessedStatus.ERROR, newStatus: ProcessedStatus.NOT_PROCESSED])
             RawPregnancyVisit.executeUpdate(       "update RawPregnancyVisit r        set r.processedStatus=:newStatus where r.processedStatus=:currStatus", [currStatus: ProcessedStatus.ERROR, newStatus: ProcessedStatus.NOT_PROCESSED])
+            RawHouseholdProxyHead.executeUpdate(   "update RawHouseholdProxyHead r        set r.processedStatus=:newStatus where r.processedStatus=:currStatus", [currStatus: ProcessedStatus.ERROR, newStatus: ProcessedStatus.NOT_PROCESSED])
 
             RawErrorLog.executeUpdate("delete from RawErrorLog r") //Crazy decision? not that much, if we are going to execute all again we dont need the old errors
         }
@@ -164,6 +166,7 @@ class RawBatchExecutionService {
             RawChangeRegionHead.executeUpdate(     "update RawChangeRegionHead r      set r.processedStatus=:newStatus", [newStatus: ProcessedStatus.NOT_PROCESSED])
             RawHouseholdRelocation.executeUpdate(  "update RawHouseholdRelocation r   set r.processedStatus=:newStatus", [newStatus: ProcessedStatus.NOT_PROCESSED])
             RawPregnancyVisit.executeUpdate(       "update RawPregnancyVisit r        set r.processedStatus=:newStatus", [newStatus: ProcessedStatus.NOT_PROCESSED])
+            RawHouseholdProxyHead.executeUpdate(   "update RawHouseholdProxyHead r        set r.processedStatus=:newStatus", [newStatus: ProcessedStatus.NOT_PROCESSED])
 
             RawErrorLog.executeUpdate("delete from RawErrorLog r") //Crazy decision? not that much, if we are going to execute all again we dont need the old errors
         }
@@ -194,6 +197,7 @@ class RawBatchExecutionService {
         collectMaritalRelationshipStart()
         collectMaritalRelationshipEnd()
         collectChangeHoh()
+        collectChangeProxyHead()
         collectOutMigration()
         collectDeath()
 
@@ -402,7 +406,6 @@ class RawBatchExecutionService {
             return null
         }
 
-        
         switch (event?.eventType) {
             case RawEventType.EVENT_REGION:                       result = executeRegion(event, logReportFileId, eventsWithErrors); break
             case RawEventType.EVENT_HOUSEHOLD:                    result = executeHousehold(event, logReportFileId, eventsWithErrors); break
@@ -421,6 +424,7 @@ class RawBatchExecutionService {
             case RawEventType.EVENT_INCOMPLETE_VISIT:             result = executeIncompleteVisit(event, logReportFileId, eventsWithErrors); break
             case RawEventType.EVENT_CHANGE_HEAD_OF_REGION:        result = executeChangeRegionHead(event, logReportFileId, eventsWithErrors); break
             case RawEventType.EVENT_HOUSEHOLD_RELOCATION:         result = executeHouseholdRelocation(event, logReportFileId, eventsWithErrors); break
+            case RawEventType.EVENT_CHANGE_PROXY_HEAD:            result = executeChangeProxyHead(event, logReportFileId, eventsWithErrors); break
 
         }
 
@@ -599,14 +603,14 @@ class RawBatchExecutionService {
             obj.save(flush:true)
         }
 
-        if (domainObj.domainInstance instanceof RawChangeRegionHead) {
-            def obj = (RawChangeRegionHead) domainObj.domainInstance
+        if (domainObj.domainInstance instanceof RawHouseholdRelocation) {
+            def obj = (RawHouseholdRelocation) domainObj.domainInstance
             obj.processedStatus = ProcessedStatus.ERROR
             obj.save(flush:true)
         }
 
-        if (domainObj.domainInstance instanceof RawHouseholdRelocation) {
-            def obj = (RawHouseholdRelocation) domainObj.domainInstance
+        if (domainObj.domainInstance instanceof RawHouseholdProxyHead) {
+            def obj = (RawHouseholdProxyHead) domainObj.domainInstance
             obj.processedStatus = ProcessedStatus.ERROR
             obj.save(flush:true)
         }
@@ -676,6 +680,10 @@ class RawBatchExecutionService {
             case RawEventType.EVENT_HOUSEHOLD_RELOCATION:
                 def rawObj = RawHouseholdRelocation.findById(rawEvent?.eventId)
                 return new RawEntityObj(RawEntity.HOUSEHOLD_RELOCATION, RawDomainObj.attach(rawObj))
+
+            case RawEventType.EVENT_CHANGE_PROXY_HEAD:
+                def rawObj = RawHouseholdProxyHead.findById(rawEvent?.eventId)
+                return new RawEntityObj(RawEntity.CHANGE_PROXY_HEAD, RawDomainObj.attach(rawObj))
         }
         return obj;
     }
@@ -818,6 +826,8 @@ class RawBatchExecutionService {
             def depStatus = solveHouseholdDependency(householdCode, "householdCode", logReportFileId, eventsWithErrors)
             dependencyResolved = depStatus.solved
 
+            def isInstitutionalHousehold = depStatus.solved && Household.countByCodeAndType(householdCode, HouseholdType.INSTITUTIONAL)==1
+
             //try to solve head dependency, check if the household has a head yet
             /*if (!rawObj.headRelationshipType?.equals("HOH") && !headRelationshipService.hasHeadOfHousehold(householdCode)){
                 //try to find the head of household
@@ -839,7 +849,7 @@ class RawBatchExecutionService {
 
             //try to solve head dependency (cannot register a new individual in a household without a head)
             def depStatus5 = RawDependencyStatus.dependencySolved(RawEntity.MEMBER_ENUMERATION)
-            if (rawEvent.eventOrder != RawMemberOrder.HEAD_OF_HOUSEHOLD) {
+            if (rawEvent.eventOrder != RawMemberOrder.HEAD_OF_HOUSEHOLD && !isInstitutionalHousehold) {
                 depStatus5 = solveHeadDependency(householdCode, "householdCode", logReportFileId, eventsWithErrors)
                 dependencyResolved = dependencyResolved && depStatus5.solved
             }
@@ -984,6 +994,8 @@ class RawBatchExecutionService {
             def depStatus = solveHouseholdDependency(destinationCode, "destinationCode", logReportFileId, eventsWithErrors)
             dependencyResolved = dependencyResolved && depStatus.solved
 
+            def isInstitutionalHousehold = depStatus.solved && Household.countByCodeAndType(destinationCode, HouseholdType.INSTITUTIONAL)==1
+
             //try to solve visit dependency
             def depStatus2 = solveVisitDependency(visitCode, "visitCode", logReportFileId, eventsWithErrors)
             dependencyResolved = dependencyResolved && depStatus2.solved
@@ -994,7 +1006,7 @@ class RawBatchExecutionService {
 
             //try to solve head dependency (cannot register a new individual in a household without a head)
             def depStatus4 =  RawDependencyStatus.dependencySolved(RawEntity.IN_MIGRATION)
-            if (rawEvent.eventOrder != RawMemberOrder.HEAD_OF_HOUSEHOLD) {
+            if (rawEvent.eventOrder != RawMemberOrder.HEAD_OF_HOUSEHOLD && !isInstitutionalHousehold) {
                 depStatus4 = solveHeadDependency(destinationCode, "destinationCode", logReportFileId, eventsWithErrors)
                 dependencyResolved = dependencyResolved && depStatus4.solved
             }
@@ -1044,6 +1056,8 @@ class RawBatchExecutionService {
             def depStatus = solveHouseholdDependency(destinationCode, "destinationCode", logReportFileId, eventsWithErrors)
             dependencyResolved = depStatus.solved
 
+            def isInstitutionalHousehold = depStatus.solved && Household.countByCodeAndType(destinationCode, HouseholdType.INSTITUTIONAL)==1
+
             //try to solve visit dependency
             def depStatus2 = solveVisitDependency(visitCode, "visitCode", logReportFileId, eventsWithErrors)
             dependencyResolved = dependencyResolved && depStatus2.solved
@@ -1065,7 +1079,7 @@ class RawBatchExecutionService {
 
             //try to solve head dependency (cannot register a new individual in a household without a head)
             def depStatus6 = RawDependencyStatus.dependencySolved(RawEntity.EXTERNAL_INMIGRATION)
-            if (rawEvent.eventOrder != RawMemberOrder.HEAD_OF_HOUSEHOLD) {
+            if (rawEvent.eventOrder != RawMemberOrder.HEAD_OF_HOUSEHOLD && !isInstitutionalHousehold) {
                 depStatus6 = solveHeadDependency(destinationCode, "destinationCode", logReportFileId, eventsWithErrors)
                 dependencyResolved = dependencyResolved && depStatus6.solved
             }
@@ -1509,7 +1523,62 @@ class RawBatchExecutionService {
 
         return null
     }
-    
+
+    RawExecutionResult<HouseholdProxyHead> executeChangeProxyHead(RawEvent rawEvent, String logReportFileId, HashMap<String, RawEvent> eventsWithErrors) {
+        if (rawEvent == null || rawEvent?.isProcessed()) return null
+
+        def rawObj = RawHouseholdProxyHead.findById(rawEvent?.eventId)
+
+        if (rawObj != null) {
+
+            def dependencyResolved = true
+
+            //check dependencies existence (visit, household(destinationCode))
+            def householdCode = rawObj.householdCode
+            def visitCode = rawObj.visitCode
+            def proxyHeadCode = rawObj.proxyHeadCode
+
+            //try to solve household dependency
+            def depStatus = solveHouseholdDependency(householdCode, "householdCode", logReportFileId, eventsWithErrors)
+            dependencyResolved = depStatus.solved
+
+            //try to solve visit dependency
+            def depStatus2 = null as RawDependencyStatus
+            if (!StringUtil.isBlank(visitCode)) {
+                depStatus2 = solveVisitDependency(visitCode, "visitCode", logReportFileId, eventsWithErrors)
+                dependencyResolved = dependencyResolved && depStatus2.solved
+            }
+
+            //try to solve member dependency (proxyHeadCode)
+            def depStatus3 = null as RawDependencyStatus
+            if (!StringUtil.isBlank(proxyHeadCode)) {
+                depStatus3 = solveMemberDependency(proxyHeadCode, "proxyHeadCode", logReportFileId, eventsWithErrors)
+                dependencyResolved = dependencyResolved && depStatus3.solved
+            }
+
+            if (dependencyResolved) {
+                def result = rawExecutionService.createChangeProxyHead(rawObj, logReportFileId)
+
+                //set event has processed
+                rawEvent.processed = getProcessedStatus(result?.status)
+                rawEvent.save(flush:true)
+
+                return result
+            } else {
+                def errors = new ArrayList<RawMessage>()
+                if (depStatus != null && !depStatus.errorMessages?.isEmpty()) errors.addAll(depStatus?.errorMessages)
+                if (depStatus2 != null && !depStatus2.errorMessages?.isEmpty()) errors.addAll(depStatus2?.errorMessages)
+                if (depStatus3 != null && !depStatus3.errorMessages?.isEmpty()) errors.addAll(depStatus3?.errorMessages)
+
+                def result = createRawEventErrorLog(RawEntity.CHANGE_PROXY_HEAD, rawEvent, RawDomainObj.attach(rawObj), "householdCode", errors, logReportFileId)
+                return result
+            }
+
+        }
+
+        return null
+    }
+
     RawMessage getRegionDependencyError(String regionCode, String columnName) {
         return errorMessageService.getRawMessage(RawEntity.REGION, "validation.dependency.region.not.found", [regionCode, columnName], [columnName])
     }
@@ -2038,6 +2107,25 @@ class RawBatchExecutionService {
             RawEvent.withTransaction {
                 batch.each {
                     new RawEvent(keyDate: it.eventDate.atStartOfDay(), collectedDate: it.collectedDate, eventType: RawEventType.EVENT_CHANGE_HEAD_OF_REGION, eventId: it.id, eventHouseholdCode: it.regionCode, entityCode: it.newHeadCode).save()
+                }
+            }
+        }
+
+        list.clear()
+        cleanUpGorm()
+    }
+
+    def collectChangeProxyHead() {
+        def list = [] as List<RawHouseholdProxyHead>
+
+        RawHouseholdProxyHead.withTransaction {
+            list = RawHouseholdProxyHead.findAllByProcessedStatus(ProcessedStatus.NOT_PROCESSED, [sort: "eventDate", order: "asc"])
+        }
+
+        list.collate(200).each { batch ->
+            RawEvent.withTransaction {
+                batch.each {
+                    new RawEvent(keyDate: it.eventDate.atStartOfDay(), collectedDate: it.collectedDate, eventType: RawEventType.EVENT_CHANGE_PROXY_HEAD, eventId: it.id, eventHouseholdCode: it.householdCode, entityCode: it.householdCode).save()
                 }
             }
         }

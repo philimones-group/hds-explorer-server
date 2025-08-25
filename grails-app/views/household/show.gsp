@@ -1,3 +1,4 @@
+<%@ page import="org.philimone.hds.explorer.server.model.enums.HouseholdType" %>
 <!DOCTYPE html>
 <html>
     <head>
@@ -29,8 +30,23 @@
             <bi:field bean="${this.household}" property="code"  label="household.code.label" mode="show" />
             <bi:field bean="${this.household}" property="parentRegion" label="household.region.label" mode="show" />
             <bi:field bean="${this.household}" property="name" label="household.name.label" mode="show" />
+            <bi:field bean="${this.household}" property="type" label="household.type.label" valueMessage="true" mode="show" />
+
+            <g:if test="${this.household.type.code.equals(org.philimone.hds.explorer.server.model.enums.HouseholdType.INSTITUTIONAL.code) }">
+                <bi:field bean="${this.household}" property="institutionType" label="household.institutionType.label" valueMessage="true" mode="show" />
+            </g:if>
+
+            <bi:field bean="${this.household}" property="name" label="household.name.label" mode="show" />
             <bi:field bean="${this.household}" property="headCode" label="household.headCode.label" mode="show" />
             <bi:field bean="${this.household}" property="headName" label="household.headName.label" mode="show" />
+
+            <g:if test="${this.household.proxyHead}">
+                <bi:field bean="${this.household}" property="proxyHead" subProperty="proxyHeadType" label="household.proxyHead.proxyHeadType.label" valueMessage="true" mode="show" />
+                <bi:field bean="${this.household}" property="proxyHead" subProperty="proxyHeadCode" label="household.proxyHead.proxyHeadCode.label" mode="show" />
+                <bi:field bean="${this.household}" property="proxyHead" subProperty="proxyHeadName" label="household.proxyHead.proxyHeadName.label" mode="show" />
+                <bi:field bean="${this.household}" property="proxyHead" subProperty="proxyHeadRole" label="household.proxyHead.proxyHeadRole.label" valueMessage="true" mode="show" />
+            </g:if>
+
             <bi:field bean="${this.household}" property="createdBy" label="household.createdBy.label" mode="show" />
             <bi:dateField bean="${this.household}" property="createdDate" label="household.createdDate.label" mode="show" />
             <bi:field bean="${this.household}" property="updatedBy" label="household.updatedBy.label" mode="show" />

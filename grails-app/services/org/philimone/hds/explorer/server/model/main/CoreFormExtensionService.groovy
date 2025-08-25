@@ -278,6 +278,7 @@ class CoreFormExtensionService {
         columnsMap.put("proxy_head_type","#proxyHeadType")
         columnsMap.put("proxy_head_code", "#proxyHeadCode")
         columnsMap.put("proxy_head_name", "#proxyHeadName")
+        columnsMap.put("proxy_head_role", "#proxyHeadRole")
 
         return mapToString(columnsMap)
     }

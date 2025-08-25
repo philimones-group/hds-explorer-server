@@ -23,7 +23,8 @@ enum RawEntity {
     CHANGE_HEAD_OF_HOUSEHOLD ("syncdss.sync.changehead.label", "rawChangeHead"),
     INCOMPLETE_VISIT ("syncdss.sync.incompletevisit.label", "rawIncompleteVisit"),
     CHANGE_HEAD_OF_REGION ("syncdss.sync.changeregionhead.label", "rawChangeRegionHead"),
-    HOUSEHOLD_RELOCATION ("syncdss.sync.householdrelocation.label", "rawHouseholdRelocation")
+    HOUSEHOLD_RELOCATION ("syncdss.sync.householdrelocation.label", "rawHouseholdRelocation"),
+    CHANGE_PROXY_HEAD ("syncdss.sync.changeproxyheads.label", "rawHouseholdProxyHead")
 
     final String name
     final String tag

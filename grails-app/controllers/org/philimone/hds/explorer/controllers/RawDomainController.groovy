@@ -119,6 +119,11 @@ class RawDomainController {
             return
         }
 
+        if (entity == RawEntity.CHANGE_PROXY_HEAD){
+            redirect action: "editHouseholdProxyHead", params: [id: params.id]
+            return
+        }
+
         redirect(controller: "eventSync", action:"showSyncReportDetails", model:[id: errorLog?.logReportFile?.id])
     }
 
@@ -284,6 +289,13 @@ class RawDomainController {
         def dependencyCheckResult = rawDomainService.checkDependencyErrors(errorMessages)
 
         respond RawHouseholdRelocation.get(params.id), model: [mode: "edit", errorMessages: errorMessages, dependencyResult: dependencyCheckResult]
+    }
+
+    def editHouseholdProxyHead = {
+        def errorMessages = RawErrorLog.findByUuid(params.id)?.messages
+        def dependencyCheckResult = rawDomainService.checkDependencyErrors(errorMessages)
+
+        respond RawHouseholdProxyHead.get(params.id), model: [mode: "edit", errorMessages: errorMessages, dependencyResult: dependencyCheckResult]
     }
 
     def updateRegion = {
@@ -913,7 +925,40 @@ class RawDomainController {
         }
 
         flash.message = message(code: 'default.updated.message', args: [message(code: 'rawHouseholdRelocation.label', default: 'Raw Household Relocation'), rawHouseholdRelocation.destinationCode])
-        respond rawHouseholdRelocation, view:"editChangeHead", model: [mode: "show"]
+        respond rawHouseholdRelocation, view:"editHouseholdRelocation", model: [mode: "show"]
+
+    }
+
+    def updateHouseholdProxyHead = {
+
+        RawHouseholdProxyHead rawHouseholdProxyHead = RawHouseholdProxyHead.get(params.id)
+
+        def reset = false
+
+        if (params.reset){
+            reset = params.reset
+        }
+
+        params.eventDate = StringUtil.toLocalDateFromDate(params.getDate('eventDate'))
+
+        try {
+            bindData(rawHouseholdProxyHead, params)
+            rawHouseholdProxyHead.save(flush:true)
+
+            if (reset) {
+                //reset the event
+                RawHouseholdProxyHead.executeUpdate("update RawHouseholdProxyHead r set r.processedStatus=:status where r.id=:rawId", [status: ProcessedStatus.NOT_PROCESSED, rawId: rawHouseholdProxyHead.id])
+                RawEvent.executeUpdate("update RawEvent r set r.processed=:status where r.eventId=:rawId", [status: ProcessedStatus.NOT_PROCESSED, rawId: rawHouseholdProxyHead.id])
+                RawErrorLog.executeUpdate("delete from RawErrorLog r where r.uuid=?0", [rawHouseholdProxyHead.id])
+            }
+
+        } catch (ValidationException e) {
+            respond rawHouseholdProxyHead.errors, view:'editHouseholdProxyHead', model: [mode: "edit", errorMessages: RawErrorLog.findByUuid(rawHouseholdProxyHead.id)?.messages]
+            return
+        }
+
+        flash.message = message(code: 'default.updated.message', args: [message(code: 'rawHouseholdProxyHead.label', default: 'Raw Household Relocation'), rawHouseholdProxyHead.householdCode])
+        respond rawHouseholdProxyHead, view:"editHouseholdProxyHead", model: [mode: "show"]
 
     }
 
@@ -1041,8 +1086,16 @@ class RawDomainController {
         RawHouseholdRelocation rawHouseholdRelocation = RawHouseholdRelocation.get(params.id)
         RawHouseholdRelocation.executeUpdate("update RawHouseholdRelocation r set r.processedStatus=:status where r.id=:rawId", [status: ProcessedStatus.INVALIDATED, rawId: rawHouseholdRelocation.id])
 
-        flash.message = message(code: 'default.updated.message', args: [message(code: 'rawChangeHead.label', default: 'Raw Change Head'), rawHouseholdRelocation.destinationCode])
-        respond rawHouseholdRelocation, view:"editChangeHead", model: [mode: "show"]
+        flash.message = message(code: 'default.updated.message', args: [message(code: 'rawHouseholdRelocation.label', default: 'Raw Household Relocation'), rawHouseholdRelocation.destinationCode])
+        respond rawHouseholdRelocation, view:"editHouseholdRelocation", model: [mode: "show"]
+    }
+
+    def invalidateHouseholdProxyHead = {
+        RawHouseholdProxyHead rawHouseholdProxyHead = RawHouseholdProxyHead.get(params.id)
+        RawHouseholdProxyHead.executeUpdate("update RawHouseholdProxyHead r set r.processedStatus=:status where r.id=:rawId", [status: ProcessedStatus.INVALIDATED, rawId: rawHouseholdProxyHead.id])
+
+        flash.message = message(code: 'default.updated.message', args: [message(code: 'rawChangeProxyHead.label', default: 'Raw Change Head'), rawHouseholdProxyHead.householdCode])
+        respond rawHouseholdProxyHead, view:"editHouseholdProxyHead", model: [mode: "show"]
     }
 
     def deleteChangeHead = {
@@ -1373,6 +1426,25 @@ class RawDomainController {
 
         //delete errorLog, rawObj
         def rawObj = RawHouseholdRelocation.get(params.id)
+        def errorLog = RawErrorLog.findByUuid(params.id)
+        def logReportFileId = errorLog?.logReportFileId
+
+        //delete records
+        try {
+            errorLog.delete(flush: true)
+            rawObj.delete(flush: true)
+
+        } catch(Exception ex) {
+            ex.printStackTrace()
+        }
+        //show report details
+        redirect controller: "eventSync", action: "showSyncReportDetails", id: logReportFileId
+    }
+
+    def deleteHouseholdProxyHead = {
+
+        //delete errorLog, rawObj
+        def rawObj = RawHouseholdProxyHead.get(params.id)
         def errorLog = RawErrorLog.findByUuid(params.id)
         def logReportFileId = errorLog?.logReportFileId
 

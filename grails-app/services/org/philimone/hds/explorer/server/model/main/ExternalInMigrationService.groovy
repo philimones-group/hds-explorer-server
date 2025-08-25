@@ -167,6 +167,7 @@ class ExternalInMigrationService {
         def memberExists = member != null
 
         def isReturningToStudyArea = extMigrationType==ExternalInMigrationType.REENTRY //isMemberReturningToStudyArea(externalInMigration.memberCode)
+        def isInstitutionalHousehold = destination?.type == HouseholdType.INSTITUTIONAL
 
         //C1. Check Blank Fields (visitCode)
         if (isBlankVisitCode){
@@ -197,7 +198,7 @@ class ExternalInMigrationService {
             errors << errorMessageService.getRawMessage(RawEntity.EXTERNAL_INMIGRATION, "validation.field.blank", ["memberDob"], ["memberDob"])
         }
         //C1. Check Blank Fields (headRelationshipType)
-        if (isBlankHeadRelationshipType){
+        if (!isInstitutionalHousehold && isBlankHeadRelationshipType){
             errors << errorMessageService.getRawMessage(RawEntity.EXTERNAL_INMIGRATION, "validation.field.blank", ["headRelationshipType"], ["headRelationshipType"])
         }
 
@@ -215,7 +216,7 @@ class ExternalInMigrationService {
             errors << errorMessageService.getRawMessage(RawEntity.EXTERNAL_INMIGRATION, "validation.field.enum.choices.error", [externalInMigration.memberGender, "memberGender"], ["memberGender"])
         }
         //C12. Validate Enum Options (headRelationshipType)
-        if (!isBlankHeadRelationshipType && HeadRelationshipType.getFrom(externalInMigration.headRelationshipType)==null){
+        if (!isInstitutionalHousehold && !isBlankHeadRelationshipType && HeadRelationshipType.getFrom(externalInMigration.headRelationshipType)==null){
             errors << errorMessageService.getRawMessage(RawEntity.EXTERNAL_INMIGRATION, "validation.field.enum.choices.error", [externalInMigration.headRelationshipType, "headRelationshipType"], ["headRelationshipType"])
         }
 
