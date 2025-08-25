@@ -12,7 +12,14 @@
 
             $(window).on('load', function () {
                 var formName = $("#form").val();
-                if (formName != null) {
+                var columnName = "${selectedColumn?.encodeAsJavaScript()}"
+                columnName = columnName.length==0 ? null : columnName
+                //console.log("form: "+formName)
+                //console.log(columnName)
+
+                if (formName != null && columnName != null) {
+                    loadColumnsx(formName, columnName)
+                } else if (formName != null) {
                     loadColumns(formName);
                 }
             });
@@ -23,6 +30,8 @@
                 });
 
                 $("#column").change(function() {
+                    var selectedForm = $("#form").val();
+                    updateFormData(selectedForm, this.value)
                     renderTabulator(this.value)
                 });
             });
@@ -35,12 +44,38 @@
                     success: function(html) {
                         $("#column").html(html);
 
+                        var selectedForm = $("#form").val();
                         var selected = $("#column").val();
                         if (selected != null) {
+                            updateFormData(selectedForm, selected)
                             renderTabulator(selected)
                         }
                     }
                 });
+            }
+
+            function loadColumnsx(formName, columnCode) {
+                $.ajax({
+                    url: "${createLink(controller: "settings", action: "getCustomOptionsColumns")}",
+                    data: "name=" + encodeURIComponent(formName),
+                    cache: false,
+                    success: function(html) {
+                        $("#column").html(html);
+
+                        var selectedForm = $("#form").val();
+                        if (columnCode != null) {
+                            updateFormData(selectedForm, columnCode)
+                            renderTabulator(columnCode)
+
+                            $("#column").val(columnCode)
+                        }
+                    }
+                });
+            }
+
+            function updateFormData(columnForm, columnCode) {
+                $("#columnForm").val(columnForm)
+                $("#columnCode").val(columnCode)
             }
 
             function renderTabulator(columnCode) {
@@ -84,7 +119,7 @@
                         <label for="columnName">
                             <g:message code="default.menu.settings.coreformoptions.column.label" default="Column Name" /><span class="required-indicator">*</span>
                         </label>
-                        <g:select name="column" from="" />
+                        <g:select name="column" from="" value="${selectedColumn}" />
                     </div>
                 </fieldset>
 
@@ -103,6 +138,14 @@
                     <tb:column name="optionLabel" label="${message(code: 'settings.coreformoptions.optionLabel.label')}" hzalign="left" editor="input" />
                     <tb:column name="optionLabelCode" label="${message(code: 'settings.coreformoptions.messageCode.label')}" hzalign="left" editor="input" />
                 </tb:tabulator>
+                <br>
+                <fieldset class="buttons">
+                    <g:form controller="settings" action="createDefaultOptions"  method="PUT">
+                        <g:hiddenField name="columnCode" value="" />
+                        <g:hiddenField name="columnForm" value="" />
+                        <g:submitButton name="create" class="save" value="${message(code: 'settings.coreformoptions.button.recreate.label')}" />
+                    </g:form>
+                </fieldset>
 
             </div>
         </div>

@@ -215,4 +215,21 @@ class SettingsController {
 
         render result as JSON
     }
+
+    def createDefaultOptions = {
+        def columnForm = params.columnForm
+        def columnCode = params.columnCode
+
+
+        //println "${columnCode}"
+
+        if (columnCode != null) {
+            coreFormColumnOptionsService.createDefaultOptionsFor(columnCode)
+
+        }
+
+        flash.message = message(code: 'settings.coreformoptions.dataintegrity.info.label')
+
+        render view: "customOptions", model: [forms: coreFormColumnOptionsService.getCustomOptionsForms(), selectedForm : columnForm, selectedColumn: columnCode]
+    }
 }
