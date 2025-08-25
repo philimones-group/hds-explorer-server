@@ -2,6 +2,8 @@ package org.philimone.hds.explorer.server.model.main
 
 import grails.converters.JSON
 import grails.validation.ValidationException
+import net.betainteractive.io.odk.util.XFormReader
+import org.philimone.hds.explorer.io.SystemPath
 import org.philimone.hds.explorer.server.model.authentication.User
 import org.philimone.hds.explorer.server.model.enums.FormCollectType
 import org.philimone.hds.explorer.server.model.enums.FormSubjectType
@@ -107,7 +109,6 @@ class FormController {
         }
 
         println "${formInstance.errors}, ${formInstance.id}"
-
 
         flash.message = message(code: 'default.created.message', args: [message(code: 'form.label', default: 'Form'), formInstance.formId])
         redirect action: "show", id: formInstance.id, model: [id: formInstance.id, status: CREATED]
@@ -237,21 +238,19 @@ class FormController {
     }
 
     def saveFormMapping = {
-        def formMapping = new FormMapping(params)
+        def formMappingInstance = new FormMapping(params)
         //println "prs: "+params
         //println "obj: "+formMapping
 
         def splitIndex = params.columnSplitIndex
         def String constValue = params.columnConstantValue
 
-        println "ftype: ${formMapping.columnFormat}, format: ${formMapping.columnFormat?.format}"
+        println "ftype: ${formMappingInstance.columnFormat}, format: ${formMappingInstance.columnFormat?.format}"
 
-        if (formMapping == null) {
+        if (formMappingInstance == null) {
             notFound()
             return
         }
-
-
 
         if (constValue && constValue.length()>0){
             //formMapping.tableName = "#"
@@ -263,11 +262,9 @@ class FormController {
             //}
 
             /* We will deal only with special constants */
-            formMapping.tableName = "\$"
-            formMapping.columnName = constValue
-
+            formMappingInstance.tableName = "\$"
+            formMappingInstance.columnName = constValue
         }
-
 
         /*
         if (splitIndex != null && splitIndex.matches("[0-9]+")){
@@ -285,43 +282,52 @@ class FormController {
             return
         }*/
 
-        def formatType = formMapping.columnFormat
+        def formatType = formMappingInstance.columnFormat
         if (formatType != null){
 
-            if (formMapping.columnFormatValue == null || formMapping.columnFormatValue.isEmpty()){
-                formMapping.columnFormatValue = formatType.format
+            if (formMappingInstance.columnFormatValue == null || formMappingInstance.columnFormatValue.isEmpty()){
+                formMappingInstance.columnFormatValue = formatType.format
             }
 
             //formMapping.columnFormat = formatType.getValue()
             //formatType.discard()
         }
 
-        if (formMapping.hasErrors()) {
-            respond formMapping.errors, view:'formMapping'
+        if (formMappingInstance.hasErrors()) {
+            respond formMappingInstance.errors, view:'formMapping', model: [xmlColumnsList: (session.xmlColumnsList ?: null), fileSubmissionMsg: (session.xmlLoadedMessage ?: null) ]
             return
         }
 
-        if (!formMapping.save(flush:true)){
-            flash.message = message(code: 'default.created.message', args: [message(code: 'formMapping.label', default: 'Form Mapping'), formMapping.id])
-            redirect action: "formMapping", id: formMapping.form.id
+        if (!formMappingInstance.save(flush:true)){
+            //flash.message = message(code: 'default.created.message', args: [message(code: 'formMapping.label', default: 'Form Mapping'), formMappingInstance.id])
+
+            def formMappingModel = formMapping(formMappingInstance.form)
+            formMappingModel << [xmlColumnsList: (session.xmlColumnsList ?: null), fileSubmissionMsg: (session.xmlLoadedMessage ?: null) ]
+
+            respond formMappingInstance.errors, view:'formMapping', model: formMappingModel
             return
         }
 
+        def formMappingModel = formMapping(formMappingInstance.form)
+        formMappingModel << [xmlColumnsList: (session.xmlColumnsList ?: null), fileSubmissionMsg: (session.xmlLoadedMessage ?: null) ]
 
-        flash.message = message(code: 'default.created.message', args: [message(code: 'formMapping.label', default: 'Form Mapping'), formMapping.formVariableName])
-        redirect action: "formMapping", id: formMapping.form.id
+        flash.message = message(code: 'default.created.message', args: [message(code: 'formMapping.label', default: 'Form Mapping'), formMappingInstance.formVariableName])
+        render view: "formMapping", model: formMappingModel
     }
 
     def deleteFormMapping(String id) {
-        def formMapping = FormMapping.get(id)
+        def formMappingInstance = FormMapping.get(id)
 
-        def form = formMapping?.form
+        def formInstance = formMappingInstance?.form
 
-        if (!formMapping) {
+        if (!formMappingInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'formMapping.label', default: 'Form Mapping'), id])
 
-            if (form){
-                redirect action: "formMapping", id: form.id
+            if (formInstance){
+                def formMappingModel = formMapping(formMappingInstance.form)
+                formMappingModel << [xmlColumnsList: (session.xmlColumnsList ?: null), fileSubmissionMsg: (session.xmlLoadedMessage ?: null) ]
+
+                render view: "formMapping", model: formMappingModel
             }else
                 redirect(action: "index")
 
@@ -330,15 +336,22 @@ class FormController {
 
         try {
 
-            formMapping.delete(flush: true)
+            formMappingInstance.delete(flush: true)
             flash.message = message(code: 'default.deleted.message', args: [message(code: 'formMapping.label', default: 'Form Mapping'), id])
 
-            redirect action: "formMapping", id: form.id
+            def formMappingModel = formMapping(formMappingInstance.form)
+            formMappingModel << [xmlColumnsList: (session.xmlColumnsList ?: null), fileSubmissionMsg: (session.xmlLoadedMessage ?: null) ]
+
+            render view: "formMapping", model: formMappingModel
 
         } catch (DataIntegrityViolationException e) {
 
             flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'formMapping.label', default: 'Form Mapping'), id])
-            redirect action: "formMapping", id: form.id
+
+            def formMappingModel = formMapping(formMappingInstance.form)
+            formMappingModel << [xmlColumnsList: (session.xmlColumnsList ?: null), fileSubmissionMsg: (session.xmlLoadedMessage ?: null) ]
+
+            render view: "formMapping", model: formMappingModel
         }
     }
 
@@ -446,6 +459,24 @@ class FormController {
         flash.message = message(code: 'form.groupMapping.updated.label', args: [form.formId, groupForm.formId])
         redirect action: "formGroupMapping", id: groupForm.id
         
+    }
+
+    def uploadFormMappingOdkXmlFile = {
+        def formInstance = Form.get(params.formId)
+        def file = request.getFile('odkFileUpload')
+
+        //println "test ${file.originalFilename}"
+
+        def columnsMap = XFormReader.getFormColumns(file.bytes)
+
+        def xmlColumnsList = columnsMap.keySet()
+        session.xmlColumnsList = xmlColumnsList
+        session.xmlLoadedMessage = message(code: "formMapping.odk.uploaded.label", args: [file.originalFilename])
+
+        def model = formMapping(formInstance)
+        model << [xmlColumnsList: xmlColumnsList, fileSubmissionMsg: session.xmlLoadedMessage ]
+
+        render view: "formMapping", model: model
     }
 
     def generateFormGroupIdGsp = {

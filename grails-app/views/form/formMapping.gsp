@@ -135,6 +135,14 @@
 			<g:if test="${flash.message}">
 			<div class="message" role="status">${flash.message}</div>
 			</g:if>
+            <g:hasErrors bean="${this.formMapping}">
+                <ul class="errors" role="alert">
+                    <g:eachError bean="${this.formMapping}" var="error">
+                        <li <g:if test="${error in org.springframework.validation.FieldError}">data-field-id="${error.field}"</g:if>><g:message error="${error}"/></li>
+                    </g:eachError>
+                </ul>
+            </g:hasErrors>
+
 			<ol class="property-list form">
 			
 				<g:if test="${formInstance?.formId}">
@@ -153,6 +161,15 @@
 				    <span class="property-value" aria-labelledby="formName-label"><g:fieldValue bean="${formInstance}" field="formName"/></span>
 				</li>
 				</g:if>
+
+                <g:uploadForm controller="form" action="uploadFormMappingOdkXmlFile" >
+                    <div class="fieldcontain ${hasErrors(bean: dataSetInstance, field: 'filename', 'error')} " >
+                        <label for="filename"><g:message code="formMapping.odk.upload.file.label" default="ODK XML File" /></label>
+                        <input type="file" id="odkFileUpload" name="odkFileUpload" style="display:inline;" />
+                        <g:hiddenField id="formId" name="formId" value="${formInstance?.id}"/>
+                        <g:submitButton name="create" class="button_link" value="${message(code: 'dataset.file.upload.label')}" />
+                    </div>
+                </g:uploadForm>
 			</ol>
 
         <!-- Add new Form Mapping Variable -->
@@ -162,7 +179,14 @@
                         <g:hiddenField id="form" name="form.id" from="${[formInstance]}" optionKey="id" required="" value="${formMappingInstance?.form?.id}" class="many-to-one"/>
                         <div class="fieldcontain ">
                             <label class="label2"><g:message code="formMapping.formVariableName.label" default="Form Variable Name" /></label>
-                            <g:textField name="formVariableName" value="${formMappingInstance?.formVariableName}" />
+
+                            <g:if test="${xmlColumnsList}">
+                                <g:select name="formVariableName" required="" value="${formMappingInstance?.formVariableName}" from="${xmlColumnsList}" class="many-to-one"/>
+                                [<i>${fileSubmissionMsg}</i>]
+                            </g:if>
+                            <g:else>
+                                <g:textField name="formVariableName" value="${formMappingInstance?.formVariableName}" />
+                            </g:else>
                         </div>
 
                         <g:if test="${repeatGroups.size()>0}">
