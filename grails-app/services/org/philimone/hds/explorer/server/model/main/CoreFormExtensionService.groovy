@@ -56,7 +56,7 @@ class CoreFormExtensionService {
         if (form == CoreForm.INCOMPLETE_VISIT_FORM) return getIncVisitMapping();
         if (form == CoreForm.CHANGE_REGION_HEAD_FORM) return getChangeRegionHeadMapping();
         if (form == CoreForm.HOUSEHOLD_RELOCATION_FORM) return getHouseholdRelocationMapping();
-
+        if (form == CoreForm.CHANGE_PROXY_HEAD_FORM) return getChangeProxyHeadMapping();
         return ""
     }
 
@@ -80,9 +80,12 @@ class CoreFormExtensionService {
         columnsMap.put("collected_id", "#id")
         columnsMap.put("household_code", "#householdCode")
         columnsMap.put("household_name", "#householdName")
+        columnsMap.put("household_type", "#householdType")
+        columnsMap.put("institution_type", "#institutionType")
         columnsMap.put("visit_code", "#visitCode")
         columnsMap.put("head_code", "#headCode")
         columnsMap.put("head_name", "#headName")
+
 
         return mapToString(columnsMap)
     }
@@ -260,6 +263,21 @@ class CoreFormExtensionService {
         columnsMap.put("old_head_name","#oldHeadName")
         columnsMap.put("new_head_code", "#newHeadCode")
         columnsMap.put("new_head_name", "#newHeadName")
+
+        return mapToString(columnsMap)
+    }
+
+    String getChangeProxyHeadMapping() {
+        def columnsMap = new LinkedHashMap()
+
+        columnsMap.put("core_form_id", CoreForm.CHANGE_PROXY_HEAD_FORM.code)
+        columnsMap.put("collected_id", "#id")
+        columnsMap.put("household_code", "#householdCode")
+        columnsMap.put("household_name", "Household.name")
+        columnsMap.put("visit_code", "#visitCode")
+        columnsMap.put("proxy_head_type","#proxyHeadType")
+        columnsMap.put("proxy_head_code", "#proxyHeadCode")
+        columnsMap.put("proxy_head_name", "#proxyHeadName")
 
         return mapToString(columnsMap)
     }

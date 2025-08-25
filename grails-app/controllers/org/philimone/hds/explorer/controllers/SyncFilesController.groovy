@@ -142,6 +142,11 @@ class SyncFilesController {
         render file: file
     }
 
+    def proxyheads = {
+        def file = new File(SystemPath.getGeneratedFilesPath() + File.separator + "${SyncEntity.HOUSEHOLD_PROXY_HEADS.xmlFilename}")
+        render file: file
+    }
+
     /* ZIP Files*/
 
     def householdsZip = {
@@ -328,6 +333,11 @@ class SyncFilesController {
 
     def regionheadsZip = {
         def file = new File(SystemPath.getGeneratedFilesPath() + File.separator + "${SyncEntity.REGION_HEADS.zipFilename}")
+        render file: file
+    }
+
+    def proxyheadsZip = {
+        def file = new File(SystemPath.getGeneratedFilesPath() + File.separator + "${SyncEntity.HOUSEHOLD_PROXY_HEADS.zipFilename}")
         render file: file
     }
 

@@ -7,7 +7,6 @@ import net.betainteractive.utilities.StringUtil
 import org.philimone.hds.explorer.server.model.authentication.User
 import org.philimone.hds.explorer.io.SystemPath
 import org.philimone.hds.explorer.server.model.enums.FormType
-import org.philimone.hds.explorer.server.model.enums.PregnancyOutcomeType
 import org.philimone.hds.explorer.server.model.enums.PregnancyStatus
 import org.philimone.hds.explorer.server.model.enums.ValidatableStatus
 import org.philimone.hds.explorer.server.model.enums.settings.LogReportCode
@@ -24,6 +23,7 @@ import org.philimone.hds.explorer.server.model.main.FormGroupMapping
 import org.philimone.hds.explorer.server.model.main.FormMapping
 import org.philimone.hds.explorer.server.model.main.HeadRelationship
 import org.philimone.hds.explorer.server.model.main.Household
+import org.philimone.hds.explorer.server.model.main.HouseholdProxyHead
 import org.philimone.hds.explorer.server.model.main.InMigration
 import org.philimone.hds.explorer.server.model.main.MaritalRelationship
 import org.philimone.hds.explorer.server.model.main.Member
@@ -37,7 +37,6 @@ import org.philimone.hds.explorer.server.model.main.RedcapMapping
 import org.philimone.hds.explorer.server.model.main.Region
 import org.philimone.hds.explorer.server.model.main.RegionHeadRelationship
 import org.philimone.hds.explorer.server.model.main.Residency
-import org.philimone.hds.explorer.server.model.main.ResidencyService
 import org.philimone.hds.explorer.server.model.main.Round
 import org.philimone.hds.explorer.server.model.main.Module
 import org.philimone.hds.explorer.server.model.main.TrackingList
@@ -105,6 +104,9 @@ class SyncFilesService {
         println("saving residencies")
         generateResidenciesXML(logReportId)
 
+        println("saving proxy heads")
+        generateProxyHeadsXML(logReportId)
+
         if (settingsService.getRegionHeadSupport()) {
             println("saving region head relationships")
             generateRegionHeadsXML(logReportId)
@@ -119,6 +121,7 @@ class SyncFilesService {
         generatePregnancyOutcomesXML(logReportId)
         generatePregnancyVisitsXML(logReportId)
         generateDeathsXML(logReportId)
+
         //These events are not needed in the mobile app
         //generateInMigrationsXML(logReportId)
         //generateOutMigrationsXML(logReportId)
@@ -1445,6 +1448,102 @@ class SyncFilesService {
 
     }
 
+    def generateProxyHeadsXML(LogReportCode logReportId) {
+        String filename = SyncEntity.HOUSEHOLD_PROXY_HEADS.filename
+        String xmlFilename = SyncEntity.HOUSEHOLD_PROXY_HEADS.xmlFilename
+        String zipFilename = SyncEntity.HOUSEHOLD_PROXY_HEADS.zipFilename
+
+
+        LogOutput log = generalUtilitiesService.getOutput(SystemPath.getLogsPath(), "generate-${filename}-xml-zip");
+        PrintStream output = log.output
+        if (output == null) return;
+
+        def start = LocalDateTime.now();
+        int processed = 0
+        int errors = 0
+        def logStatusValue = LogStatus.FINISHED
+
+        try {
+            //Ler todos users
+            def resultProxyHeads = []
+
+            HouseholdProxyHead.withTransaction {
+                resultProxyHeads = HouseholdProxyHead.executeQuery("select r.id from HouseholdProxyHead r where r.status <> ?0 or r.status is null", [ValidatableStatus.TEMPORARILY_INACTIVE])
+            }
+
+
+            // root elements
+            println("creating ${filename}.xml of ${resultProxyHeads.size()} records")
+            PrintStream outputFile = new PrintStream(new FileOutputStream(SystemPath.generatedFilesPath + "/${filename}.xml"), true)
+            outputFile.print("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?><${filename}>")
+
+            int count = 0;
+
+            resultProxyHeads.collate(1000).each { batch ->
+                def proxyHeads = HouseholdProxyHead.findAllByIdInList(batch)
+                proxyHeads.each { proxyHead ->
+                    count++;
+
+                    outputFile.print(createHouseholdProxyHeadXml(proxyHead))
+
+                    if (count % 3000 == 0) {
+                        cleanUpGorm()
+                    }
+                }
+            }
+
+            cleanUpGorm()
+
+            outputFile.print("</${filename}>")
+            outputFile.close()
+
+            // write the content into xml file
+            System.out.println("File saved! - ${xmlFilename}");
+            output.println("File saved! - ${xmlFilename}");
+
+            //zip file
+            ZipMaker zipMaker = new ZipMaker(SystemPath.getGeneratedFilesPath() + File.separator + "${zipFilename}")
+            zipMaker.addFile(SystemPath.getGeneratedFilesPath() + File.separator + "${xmlFilename}")
+            def b = zipMaker.makeZip()
+
+            println "creating zip - ${zipFilename} - success=" + b
+
+            processed = 1
+
+            //Save number of records
+            syncFilesReportService.update(SyncEntity.HOUSEHOLD_PROXY_HEADS, count)
+
+        } catch (Exception ex) {
+            ex.printStackTrace()
+            processed = 0
+            errors = 1
+            output.println(ex.toString())
+
+            logStatusValue = LogStatus.ERROR
+        }
+
+        LogReport.withTransaction {
+            LogReport logReport = LogReport.findByReportId(logReportId)
+            LogReportFile reportFile = new LogReportFile(creationDate: LocalDateTime.now(), fileName: log.logFileName, logReport: logReport)
+            reportFile.keyTimestamp = logReport.keyTimestamp
+            reportFile.start = start
+            reportFile.end = LocalDateTime.now()
+            reportFile.creationDate = LocalDateTime.now()
+            reportFile.processedCount = processed
+            reportFile.errorsCount = errors
+
+            logReport.end = LocalDateTime.now()
+            logReport.status = logStatusValue
+            logReport.addToLogFiles(reportFile)
+            logReport.save()
+
+            //println("errors: ${logReport.errors}")
+        }
+
+        output.close();
+
+    }
+
     def generateVisitsXML(LogReportCode logReportId) { //read forms
 
         String filename = SyncEntity.VISITS.filename
@@ -2549,7 +2648,27 @@ class SyncFilesService {
 
         return element.toString();
     }
-    
+
+    private String createHouseholdProxyHeadXml(HouseholdProxyHead proxyHead) {
+        StringBuilder element = new StringBuilder("<householdProxyHead>");
+
+        element.append(createXmlAttribute("visitCode", proxyHead.visitCode));
+        element.append(createXmlAttribute("householdCode", proxyHead.householdCode));
+        element.append(createXmlAttribute("proxyHeadType", proxyHead.proxyHeadType.code));
+        element.append(createXmlAttribute("proxyHeadCode", proxyHead.proxyHeadCode));
+        element.append(createXmlAttribute("proxyHeadName", proxyHead.proxyHeadName));
+        element.append(createXmlAttribute("proxyHeadRole", proxyHead.proxyHeadRole.code));
+        element.append(createXmlAttribute("startDate", proxyHead.startDate==null ? "" : StringUtil.format(proxyHead.startDate)));
+        element.append(createXmlAttribute("endDate", proxyHead.endDate==null ? "" : StringUtil.format(proxyHead.endDate)));
+        element.append(createXmlAttribute("reason", proxyHead.reason?.code));
+        element.append(createXmlAttribute("reasonOther", proxyHead.reasonOther));
+        element.append(createXmlAttribute("collectedId", proxyHead.collectedId));
+
+        element.append("</householdProxyHead>")
+
+        return element.toString();
+    }
+
     private Element createVisit(Document doc, Visit visit) {
         Element element = doc.createElement("visit")
 
@@ -2906,11 +3025,20 @@ class SyncFilesService {
         return ("<household>") +
                 ((h.code == null || h.code.isEmpty()) ?               "<code />"   : "<code>${h.code}</code>") +
                 ((h.region == null || h.region.isEmpty()) ?           "<region />" : "<region>${h.region}</region>") +
+
+                ((h.type == null) ?                                   "<type />" : "<type>${h.type.code}</type>") +
+                ((h.institutionType == null) ?                        "<institutionType />" : "<institutionType>${h.institutionType.code}</institutionType>") +
+                ((StringUtil.isBlank(h.institutionTypeOther)) ?       "<institutionTypeOther />" : "<institutionTypeOther>${h.institutionTypeOther}</institutionTypeOther>") +
+
                 ((h.name == null || h.name.isEmpty()) ?               "<name />"   : "<name>${h.name}</name>") +
 
                 ((h.headCode == null || h.headCode.isEmpty()) ?       "<headCode />" : "<headCode>${h.headCode}</headCode>") +
                 ((h.headName == null || h.headName.isEmpty()) ?       "<headName />" : "<headName>${h.headName}</headName>") +
-                ((h.secHeadCode == null || h.secHeadCode.isEmpty()) ? "<secHeadCode />" : "<secHeadCode>${h.secHeadCode}</secHeadCode>") +
+
+                ((h.proxyHead?.proxyHeadType == null) ?               "<proxyHeadType />" : "<proxyHeadType>${h.proxyHead.proxyHeadType?.code}</proxyHeadType>") +
+                ((StringUtil.isBlank(h.proxyHead?.proxyHeadCode)) ?   "<proxyHeadCode />" : "<proxyHeadCode>${h.proxyHead.proxyHeadCode}</proxyHeadCode>") +
+                ((StringUtil.isBlank(h.proxyHead?.proxyHeadName)) ?   "<proxyHeadName />" : "<proxyHeadName>${h.proxyHead.proxyHeadName}</proxyHeadName>") +
+                ((h.proxyHead?.proxyHeadRole == null) ?               "<proxyHeadRole />" : "<proxyHeadRole>${h.proxyHead.proxyHeadRole?.code}</proxyHeadRole>") +
 
                 ((h.hierarchy1 == null || h.hierarchy1.isEmpty()) ? "<hierarchy1 />" : "<hierarchy1>${h.hierarchy1}</hierarchy1>") +
                 ((h.hierarchy2 == null || h.hierarchy2.isEmpty()) ? "<hierarchy2 />" : "<hierarchy2>${h.hierarchy2}</hierarchy2>") +

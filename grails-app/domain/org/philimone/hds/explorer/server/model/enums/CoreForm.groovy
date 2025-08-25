@@ -17,7 +17,8 @@ enum CoreForm {
     CHANGE_HEAD_FORM ("rawChangeHead", "coreFormExtension.changehead.label", "change_head_ext"),
     INCOMPLETE_VISIT_FORM ("rawIncompleteVisit", "coreFormExtension.incompletevisit.label", "incomplete_visit_ext"),
     CHANGE_REGION_HEAD_FORM ("rawChangeRegionHead", "coreFormExtension.changeregionhead.label", "change_region_head_ext"),
-    HOUSEHOLD_RELOCATION_FORM ("rawHouseholdRelocation", "coreFormExtension.householdrelocation.label", "household_relocation_ext")
+    HOUSEHOLD_RELOCATION_FORM ("rawHouseholdRelocation", "coreFormExtension.householdrelocation.label", "household_relocation_ext"),
+    CHANGE_PROXY_HEAD_FORM ("rawHouseholdProxyHead", "coreFormExtension.changeproxyhead.label", "household_proxy_head_ext")
 
     String code
     String name

@@ -1,7 +1,6 @@
 package org.philimone.hds.explorer.services
 
 import com.ibm.icu.util.EthiopicCalendar
-import grails.gorm.transactions.Transactional
 import net.betainteractive.io.LogOutput
 import net.betainteractive.utilities.DateUtil
 import net.betainteractive.utilities.GeneralUtil
@@ -367,6 +366,7 @@ class EventSyncService {
             list.add(getPregnancyVisitStatus())
             list.add(getDeathStatus())
             list.add(getChangeHeadStatus())
+            list.add(getChangeProxyHeadStatus())
             list.add(getHouseholdRelocationStatus())
             list.add(getIncompleteVisitStatus())
 
@@ -614,6 +614,21 @@ class EventSyncService {
         status.notProcessed = RawChangeHead.countByProcessedStatus(ProcessedStatus.NOT_PROCESSED)
         status.invalidated = RawChangeHead.countByProcessedStatus(ProcessedStatus.INVALIDATED)
         //status.otherCases = RawChangeHead.countByProcessedStatus(ProcessedStatus.)
+
+        return status
+    }
+
+    SyncProcessedStatus getChangeProxyHeadStatus(){
+        SyncProcessedStatus status = new SyncProcessedStatus()
+
+        //total records
+        status.name = 'syncdss.sync.changeproxyheads.label'
+        status.totalRecords = -1
+        status.processed = RawHouseholdProxyHead.countByProcessedStatus(ProcessedStatus.SUCCESS)
+        status.processedWithError = RawHouseholdProxyHead.countByProcessedStatus(ProcessedStatus.ERROR)
+        status.notProcessed = RawHouseholdProxyHead.countByProcessedStatus(ProcessedStatus.NOT_PROCESSED)
+        status.invalidated = RawHouseholdProxyHead.countByProcessedStatus(ProcessedStatus.INVALIDATED)
+        //status.otherCases = RawHouseholdProxyHead.countByProcessedStatus(ProcessedStatus.)
 
         return status
     }

@@ -333,6 +333,23 @@ class CoreExtensionService {
         return result
     }
 
+    CoreExtensionDatabaseService.SqlExecutionResult insertHouseholdProxyHeadExtension(RawHouseholdProxyHead rawObj, HouseholdProxyHead finalObj) {
+        if (rawObj.extensionForm == null) return null
+
+        //get form extensions
+        def coreFormExt = CoreFormExtension.findByCoreForm(CoreForm.CHANGE_PROXY_HEAD_FORM)
+        if (!coreFormExt?.enabled || coreFormExt?.extFormDefinition == null) return null
+
+        //read xml data to map
+        def mapInstanceValues = getInstanceMappedValues(coreFormExt, coreFormExt.extFormDefinition, rawObj.extensionForm)
+        //insert into
+        def result = coreExtensionDatabaseService.executeSqlInsert(coreFormExt.extFormId, mapInstanceValues)
+
+        println "Inserting extension for hhr(${rawObj.householdCode}) - result=${result.success}, msg: ${result.errorMessage}"
+
+        return result
+    }
+
     LinkedHashMap<String, Object> getInstanceMappedValues(CoreFormExtension coreFormExt, byte[] formDefBytes, byte[] instanceBytes) {
 
         def mapValues = new LinkedHashMap<String, Object>()

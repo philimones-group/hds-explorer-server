@@ -34,6 +34,7 @@ class RawImportApiController {
                              incompletevisits: "POST",
                              changeregionheads: "POST",
                              householdrelocations: "POST",
+                             changeproxyheads: "POST",
                              editregions: "POST",
                              edithouseholds: "POST",
                              editmembers: "POST"]
@@ -958,6 +959,55 @@ class RawImportApiController {
 
         if (resultSave.postExecution){ //execute creation
             def result = rawExecutionService.createChangeRegionHead(resultSave, "")
+
+            if (result.status== RawExecutionResult.Status.ERROR){
+                render text: errorMessageService.getRawMessagesText(result.errorMessages), status: HttpStatus.BAD_REQUEST
+                return
+            }
+        }
+
+        render text: "OK", status: HttpStatus.OK
+    }
+
+    def changeproxyheads = {
+
+        if (request.format != "xml") {
+            def message = message(code: 'validation.field.raw.xml.invalid.error')
+            render text: message, status:  HttpStatus.BAD_REQUEST // Only XML expected
+            return
+        }
+
+        RawParseResult<RawHouseholdProxyHead> parseResult = null
+        String xmlContent = request.reader?.text
+        String extensionXml = rawImportApiService.getExtensionXmlText(xmlContent, RawEntity.CHANGE_PROXY_HEAD)
+
+        try {
+            def node = new XmlSlurper().parseText(xmlContent) as NodeChild
+            node = node.children().first() as NodeChild //RawDomain
+
+            parseResult = rawImportApiService.parseChangeProxyHead(node)
+        } catch(Exception ex) {
+            def msg = errorMessageService.getRawMessagesText(ex)
+            render text: msg, status: HttpStatus.BAD_REQUEST
+            return
+        }
+        if (parseResult.hasErrors()) {
+            render text: parseResult.getErrorsText(), status: HttpStatus.BAD_REQUEST
+            return
+        }
+
+        def rawInstance = parseResult.domainInstance
+        rawInstance.extensionForm = extensionXml?.getBytes()
+
+        def resultSave = rawInstance.save(flush: true)
+print(rawInstance.errors)
+        if (rawInstance.hasErrors()){
+            render text: errorMessageService.getRawMessagesText(rawInstance), status: HttpStatus.BAD_REQUEST
+            return
+        }
+
+        if (resultSave.postExecution){ //execute creation
+            def result = rawExecutionService.createChangeProxyHead(resultSave, "")
 
             if (result.status== RawExecutionResult.Status.ERROR){
                 render text: errorMessageService.getRawMessagesText(result.errorMessages), status: HttpStatus.BAD_REQUEST

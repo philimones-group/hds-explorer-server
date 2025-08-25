@@ -192,6 +192,7 @@ class BootStrap {
             new SecurityMap(url: "/api/export/pregnancyvisits/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER},${Role.ROLE_FIELD_WORKER}").save(flush: true)
             new SecurityMap(url: "/api/export/deaths/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER},${Role.ROLE_FIELD_WORKER}").save(flush: true)
             new SecurityMap(url: "/api/export/regionheads/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER},${Role.ROLE_FIELD_WORKER}").save(flush: true)
+            new SecurityMap(url: "/api/export/proxyheads/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER},${Role.ROLE_FIELD_WORKER}").save(flush: true)
             new SecurityMap(url: "/api/export/stats/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER},${Role.ROLE_FIELD_WORKER}").save(flush: true)
 
             new SecurityMap(url: "/api/export/params/**", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER},${Role.ROLE_FIELD_WORKER}").save(flush: true)
@@ -226,6 +227,7 @@ class BootStrap {
             new SecurityMap(url: "/api/import/incompletevisits", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER},${Role.ROLE_FIELD_WORKER}").save(flush: true)
             new SecurityMap(url: "/api/import/changeregionheads", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER},${Role.ROLE_FIELD_WORKER}").save(flush: true)
             new SecurityMap(url: "/api/import/householdrelocations", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER},${Role.ROLE_FIELD_WORKER}").save(flush: true)
+            new SecurityMap(url: "/api/import/changeproxyheads", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER},${Role.ROLE_FIELD_WORKER}").save(flush: true)
             new SecurityMap(url: "/api/import/editregions", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER},${Role.ROLE_FIELD_WORKER}").save(flush: true)
             new SecurityMap(url: "/api/import/edithouseholds", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER},${Role.ROLE_FIELD_WORKER}").save(flush: true)
             new SecurityMap(url: "/api/import/editmembers", configAttribute: "${Role.ROLE_ADMINISTRATOR},${Role.ROLE_DATA_MANAGER},${Role.ROLE_FIELD_WORKER}").save(flush: true)
@@ -569,8 +571,9 @@ class BootStrap {
         def core12 = new CoreFormExtension(formName: CoreForm.CHANGE_REGION_HEAD_FORM.name, coreForm: CoreForm.CHANGE_REGION_HEAD_FORM, formId: CoreForm.CHANGE_REGION_HEAD_FORM.code, extFormId: CoreForm.CHANGE_REGION_HEAD_FORM.extension, required: true, enabled: false, columnsMapping: svc.getColumnMapping(CoreForm.CHANGE_REGION_HEAD_FORM))
         def core13 = new CoreFormExtension(formName: CoreForm.HOUSEHOLD_RELOCATION_FORM.name, coreForm: CoreForm.HOUSEHOLD_RELOCATION_FORM, formId: CoreForm.HOUSEHOLD_RELOCATION_FORM.code, extFormId: CoreForm.HOUSEHOLD_RELOCATION_FORM.extension, required: true, enabled: false, columnsMapping: svc.getColumnMapping(CoreForm.HOUSEHOLD_RELOCATION_FORM))
         def core14 = new CoreFormExtension(formName: CoreForm.PREGNANCY_VISIT_FORM.name, coreForm: CoreForm.PREGNANCY_VISIT_FORM, formId: CoreForm.PREGNANCY_VISIT_FORM.code, extFormId: CoreForm.PREGNANCY_VISIT_FORM.extension, required: true, enabled: false, columnsMapping: svc.getColumnMapping(CoreForm.PREGNANCY_VISIT_FORM))
+        def core15 = new CoreFormExtension(formName: CoreForm.CHANGE_PROXY_HEAD_FORM.name, coreForm: CoreForm.CHANGE_PROXY_HEAD_FORM, formId: CoreForm.CHANGE_PROXY_HEAD_FORM.code, extFormId: CoreForm.CHANGE_PROXY_HEAD_FORM.extension, required: true, enabled: false, columnsMapping: svc.getColumnMapping(CoreForm.CHANGE_PROXY_HEAD_FORM))
 
-        def cores = [core0, core1, core2, core3, core4, core5, core6, core6, core7, core8, core9, core10, core11, core12, core13, core14] as List<CoreFormExtension>
+        def cores = [core0, core1, core2, core3, core4, core5, core6, core6, core7, core8, core9, core10, core11, core12, core13, core14, core15] as List<CoreFormExtension>
 
         for (CoreFormExtension core : cores){
             if (CoreFormExtension.countByFormId(core.formId)==0){

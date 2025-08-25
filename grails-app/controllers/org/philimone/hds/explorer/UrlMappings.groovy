@@ -46,7 +46,7 @@ class UrlMappings {
         "/api/export/pregnancyvisits"(controller:         "syncFiles", action: "pregnancyVisits")
         "/api/export/deaths"(controller:         "syncFiles", action: "deaths")
         "/api/export/regionheads"(controller:         "syncFiles", action: "regionheads")
-
+        "/api/export/proxyheads"(controller:         "syncFiles", action: "proxyheads")
 
         "/api/export/households/zip"(controller:    "syncFiles", action: "householdsZip")
         "/api/export/members/zip"(controller:   "syncFiles", action: "membersZip")
@@ -74,6 +74,7 @@ class UrlMappings {
         "/api/export/pregnancyvisits/zip"(controller:         "syncFiles", action: "pregnancyVisitsZip")
         "/api/export/deaths/zip"(controller:         "syncFiles", action: "deathsZip")
         "/api/export/regionheads/zip"(controller:         "syncFiles", action: "regionheadsZip")
+        "/api/export/proxyheads/zip"(controller:         "syncFiles", action: "proxyheadsZip")
 
         "/api/export/sync-report"(controller: "syncFiles", action: "syncFilesReport")
 
@@ -97,6 +98,7 @@ class UrlMappings {
         "/api/import/incompletevisits"(controller: "rawImportApi", action: "incompletevisits")
         "/api/import/changeregionheads"(controller: "rawImportApi", action: "changeregionheads")
         "/api/import/householdrelocations"(controller: "rawImportApi", action: "householdrelocations")
+        "/api/import/changeproxyheads"(controller: "rawImportApi", action: "changeproxyheads")
         "/api/import/editregions"(controller: "rawImportApi", action: "editregions")
         "/api/import/edithouseholds"(controller: "rawImportApi", action: "edithouseholds")
         "/api/import/editmembers"(controller: "rawImportApi", action: "editmembers")

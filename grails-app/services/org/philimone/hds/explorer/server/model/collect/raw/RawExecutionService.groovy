@@ -7,11 +7,11 @@ import org.philimone.hds.explorer.server.model.main.Death
 import org.philimone.hds.explorer.server.model.main.Enumeration
 import org.philimone.hds.explorer.server.model.main.HeadRelationship
 import org.philimone.hds.explorer.server.model.main.Household
+import org.philimone.hds.explorer.server.model.main.HouseholdProxyHead
 import org.philimone.hds.explorer.server.model.main.HouseholdRelocation
 import org.philimone.hds.explorer.server.model.main.InMigration
 import org.philimone.hds.explorer.server.model.main.IncompleteVisit
 import org.philimone.hds.explorer.server.model.main.MaritalRelationship
-import org.philimone.hds.explorer.server.model.main.Member
 import org.philimone.hds.explorer.server.model.main.OutMigration
 import org.philimone.hds.explorer.server.model.main.PregnancyOutcome
 import org.philimone.hds.explorer.server.model.main.PregnancyRegistration
@@ -43,6 +43,7 @@ class RawExecutionService {
     def changeHeadService
     def changeRegionHeadService
     def householdRelocationService
+    def changeProxyHeadService
 
     //Receive a RawModel, execute it and flag errors
 
@@ -378,6 +379,27 @@ class RawExecutionService {
         if (result.status == RawExecutionResult.Status.ERROR){
             //create errorLog
             def errorLog = new RawErrorLog(uuid: rawDomainInstance.id, entity: result.entity, collectedDate: rawDomainInstance.collectedDate, columnName: "originCode", code: rawDomainInstance.originCode)
+            errorLog.uuid = rawDomainInstance.id
+            errorLog.logReportFile = LogReportFile.findById(logReportFileId)
+            errorLog.setMessages(result.errorMessages)
+            errorLog.save(flush:true)
+        }
+
+        rawDomainInstance.refresh()
+        rawDomainInstance.processedStatus = getProcessedStatus(result.status)
+        rawDomainInstance.save(flush:true)
+
+        return result
+
+    }
+
+    RawExecutionResult<HouseholdProxyHead> createChangeProxyHead(RawHouseholdProxyHead rawDomainInstance, String logReportFileId){
+
+        def result = changeProxyHeadService.createChangeProxyHead(rawDomainInstance)
+
+        if (result.status == RawExecutionResult.Status.ERROR){
+            //create errorLog
+            def errorLog = new RawErrorLog(uuid: rawDomainInstance.id, entity: result.entity, collectedDate: rawDomainInstance.collectedDate, columnName: "householdCode", code: rawDomainInstance.householdCode)
             errorLog.uuid = rawDomainInstance.id
             errorLog.logReportFile = LogReportFile.findById(logReportFileId)
             errorLog.setMessages(result.errorMessages)
