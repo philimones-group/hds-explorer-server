@@ -51,6 +51,7 @@ class RawInMigration {
         visitCode blank: false, nullable: false
         memberCode blank: false, nullable: false
 
+        headRelationshipType nullable: true
         education blank: true, nullable: true
         religion blank: true, nullable: true
         phonePrimary blank: true, nullable: true

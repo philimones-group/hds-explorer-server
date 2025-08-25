@@ -68,6 +68,8 @@ class RawExternalInMigration {
         phonePrimary blank: true, nullable: true
         phoneAlternative blank: true, nullable: true
 
+        headRelationshipType nullable: true
+
         migrationType nullable: false, blank: false
         extMigrationType nullable: false, blank: false
 

@@ -1,8 +1,10 @@
 package org.philimone.hds.explorer.server.model.main
 
-import net.betainteractive.utilities.GeneralUtil
+
 import org.philimone.hds.explorer.server.model.audit.CollectableEntity
+import org.philimone.hds.explorer.server.model.enums.HouseholdInstitutionType
 import org.philimone.hds.explorer.server.model.enums.HouseholdStatus
+import org.philimone.hds.explorer.server.model.enums.HouseholdType
 import org.philimone.hds.explorer.server.model.types.StringCollectionType
 
 /**
@@ -13,13 +15,17 @@ class Household extends CollectableEntity {
     String id
     String code
     String region;      /* Last Location Hierarchy */
+    HouseholdType type = HouseholdType.REGULAR
+    HouseholdInstitutionType institutionType
+    String institutionTypeOther
     String name
+    Member headMember
     String headCode;    /* Head of Houeshold Code*/
     String headName     /* Head of Household Name*/
-    String secHeadCode; /* Secondary Head of Household */
+
+    HouseholdProxyHead proxyHead
 
     Region parentRegion
-    Member headMember
 
     String hierarchy1
     String hierarchy2
@@ -51,13 +57,18 @@ class Household extends CollectableEntity {
         id maxSize: 32
         code unique: true
         region nullable: false
+
+        type nullable: false
+        institutionType nullable: true
+        institutionTypeOther nullable:true
+
         name blank: false
+        headMember nullable: true
         headCode  blank: true, nullable: true, unique: 'code'
         headName blank: true, nullable: true
-        secHeadCode blank: true, nullable: true, index: "idx_sec_head_code"
+        proxyHead blank: true, nullable: true
 
         parentRegion nullable: false
-        headMember nullable: true
 
         hierarchy1 nullable: true
         hierarchy2 nullable: true
@@ -93,13 +104,19 @@ class Household extends CollectableEntity {
 
         code column: 'code'
         region column: 'region'
+
+        type column: 'type', enumType: 'identity', index: 'idx_hh_type', defaultValue: "'REGULAR'"
+        institutionType column: 'institution_type', enumType: 'identity', index: 'idx_inst_type'
+        institutionTypeOther column: 'institution_type_other'
+
         name column: 'name'
+        headMember column: 'head_id'
         headCode column: 'head_code'
         headName column: 'head_name'
-        secHeadCode column: 'sec_head_code'
+
+        proxyHead column: 'proxy_head_id'
 
         parentRegion column: 'region_id'
-        headMember column: 'head_id'
 
         hierarchy1 column: 'hierarchy1'
         hierarchy2 column: 'hierarchy2'

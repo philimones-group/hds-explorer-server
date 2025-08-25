@@ -1,5 +1,7 @@
 package org.philimone.hds.explorer.server.model.collect.raw
 
+import org.philimone.hds.explorer.server.model.enums.HouseholdInstitutionType
+import org.philimone.hds.explorer.server.model.enums.HouseholdType
 import org.philimone.hds.explorer.server.model.enums.ProcessedStatus
 
 import java.time.LocalDateTime
@@ -15,6 +17,9 @@ class RawHousehold {
     String regionName
     String householdCode
     String householdName
+    String householdType
+    String institutionType
+    String institutionTypeOther
     String headCode
     String headName
     String gpsLat
@@ -46,6 +51,9 @@ class RawHousehold {
         regionName blank: true, nullable: true
         householdCode blank: true
         householdName blank: true
+        householdType nullable: false
+        institutionType nullable: true
+        institutionTypeOther nullable: true
         headCode blank: true, nullable: true
         headName blank: true, nullable: true
         gpsLon blank: true, nullable: true
@@ -79,6 +87,9 @@ class RawHousehold {
         regionName column: "region_name"
         householdCode column: "household_code", index: "idx_household_code"
         householdName column: "household_name"
+        householdType column: "household_type", index: 'idx_hh_type', defaultValue: "'REGULAR'"
+        institutionType column: 'institution_type', index: 'idx_inst_type'
+        institutionTypeOther column: 'institution_type_other'
         headCode column: "head_code", index: "idx_head_code"
         headName column: "head_name"
         gpsLon column: "gps_longitude"

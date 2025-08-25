@@ -75,7 +75,7 @@ class RawMemberEnu {
 
         householdCode blank: false
         householdName blank: true, nullable: true
-        headRelationshipType blank: false
+        headRelationshipType blank: true, nullable: true
         residencyStartDate blank: false
 
         modules nullable: true
