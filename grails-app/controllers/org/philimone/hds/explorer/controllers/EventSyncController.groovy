@@ -1,10 +1,11 @@
 package org.philimone.hds.explorer.controllers
 
-import net.betainteractive.utilities.DateUtil
+
 import net.betainteractive.utilities.StringUtil
 import grails.converters.JSON
 import org.philimone.hds.explorer.server.model.collect.raw.RawErrorLog
 import org.philimone.hds.explorer.server.model.enums.LogStatus
+import org.philimone.hds.explorer.server.model.enums.RawEventType
 import org.philimone.hds.explorer.server.model.enums.settings.LogGroupCode
 import org.philimone.hds.explorer.server.model.enums.settings.LogReportCode
 import org.philimone.hds.explorer.server.model.logs.LogReport
@@ -17,6 +18,7 @@ class EventSyncController {
 
     def eventSyncService
     def dataModelsService
+    def eventSyncRawDomainService
     def generalUtilitiesService
 
     def index = {
@@ -157,6 +159,12 @@ class EventSyncController {
         render view:"showSyncReportDetails", model: [logReportFileInstance: result.first()]
     }
 
+    def showRawDataDetails = {
+        def selectedRawEvent = RawEventType.getFrom(Integer.parseInt(params.id))
+
+        [selectedRawEvent: selectedRawEvent]
+    }
+
     def editRawDomain = {
         //def errorLog = RawErrorLog.findByUuid(params.id)
         redirect controller:"rawDomain", action: "editDomain", model: [id:params.id]
@@ -201,13 +209,6 @@ class EventSyncController {
         def logReportFileInstance = LogReportFile.get(params.id)
 
         //event, uuid, column, code, creationDate, errorMessage
-
-        //println(params)
-        //println()
-        //println "errorLog file $logReportFileInstance"
-        //println()
-        //println "errorLog orderList $orderList"
-
 
         //FILTERS - if not null will filter
         def search_filter = (params_search != null && !"${params_search}".empty) ? "%${params_search}%" : null
@@ -282,5 +283,14 @@ class EventSyncController {
         def result = [draw: jqdtParams.draw, recordsTotal: recordsTotal, recordsFiltered: recordsFiltered, data: errorLogs]
 
         render result as JSON
+    }
+
+    def rawDomainsList = {
+
+        def selectedRawEvent = RawEventType.getFrom(Integer.parseInt(params.id))
+
+        def domainDataResult = eventSyncRawDomainService.getRawDomainData(selectedRawEvent, params)
+
+        render domainDataResult as JSON
     }
 }

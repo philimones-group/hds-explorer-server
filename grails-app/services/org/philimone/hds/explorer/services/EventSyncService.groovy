@@ -8,6 +8,8 @@ import net.betainteractive.utilities.StringUtil
 import org.philimone.hds.explorer.io.SystemPath
 import org.philimone.hds.explorer.server.model.enums.LogStatus
 import org.philimone.hds.explorer.server.model.enums.ProcessedStatus
+import org.philimone.hds.explorer.server.model.enums.RawEntity
+import org.philimone.hds.explorer.server.model.enums.RawEventType
 import org.philimone.hds.explorer.server.model.enums.settings.LogReportCode
 import org.philimone.hds.explorer.server.model.enums.temporal.ExternalInMigrationType
 import org.philimone.hds.explorer.server.model.enums.temporal.InMigrationType
@@ -383,6 +385,7 @@ class EventSyncService {
 
         //total records
         status.name = 'syncdss.sync.households.label'
+        status.eventType = RawEventType.EVENT_HOUSEHOLD
         status.totalRecords = Household.count()
         status.processed = -1          //.countByProcessedStatus(ProcessedStatus.SUCCESS)
         status.processedWithError = -1 //.countByProcessedStatus(ProcessedStatus.ERROR)
@@ -398,6 +401,7 @@ class EventSyncService {
 
         //total records
         status.name = 'syncdss.sync.members.label'
+        status.eventType = RawEventType.EVENT_MEMBER_ENU
         status.totalRecords = Member.count()-1 //minus Unknown Individual
         status.processed = -1          //.countByProcessedStatus(ProcessedStatus.SUCCESS)
         status.processedWithError = -1 //.countByProcessedStatus(ProcessedStatus.ERROR)
@@ -413,6 +417,7 @@ class EventSyncService {
 
         //total records
         status.name = 'syncdss.sync.region.label'
+        status.eventType = RawEventType.EVENT_REGION
         status.totalRecords = Region.count()
         status.processed = RawRegion.countByProcessedStatus(ProcessedStatus.SUCCESS)
         status.processedWithError = RawRegion.countByProcessedStatus(ProcessedStatus.ERROR)
@@ -428,6 +433,7 @@ class EventSyncService {
 
         //total records
         status.name = 'syncdss.sync.household.label'
+        status.eventType = RawEventType.EVENT_HOUSEHOLD
         status.totalRecords = Household.count()
         status.processed = RawHousehold.countByProcessedStatus(ProcessedStatus.SUCCESS)
         status.processedWithError = RawHousehold.countByProcessedStatus(ProcessedStatus.ERROR)
@@ -443,6 +449,7 @@ class EventSyncService {
 
         //total records
         status.name = 'syncdss.sync.visit.label'
+        status.eventType = RawEventType.EVENT_VISIT
         status.totalRecords = Visit.count()
         status.processed = RawVisit.countByProcessedStatus(ProcessedStatus.SUCCESS)
         status.processedWithError = RawVisit.countByProcessedStatus(ProcessedStatus.ERROR)
@@ -458,6 +465,7 @@ class EventSyncService {
 
         //total records
         status.name = 'syncdss.sync.memberenu.label'
+        status.eventType = RawEventType.EVENT_MEMBER_ENU
         status.totalRecords = -1
         status.processed = RawMemberEnu.countByProcessedStatus(ProcessedStatus.SUCCESS)
         status.processedWithError = RawMemberEnu.countByProcessedStatus(ProcessedStatus.ERROR)
@@ -473,6 +481,7 @@ class EventSyncService {
 
         //total records
         status.name = 'syncdss.sync.maritalreg.label'
+        status.eventType = RawEventType.EVENT_MARITAL_RELATIONSHIP
         status.totalRecords = MaritalRelationship.count()
         status.processed = RawMaritalRelationship.countByProcessedStatus(ProcessedStatus.SUCCESS)
         status.processedWithError = RawMaritalRelationship.countByProcessedStatus(ProcessedStatus.ERROR)
@@ -488,6 +497,7 @@ class EventSyncService {
 
         //total records
         status.name = 'syncdss.sync.inmigration.label'
+        status.eventType = RawEventType.EVENT_INTERNAL_INMIGRATION
         status.totalRecords = InMigration.countByType(InMigrationType.INTERNAL)
         status.processed = RawInMigration.countByProcessedStatus(ProcessedStatus.SUCCESS)
         status.processedWithError = RawInMigration.countByProcessedStatus(ProcessedStatus.ERROR)
@@ -503,6 +513,7 @@ class EventSyncService {
 
         //total records
         status.name = 'syncdss.sync.externalinmigration.entry.label'
+        status.eventType = RawEventType.EVENT_EXTERNAL_INMIGRATION_ENTRY
         status.totalRecords = InMigration.countByTypeAndExtMigType(InMigrationType.EXTERNAL, ExternalInMigrationType.ENTRY)
         status.processed = RawExternalInMigration.countByProcessedStatusAndExtMigrationType(ProcessedStatus.SUCCESS, ExternalInMigrationType.ENTRY.name())
         status.processedWithError = RawExternalInMigration.countByProcessedStatusAndExtMigrationType(ProcessedStatus.ERROR, ExternalInMigrationType.ENTRY.name())
@@ -518,6 +529,7 @@ class EventSyncService {
 
         //total records
         status.name = 'syncdss.sync.externalinmigration.reentry.label'
+        status.eventType = RawEventType.EVENT_EXTERNAL_INMIGRATION_REENTRY
         status.totalRecords = InMigration.countByTypeAndExtMigType(InMigrationType.EXTERNAL, ExternalInMigrationType.REENTRY)
         status.processed = RawExternalInMigration.countByProcessedStatusAndExtMigrationType(ProcessedStatus.SUCCESS, ExternalInMigrationType.REENTRY.name())
         status.processedWithError = RawExternalInMigration.countByProcessedStatusAndExtMigrationType(ProcessedStatus.ERROR, ExternalInMigrationType.REENTRY.name())
@@ -533,6 +545,7 @@ class EventSyncService {
 
         //total records
         status.name = 'syncdss.sync.outmigration.label'
+        status.eventType = RawEventType.EVENT_OUTMIGRATION
         status.totalRecords = OutMigration.count()
         status.processed = RawOutMigration.countByProcessedStatus(ProcessedStatus.SUCCESS)
         status.processedWithError = RawOutMigration.countByProcessedStatus(ProcessedStatus.ERROR)
@@ -548,6 +561,7 @@ class EventSyncService {
 
         //total records
         status.name = 'syncdss.sync.pregnancyreg.label'
+        status.eventType = RawEventType.EVENT_PREGNANCY_REGISTRATION
         status.totalRecords = PregnancyRegistration.count()
         status.processed = RawPregnancyRegistration.countByProcessedStatus(ProcessedStatus.SUCCESS)
         status.processedWithError = RawPregnancyRegistration.countByProcessedStatus(ProcessedStatus.ERROR)
@@ -563,6 +577,7 @@ class EventSyncService {
 
         //total records
         status.name = 'syncdss.sync.pregnancyoutcome.label'
+        status.eventType = RawEventType.EVENT_PREGNANCY_OUTCOME
         status.totalRecords = PregnancyOutcome.count()
         status.processed = RawPregnancyOutcome.countByProcessedStatus(ProcessedStatus.SUCCESS)
         status.processedWithError = RawPregnancyOutcome.countByProcessedStatus(ProcessedStatus.ERROR)
@@ -578,6 +593,7 @@ class EventSyncService {
 
         //total records
         status.name = 'syncdss.sync.pregnancyvisit.label'
+        status.eventType = RawEventType.EVENT_PREGNANCY_VISIT
         status.totalRecords = PregnancyVisit.count()
         status.processed = RawPregnancyVisit.countByProcessedStatus(ProcessedStatus.SUCCESS)
         status.processedWithError = RawPregnancyVisit.countByProcessedStatus(ProcessedStatus.ERROR)
@@ -593,6 +609,7 @@ class EventSyncService {
 
         //total records
         status.name = 'syncdss.sync.death.label'
+        status.eventType = RawEventType.EVENT_DEATH
         status.totalRecords = Death.count()
         status.processed = RawDeath.countByProcessedStatus(ProcessedStatus.SUCCESS)
         status.processedWithError = RawDeath.countByProcessedStatus(ProcessedStatus.ERROR)
@@ -608,6 +625,7 @@ class EventSyncService {
 
         //total records
         status.name = 'syncdss.sync.changehead.label'
+        status.eventType = RawEventType.EVENT_CHANGE_HEAD_OF_HOUSEHOLD
         status.totalRecords = -1
         status.processed = RawChangeHead.countByProcessedStatus(ProcessedStatus.SUCCESS)
         status.processedWithError = RawChangeHead.countByProcessedStatus(ProcessedStatus.ERROR)
@@ -623,6 +641,7 @@ class EventSyncService {
 
         //total records
         status.name = 'syncdss.sync.changeproxyheads.label'
+        status.eventType = RawEventType.EVENT_CHANGE_PROXY_HEAD
         status.totalRecords = -1
         status.processed = RawHouseholdProxyHead.countByProcessedStatus(ProcessedStatus.SUCCESS)
         status.processedWithError = RawHouseholdProxyHead.countByProcessedStatus(ProcessedStatus.ERROR)
@@ -638,6 +657,7 @@ class EventSyncService {
 
         //total records
         status.name = 'syncdss.sync.householdrelocation.label'
+        status.eventType = RawEventType.EVENT_HOUSEHOLD_RELOCATION
         status.totalRecords = -1
         status.processed = RawHouseholdRelocation.countByProcessedStatus(ProcessedStatus.SUCCESS)
         status.processedWithError = RawHouseholdRelocation.countByProcessedStatus(ProcessedStatus.ERROR)
@@ -653,6 +673,7 @@ class EventSyncService {
 
         //total records
         status.name = 'syncdss.sync.incompletevisit.label'
+        status.eventType = RawEventType.EVENT_INCOMPLETE_VISIT
         status.totalRecords = IncompleteVisit.count()
         status.processed = RawIncompleteVisit.countByProcessedStatus(ProcessedStatus.SUCCESS)
         status.processedWithError = RawIncompleteVisit.countByProcessedStatus(ProcessedStatus.ERROR)
@@ -668,6 +689,7 @@ class EventSyncService {
 
         //total records
         status.name = 'syncdss.sync.changeregionhead.label'
+        status.eventType = RawEventType.EVENT_CHANGE_HEAD_OF_REGION
         status.totalRecords = -1
         status.processed = RawChangeRegionHead.countByProcessedStatus(ProcessedStatus.SUCCESS)
         status.processedWithError = RawChangeRegionHead.countByProcessedStatus(ProcessedStatus.ERROR)

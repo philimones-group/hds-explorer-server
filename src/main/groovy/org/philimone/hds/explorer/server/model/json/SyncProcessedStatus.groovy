@@ -1,7 +1,11 @@
 package org.philimone.hds.explorer.server.model.json
 
+
+import org.philimone.hds.explorer.server.model.enums.RawEventType
+
 class SyncProcessedStatus {
     int code
+    RawEventType eventType
     String name
     /*main datasets*/
     int totalRecords /* saved in final dataset*/

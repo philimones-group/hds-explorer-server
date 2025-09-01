@@ -106,7 +106,17 @@
 					<g:each in="${syncProcesses}" status="i" var="syncProcess">
 						<tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
 
-							<td style="text-align: center; vertical-align: middle;"><g:message code="${syncProcess.name}" default="Execute" /></td>
+							<td style="text-align: center; vertical-align: middle;">
+								<g:if test="${i==0 || i==1}">
+									<g:message code="${syncProcess.name}" default="Execute" />
+								</g:if>
+								<g:else>
+									<g:link action="showRawDataDetails" id="${syncProcess.eventType.code}">
+										<g:message code="${syncProcess.name}" default="Execute" />
+									</g:link>
+								</g:else>
+
+							</td>
 
 							<td style="text-align: center; vertical-align: middle;">${syncProcess.format(syncProcess.totalRecords)}</td>
 
