@@ -5,14 +5,23 @@
     <model>
       <itext>
         <translation lang="Portuguese">
-          <text id="/household_proxy_head_ext/collected_id:label">
-            <value>Id do Formulário Mãe</value>
+          <text id="/household_proxy_head_ext/end:label">
+            <value>-</value>
+          </text>
+          <text id="/household_proxy_head_ext/proxy_head_role/MIL:label">
+            <value>-</value>
+          </text>
+          <text id="/household_proxy_head_ext/custom_quest1:label">
+            <value>Custom Question 1</value>
+          </text>
+          <text id="/household_proxy_head_ext/proxy_head_role/DIR:label">
+            <value>-</value>
+          </text>
+          <text id="/household_proxy_head_ext/proxy_head_role/COM:label">
+            <value>-</value>
           </text>
           <text id="/household_proxy_head_ext/visit_code:label">
             <value>Código da Visita</value>
-          </text>
-          <text id="/household_proxy_head_ext/deviceid:label">
-            <value>-</value>
           </text>
           <text id="/household_proxy_head_ext/proxy_head_role:label">
             <value>Função do Chefe Substituto</value>
@@ -20,11 +29,50 @@
           <text id="/household_proxy_head_ext/proxy_head_name:label">
             <value>Nome do Chefe Substituto</value>
           </text>
-          <text id="/household_proxy_head_ext/custom_quest2:label">
-            <value>Custom Question 2</value>
+          <text id="/household_proxy_head_ext/proxy_head_role/ADM:label">
+            <value>-</value>
+          </text>
+          <text id="/household_proxy_head_ext/proxy_head_role/OTH:label">
+            <value>-</value>
+          </text>
+          <text id="/household_proxy_head_ext/start:label">
+            <value>-</value>
+          </text>
+          <text id="/household_proxy_head_ext/household_name:label">
+            <value>Nome do Agregado</value>
+          </text>
+          <text id="/household_proxy_head_ext/proxy_head_role/CTK:label">
+            <value>-</value>
+          </text>
+          <text id="/household_proxy_head_ext/proxy_head_type/NON_RESIDENT:label">
+            <value>-</value>
+          </text>
+          <text id="/household_proxy_head_ext/proxy_head_role/FAM:label">
+            <value>-</value>
           </text>
           <text id="/household_proxy_head_ext/household_code:label">
             <value>Código do Agregado</value>
+          </text>
+          <text id="/household_proxy_head_ext/proxy_head_role/PRI:label">
+            <value>-</value>
+          </text>
+          <text id="/household_proxy_head_ext/proxy_head_role/REL:label">
+            <value>-</value>
+          </text>
+          <text id="/household_proxy_head_ext/deviceid:label">
+            <value>-</value>
+          </text>
+          <text id="/household_proxy_head_ext/proxy_head_role/LGU:label">
+            <value>-</value>
+          </text>
+          <text id="/household_proxy_head_ext/custom_quest2:label">
+            <value>Custom Question 2</value>
+          </text>
+          <text id="/household_proxy_head_ext/collected_id:label">
+            <value>Id do Formulário Mãe</value>
+          </text>
+          <text id="/household_proxy_head_ext/proxy_head_type/NON_DSS_MEMBER:label">
+            <value>-</value>
           </text>
           <text id="/household_proxy_head_ext/proxy_head_code:label">
             <value>Códido do Chefe Substituto</value>
@@ -32,8 +80,105 @@
           <text id="/household_proxy_head_ext/proxy_head_type:label">
             <value>Tipo de Chefe Substituto</value>
           </text>
+          <text id="/household_proxy_head_ext/proxy_head_type/RESIDENT:label">
+            <value>-</value>
+          </text>
+          <text id="/household_proxy_head_ext/proxy_head_role/WRD:label">
+            <value>-</value>
+          </text>
+          <text id="/household_proxy_head_ext/proxy_head_role/SOC:label">
+            <value>-</value>
+          </text>
+        </translation>
+        <translation lang="pt">
+          <text id="/household_proxy_head_ext/proxy_head_role/MIL:label">
+            <value>Comandante Militar</value>
+          </text>
+          <text id="/household_proxy_head_ext/end:label">
+            <value>-</value>
+          </text>
+          <text id="/household_proxy_head_ext/custom_quest1:label">
+            <value>-</value>
+          </text>
+          <text id="/household_proxy_head_ext/proxy_head_role/DIR:label">
+            <value>Diretor</value>
+          </text>
+          <text id="/household_proxy_head_ext/proxy_head_role/COM:label">
+            <value>Representante da Comunidade</value>
+          </text>
+          <text id="/household_proxy_head_ext/proxy_head_role/REL:label">
+            <value>Líder Religioso</value>
+          </text>
+          <text id="/household_proxy_head_ext/proxy_head_role/SOC:label">
+            <value>Assistente Social</value>
+          </text>
+          <text id="/household_proxy_head_ext/proxy_head_name:label">
+            <value>-</value>
+          </text>
+          <text id="/household_proxy_head_ext/proxy_head_role/ADM:label">
+            <value>Administrador</value>
+          </text>
+          <text id="/household_proxy_head_ext/proxy_head_role/OTH:label">
+            <value>Outro</value>
+          </text>
           <text id="/household_proxy_head_ext/start:label">
             <value>-</value>
+          </text>
+          <text id="/household_proxy_head_ext/household_name:label">
+            <value>-</value>
+          </text>
+          <text id="/household_proxy_head_ext/proxy_head_role/CTK:label">
+            <value>Cuidador</value>
+          </text>
+          <text id="/household_proxy_head_ext/proxy_head_type/NON_RESIDENT:label">
+            <value>Chefe Substituto Não Residente (reside noutro agregado)</value>
+          </text>
+          <text id="/household_proxy_head_ext/proxy_head_role/FAM:label">
+            <value>Representante da Família</value>
+          </text>
+          <text id="/household_proxy_head_ext/household_code:label">
+            <value>-</value>
+          </text>
+          <text id="/household_proxy_head_ext/proxy_head_role/PRI:label">
+            <value>Diretor da Escola</value>
+          </text>
+          <text id="/household_proxy_head_ext/visit_code:label">
+            <value>-</value>
+          </text>
+          <text id="/household_proxy_head_ext/deviceid:label">
+            <value>-</value>
+          </text>
+          <text id="/household_proxy_head_ext/proxy_head_role/LGU:label">
+            <value>Tutor Legal</value>
+          </text>
+          <text id="/household_proxy_head_ext/custom_quest2:label">
+            <value>-</value>
+          </text>
+          <text id="/household_proxy_head_ext/collected_id:label">
+            <value>-</value>
+          </text>
+          <text id="/household_proxy_head_ext/proxy_head_type/NON_DSS_MEMBER:label">
+            <value>Não é Membro do DSS</value>
+          </text>
+          <text id="/household_proxy_head_ext/proxy_head_code:label">
+            <value>-</value>
+          </text>
+          <text id="/household_proxy_head_ext/proxy_head_type:label">
+            <value>-</value>
+          </text>
+          <text id="/household_proxy_head_ext/proxy_head_type/RESIDENT:label">
+            <value>Chefe Substituto Residente</value>
+          </text>
+          <text id="/household_proxy_head_ext/proxy_head_role/WRD:label">
+            <value>Guarda</value>
+          </text>
+          <text id="/household_proxy_head_ext/proxy_head_role:label">
+            <value>-</value>
+          </text>
+        </translation>
+        <translation default="true()" lang="English">
+          <text id="/household_proxy_head_ext/proxy_head_role/MIL:label">
+            <value>Military Commander</value>
           </text>
           <text id="/household_proxy_head_ext/end:label">
             <value>-</value>
@@ -41,31 +186,65 @@
           <text id="/household_proxy_head_ext/custom_quest1:label">
             <value>Custom Question 1</value>
           </text>
-          <text id="/household_proxy_head_ext/household_name:label">
-            <value>Nome do Agregado</value>
+          <text id="/household_proxy_head_ext/proxy_head_role/DIR:label">
+            <value>Director</value>
           </text>
-        </translation>
-        <translation default="true()" lang="English">
-          <text id="/household_proxy_head_ext/collected_id:label">
-            <value>Core Form Id</value>
+          <text id="/household_proxy_head_ext/proxy_head_role/COM:label">
+            <value>Community Representative</value>
           </text>
           <text id="/household_proxy_head_ext/visit_code:label">
             <value>Visit Code</value>
           </text>
-          <text id="/household_proxy_head_ext/deviceid:label">
-            <value>-</value>
-          </text>
-          <text id="/household_proxy_head_ext/proxy_head_role:label">
-            <value>Proxy Head Role</value>
+          <text id="/household_proxy_head_ext/proxy_head_role/SOC:label">
+            <value>Social Worker</value>
           </text>
           <text id="/household_proxy_head_ext/proxy_head_name:label">
             <value>Proxy Head Name</value>
           </text>
-          <text id="/household_proxy_head_ext/custom_quest2:label">
-            <value>Custom Question 2</value>
+          <text id="/household_proxy_head_ext/proxy_head_role/ADM:label">
+            <value>Administrator</value>
+          </text>
+          <text id="/household_proxy_head_ext/proxy_head_role/OTH:label">
+            <value>Other</value>
+          </text>
+          <text id="/household_proxy_head_ext/start:label">
+            <value>-</value>
+          </text>
+          <text id="/household_proxy_head_ext/household_name:label">
+            <value>Household Name</value>
+          </text>
+          <text id="/household_proxy_head_ext/proxy_head_role/CTK:label">
+            <value>Caretaker</value>
+          </text>
+          <text id="/household_proxy_head_ext/proxy_head_type/NON_RESIDENT:label">
+            <value>Non-resident Proxy Head (registered in DSS, different household)</value>
+          </text>
+          <text id="/household_proxy_head_ext/proxy_head_role/FAM:label">
+            <value>Family Representative</value>
           </text>
           <text id="/household_proxy_head_ext/household_code:label">
             <value>Household Code</value>
+          </text>
+          <text id="/household_proxy_head_ext/proxy_head_role/PRI:label">
+            <value>Principal</value>
+          </text>
+          <text id="/household_proxy_head_ext/proxy_head_role/REL:label">
+            <value>Religious Leader</value>
+          </text>
+          <text id="/household_proxy_head_ext/deviceid:label">
+            <value>-</value>
+          </text>
+          <text id="/household_proxy_head_ext/proxy_head_role/LGU:label">
+            <value>Legal Guardian</value>
+          </text>
+          <text id="/household_proxy_head_ext/custom_quest2:label">
+            <value>Custom Question 2</value>
+          </text>
+          <text id="/household_proxy_head_ext/collected_id:label">
+            <value>Core Form Id</value>
+          </text>
+          <text id="/household_proxy_head_ext/proxy_head_type/NON_DSS_MEMBER:label">
+            <value>Non-DSS Member Proxy Head (external to the system)</value>
           </text>
           <text id="/household_proxy_head_ext/proxy_head_code:label">
             <value>Proxy Head Code</value>
@@ -73,17 +252,14 @@
           <text id="/household_proxy_head_ext/proxy_head_type:label">
             <value>Proxy Head Type</value>
           </text>
-          <text id="/household_proxy_head_ext/start:label">
-            <value>-</value>
+          <text id="/household_proxy_head_ext/proxy_head_type/RESIDENT:label">
+            <value>Resident Proxy Head</value>
           </text>
-          <text id="/household_proxy_head_ext/end:label">
-            <value>-</value>
+          <text id="/household_proxy_head_ext/proxy_head_role/WRD:label">
+            <value>Warden</value>
           </text>
-          <text id="/household_proxy_head_ext/custom_quest1:label">
-            <value>Custom Question 1</value>
-          </text>
-          <text id="/household_proxy_head_ext/household_name:label">
-            <value>Household Name</value>
+          <text id="/household_proxy_head_ext/proxy_head_role:label">
+            <value>Proxy Head Role</value>
           </text>
         </translation>
       </itext>
@@ -115,10 +291,10 @@
       <bind nodeset="/household_proxy_head_ext/visit_code" readonly="true()" required="true()" type="string"/>
       <bind nodeset="/household_proxy_head_ext/household_code" readonly="true()" required="true()" type="string"/>
       <bind nodeset="/household_proxy_head_ext/household_name" readonly="true()" required="true()" type="string"/>
-      <bind nodeset="/household_proxy_head_ext/proxy_head_type" readonly="true()" required="true()" type="string"/>
+      <bind nodeset="/household_proxy_head_ext/proxy_head_type" readonly="true()" required="true()" type="select1"/>
       <bind nodeset="/household_proxy_head_ext/proxy_head_code" readonly="true()" required="true()" type="string"/>
       <bind nodeset="/household_proxy_head_ext/proxy_head_name" readonly="true()" required="true()" type="string"/>
-      <bind nodeset="/household_proxy_head_ext/proxy_head_role" readonly="true()" required="true()" type="string"/>
+      <bind nodeset="/household_proxy_head_ext/proxy_head_role" readonly="true()" required="true()" type="select1"/>
       <bind nodeset="/household_proxy_head_ext/custom_quest1" type="string"/>
       <bind nodeset="/household_proxy_head_ext/custom_quest2" type="string"/>
       <bind calculate="concat('uuid:', uuid())" nodeset="/household_proxy_head_ext/meta/instanceID" readonly="true()" type="string"/>
@@ -138,18 +314,78 @@
     <input ref="/household_proxy_head_ext/household_name">
       <label ref="jr:itext('/household_proxy_head_ext/household_name:label')"/>
     </input>
-    <input ref="/household_proxy_head_ext/proxy_head_type">
+    <select1 ref="/household_proxy_head_ext/proxy_head_type">
       <label ref="jr:itext('/household_proxy_head_ext/proxy_head_type:label')"/>
-    </input>
+      <item>
+        <label ref="jr:itext('/household_proxy_head_ext/proxy_head_type/RESIDENT:label')"/>
+        <value>RESIDENT</value>
+      </item>
+      <item>
+        <label ref="jr:itext('/household_proxy_head_ext/proxy_head_type/NON_RESIDENT:label')"/>
+        <value>NON_RESIDENT</value>
+      </item>
+      <item>
+        <label ref="jr:itext('/household_proxy_head_ext/proxy_head_type/NON_DSS_MEMBER:label')"/>
+        <value>NON_DSS_MEMBER</value>
+      </item>
+    </select1>
     <input ref="/household_proxy_head_ext/proxy_head_code">
       <label ref="jr:itext('/household_proxy_head_ext/proxy_head_code:label')"/>
     </input>
     <input ref="/household_proxy_head_ext/proxy_head_name">
       <label ref="jr:itext('/household_proxy_head_ext/proxy_head_name:label')"/>
     </input>
-    <input ref="/household_proxy_head_ext/proxy_head_role">
+    <select1 ref="/household_proxy_head_ext/proxy_head_role">
       <label ref="jr:itext('/household_proxy_head_ext/proxy_head_role:label')"/>
-    </input>
+      <item>
+        <label ref="jr:itext('/household_proxy_head_ext/proxy_head_role/ADM:label')"/>
+        <value>ADM</value>
+      </item>
+      <item>
+        <label ref="jr:itext('/household_proxy_head_ext/proxy_head_role/WRD:label')"/>
+        <value>WRD</value>
+      </item>
+      <item>
+        <label ref="jr:itext('/household_proxy_head_ext/proxy_head_role/SOC:label')"/>
+        <value>SOC</value>
+      </item>
+      <item>
+        <label ref="jr:itext('/household_proxy_head_ext/proxy_head_role/CTK:label')"/>
+        <value>CTK</value>
+      </item>
+      <item>
+        <label ref="jr:itext('/household_proxy_head_ext/proxy_head_role/LGU:label')"/>
+        <value>LGU</value>
+      </item>
+      <item>
+        <label ref="jr:itext('/household_proxy_head_ext/proxy_head_role/FAM:label')"/>
+        <value>FAM</value>
+      </item>
+      <item>
+        <label ref="jr:itext('/household_proxy_head_ext/proxy_head_role/COM:label')"/>
+        <value>COM</value>
+      </item>
+      <item>
+        <label ref="jr:itext('/household_proxy_head_ext/proxy_head_role/REL:label')"/>
+        <value>REL</value>
+      </item>
+      <item>
+        <label ref="jr:itext('/household_proxy_head_ext/proxy_head_role/MIL:label')"/>
+        <value>MIL</value>
+      </item>
+      <item>
+        <label ref="jr:itext('/household_proxy_head_ext/proxy_head_role/PRI:label')"/>
+        <value>PRI</value>
+      </item>
+      <item>
+        <label ref="jr:itext('/household_proxy_head_ext/proxy_head_role/DIR:label')"/>
+        <value>DIR</value>
+      </item>
+      <item>
+        <label ref="jr:itext('/household_proxy_head_ext/proxy_head_role/OTH:label')"/>
+        <value>OTH</value>
+      </item>
+    </select1>
     <input ref="/household_proxy_head_ext/custom_quest1">
       <label ref="jr:itext('/household_proxy_head_ext/custom_quest1:label')"/>
     </input>

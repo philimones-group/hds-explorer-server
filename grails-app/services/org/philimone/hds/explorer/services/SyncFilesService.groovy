@@ -69,6 +69,8 @@ class SyncFilesService {
     def syncFilesReportService
     def moduleService
     def settingsService
+    def residencyService
+    def maritalRelationshipService
 
     def cleanUpGorm() {
         def session = sessionFactory.currentSession
@@ -1192,7 +1194,7 @@ class SyncFilesService {
                 list.each { m ->
                     count++
                     //def m = Member.get(id)
-                    outputFile.print(toXML(m))
+                    outputFile.print(toMemberXML(m))
                     m = null
 
                     if (count % 2000 == 0) {
@@ -3099,6 +3101,82 @@ class SyncFilesService {
                 ((m.entryHousehold==null || m.entryHousehold.isEmpty()) ? "<entryHousehold />" : "<entryHousehold>${m.entryHousehold}</entryHousehold>") +
                 ((m.entryType==null)           ? "<entryType />" : "<entryType>${m.entryType.code}</entryType>") +
                 ((m.entryDate==null)                                    ? "<entryDate />" : "<entryDate>${StringUtil.format(m.entryDate)}</entryDate>") +
+
+                ((m.headRelationshipType==null)                       ? "<headRelationshipType />" : "<headRelationshipType>${m.headRelationshipType.code}</headRelationshipType>") +
+                ((m.headRelationshipType==null)                       ? "<isHouseholdHead />" : "<isHouseholdHead>${m.isHouseholdHead()}</isHouseholdHead>") +
+                //((m.isSecHouseholdHead==null)                         ? "<isSecHouseholdHead />" : "<isSecHouseholdHead>${m.isSecHouseholdHead}</isSecHouseholdHead>") +
+
+                ((m.gpsAccuracy == null)                              ? "<gpsAccuracy />" : "<gpsAccuracy>${m.gpsAccuracy}</gpsAccuracy>") +
+                ((m.gpsAltitude == null)                              ? "<gpsAltitude />" : "<gpsAltitude>${m.gpsAltitude}</gpsAltitude>") +
+                ((m.gpsLatitude == null)                              ? "<gpsLatitude />" : "<gpsLatitude>${m.gpsLatitude}</gpsLatitude>") +
+                ((m.gpsLongitude == null)                             ? "<gpsLongitude />" : "<gpsLongitude>${m.gpsLongitude}</gpsLongitude>") +
+
+                ((m.collectedId == null) ? "<collectedId />" : "<collectedId>${m.collectedId}</collectedId>") +
+
+                ((m.modules.empty)        ?  "<modules />"     : "<modules>${moduleService.getListModulesAsText(m.modules)}</modules>")+
+
+                ("</member>")
+    }
+
+    private String toMemberXML(Member m){
+        //Export member with updated data (current residency and current marital status)
+
+        //def r = residencyService.getCurrentResidency(m)
+
+        def res = Residency.executeQuery("select r.householdCode, r.household.name, r.startType, r.startDate, r.endType, r.endDate from Residency r where r.member.id=?0 and (r.status <> ?1 or r.status is null) order by r.startDate desc", [m.id, ValidatableStatus.TEMPORARILY_INACTIVE], [offset:0, max:1]) // limit 1
+        def mr = maritalRelationshipService.getCurrentMaritalRelationship(m)
+        def r = res?.size() > 0 ? res.first() : null
+        //println "${res}, ${r}"
+
+        def householdCode = r != null ? r[0] : null
+        def householdName = r != null ? r[1] : null
+        def startType = r != null ? r[2] : null
+        def startDate = r != null ? r[3] : null
+        def endType = r != null ? r[4] : null
+        def endDate = r != null ? r[5] : null
+
+        def spouse = mr != null ? (mr?.memberA_code.equals(m.code) ? mr.memberB : mr.memberA) : null
+        m.maritalStatus = maritalRelationshipService.getMaritalStatusFrom(mr)
+        //m.spouse = spouse
+        m.spouseCode = spouse?.code
+        m.spouseName = spouse?.name
+
+        return  ("<member>") +
+                ((m.code==null || m.code.isEmpty()) ?                   "<code />" : "<code>${m.code}</code>") +
+                ((m.name==null || m.name.isEmpty()) ?                   "<name />" : "<name>${m.name}</name>") +
+                ((m.gender==null ) ?                                    "<gender />" : "<gender>${m.gender.code}</gender>") +
+                ((m.dob==null) ?                                        "<dob />" : "<dob>${StringUtil.format(m.dob)}</dob>") +
+                ((m.age==null) ?                                        "<age />" : "<age>${m.age}</age>") +
+
+                ((m.ageAtDeath==null) ?                                 "<ageAtDeath />" : "<ageAtDeath>${m.ageAtDeath}</ageAtDeath>") +
+
+                ((m.motherCode==null || m.motherCode.isEmpty()) ?       "<motherCode />" : "<motherCode>${m.motherCode}</motherCode>") +
+                ((m.motherName==null || m.motherName.isEmpty()) ?       "<motherName />" : "<motherName>${m.motherName}</motherName>") +
+                ((m.fatherCode==null || m.fatherCode.isEmpty()) ?       "<fatherCode />" : "<fatherCode>${m.fatherCode}</fatherCode>") +
+                ((m.fatherName==null || m.fatherName.isEmpty()) ?       "<fatherName />" : "<fatherName>${m.fatherName}</fatherName>") +
+
+                ((m.maritalStatus==null) ?                              "<maritalStatus />" : "<maritalStatus>${m.maritalStatus.code}</maritalStatus>") +
+                ((m.spouseCode==null || m.spouseCode.isEmpty()) ?       "<spouseCode />" : "<spouseCode>${m.spouseCode}</spouseCode>") +
+                ((m.spouseName==null || m.spouseName.isEmpty()) ?       "<spouseName />" : "<spouseName>${m.spouseName}</spouseName>") +
+
+                ((m.education==null || m.education.isEmpty()) ?       "<education />" : "<education>${m.education}</education>") +
+                ((m.religion==null || m.religion.isEmpty()) ?       "<religion />" : "<religion>${m.religion}</religion>") +
+
+                ((m.phonePrimary==null || m.phonePrimary.isEmpty()) ?         "<phonePrimary />" : "<phonePrimary>${m.phonePrimary}</phonePrimary>") +
+                ((m.phoneAlternative==null || m.phoneAlternative.isEmpty()) ? "<phoneAlternative />" : "<phoneAlternative>${m.phoneAlternative}</phoneAlternative>") +
+
+                /*((m.spouseType==null || m.spouseType.isEmpty()) ?       "<spouseType />" : "<spouseType>${m.spouseType}</spouseType>") + */
+                ((householdCode==null || householdCode?.isEmpty()) ? "<householdCode />" : "<householdCode>${householdCode}</householdCode>") +
+                ((householdName==null || householdName?.isEmpty()) ? "<householdName />" : "<householdName>${householdName}</householdName>") +
+
+                ((startType==null) ?                                 "<startType />" : "<startType>${startType.code}</startType>") +
+                ((startDate==null)                        ?          "<startDate />" : "<startDate>${StringUtil.format(startDate)}</startDate>") +
+                ((endType==null)     ?                               "<endType />"   : "<endType>${endType.code}</endType>") +
+                ((endDate==null)                          ?          "<endDate />"   : "<endDate>${StringUtil.format(endDate)}</endDate>") +
+
+                ((m.entryHousehold==null || m.entryHousehold.isEmpty()) ? "<entryHousehold />" : "<entryHousehold>${m.entryHousehold}</entryHousehold>") +
+                ((m.entryType==null)           ?                     "<entryType />" : "<entryType>${m.entryType.code}</entryType>") +
+                ((m.entryDate==null)                               ? "<entryDate />" : "<entryDate>${StringUtil.format(m.entryDate)}</entryDate>") +
 
                 ((m.headRelationshipType==null)                       ? "<headRelationshipType />" : "<headRelationshipType>${m.headRelationshipType.code}</headRelationshipType>") +
                 ((m.headRelationshipType==null)                       ? "<isHouseholdHead />" : "<isHouseholdHead>${m.isHouseholdHead()}</isHouseholdHead>") +
