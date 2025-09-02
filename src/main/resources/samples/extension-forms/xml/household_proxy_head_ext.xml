@@ -292,7 +292,7 @@
       <bind nodeset="/household_proxy_head_ext/household_code" readonly="true()" required="true()" type="string"/>
       <bind nodeset="/household_proxy_head_ext/household_name" readonly="true()" required="true()" type="string"/>
       <bind nodeset="/household_proxy_head_ext/proxy_head_type" readonly="true()" required="true()" type="select1"/>
-      <bind nodeset="/household_proxy_head_ext/proxy_head_code" readonly="true()" required="true()" type="string"/>
+      <bind nodeset="/household_proxy_head_ext/proxy_head_code" readonly="true()" type="string"/>
       <bind nodeset="/household_proxy_head_ext/proxy_head_name" readonly="true()" required="true()" type="string"/>
       <bind nodeset="/household_proxy_head_ext/proxy_head_role" readonly="true()" required="true()" type="select1"/>
       <bind nodeset="/household_proxy_head_ext/custom_quest1" type="string"/>
