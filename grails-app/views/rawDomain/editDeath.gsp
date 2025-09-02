@@ -112,7 +112,7 @@
 
             <g:if test="${this.rawDeath?.relationships}">
 
-                <li class="fieldcontain">
+                <div class="fieldcontain">
                     <span id="relationships-label" class="property-label">
                         <g:message code="rawDeath.relationships.label" />
                     </span>
@@ -132,7 +132,7 @@
                             </g:each>
                         </ul>
                     </span>
-                </li>
+                </div>
 
             </g:if>
 

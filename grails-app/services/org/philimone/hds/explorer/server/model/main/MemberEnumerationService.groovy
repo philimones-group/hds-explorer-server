@@ -106,9 +106,6 @@ class MemberEnumerationService {
 
         //create member and execute inmigration
         def resultMember = memberService.createMember(newRawMember)
-        def resultResidency = residencyService.createResidency(newRawResidency)
-        def resultHeadRelationship = isInstitutionalHousehold ? null : headRelationshipService.createHeadRelationship(newRawHeadRelationship)
-
 
         //Couldnt create Member
         if (resultMember.status == RawExecutionResult.Status.ERROR) {
@@ -119,14 +116,12 @@ class MemberEnumerationService {
             return obj
         }
 
+        def resultResidency = residencyService.createResidency(newRawResidency)
+
         if (resultMember?.domainInstance != null && resultResidency.status == RawExecutionResult.Status.ERROR) {
 
             //delete member
             errors += resultResidency.errorMessages
-
-            if (resultHeadRelationship?.domainInstance != null) {
-                errors += deleteHeadRelationship(resultHeadRelationship.domainInstance)
-            }
 
             errors += deleteMember(resultMember.domainInstance)
 
@@ -135,6 +130,8 @@ class MemberEnumerationService {
             RawExecutionResult<Enumeration> obj = RawExecutionResult.newErrorResult(RawEntity.MEMBER_ENUMERATION, errors)
             return obj
         }
+
+        def resultHeadRelationship = isInstitutionalHousehold ? null : headRelationshipService.createHeadRelationship(newRawHeadRelationship)
 
         if (resultMember?.domainInstance != null && resultHeadRelationship?.status == RawExecutionResult.Status.ERROR) {
 
@@ -180,18 +177,42 @@ class MemberEnumerationService {
         if (enumeration.hasErrors()){
             errors = errorMessageService.getRawMessages(RawEntity.MEMBER_ENUMERATION, enumeration)
 
+            //rollback previous data
+            if (resultResidency?.domainInstance != null) {
+                errors += deleteResidency(resultResidency.domainInstance)
+            }
+            if (resultHeadRelationship?.domainInstance != null) {
+                errors += deleteHeadRelationship(resultHeadRelationship.domainInstance)
+            }
+            errors += deleteMember(resultMember.domainInstance)
+
             RawExecutionResult<Enumeration> obj = RawExecutionResult.newErrorResult(RawEntity.MEMBER_ENUMERATION, errors)
             return obj
         }
-
-        afterNewHouseholdMember(rawMemberEnu, resultMember.domainInstance);
 
         //--> take the extensionXml and save to Extension Table
         def resultExtension = coreExtensionService.insertEnumerationExtension(rawMemberEnu, enumeration)
         if (resultExtension != null && !resultExtension.success) { //if null - there is no extension to process
             //it supposed to not fail
+
+            //rollback previous data
+            if (resultResidency?.domainInstance != null) {
+                errors += deleteResidency(resultResidency.domainInstance)
+            }
+            if (resultHeadRelationship?.domainInstance != null) {
+                errors += deleteHeadRelationship(resultHeadRelationship.domainInstance)
+            }
+            errors += deleteMember(resultMember.domainInstance)
+            enumeration.delete(flush: true)
+
             println "Failed to insert extension: ${resultExtension.errorMessage}"
+
+            errors << new RawMessage(resultExtension.errorMessage, null)
+            RawExecutionResult<Enumeration> obj = RawExecutionResult.newErrorResult(RawEntity.MEMBER_ENUMERATION, errors)
+            return obj
         }
+
+        afterNewHouseholdMember(rawMemberEnu, resultMember.domainInstance);
 
         //SUCCESS
         RawExecutionResult<Enumeration> obj = RawExecutionResult.newSuccessResult(RawEntity.MEMBER_ENUMERATION, enumeration)

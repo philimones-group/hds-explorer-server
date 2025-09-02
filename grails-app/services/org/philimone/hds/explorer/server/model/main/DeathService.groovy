@@ -55,14 +55,69 @@ class DeathService {
         return Death.findByMember(member)
     }
 
-    List<RawMessage> afterDeathRegistered(Death death, RawDeath rawDeath, def hasOnlyMinorsLeftInHousehold = false){
+    List<RawHeadRelationship> createRawHeadRelationships(List<RawDeathRelationship> deathRelationships) {
+        def relationships = new ArrayList<RawHeadRelationship>()
+
+        deathRelationships.each {
+            relationships << createRawHeadRelationship(it)
+        }
+
+        return relationships
+    }
+
+    RawHeadRelationship createRawHeadRelationship(RawDeathRelationship rawDthRel) {
+
+        def rawDeath = rawDthRel.death
+
+        def rawHeadRelationship = new RawHeadRelationship()
+
+        rawHeadRelationship.householdCode = visitService.getHouseholdCode(rawDeath.visitCode)
+        rawHeadRelationship.memberCode = rawDthRel.newMemberCode
+        rawHeadRelationship.relationshipType = rawDthRel.newRelationshipType
+        rawHeadRelationship.startType = HeadRelationshipStartType.NEW_HEAD_OF_HOUSEHOLD.code
+        rawHeadRelationship.startDate = rawDeath.deathDate.plusDays(1)
+        rawHeadRelationship.endType = HeadRelationshipEndType.NOT_APPLICABLE.code
+        rawHeadRelationship.endDate = null
+
+        return rawHeadRelationship
+    }
+
+    //</editor-fold>
+
+    //<editor-fold desc="Death Factory/Manager Methods">
+    RawExecutionResult<Death> createDeath(RawDeath rawDeath) {
+
+        /* Run Checks and Validations */
+        def visit = visitService.getVisit(rawDeath.visitCode)
+        def household = visit?.household
+        def member = memberService.getMember(rawDeath.memberCode)
+        def hasOnlyMinorsLeftInHousehold = residencyService.hasOnlyMinorsLeftInHousehold(household, member)
+
+        def errors = validate(rawDeath, hasOnlyMinorsLeftInHousehold)
+
+        if (!errors.isEmpty()){
+            //create result and close
+            RawExecutionResult<Death> obj = RawExecutionResult.newErrorResult(RawEntity.DEATH, errors)
+            return obj
+        }
+
+        def death = newDeathInstance(rawDeath)
+
+        def resultDeath = death.save(flush:true)
+        //Validate using Gorm Validations
+        if (death.hasErrors()){
+
+            errors = errorMessageService.getRawMessages(RawEntity.DEATH, death)
+
+            RawExecutionResult<Death> obj = RawExecutionResult.newErrorResult(RawEntity.DEATH, errors)
+            return obj
+        } else {
+            death = resultDeath
+        }
+
+        //Update creating Death -
         //1. closeResidency, closeHeadRelationship, closeMaritalRelationship
         //2. Update Member residencyStatus, maritalStatus
-
-        def errors = [] as ArrayList<RawMessage>
-
-        def member = death.member
-        def household = residencyService.getCurrentHousehold(member)
 
         def residency = residencyService.getCurrentResidencyAsRaw(member)
         def headRelationship = headRelationshipService.getLastHeadRelationshipAsRaw(member) //his relationship with the head, even if he is the head
@@ -158,109 +213,8 @@ class DeathService {
 
         if (!errors.isEmpty()) {
             //Roolback data
-            //Residency closedResidency = null
-            if (closedResidency != null) {
-                closedResidency.endType = ResidencyEndType.NOT_APPLICABLE
-                closedResidency.endDate = null
-                closedResidency.save(flush:true)
-            }
-            //HeadRelationship closedHeadRelationship = null
-            if (closedHeadRelationship != null) {
-                closedHeadRelationship.endType = HeadRelationshipEndType.NOT_APPLICABLE
-                closedHeadRelationship.endDate = null
-                closedHeadRelationship.save(flush:true)
-            }
-            //List<MaritalRelationship> closedMaritalRelationships = []
-            closedMaritalRelationships.each { closed ->
-                closed.endStatus = MaritalEndStatus.NOT_APPLICABLE
-                closed.endDate = null
-                closed.save(flush:true)
-            }
-            //List<HeadRelationship> closedHeadRelationships = []
-            closedHeadRelationships.each { closed ->
-                closed.endType = HeadRelationshipEndType.NOT_APPLICABLE
-                closed.endDate = null
-                closed.save(flush:true)
-            }
-            //List<HeadRelationship> createdHeadRelationships = []
-            createdHeadRelationships.each {
-                it.delete(flush: true)
-            }
-        }
+            deleteAllCreatedRecords(closedResidency, closedHeadRelationship, closedMaritalRelationships, closedHeadRelationships, createdHeadRelationships)
 
-        return errors
-
-    }
-
-    List<RawHeadRelationship> createRawHeadRelationships(List<RawDeathRelationship> deathRelationships) {
-        def relationships = new ArrayList<RawHeadRelationship>()
-
-        deathRelationships.each {
-            relationships << createRawHeadRelationship(it)
-        }
-
-        return relationships
-    }
-
-    RawHeadRelationship createRawHeadRelationship(RawDeathRelationship rawDthRel) {
-
-        def rawDeath = rawDthRel.death
-
-        def rawHeadRelationship = new RawHeadRelationship()
-
-        rawHeadRelationship.householdCode = visitService.getHouseholdCode(rawDeath.visitCode)
-        rawHeadRelationship.memberCode = rawDthRel.newMemberCode
-        rawHeadRelationship.relationshipType = rawDthRel.newRelationshipType
-        rawHeadRelationship.startType = HeadRelationshipStartType.NEW_HEAD_OF_HOUSEHOLD.code
-        rawHeadRelationship.startDate = rawDeath.deathDate.plusDays(1)
-        rawHeadRelationship.endType = HeadRelationshipEndType.NOT_APPLICABLE.code
-        rawHeadRelationship.endDate = null
-
-        return rawHeadRelationship
-    }
-
-    //</editor-fold>
-
-    //<editor-fold desc="Death Factory/Manager Methods">
-    RawExecutionResult<Death> createDeath(RawDeath rawDeath) {
-
-        /* Run Checks and Validations */
-        def visit = visitService.getVisit(rawDeath.visitCode)
-        def household = visit?.household
-        def member = memberService.getMember(rawDeath.memberCode)
-        def hasOnlyMinorsLeftInHousehold = residencyService.hasOnlyMinorsLeftInHousehold(household, member)
-
-        def errors = validate(rawDeath, hasOnlyMinorsLeftInHousehold)
-
-        if (!errors.isEmpty()){
-            //create result and close
-            RawExecutionResult<Death> obj = RawExecutionResult.newErrorResult(RawEntity.DEATH, errors)
-            return obj
-        }
-
-        def death = newDeathInstance(rawDeath)
-
-        def result = death.save(flush:true)
-        //Validate using Gorm Validations
-        if (death.hasErrors()){
-
-            errors = errorMessageService.getRawMessages(RawEntity.DEATH, death)
-
-            RawExecutionResult<Death> obj = RawExecutionResult.newErrorResult(RawEntity.DEATH, errors)
-            return obj
-        } else {
-            death = result
-        }
-
-        //Update After Death -
-        //1. closeResidency, closeHeadRelationship, closeMaritalRelationship
-        //2. Update Member residencyStatus, maritalStatus
-
-        errors = afterDeathRegistered(death, rawDeath, hasOnlyMinorsLeftInHousehold)
-
-        if (!errors.isEmpty()){
-
-            //RoolBack
             //1. Delete Death
             if (death != null) {
                 death.delete(flush: true)
@@ -271,18 +225,58 @@ class DeathService {
             return obj
         }
 
+        //--> take the extensionXml and save to Extension Table
+        def resultExtension = coreExtensionService.insertDeathExtension(rawDeath, resultDeath)
+        if (resultExtension != null && !resultExtension.success) { //if null - there is no extension to process
+            //it supposed to not fail
+
+            deleteAllCreatedRecords(closedResidency, closedHeadRelationship, closedMaritalRelationships, closedHeadRelationships, createdHeadRelationships)
+            death.delete(flush: true)
+
+            println "Failed to insert extension: ${resultExtension.errorMessage}"
+
+            errors << new RawMessage(resultExtension.errorMessage, null)
+            RawExecutionResult<Death> obj = RawExecutionResult.newErrorResult(RawEntity.DEATH, errors)
+            return obj
+        }
+
         //Set Vacant if no members in the household
         householdService.setHouseholdStatusVacant(household)
 
-        //--> take the extensionXml and save to Extension Table
-        def resultExtension = coreExtensionService.insertDeathExtension(rawDeath, result)
-        if (resultExtension != null && !resultExtension.success) { //if null - there is no extension to process
-            //it supposed to not fail
-            println "Failed to insert extension: ${resultExtension.errorMessage}"
-        }
-
         RawExecutionResult<Death> obj = RawExecutionResult.newSuccessResult(RawEntity.DEATH, death, errors)
         return obj
+    }
+
+    private void deleteAllCreatedRecords(Residency closedResidency, HeadRelationship closedHeadRelationship, ArrayList<MaritalRelationship> closedMaritalRelationships, ArrayList<HeadRelationship> closedHeadRelationships, ArrayList<HeadRelationship> createdHeadRelationships) {
+        //Roolback
+        //Residency closedResidency = null
+        if (closedResidency != null) {
+            closedResidency.endType = ResidencyEndType.NOT_APPLICABLE
+            closedResidency.endDate = null
+            closedResidency.save(flush: true)
+        }
+        //HeadRelationship closedHeadRelationship = null
+        if (closedHeadRelationship != null) {
+            closedHeadRelationship.endType = HeadRelationshipEndType.NOT_APPLICABLE
+            closedHeadRelationship.endDate = null
+            closedHeadRelationship.save(flush: true)
+        }
+        //List<MaritalRelationship> closedMaritalRelationships = []
+        closedMaritalRelationships.each { closed ->
+            closed.endStatus = MaritalEndStatus.NOT_APPLICABLE
+            closed.endDate = null
+            closed.save(flush: true)
+        }
+        //List<HeadRelationship> closedHeadRelationships = []
+        closedHeadRelationships.each { closed ->
+            closed.endType = HeadRelationshipEndType.NOT_APPLICABLE
+            closed.endDate = null
+            closed.save(flush: true)
+        }
+        //List<HeadRelationship> createdHeadRelationships = []
+        createdHeadRelationships.each {
+            it.delete(flush: true)
+        }
     }
 
     ArrayList<RawMessage> validate(RawDeath rawDeath, def hasOnlyMinorsLeftInHousehold = false){

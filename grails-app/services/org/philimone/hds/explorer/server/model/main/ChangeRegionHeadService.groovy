@@ -142,6 +142,14 @@ class ChangeRegionHeadService {
             newRegionHeadRelationship.save(flush: true)
 
             if (newRegionHeadRelationship.hasErrors()){
+
+                //we must restore back the previousRegionHeadRelationship info
+                if (previousRegionHeadRelationship != null) {
+                    previousRegionHeadRelationship.endType = previousEndType
+                    previousRegionHeadRelationship.endDate = previousEndDate
+                    previousRegionHeadRelationship.save(flush:true)
+                }
+
                 errors = errorMessageService.getRawMessages(RawEntity.CHANGE_HEAD_OF_REGION, newRegionHeadRelationship)
 
                 RawExecutionResult<RegionHeadRelationship> obj = RawExecutionResult.newErrorResult(RawEntity.CHANGE_HEAD_OF_REGION, errors)
@@ -154,6 +162,16 @@ class ChangeRegionHeadService {
             region.save(flush: true)
 
             if (region.hasErrors()){
+
+                //roolback data
+                if (previousRegionHeadRelationship != null) {
+                    previousRegionHeadRelationship.endType = previousEndType
+                    previousRegionHeadRelationship.endDate = previousEndDate
+                    previousRegionHeadRelationship.save(flush: true)
+                }
+
+                newRegionHeadRelationship.delete(flush: true)
+
                 errors = errorMessageService.getRawMessages(RawEntity.CHANGE_HEAD_OF_REGION, region)
 
                 RawExecutionResult<RegionHeadRelationship> obj = RawExecutionResult.newErrorResult(RawEntity.CHANGE_HEAD_OF_REGION, errors)
@@ -163,22 +181,8 @@ class ChangeRegionHeadService {
         
         //Roolback everything if an error ocurred - delete results
         if (!errors.empty) {
+            deleteAllCreatedRecords(newRegionHeadRelationship, previousEndType, previousRegionHeadRelationship, previousEndDate, previousHead, region)
 
-            //delete created records
-            newRegionHeadRelationship.delete(flush: true)
-
-            //unclosed closed relationship
-            previousRegionHeadRelationship.endType = previousEndType
-            previousRegionHeadRelationship.endDate = previousEndDate
-            previousRegionHeadRelationship.save(flush:true)
-
-            //restore previous head
-            region.head = previousHead
-            region.headCode = previousHead.code
-            region.save(flush: true)
-        }
-
-        if (!errors.empty){
             RawExecutionResult<RegionHeadRelationship> obj = RawExecutionResult.newErrorResult(RawEntity.CHANGE_HEAD_OF_REGION, errors)
             return obj
         }
@@ -187,11 +191,35 @@ class ChangeRegionHeadService {
         def resultExtension = coreExtensionService.insertChangeRegionHeadExtension(changeRegionHead, null)
         if (resultExtension != null && !resultExtension.success) { //if null - there is no extension to process
             //it supposed to not fail
+
+            deleteAllCreatedRecords(newRegionHeadRelationship, previousEndType, previousRegionHeadRelationship, previousEndDate, previousHead, region)
+
             println "Failed to insert extension: ${resultExtension.errorMessage}"
+
+            errors << new RawMessage(resultExtension.errorMessage, null)
+            RawExecutionResult<RegionHeadRelationship> obj = RawExecutionResult.newErrorResult(RawEntity.CHANGE_HEAD_OF_REGION, errors)
+            return obj
         }
 
         RawExecutionResult<RegionHeadRelationship> obj = RawExecutionResult.newSuccessResult(RawEntity.CHANGE_HEAD_OF_REGION, newRegionHeadRelationship, errors)
         return obj
+    }
+
+    private void deleteAllCreatedRecords(RegionHeadRelationship newRegionHeadRelationship, RegionHeadEndType previousEndType, RegionHeadRelationship previousRegionHeadRelationship, LocalDate previousEndDate, Member previousHead, Region region) {
+        //delete created records
+        newRegionHeadRelationship.delete(flush: true)
+
+        //unclosed closed relationship
+        if (previousRegionHeadRelationship != null) {
+            previousRegionHeadRelationship.endType = previousEndType
+            previousRegionHeadRelationship.endDate = previousEndDate
+            previousRegionHeadRelationship.save(flush: true)
+        }
+
+        //restore previous head
+        region.head = previousHead
+        region.headCode = previousHead?.code
+        region.save(flush: true)
     }
 
     ArrayList<RawMessage> validate(RawChangeRegionHead changeHead) {

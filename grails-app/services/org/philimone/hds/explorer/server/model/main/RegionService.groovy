@@ -133,7 +133,15 @@ class RegionService {
         def resultExtension = coreExtensionService.insertRegionExtension(rawRegion, result)
         if (resultExtension != null && !resultExtension.success) { //if null - there is no extension to process
             //it supposed to not fail
+
+            //roolback
+            region.delete(flush: true)
+
             println "Failed to insert extension: ${resultExtension.errorMessage}"
+
+            errors << new RawMessage(resultExtension.errorMessage, null)
+            RawExecutionResult<Region> obj = RawExecutionResult.newErrorResult(RawEntity.REGION, errors)
+            return obj
         }
 
         RawExecutionResult<Region> obj = RawExecutionResult.newSuccessResult(RawEntity.REGION, region)

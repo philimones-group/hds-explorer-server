@@ -77,16 +77,16 @@ class ExternalInMigrationService {
 
         //create member and execute inmigration
         def resultMember = (isReturningToStudyArea ? null : memberService.createMember(newRawMember)) as RawExecutionResult<Member>
-        def resultInMigration = inMigrationService.createInMigration(newRawInMigration)
 
         //Couldnt create Member
         if (resultMember != null && resultMember.status == RawExecutionResult.Status.ERROR) {
-
             errors += errorMessageService.addPrefixToMessages(resultMember.errorMessages, "validation.field.inmigration.external.prefix.msg.error", [rawExternalInMigration.id])
 
             RawExecutionResult<InMigration> obj = RawExecutionResult.newErrorResult(RawEntity.EXTERNAL_INMIGRATION, errors)
             return obj
         }
+
+        def resultInMigration = inMigrationService.createInMigration(newRawInMigration)
 
         if (resultInMigration.status == RawExecutionResult.Status.ERROR) {
             //delete member
@@ -102,18 +102,54 @@ class ExternalInMigrationService {
             return obj
         }
 
-        afterNewHouseholdMember(rawExternalInMigration)
-
         //--> take the extensionXml and save to Extension Table
         def resultExtension = coreExtensionService.insertExternalInMigrationExtension(rawExternalInMigration, resultInMigration.domainInstance)
         if (resultExtension != null && !resultExtension.success) { //if null - there is no extension to process
             //it supposed to not fail
+
+            //delete inmigration
+            if (resultInMigration != null) {
+                deleteCreatedRecords(resultInMigration)
+            }
+
+            //delete new member
+            if (isReturningToStudyArea == false) { //its a new member
+                errors += deleteMember(resultMember.domainInstance)
+            }
+
             println "Failed to insert extension: ${resultExtension.errorMessage}"
+
+            errors << new RawMessage(resultExtension.errorMessage, null)
+            RawExecutionResult<InMigration> obj = RawExecutionResult.newErrorResult(RawEntity.EXTERNAL_INMIGRATION, errors)
+            return obj
         }
+
+        afterNewHouseholdMember(rawExternalInMigration)
 
         //SUCCESS
         RawExecutionResult<InMigration> obj = RawExecutionResult.newSuccessResult(RawEntity.EXTERNAL_INMIGRATION, resultInMigration.domainInstance)
         return obj
+    }
+
+    def deleteCreatedRecords(RawExecutionResult<InMigration> result) {
+
+        //delete outmigrations, residencies and head relationships
+        result.createdDomains.each {
+            if (it.key == RawEntity.OUT_MIGRATION) {
+                def obj = it.value as OutMigration
+                obj.delete(flush: true)
+            }
+        }
+        result.createdResidencies.each {
+            it.delete(flush: true)
+        }
+        result.createdHeadRelationships.each {
+            it.delete(flush: true)
+        }
+
+        if (result.domainInstance != null) {
+            inMigrationService.deleteInMigration(result.domainInstance)
+        }
     }
 
     def afterNewHouseholdMember(RawExternalInMigration rawObj) {

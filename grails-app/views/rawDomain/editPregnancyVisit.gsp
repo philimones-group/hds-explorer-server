@@ -135,7 +135,7 @@
 
             <g:if test="${this.rawPregnancyVisit?.childs}">
 
-                <li class="fieldcontain">
+                <div class="fieldcontain">
                     <span id="relationships-label" class="property-label">
                         <g:message code="rawPregnancyVisit.childs.label" />
                     </span>
@@ -150,7 +150,7 @@
                             </g:each>
                         </ul>
                     </span>
-                </li>
+                </div>
 
             </g:if>
 

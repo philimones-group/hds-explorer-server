@@ -113,8 +113,8 @@ class HouseholdService {
         }
 
         def household = newHouseholdInstance(rawHousehold)
-
         def result = household.save(flush:true)
+
         //Validate using Gorm Validations
         if (household.hasErrors()){
 
@@ -129,7 +129,15 @@ class HouseholdService {
             def resultExtension = coreExtensionService.insertHouseholdExtension(rawHousehold, result)
             if (resultExtension != null && !resultExtension.success) { //if null - there is no extension to process
                 //it supposed to not fail
+
+                //roolback created data - remove the household
+                household.delete(flush: true)
+
                 println "Failed to insert extension: ${resultExtension.errorMessage}"
+
+                errors << new RawMessage(resultExtension.errorMessage, null)
+                RawExecutionResult<Household> obj = RawExecutionResult.newErrorResult(RawEntity.HOUSEHOLD, errors)
+                return obj
             }
         }
 

@@ -65,7 +65,15 @@ class IncompleteVisitService {
         def resultExtension = coreExtensionService.insertIncompleteVisitExtension(rawIncompleteVisit, result)
         if (resultExtension != null && !resultExtension.success) { //if null - there is no extension to process
             //it supposed to not fail
+
+            //roolback data - delete incomplete visit
+            incompleteVisit.delete(flush: true)
+
             println "Failed to insert extension: ${resultExtension.errorMessage}"
+
+            errors << new RawMessage(resultExtension.errorMessage, null)
+            RawExecutionResult<IncompleteVisit> obj = RawExecutionResult.newErrorResult(RawEntity.INCOMPLETE_VISIT, errors)
+            return obj
         }
 
         RawExecutionResult<IncompleteVisit> obj = RawExecutionResult.newSuccessResult(RawEntity.INCOMPLETE_VISIT, incompleteVisit)

@@ -105,23 +105,8 @@ class ChangeProxyHeadService {
         
         //Roolback everything if an error ocurred - delete results
         if (!errors.empty) {
+            deleteAllCreatedRecords(currentProxyHead, household, resultNewProxyHead)
 
-            //restore previous
-            if (currentProxyHead != null) {
-                currentProxyHead.endDate = null
-                currentProxyHead.save(flush: true)
-
-                household.proxyHead = currentProxyHead
-                household.save(flush:true)
-            }
-
-            //delete proxy head
-            if (resultNewProxyHead != null) {
-                resultNewProxyHead.delete(flush:true)
-            }
-        }
-
-        if (!errors.empty){
             RawExecutionResult<HouseholdProxyHead> obj = RawExecutionResult.newErrorResult(RawEntity.CHANGE_PROXY_HEAD, errors)
             return obj
         }
@@ -130,11 +115,34 @@ class ChangeProxyHeadService {
         def resultExtension = coreExtensionService.insertHouseholdProxyHeadExtension(rawHouseholdProxyHead, newHouseholdProxyHead)
         if (resultExtension != null && !resultExtension.success) { //if null - there is no extension to process
             //it supposed to not fail
+
+            deleteAllCreatedRecords(currentProxyHead, household, resultNewProxyHead)
+
             println "Failed to insert extension: ${resultExtension.errorMessage}"
+
+            errors << new RawMessage(resultExtension.errorMessage, null)
+            RawExecutionResult<HouseholdProxyHead> obj = RawExecutionResult.newErrorResult(RawEntity.CHANGE_PROXY_HEAD, errors)
+            return obj
         }
 
         RawExecutionResult<HouseholdProxyHead> obj = RawExecutionResult.newSuccessResult(RawEntity.CHANGE_PROXY_HEAD, resultNewProxyHead, errors)
         return obj
+    }
+
+    private void deleteAllCreatedRecords(HouseholdProxyHead currentProxyHead, Household household, HouseholdProxyHead resultNewProxyHead) {
+        //restore previous
+        if (currentProxyHead != null) {
+            currentProxyHead.endDate = null
+            currentProxyHead.save(flush: true)
+        }
+
+        household.proxyHead = currentProxyHead
+        household.save(flush: true)
+
+        //delete proxy head
+        if (resultNewProxyHead != null) {
+            resultNewProxyHead.delete(flush: true)
+        }
     }
 
     ArrayList<RawMessage> validate(RawHouseholdProxyHead rawHouseholdProxyHead) {

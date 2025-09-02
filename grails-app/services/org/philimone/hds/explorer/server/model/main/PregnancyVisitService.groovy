@@ -113,14 +113,25 @@ class PregnancyVisitService {
             return obj
         }
 
-        afterCreatingPregnancyVisit(createdPregnancyVisit)
-
         //--> take the extensionXml and save to Extension Table
         def resultExtension = coreExtensionService.insertPregnancyVisitExtension(rawPregnancyVisit, createdPregnancyVisit)
         if (resultExtension != null && !resultExtension.success) { //if null - there is no extension to process
             //it supposed to not fail
+
+            //rollback
+            createdPregnancyVisitChilds.each {
+                it.delete(flush: true)
+            }
+            createdPregnancyVisit.delete(flush: true)
+
             println "Failed to insert extension: ${resultExtension.errorMessage}"
+
+            errors << new RawMessage(resultExtension.errorMessage, null)
+            RawExecutionResult<PregnancyVisit> obj = RawExecutionResult.newErrorResult(RawEntity.PREGNANCY_VISIT, errors)
+            return obj
         }
+
+        afterCreatingPregnancyVisit(createdPregnancyVisit)
 
         RawExecutionResult<PregnancyVisit> obj = RawExecutionResult.newSuccessResult(RawEntity.PREGNANCY_VISIT, pregnancyVisit)
         return obj

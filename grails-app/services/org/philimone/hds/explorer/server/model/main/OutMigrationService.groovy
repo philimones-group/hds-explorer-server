@@ -29,37 +29,6 @@ class OutMigrationService {
     def errorMessageService
 
     //<editor-fold desc="InMigration Utilities Methods">
-    
-    List<RawMessage> afterCreateOutMigration(OutMigration outMigration){
-        //1. closeResidency, closeHeadRelationship, closeMaritalRelationship
-        //2. Update Member residencyStatus, maritalStatus
-
-        def errors = new ArrayList<RawMessage>()
-
-        def member = outMigration.member
-        def residency = residencyService.getCurrentResidencyAsRaw(member)
-        def headRelationship = headRelationshipService.getLastHeadRelationshipAsRaw(member) //his relationship with the head, even if he is the head
-
-        // Closing the Residency with OutMigration
-        if (residency != null && residency.endType == ResidencyEndType.NOT_APPLICABLE.code){ //must be opened
-            residency.endType = outMigration.migrationType==OutMigrationType.INTERNAL ? ResidencyEndType.INTERNAL_OUTMIGRATION.code : ResidencyEndType.EXTERNAL_OUTMIGRATION.code
-            residency.endDate = outMigration.migrationDate
-            def result = residencyService.closeResidency(residency)
-            errors += result.errorMessages
-        }
-
-        // Closing the HeadRelationship with OutMigration
-        if (headRelationship != null && headRelationship.endType == HeadRelationshipEndType.NOT_APPLICABLE.code){ //must be opened
-            headRelationship.endType = outMigration.migrationType==OutMigrationType.INTERNAL ? HeadRelationshipEndType.INTERNAL_OUTMIGRATION.code : HeadRelationshipEndType.EXTERNAL_OUTMIGRATION.code
-            headRelationship.endDate = outMigration.migrationDate
-            def result = headRelationshipService.closeHeadRelationship(headRelationship)
-            errors += result.errorMessages
-        }
-
-
-        return errors
-
-    }
 
     //</editor-fold>
 
@@ -76,38 +45,111 @@ class OutMigrationService {
             return obj
         }
 
-        def outmigration = newOutMigrationInstance(rawOutMigration)
+        //1. closeResidency, closeHeadRelationship, closeMaritalRelationship
+        //2. Update Member residencyStatus, maritalStatus
 
-        def result = outmigration.save(flush:true)
+        def member = memberService.getMember(rawOutMigration.memberCode)
+        def previousRawResidency = residencyService.getCurrentResidencyAsRaw(member)
+        def previousRawHeadRelationship = headRelationshipService.getLastHeadRelationshipAsRaw(member) //his relationship with the head, even if he is the head
+        def createdOutmigration = newOutMigrationInstance(rawOutMigration) as OutMigration
+        def closedResidency = null as Residency
+        def closedHeadRelationship = null as HeadRelationship
+
+        // Closing the Residency with OutMigration
+        if (previousRawResidency != null && previousRawResidency.endType == ResidencyEndType.NOT_APPLICABLE.code){ //must be opened
+            previousRawResidency.endType = createdOutmigration.migrationType==OutMigrationType.INTERNAL ? ResidencyEndType.INTERNAL_OUTMIGRATION.code : ResidencyEndType.EXTERNAL_OUTMIGRATION.code
+            previousRawResidency.endDate = createdOutmigration.migrationDate
+            def result = residencyService.closeResidency(previousRawResidency)
+
+            if (result.status == RawExecutionResult.Status.ERROR) {
+                errors += result.errorMessages
+
+                RawExecutionResult<OutMigration> obj = RawExecutionResult.newErrorResult(RawEntity.OUT_MIGRATION, errors)
+                return obj
+            }
+        }
+
+        // Closing the HeadRelationship with OutMigration
+        if (previousRawHeadRelationship != null && previousRawHeadRelationship.endType == HeadRelationshipEndType.NOT_APPLICABLE.code){ //must be opened
+            previousRawHeadRelationship.endType = createdOutmigration.migrationType==OutMigrationType.INTERNAL ? HeadRelationshipEndType.INTERNAL_OUTMIGRATION.code : HeadRelationshipEndType.EXTERNAL_OUTMIGRATION.code
+            previousRawHeadRelationship.endDate = createdOutmigration.migrationDate
+            def result = headRelationshipService.closeHeadRelationship(previousRawHeadRelationship)
+
+            if (result.status == RawExecutionResult.Status.ERROR) {
+                //rollback previous data
+                if (closedResidency != null) {
+                    closedResidency.endType = ResidencyEndType.NOT_APPLICABLE
+                    closedResidency.endDate = null
+                    closedResidency.save(flush:true)
+
+                    member.endType = ResidencyEndType.NOT_APPLICABLE
+                    member.endDate = null
+                    member.save(flush:true)
+                }
+
+                errors += result.errorMessages
+
+                RawExecutionResult<OutMigration> obj = RawExecutionResult.newErrorResult(RawEntity.OUT_MIGRATION, errors)
+                return obj
+            }
+        }
+
+        //Create OutMigration
+        def result = createdOutmigration.save(flush:true)
+
         //Validate using Gorm Validations
-        if (outmigration.hasErrors()){
+        if (createdOutmigration.hasErrors()){
 
-            errors = errorMessageService.getRawMessages(RawEntity.OUT_MIGRATION, outmigration)
+            //rollback data
+            deleteAllCreatedRecords(closedResidency, member, closedHeadRelationship)
+
+            errors = errorMessageService.getRawMessages(RawEntity.OUT_MIGRATION, createdOutmigration)
 
             RawExecutionResult<OutMigration> obj = RawExecutionResult.newErrorResult(RawEntity.OUT_MIGRATION, errors)
             return obj
         } else {
-            outmigration = result
+            createdOutmigration = result
         }
-
-        //Update After OutMigration -
-        //1. closeResidency, closeHeadRelationship
-        //2. Update Member endType, endDate
-
-        errors = afterCreateOutMigration(outmigration)
-
-        //Set Vacant if no members in the household
-        householdService.setHouseholdStatusVacant(outmigration.origin)
 
         //--> take the extensionXml and save to Extension Table
         def resultExtension = coreExtensionService.insertOutMigrationExtension(rawOutMigration, result)
         if (resultExtension != null && !resultExtension.success) { //if null - there is no extension to process
             //it supposed to not fail
+
+            deleteAllCreatedRecords(closedResidency, member, closedHeadRelationship)
+            createdOutmigration.delete(flush: true)
+
             println "Failed to insert extension: ${resultExtension.errorMessage}"
+
+            errors << new RawMessage(resultExtension.errorMessage, null)
+            RawExecutionResult<OutMigration> obj = RawExecutionResult.newErrorResult(RawEntity.OUT_MIGRATION, errors)
+            return obj
         }
 
-        RawExecutionResult<OutMigration> obj = RawExecutionResult.newSuccessResult(RawEntity.OUT_MIGRATION, outmigration, errors)
+        //Set Vacant if no members in the household
+        householdService.setHouseholdStatusVacant(createdOutmigration.origin)
+
+        RawExecutionResult<OutMigration> obj = RawExecutionResult.newSuccessResult(RawEntity.OUT_MIGRATION, createdOutmigration, errors)
         return obj
+    }
+
+    private void deleteAllCreatedRecords(Residency closedResidency, Member member, HeadRelationship closedHeadRelationship) {
+        //restore previous residency data
+        if (closedResidency != null) {
+            closedResidency.endType = ResidencyEndType.NOT_APPLICABLE
+            closedResidency.endDate = null
+            closedResidency.save(flush: true)
+
+            member.endType = ResidencyEndType.NOT_APPLICABLE
+            member.endDate = null
+            member.save(flush: true)
+        }
+        //restore previous head relationship data
+        if (closedHeadRelationship != null) {
+            closedHeadRelationship.endType = HeadRelationshipEndType.NOT_APPLICABLE
+            closedHeadRelationship.endDate = null
+            closedHeadRelationship.save(flush: true)
+        }
     }
 
     ArrayList<RawMessage> validate(RawOutMigration rawOutMigration){

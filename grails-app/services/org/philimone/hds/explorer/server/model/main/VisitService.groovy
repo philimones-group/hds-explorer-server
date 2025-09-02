@@ -95,7 +95,15 @@ class VisitService {
         def resultExtension = coreExtensionService.insertVisitExtension(rawVisit, result)
         if (resultExtension != null && !resultExtension.success) { //if null - there is no extension to process
             //it supposed to not fail
+
+            //roolback
+            visit.delete(flush: true)
+
             println "Failed to insert extension: ${resultExtension.errorMessage}"
+
+            errors << new RawMessage(resultExtension.errorMessage, null)
+            RawExecutionResult<Visit> obj = RawExecutionResult.newErrorResult(RawEntity.VISIT, errors)
+            return obj
         }
 
         //Update Household Status

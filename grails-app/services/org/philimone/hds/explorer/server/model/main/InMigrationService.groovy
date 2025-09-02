@@ -227,6 +227,25 @@ class InMigrationService {
             createdHeadRelationship = resultNewHeadRelationship?.domainInstance
         }
 
+        //--> take the extensionXml and save to Extension Table
+        def resultExtension = coreExtensionService.insertInMigrationExtension(rawInMigration, createdInmigration)
+        if (resultExtension != null && !resultExtension.success) { //if null - there is no extension to process
+            //it supposed to not fail
+
+            //Roolback everything
+            //delete inmigration, outmigration, residency, headrelationship
+            errors += deleteInMigration(createdInmigration)
+            errors += deleteOutMigration(createdOutMigrationImg)
+            errors += deleteResidency(createdResidency, previousResidency)
+            errors += deleteHeadRelationship(createdHeadRelationship)
+
+            println "Failed to insert extension: ${resultExtension.errorMessage}"
+
+            errors << new RawMessage(resultExtension.errorMessage, null)
+            RawExecutionResult<InMigration> obj = RawExecutionResult.newErrorResult(RawEntity.IN_MIGRATION, errors)
+            return obj
+        }
+
         //X. update destinationResidency
         if (createdResidency != null) {
             createdResidency = createdResidency.refresh()
@@ -235,13 +254,6 @@ class InMigrationService {
         }
 
         afterNewHouseholdMember(rawInMigration)
-
-        //--> take the extensionXml and save to Extension Table
-        def resultExtension = coreExtensionService.insertInMigrationExtension(rawInMigration, createdInmigration)
-        if (resultExtension != null && !resultExtension.success) { //if null - there is no extension to process
-            //it supposed to not fail
-            println "Failed to insert extension: ${resultExtension.errorMessage}"
-        }
 
         RawExecutionResult<InMigration> obj = RawExecutionResult.newSuccessResult(RawEntity.IN_MIGRATION, createdInmigration, errors)
         obj.createdResidencies.add(createdResidency)

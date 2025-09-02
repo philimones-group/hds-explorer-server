@@ -348,7 +348,6 @@ class MaritalRelationshipService {
         }
 
         def maritalRelationship = newCreateMaritalRelationshipInstance(rawMaritalRelationship)
-
         def result = maritalRelationship.save(flush:true)
 
         //Validate using Gorm Validations
@@ -362,15 +361,23 @@ class MaritalRelationshipService {
             maritalRelationship = result
         }
 
-        //Update Member with start status
-        errors += updatesAfterCreatingRelationship(maritalRelationship)
-
         //--> take the extensionXml and save to Extension Table
         def resultExtension = coreExtensionService.insertMaritalRelationshipExtension(rawMaritalRelationship, result)
         if (resultExtension != null && !resultExtension.success) { //if null - there is no extension to process
             //it supposed to not fail
+
+            //roolback
+            maritalRelationship.delete(flush: true)
+
             println "Failed to insert extension: ${resultExtension.errorMessage}"
+
+            errors << new RawMessage(resultExtension.errorMessage, null)
+            RawExecutionResult<MaritalRelationship> obj = RawExecutionResult.newErrorResult(RawEntity.MARITAL_RELATIONSHIP, errors)
+            return obj
         }
+
+        //Update Member with start status
+        errors += updatesAfterCreatingRelationship(maritalRelationship)
 
         RawExecutionResult<MaritalRelationship> obj = RawExecutionResult.newSuccessResult(RawEntity.MARITAL_RELATIONSHIP, maritalRelationship, errors)
         return obj

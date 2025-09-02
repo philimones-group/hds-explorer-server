@@ -98,7 +98,6 @@ class PregnancyOutcomeService {
             pregnancyOutcome = result
         }
 
-
         //PregnancyOutcome is saved, now create Childs
         for (RawPregnancyChild rawChild : rawPregnancyChilds) {
 
@@ -127,7 +126,6 @@ class PregnancyOutcomeService {
             if (outcomeType != PregnancyOutcomeType.LIVEBIRTH){
                 resultDeath = deathService.createDeath(rawDeath)
             }
-
 
             //get the result domains (can be null values - if it didnt save)
             childPack.member = resultMember.domainInstance
@@ -177,29 +175,11 @@ class PregnancyOutcomeService {
             childPack.pregnancyChild = resultChild //everything went fine - store the pregnancyChild in the pack!!!
         }
 
-
         //If there is an error while trying to create childs - delete all created records
         if (!errors.empty) {
             //Delete all created
 
-            try {
-                childPacks.each { childPack ->
-
-                    childPack.pregnancyChild?.delete(flush: true)
-                    childPack.headRelationship?.delete(flush: true)
-                    childPack.residency?.delete(flush: true)
-                    childPack.member?.delete(flush: true)
-                    childPack.death?.delete(flush: true)
-
-                }
-                pregnancyOutcome?.delete(flush: true)
-
-            } catch (Exception ex) {
-
-                println "we got you mr.error"
-
-                ex.printStackTrace()
-            }
+            deleteAllCreatedRecords(childPacks, pregnancyOutcome)
 
             RawExecutionResult<PregnancyOutcome> obj = RawExecutionResult.newErrorResult(RawEntity.PREGNANCY_OUTCOME, errors)
             return obj
@@ -207,6 +187,20 @@ class PregnancyOutcomeService {
 
         pregnancyOutcome.numberOfLivebirths = numberOfLivebirths
         pregnancyOutcome.save()
+
+        //--> take the extensionXml and save to Extension Table
+        def resultExtension = coreExtensionService.insertPregnancyOutcomeExtension(rawPregnancyOutcome, result)
+        if (resultExtension != null && !resultExtension.success) { //if null - there is no extension to process
+            //it supposed to not fail
+
+            deleteAllCreatedRecords(childPacks, pregnancyOutcome)
+
+            println "Failed to insert extension: ${resultExtension.errorMessage}"
+
+            errors << new RawMessage(resultExtension.errorMessage, null)
+            RawExecutionResult<PregnancyOutcome> obj = RawExecutionResult.newErrorResult(RawEntity.PREGNANCY_OUTCOME, errors)
+            return obj
+        }
 
         afterCreatingPregnancyOutcome(pregnancyOutcome)
 
@@ -217,15 +211,29 @@ class PregnancyOutcomeService {
             }
         }
 
-        //--> take the extensionXml and save to Extension Table
-        def resultExtension = coreExtensionService.insertPregnancyOutcomeExtension(rawPregnancyOutcome, result)
-        if (resultExtension != null && !resultExtension.success) { //if null - there is no extension to process
-            //it supposed to not fail
-            println "Failed to insert extension: ${resultExtension.errorMessage}"
-        }
-
         RawExecutionResult<PregnancyOutcome> obj = RawExecutionResult.newSuccessResult(RawEntity.PREGNANCY_OUTCOME, pregnancyOutcome)
         return obj
+    }
+
+    private void deleteAllCreatedRecords(ArrayList<ChildPack> childPacks, PregnancyOutcome pregnancyOutcome) {
+        try {
+            childPacks.each { childPack ->
+
+                childPack.pregnancyChild?.delete(flush: true)
+                childPack.headRelationship?.delete(flush: true)
+                childPack.residency?.delete(flush: true)
+                childPack.member?.delete(flush: true)
+                childPack.death?.delete(flush: true)
+
+            }
+            pregnancyOutcome?.delete(flush: true)
+
+        } catch (Exception ex) {
+
+            println "we got you mr.error"
+
+            ex.printStackTrace()
+        }
     }
 
     def afterCreatingPregnancyOutcome(PregnancyOutcome pregnancyOutcome) {

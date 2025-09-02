@@ -113,7 +113,7 @@
 
             <g:if test="${this.rawChangeHead?.relationships}">
 
-                <li class="fieldcontain">
+                <div class="fieldcontain">
                     <span id="relationships-label" class="property-label">
                         <g:message code="rawChangeHead.relationships.label" />
                     </span>
@@ -133,7 +133,7 @@
                             </g:each>
                         </ul>
                     </span>
-                </li>
+                </div>
 
             </g:if>
 

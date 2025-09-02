@@ -181,6 +181,13 @@ class ChangeHeadService {
 
                 if (result.status==RawExecutionResult.Status.ERROR) {
 
+                    //roolback
+                    resultClosedHeadRelationships.each {
+                        it.endType = HeadRelationshipEndType.NOT_APPLICABLE
+                        it.endDate = null
+                        it.save(flush: true)
+                    }
+
                     def innerErrors = result.errorMessages
                     errors += errorMessageService.addPrefixToMessages(innerErrors, "validation.field.changehead.prefix.msg.error", [changeHead.id])
                 } else {
@@ -191,21 +198,8 @@ class ChangeHeadService {
         
         //Roolback everything if an error ocurred - delete results
         if (!errors.empty) {
+            deleteAllCreatedRecords(resultCreatedHeadRelationships, resultClosedHeadRelationships)
 
-            //delete created headrelationships
-            HeadRelationship.deleteAll(resultCreatedHeadRelationships)
-            //unclosed closed headrelationships
-            resultClosedHeadRelationships.each {
-                it.endType = HeadRelationshipEndType.NOT_APPLICABLE
-                it.endDate = null
-                it.save(flush:true)
-            }
-
-            resultCreatedHeadRelationships.clear()
-            resultClosedHeadRelationships.clear()
-        }
-
-        if (!errors.empty){
             RawExecutionResult<HeadRelationship> obj = RawExecutionResult.newErrorResult(RawEntity.CHANGE_HEAD_OF_HOUSEHOLD, errors)
             return obj
         }
@@ -214,11 +208,32 @@ class ChangeHeadService {
         def resultExtension = coreExtensionService.insertChangeHeadExtension(changeHead, null)
         if (resultExtension != null && !resultExtension.success) { //if null - there is no extension to process
             //it supposed to not fail
+
+            deleteAllCreatedRecords(resultCreatedHeadRelationships, resultClosedHeadRelationships)
+
             println "Failed to insert extension: ${resultExtension.errorMessage}"
+
+            errors << new RawMessage(resultExtension.errorMessage, null)
+            RawExecutionResult<HeadRelationship> obj = RawExecutionResult.newErrorResult(RawEntity.CHANGE_HEAD_OF_HOUSEHOLD, errors)
+            return obj
         }
 
         RawExecutionResult<HeadRelationship> obj = RawExecutionResult.newSuccessResult(RawEntity.CHANGE_HEAD_OF_HOUSEHOLD, resultCreatedHeadRelationships.first(), errors)
         return obj
+    }
+
+    private void deleteAllCreatedRecords(ArrayList<HeadRelationship> resultCreatedHeadRelationships, ArrayList<HeadRelationship> resultClosedHeadRelationships) {
+        //delete created headrelationships
+        HeadRelationship.deleteAll(resultCreatedHeadRelationships)
+        //unclosed closed headrelationships
+        resultClosedHeadRelationships.each {
+            it.endType = HeadRelationshipEndType.NOT_APPLICABLE
+            it.endDate = null
+            it.save(flush: true)
+        }
+
+        resultCreatedHeadRelationships.clear()
+        resultClosedHeadRelationships.clear()
     }
 
     ArrayList<RawMessage> validate(RawChangeHead changeHead, List<RawChangeHeadRelationship> newChangeHeadRelationships, def onlyMinorsLeftToBeHead = false) {

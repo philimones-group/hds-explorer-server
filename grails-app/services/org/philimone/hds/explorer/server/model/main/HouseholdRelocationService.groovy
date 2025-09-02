@@ -188,44 +188,8 @@ class HouseholdRelocationService {
         //Roolback everything if an error ocurred - delete results
         if (!errors.empty) {
 
-            //delete householdRelocation
-            HouseholdRelocation.deleteAll(createdHouseholdRelocation)
+            deleteAllCreatedRecords(createdHouseholdRelocation, createdInmigrations, createdOutmigrations, createdResidencies, createdHeadRelationships, previousResidencies, previousHeadRelationships)
 
-            //undo Inmigrations
-            createdInmigrations.each {it.delete(flush: true) }
-            createdOutmigrations.each { it.delete(flush: true)}
-            createdResidencies.each {it.delete(flush: true) }
-            createdHeadRelationships.each {it.delete(flush: true) }
-            createdInmigrations.each {it.delete(flush: true) }
-
-            previousResidencies.each {
-                //set old residencies and head relationships to:
-                it.endType = ResidencyEndType.NOT_APPLICABLE
-                it.endDate = null
-                it.save(flush:true)
-
-                def member = it.member
-                member.endType = ResidencyEndType.NOT_APPLICABLE
-                member.endDate = null;
-                member.save(flush:true)
-            }
-
-            previousHeadRelationships.each {
-                //set old residencies and head relationships to:
-                it.endType = HeadRelationshipEndType.NOT_APPLICABLE
-                it.endDate = null
-                it.save(flush:true)
-            }
-
-            createdInmigrations.clear()
-            createdOutmigrations.clear()
-            createdResidencies.clear()
-            createdHeadRelationships.clear()
-            previousResidencies.clear()
-            previousHeadRelationships.clear()
-        }
-
-        if (!errors.empty){
             RawExecutionResult<HouseholdRelocation> obj = RawExecutionResult.newErrorResult(RawEntity.HOUSEHOLD_RELOCATION, errors)
             return obj
         }
@@ -234,11 +198,56 @@ class HouseholdRelocationService {
         def resultExtension = coreExtensionService.insertHouseholdRelocationExtension(rawHouseholdRelocation, createdHouseholdRelocation)
         if (resultExtension != null && !resultExtension.success) { //if null - there is no extension to process
             //it supposed to not fail
+
+            deleteAllCreatedRecords(createdHouseholdRelocation, createdInmigrations, createdOutmigrations, createdResidencies, createdHeadRelationships, previousResidencies, previousHeadRelationships)
+
             println "Failed to insert extension: ${resultExtension.errorMessage}"
+
+            errors << new RawMessage(resultExtension.errorMessage, null)
+            RawExecutionResult<HouseholdRelocation> obj = RawExecutionResult.newErrorResult(RawEntity.HOUSEHOLD_RELOCATION, errors)
+            return obj
         }
 
         RawExecutionResult<HouseholdRelocation> obj = RawExecutionResult.newSuccessResult(RawEntity.HOUSEHOLD_RELOCATION, createdHouseholdRelocation, errors)
         return obj
+    }
+
+    private void deleteAllCreatedRecords(HouseholdRelocation createdHouseholdRelocation, ArrayList<InMigration> createdInmigrations, ArrayList<OutMigration> createdOutmigrations, ArrayList<Residency> createdResidencies, ArrayList<HeadRelationship> createdHeadRelationships, ArrayList<Residency> previousResidencies, ArrayList<HeadRelationship> previousHeadRelationships) {
+        //delete householdRelocation
+        createdHouseholdRelocation?.delete(flush: true)
+
+        //undo Inmigrations
+        createdInmigrations.each { it.delete(flush: true) }
+        createdOutmigrations.each { it.delete(flush: true) }
+        createdResidencies.each { it.delete(flush: true) }
+        createdHeadRelationships.each { it.delete(flush: true) }
+        createdInmigrations.each { it.delete(flush: true) }
+
+        previousResidencies.each {
+            //set old residencies and head relationships to:
+            it.endType = ResidencyEndType.NOT_APPLICABLE
+            it.endDate = null
+            it.save(flush: true)
+
+            def member = it.member
+            member.endType = ResidencyEndType.NOT_APPLICABLE
+            member.endDate = null;
+            member.save(flush: true)
+        }
+
+        previousHeadRelationships.each {
+            //set old residencies and head relationships to:
+            it.endType = HeadRelationshipEndType.NOT_APPLICABLE
+            it.endDate = null
+            it.save(flush: true)
+        }
+
+        createdInmigrations.clear()
+        createdOutmigrations.clear()
+        createdResidencies.clear()
+        createdHeadRelationships.clear()
+        previousResidencies.clear()
+        previousHeadRelationships.clear()
     }
 
     ArrayList<RawMessage> validate(RawHouseholdRelocation rawHouseholdRelocation) {

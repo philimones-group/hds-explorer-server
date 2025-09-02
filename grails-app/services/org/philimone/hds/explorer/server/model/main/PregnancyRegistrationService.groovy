@@ -89,7 +89,14 @@ class PregnancyRegistrationService {
         def resultExtension = coreExtensionService.insertPregnancyRegistrationExtension(rawPregnancyRegistration, pregnancyRegistration)
         if (resultExtension != null && !resultExtension.success) { //if null - there is no extension to process
             //it supposed to not fail
+
+            pregnancyRegistration.delete(flush: true)
+
             println "Failed to insert extension: ${resultExtension.errorMessage}"
+
+            errors << new RawMessage(resultExtension.errorMessage, null)
+            RawExecutionResult<PregnancyRegistration> obj = RawExecutionResult.newErrorResult(RawEntity.PREGNANCY_REGISTRATION, errors)
+            return obj
         }
 
         RawExecutionResult<PregnancyRegistration> obj = RawExecutionResult.newSuccessResult(RawEntity.PREGNANCY_REGISTRATION, pregnancyRegistration)
