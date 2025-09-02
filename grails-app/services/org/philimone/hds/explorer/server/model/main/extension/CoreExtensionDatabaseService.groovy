@@ -80,7 +80,7 @@ class CoreExtensionDatabaseService {
         removeNonExistentColumns(tableName, mapValues)
 
         if (mapValues.size()==0) { //core_form xml is empty
-            def msg = "${tableName}: was not possible to insert extension form because is empty"
+            def msg = generalUtilitiesService.getMessage("coreFormExtension.database.insert.xml.error", new String[] {tableName}, "")
             println(msg)
 
             return new SqlExecutionResult(success: false, errorMessage: msg, command: "empty sql insert")
@@ -106,14 +106,18 @@ class CoreExtensionDatabaseService {
 
                         result = new SqlExecutionResult(success: true, errorMessage: null, command: sqlinsert)
                         result.keys = new ArrayList<>()
-                        result.keys.addAll(queryResult.first())
 
+                        if (queryResult.size()>0) {
+                            result.keys.addAll(queryResult.first())
+                        }
+
+                        //println "result id=" + result.keys + ", type="+result.keys
                         //println "result id=" + result.keys?.first() + ", type="+result.keys?.first()?.getClass()
 
                     } catch (SQLException ex){
                         ex.printStackTrace()
-
-                        result = new SqlExecutionResult(success: false, errorMessage: ex.getMessage(), command: sqlinsert)
+                        def prefix = generalUtilitiesService.getMessage("coreFormExtension.database.insert.xml.prefix.error", new String[]{tableName}, "")
+                        result = new SqlExecutionResult(success: false, errorMessage: prefix + " - " + ex.getMessage(), command: sqlinsert)
                     }
 
                     //sql.close()

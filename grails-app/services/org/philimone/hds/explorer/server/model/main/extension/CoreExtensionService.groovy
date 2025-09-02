@@ -683,7 +683,7 @@ class CoreExtensionService {
 
         public InstanceMappedValues() {
             this.mainFormValues = new LinkedHashMap<>()
-            this.childFormValues = new ArrayList<>()
+            this.childFormValues = new LinkedHashMap<>()
         }
     }
 }
