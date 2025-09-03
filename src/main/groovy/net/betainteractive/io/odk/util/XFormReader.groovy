@@ -14,7 +14,16 @@ import org.javarosa.xml.util.InvalidStructureException
 import org.javarosa.xml.util.UnfullfilledRequirementsException
 import org.kxml2.io.KXmlParser
 import org.philimone.hds.explorer.server.model.enums.extensions.FormColumnType
+import org.w3c.dom.Document
 import org.xmlpull.v1.XmlPullParserException
+
+import javax.xml.parsers.DocumentBuilder
+import javax.xml.parsers.DocumentBuilderFactory
+import javax.xml.transform.OutputKeys
+import javax.xml.transform.Transformer
+import javax.xml.transform.TransformerFactory
+import javax.xml.transform.dom.DOMSource
+import javax.xml.transform.stream.StreamResult
 
 class XFormReader {
 
@@ -166,6 +175,34 @@ class XFormReader {
                 findRepeatCountColumns(fe.getChild(i), list);
             }
         }
+    }
+
+    static String formatXmlPretty(byte[] xformBytes) {
+
+        if (xformBytes == null) return "";
+        if (xformBytes.length == 0) return "";
+
+        try {
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder builder = factory.newDocumentBuilder();
+            Document document = builder.parse(new ByteArrayInputStream(xformBytes));
+
+            TransformerFactory transformerFactory = TransformerFactory.newInstance();
+            Transformer transformer = transformerFactory.newTransformer();
+            // Set output properties for pretty printing
+            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+            transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2"); // or desired indent size
+            // Transform the Document to a pretty-printed String
+            StringWriter writer = new StringWriter();
+            transformer.transform(new DOMSource(document), new StreamResult(writer));
+
+            return writer.toString()
+
+        } catch (Exception ex) {
+            ex.printStackTrace()
+        }
+
+        return ""
     }
 
 }

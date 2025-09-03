@@ -111,12 +111,28 @@
             <bi:field bean="${this.rawHousehold}" property="gpsAlt"        label="rawHousehold.gpsAlt.label" mode="${mode}" />
             <bi:field bean="${this.rawHousehold}" property="gpsAcc"        label="rawHousehold.gpsAcc.label" mode="${mode}" />
 
+            <g:if test="${this.rawHousehold.extensionForm}">
+                <div class="fieldcontain  d-flex align-items-center">
+                    <span id="extensionForm-label" class="property-label me-2">
+                        <g:message code="rawDomain.helpers.show.xml.instance.property.label" />
+                    </span>
+                    <span class="property-valuex" aria-labelledby="extensionForm-label">
+                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#show_xml_instance">
+                            <g:message code="rawDomain.helpers.show.xml.instance.label" />
+                        </button>
+                    </span>
+                </div>
+            </g:if>
+
             <bi:field bean="${this.rawHousehold}" property="collectedBy"    label="rawHousehold.collectedBy.label" mode="show" />
             <bi:field bean="${this.rawHousehold}" property="collectedDate"    label="rawHousehold.collectedDate.label" mode="show" />
             <bi:field bean="${this.rawHousehold}" property="uploadedDate"    label="rawHousehold.uploadedDate.label" mode="show" />
             <bi:field bean="${this.rawHousehold}" property="processedStatus"    label="rawHousehold.processedStatus.label" mode="show" valueMessage="true"/>
 
         </fieldset>
+
+        <g:set var="xmlInstance" value="${net.betainteractive.io.odk.util.XFormReader.formatXmlPretty(this.rawHousehold.extensionForm)}" />
+
         <fieldset class="buttons">
             <g:if test="${mode=="edit"}">
                 <g:actionSubmit class="save" value="${message(code: "rawDomain.update.reset.label")}" action="updateHousehold" onclick="updateReset('true')" />
@@ -131,6 +147,9 @@
                         <g:message code="rawDomain.helpers.button.show.dependency.label" />
                     </button>
                 </g:if>
+
+                <g:render template="show_xml_instance"/>
+
             </g:if>
             <g:else>
                 <g:link class="edit" action="editHousehold" id="${this.rawHousehold.id}" ><g:message code="rawDomain.edit.label" /></g:link>

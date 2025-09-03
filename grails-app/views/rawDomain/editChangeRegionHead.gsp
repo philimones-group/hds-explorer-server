@@ -111,6 +111,19 @@
             <bi:dateField bean="${this.rawChangeRegionHead}" property="eventDate"    label="rawChangeRegionHead.eventDate.label" mode="${mode}" />
             <bi:field bean="${this.rawChangeRegionHead}" property="reason"    label="rawChangeRegionHead.reason.label" mode="${mode}" />
 
+            <g:if test="${this.rawChangeRegionHead.extensionForm}">
+                <div class="fieldcontain  d-flex align-items-center">
+                    <span id="extensionForm-label" class="property-label me-2">
+                        <g:message code="rawDomain.helpers.show.xml.instance.property.label" />
+                    </span>
+                    <span class="property-valuex" aria-labelledby="extensionForm-label">
+                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#show_xml_instance">
+                            <g:message code="rawDomain.helpers.show.xml.instance.label" />
+                        </button>
+                    </span>
+                </div>
+            </g:if>
+
             <bi:field bean="${this.rawChangeRegionHead}" property="collectedBy"    label="rawChangeRegionHead.collectedBy.label" mode="show" />
             <bi:field bean="${this.rawChangeRegionHead}" property="collectedDate"    label="rawChangeRegionHead.collectedDate.label" mode="show" />
             <bi:field bean="${this.rawChangeRegionHead}" property="uploadedDate"    label="rawChangeRegionHead.uploadedDate.label" mode="show" />
@@ -122,6 +135,7 @@
         <g:set var="old_head_code" value="${this.rawChangeRegionHead.oldHeadCode}" />
         <g:set var="new_head_code" value="${this.rawChangeRegionHead.newHeadCode}" />
         <g:set var="region_hrelationships_title" value="${message(code: 'rawDomain.helpers.changeheadrelationships.title.label')}" />
+        <g:set var="xmlInstance" value="${net.betainteractive.io.odk.util.XFormReader.formatXmlPretty(this.rawChangeRegionHead.extensionForm)}" />
 
         <fieldset class="buttons">
             <g:if test="${mode == "edit"}">
@@ -143,6 +157,8 @@
                 </g:if>
 
                 <g:render template="show_region_hrelationships"/>
+
+                <g:render template="show_xml_instance"/>
 
             </g:if>
             <g:else>

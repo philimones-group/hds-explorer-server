@@ -884,3 +884,6 @@ img.grails-logo {
 .calendars {
     z-index: 20000 !important; /* any number > 1050 works */
 }
+.property-valuex .btn {
+    margin-left: .5rem;  /* optional spacing from label */
+}

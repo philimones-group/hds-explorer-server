@@ -121,12 +121,28 @@
             <bi:field bean="${this.rawVisit}" property="gpsAlt"    label="rawVisit.gpsAlt.label" mode="${mode}" />
             <bi:field bean="${this.rawVisit}" property="gpsAcc"    label="rawVisit.gpsAcc.label" mode="${mode}" />
 
+            <g:if test="${this.rawVisit.extensionForm}">
+                <div class="fieldcontain  d-flex align-items-center">
+                    <span id="extensionForm-label" class="property-label me-2">
+                        <g:message code="rawDomain.helpers.show.xml.instance.property.label" />
+                    </span>
+                    <span class="property-valuex" aria-labelledby="extensionForm-label">
+                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#show_xml_instance">
+                            <g:message code="rawDomain.helpers.show.xml.instance.label" />
+                        </button>
+                    </span>
+                </div>
+            </g:if>
+
             <bi:field bean="${this.rawVisit}" property="collectedBy"    label="rawVisit.collectedBy.label" mode="show" />
             <bi:field bean="${this.rawVisit}" property="collectedDate"    label="rawVisit.collectedDate.label" mode="show" />
             <bi:field bean="${this.rawVisit}" property="uploadedDate"    label="rawVisit.uploadedDate.label" mode="show" />
             <bi:field bean="${this.rawVisit}" property="processedStatus"    label="rawVisit.processedStatus.label" mode="show" valueMessage="true"/>
 
         </fieldset>
+
+        <g:set var="xmlInstance" value="${net.betainteractive.io.odk.util.XFormReader.formatXmlPretty(this.rawVisit.extensionForm)}" />
+
         <fieldset class="buttons">
             <g:if test="${mode == "edit"}">
                 <g:actionSubmit class="save" value="${message(code: "rawDomain.update.reset.label")}" action="updateVisit" onclick="updateReset('true')" />
@@ -141,6 +157,9 @@
                         <g:message code="rawDomain.helpers.button.show.dependency.label" />
                     </button>
                 </g:if>
+
+                <g:render template="show_xml_instance"/>
+
             </g:if>
             <g:else>
                 <g:link class="edit" action="editVisit" id="${this.rawVisit.id}" ><g:message code="rawDomain.edit.label" /></g:link>

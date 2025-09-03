@@ -120,6 +120,19 @@
             <bi:field bean="${this.rawExternalInMigration}" property="migrationReason"    label="rawExternalInMigration.migrationReason.label" mode="${mode}" />
             <bi:field bean="${this.rawExternalInMigration}" property="modules"    label="rawExternalInMigration.modules.label" mode="${mode}" />
 
+            <g:if test="${this.rawExternalInMigration.extensionForm}">
+                <div class="fieldcontain  d-flex align-items-center">
+                    <span id="extensionForm-label" class="property-label me-2">
+                        <g:message code="rawDomain.helpers.show.xml.instance.property.label" />
+                    </span>
+                    <span class="property-valuex" aria-labelledby="extensionForm-label">
+                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#show_xml_instance">
+                            <g:message code="rawDomain.helpers.show.xml.instance.label" />
+                        </button>
+                    </span>
+                </div>
+            </g:if>
+
             <bi:field bean="${this.rawExternalInMigration}" property="collectedBy"    label="rawExternalInMigration.collectedBy.label" mode="show" />
             <bi:field bean="${this.rawExternalInMigration}" property="collectedDate"    label="rawExternalInMigration.collectedDate.label" mode="show" />
             <bi:field bean="${this.rawExternalInMigration}" property="uploadedDate"    label="rawExternalInMigration.uploadedDate.label" mode="show" />
@@ -133,6 +146,7 @@
         <g:set var="member_name" value="${this.rawExternalInMigration?.memberName}" />
         <g:set var="member_gender" value="${this.rawExternalInMigration?.memberGender}" />
         <g:set var="member_dob" value="${bi.formatDate(date: this.rawExternalInMigration?.memberDob)}" />
+        <g:set var="xmlInstance" value="${net.betainteractive.io.odk.util.XFormReader.formatXmlPretty(this.rawExternalInMigration.extensionForm)}" />
 
         <fieldset class="buttons">
             <g:if test="${mode == "edit"}">
@@ -160,6 +174,8 @@
                 <g:render template="show_member_residencies_hrelationships"/>
 
                 <g:render template="show_household_residents"/>
+
+                <g:render template="show_xml_instance"/>
 
             </g:if>
             <g:else>

@@ -104,12 +104,28 @@
             <bi:field bean="${this.rawIncompleteVisit}" property="reason"    label="rawIncompleteVisit.reason.label" mode="${mode}" options="IncompleteVisitReason" nullable="true" />
             <bi:field bean="${this.rawIncompleteVisit}" property="reasonOther"    label="rawIncompleteVisit.reasonOther.label" mode="${mode}" />
 
+            <g:if test="${this.rawIncompleteVisit.extensionForm}">
+                <div class="fieldcontain  d-flex align-items-center">
+                    <span id="extensionForm-label" class="property-label me-2">
+                        <g:message code="rawDomain.helpers.show.xml.instance.property.label" />
+                    </span>
+                    <span class="property-valuex" aria-labelledby="extensionForm-label">
+                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#show_xml_instance">
+                            <g:message code="rawDomain.helpers.show.xml.instance.label" />
+                        </button>
+                    </span>
+                </div>
+            </g:if>
+
             <bi:field bean="${this.rawIncompleteVisit}" property="collectedBy"    label="rawIncompleteVisit.collectedBy.label" mode="show" />
             <bi:field bean="${this.rawIncompleteVisit}" property="collectedDate"    label="rawIncompleteVisit.collectedDate.label" mode="show" />
             <bi:field bean="${this.rawIncompleteVisit}" property="uploadedDate"    label="rawIncompleteVisit.uploadedDate.label" mode="show" />
             <bi:field bean="${this.rawIncompleteVisit}" property="processedStatus"    label="rawIncompleteVisit.processedStatus.label" mode="show" valueMessage="true"/>
 
         </fieldset>
+
+        <g:set var="xmlInstance" value="${net.betainteractive.io.odk.util.XFormReader.formatXmlPretty(this.rawIncompleteVisit.extensionForm)}" />
+
         <fieldset class="buttons">
             <g:if test="${mode == "edit"}">
                 <g:actionSubmit class="save" value="${message(code: "rawDomain.update.reset.label")}" action="updateIncompleteVisit" onclick="updateReset('true')" />
@@ -124,6 +140,9 @@
                         <g:message code="rawDomain.helpers.button.show.dependency.label" />
                     </button>
                 </g:if>
+
+                <g:render template="show_xml_instance"/>
+
             </g:if>
             <g:else>
                 <g:link class="edit" action="editIncompleteVisit" id="${this.rawIncompleteVisit.id}" ><g:message code="rawDomain.edit.label" /></g:link>

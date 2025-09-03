@@ -112,6 +112,19 @@
             <bi:field bean="${this.rawMaritalRelationship}" property="endStatus"    label="rawMaritalRelationship.endStatus.label" mode="${mode}" options="MaritalEndStatus" nullable="true" />
             <bi:dateField bean="${this.rawMaritalRelationship}" property="endDate"    label="rawMaritalRelationship.endDate.label" mode="${mode}" />
 
+            <g:if test="${this.rawMaritalRelationship.extensionForm}">
+                <div class="fieldcontain  d-flex align-items-center">
+                    <span id="extensionForm-label" class="property-label me-2">
+                        <g:message code="rawDomain.helpers.show.xml.instance.property.label" />
+                    </span>
+                    <span class="property-valuex" aria-labelledby="extensionForm-label">
+                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#show_xml_instance">
+                            <g:message code="rawDomain.helpers.show.xml.instance.label" />
+                        </button>
+                    </span>
+                </div>
+            </g:if>
+
             <bi:field bean="${this.rawMaritalRelationship}" property="collectedBy"    label="rawMaritalRelationship.collectedBy.label" mode="show" />
             <bi:field bean="${this.rawMaritalRelationship}" property="collectedDate"    label="rawMaritalRelationship.collectedDate.label" mode="show" />
             <bi:field bean="${this.rawMaritalRelationship}" property="uploadedDate"    label="rawMaritalRelationship.uploadedDate.label" mode="show" />
@@ -121,6 +134,7 @@
 
         <g:set var="member_a_code" value="${this.rawMaritalRelationship.memberA}" />
         <g:set var="member_b_code" value="${this.rawMaritalRelationship.memberB}" />
+        <g:set var="xmlInstance" value="${net.betainteractive.io.odk.util.XFormReader.formatXmlPretty(this.rawMaritalRelationship.extensionForm)}" />
 
         <fieldset class="buttons">
             <g:if test="${mode == "edit"}">
@@ -148,6 +162,8 @@
                 <g:render template="show_a_marital_relationships"/>
 
                 <g:render template="show_b_marital_relationships"/>
+
+                <g:render template="show_xml_instance"/>
 
             </g:if>
             <g:else>

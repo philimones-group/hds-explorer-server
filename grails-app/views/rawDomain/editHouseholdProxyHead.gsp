@@ -114,6 +114,19 @@
             <bi:field bean="${this.rawHouseholdProxyHead}" property="reason"    label="rawHouseholdProxyHead.reason.label" mode="${mode}" options="ProxyHeadChangeReason" />
             <bi:field bean="${this.rawHouseholdProxyHead}" property="reasonOther"    label="rawHouseholdProxyHead.reasonOther.label" mode="${mode}" />
 
+            <g:if test="${this.rawHouseholdProxyHead.extensionForm}">
+                <div class="fieldcontain  d-flex align-items-center">
+                    <span id="extensionForm-label" class="property-label me-2">
+                        <g:message code="rawDomain.helpers.show.xml.instance.property.label" />
+                    </span>
+                    <span class="property-valuex" aria-labelledby="extensionForm-label">
+                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#show_xml_instance">
+                            <g:message code="rawDomain.helpers.show.xml.instance.label" />
+                        </button>
+                    </span>
+                </div>
+            </g:if>
+
             <bi:field bean="${this.rawHouseholdProxyHead}" property="collectedBy"    label="rawHouseholdProxyHead.collectedBy.label" mode="show" />
             <bi:field bean="${this.rawHouseholdProxyHead}" property="collectedDate"    label="rawHouseholdProxyHead.collectedDate.label" mode="show" />
             <bi:field bean="${this.rawHouseholdProxyHead}" property="uploadedDate"    label="rawHouseholdProxyHead.uploadedDate.label" mode="show" />
@@ -122,6 +135,7 @@
         </fieldset>
 
         <g:set var="household_code" value="${this.rawHouseholdProxyHead.householdCode}" />
+        <g:set var="xmlInstance" value="${net.betainteractive.io.odk.util.XFormReader.formatXmlPretty(this.rawHouseholdProxyHead.extensionForm)}" />
 
         <fieldset class="buttons">
             <g:if test="${mode == "edit"}">
@@ -143,6 +157,8 @@
                 </g:if>
 
                 <g:render template="show_household_residents"/>
+
+                <g:render template="show_xml_instance"/>
 
             </g:if>
             <g:else>

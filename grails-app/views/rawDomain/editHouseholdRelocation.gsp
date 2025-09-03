@@ -53,6 +53,7 @@
     <tb:luxonResources/>
     <tb:jquiResources/>
     <bi:kwCalendarResources/>
+
 </head>
 <body>
 
@@ -111,7 +112,18 @@
             <bi:dateField bean="${this.rawHouseholdRelocation}" property="eventDate"    label="rawHouseholdRelocation.eventDate.label" mode="${mode}" />
             <bi:field bean="${this.rawHouseholdRelocation}" property="reason"    label="rawHouseholdRelocation.reason.label" mode="${mode}" options="HouseholdRelocationReason" />
             <bi:field bean="${this.rawHouseholdRelocation}" property="reasonOther"    label="rawHouseholdRelocation.reasonOther.label" mode="${mode}" />
-
+            <g:if test="${this.rawHouseholdRelocation.extensionForm}">
+                <div class="fieldcontain  d-flex align-items-center">
+                    <span id="extensionForm-label" class="property-label me-2">
+                        <g:message code="rawDomain.helpers.show.xml.instance.property.label" />
+                    </span>
+                    <span class="property-valuex" aria-labelledby="extensionForm-label">
+                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#show_xml_instance">
+                            <g:message code="rawDomain.helpers.show.xml.instance.label" />
+                        </button>
+                    </span>
+                </div>
+            </g:if>
             <bi:field bean="${this.rawHouseholdRelocation}" property="collectedBy"    label="rawHouseholdRelocation.collectedBy.label" mode="show" />
             <bi:field bean="${this.rawHouseholdRelocation}" property="collectedDate"    label="rawHouseholdRelocation.collectedDate.label" mode="show" />
             <bi:field bean="${this.rawHouseholdRelocation}" property="uploadedDate"    label="rawHouseholdRelocation.uploadedDate.label" mode="show" />
@@ -122,6 +134,8 @@
         <g:set var="household_code" value="${this.rawHouseholdRelocation.originCode}" />
         <g:set var="household_b_code" value="${this.rawHouseholdRelocation.destinationCode}" />
         <g:set var="household_residents_title" value="${message(code: 'rawDomain.helpers.householdrelocations.title.label')}" />
+        <g:set var="xmlInstance" value="${net.betainteractive.io.odk.util.XFormReader.formatXmlPretty(this.rawHouseholdRelocation.extensionForm)}" />
+
 
         <fieldset class="buttons">
             <g:if test="${mode == "edit"}">
@@ -149,6 +163,8 @@
                 <g:render template="show_household_residents"/>
 
                 <g:render template="show_household_b_residents"/>
+
+                <g:render template="show_xml_instance"/>
 
             </g:if>
             <g:else>

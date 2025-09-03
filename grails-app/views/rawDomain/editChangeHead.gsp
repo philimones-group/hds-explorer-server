@@ -137,6 +137,19 @@
 
             </g:if>
 
+            <g:if test="${this.rawChangeHead.extensionForm}">
+                <div class="fieldcontain  d-flex align-items-center">
+                    <span id="extensionForm-label" class="property-label me-2">
+                        <g:message code="rawDomain.helpers.show.xml.instance.property.label" />
+                    </span>
+                    <span class="property-valuex" aria-labelledby="extensionForm-label">
+                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#show_xml_instance">
+                            <g:message code="rawDomain.helpers.show.xml.instance.label" />
+                        </button>
+                    </span>
+                </div>
+            </g:if>
+
             <bi:field bean="${this.rawChangeHead}" property="collectedBy"    label="rawChangeHead.collectedBy.label" mode="show" />
             <bi:field bean="${this.rawChangeHead}" property="collectedDate"    label="rawChangeHead.collectedDate.label" mode="show" />
             <bi:field bean="${this.rawChangeHead}" property="uploadedDate"    label="rawChangeHead.uploadedDate.label" mode="show" />
@@ -149,6 +162,7 @@
         <g:set var="old_head_code" value="${this.rawChangeHead.oldHeadCode}" />
         <g:set var="new_head_code" value="${this.rawChangeHead.newHeadCode}" />
         <g:set var="household_hrelationships_title" value="${message(code: 'rawDomain.helpers.changeheadrelationships.title.label')}" />
+        <g:set var="xmlInstance" value="${net.betainteractive.io.odk.util.XFormReader.formatXmlPretty(this.rawChangeHead.extensionForm)}" />
 
         <fieldset class="buttons">
             <g:if test="${mode == "edit"}">
@@ -170,6 +184,8 @@
                 </g:if>
 
                 <g:render template="show_household_hrelationships"/>
+
+                <g:render template="show_xml_instance"/>
 
             </g:if>
             <g:else>

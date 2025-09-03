@@ -101,12 +101,28 @@
             <bi:field bean="${this.rawRegion}" property="regionName"    label="rawRegion.regionName.label" mode="${mode}" />
             <bi:field bean="${this.rawRegion}" property="parentCode" label="rawRegion.parentCode.label" mode="${mode}" />
 
+            <g:if test="${this.rawRegion.extensionForm}">
+                <div class="fieldcontain  d-flex align-items-center">
+                    <span id="extensionForm-label" class="property-label me-2">
+                        <g:message code="rawDomain.helpers.show.xml.instance.property.label" />
+                    </span>
+                    <span class="property-valuex" aria-labelledby="extensionForm-label">
+                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#show_xml_instance">
+                            <g:message code="rawDomain.helpers.show.xml.instance.label" />
+                        </button>
+                    </span>
+                </div>
+            </g:if>
+
             <bi:field bean="${this.rawRegion}" property="collectedBy"    label="rawRegion.collectedBy.label" mode="show" />
             <bi:field bean="${this.rawRegion}" property="collectedDate"    label="rawRegion.collectedDate.label" mode="show" />
             <bi:field bean="${this.rawRegion}" property="uploadedDate"    label="rawRegion.uploadedDate.label" mode="show" />
             <bi:field bean="${this.rawRegion}" property="processedStatus"    label="rawRegion.processedStatus.label" mode="show" valueMessage="true"/>
 
         </fieldset>
+
+        <g:set var="xmlInstance" value="${net.betainteractive.io.odk.util.XFormReader.formatXmlPretty(this.rawRegion.extensionForm)}" />
+
         <fieldset class="buttons">
             <g:if test="${mode=="edit"}">
                 <g:actionSubmit class="save" value="${message(code: "rawDomain.update.reset.label")}" action="updateRegion" onclick="updateReset('true')" />
@@ -121,6 +137,9 @@
                         <g:message code="rawDomain.helpers.button.show.dependency.label" />
                     </button>
                 </g:if>
+
+                <g:render template="show_xml_instance"/>
+
             </g:if>
             <g:else>
                 <g:link class="edit" action="editRegion" id="${this.rawRegion.id}" ><g:message code="rawDomain.edit.label" /></g:link>

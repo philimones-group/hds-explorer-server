@@ -136,6 +136,19 @@
 
             </g:if>
 
+            <g:if test="${this.rawDeath.extensionForm}">
+                <div class="fieldcontain  d-flex align-items-center">
+                    <span id="extensionForm-label" class="property-label me-2">
+                        <g:message code="rawDomain.helpers.show.xml.instance.property.label" />
+                    </span>
+                    <span class="property-valuex" aria-labelledby="extensionForm-label">
+                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#show_xml_instance">
+                            <g:message code="rawDomain.helpers.show.xml.instance.label" />
+                        </button>
+                    </span>
+                </div>
+            </g:if>
+
             <bi:field bean="${this.rawDeath}" property="collectedBy"    label="rawDeath.collectedBy.label" mode="show" />
             <bi:field bean="${this.rawDeath}" property="collectedDate"    label="rawDeath.collectedDate.label" mode="show" />
             <bi:field bean="${this.rawDeath}" property="uploadedDate"    label="rawDeath.uploadedDate.label" mode="show" />
@@ -150,6 +163,7 @@
         <g:set var="member_dob" value="${member?.dob}" />
         <g:set var="member_a_code" value="${member?.code}" />
         <g:set var="household_hrelationships_title" value="${message(code: 'rawDomain.helpers.deathheadrelationships.title.label')}" />
+        <g:set var="xmlInstance" value="${net.betainteractive.io.odk.util.XFormReader.formatXmlPretty(this.rawDeath.extensionForm)}" />
 
 
         <fieldset class="buttons">
@@ -178,6 +192,8 @@
                 <g:render template="show_member_residencies_hrelationships"/>
 
                 <g:render template="show_household_hrelationships"/>
+
+                <g:render template="show_xml_instance"/>
 
             </g:if>
             <g:else>
