@@ -33,6 +33,7 @@ class PregnancyRegistration extends CollectableEntity {
     LocalDate summary_last_visit_date
     LocalDate summary_first_visit_date
     Boolean   summary_has_pregnancy_outcome
+    LocalDate summary_delivery_date
     Integer   summary_nr_outcomes
     Boolean   summary_followup_completed
 
@@ -61,6 +62,7 @@ class PregnancyRegistration extends CollectableEntity {
         summary_last_visit_type nullable: true
         summary_last_visit_date nullable: true
         summary_first_visit_date nullable: true
+        summary_delivery_date nullable: true
         summary_has_pregnancy_outcome nullable: true
         summary_nr_outcomes nullable: true, min: 0
         summary_followup_completed nullable: true
@@ -96,6 +98,7 @@ class PregnancyRegistration extends CollectableEntity {
         summary_last_visit_date column: "summary_last_visit_date"
         summary_first_visit_date column: "summary_first_visit_date"
         summary_has_pregnancy_outcome column: "summary_has_pregnancy_outcome"
+        summary_delivery_date column: "summary_delivery_date"
         summary_nr_outcomes column: "summary_nr_outcomes"
         summary_followup_completed column: "summary_followup_completed"
     }

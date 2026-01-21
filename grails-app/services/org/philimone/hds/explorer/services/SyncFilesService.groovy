@@ -4,6 +4,7 @@ import grails.gorm.transactions.Transactional
 import net.betainteractive.io.LogOutput
 import net.betainteractive.io.writers.ZipMaker
 import net.betainteractive.utilities.StringUtil
+import net.betainteractive.utilities.GeneralUtil
 import org.philimone.hds.explorer.server.model.authentication.User
 import org.philimone.hds.explorer.io.SystemPath
 import org.philimone.hds.explorer.server.model.enums.FormType
@@ -2048,6 +2049,22 @@ class SyncFilesService {
                 list.each { PregnancyRegistration pregnancyregistration ->
                     count++;
 
+                    //update followup status
+                    if (pregnancyregistration.status == PregnancyStatus.DELIVERED && !pregnancyregistration.summary_followup_completed) {
+                        if (pregnancyregistration.summary_delivery_date == null) {
+                            //try to get delivery date
+                            def po = PregnancyOutcome.findByCode(pregnancyregistration.code)
+                            pregnancyregistration.summary_delivery_date = (po != null) ? po.outcomeDate : null
+                        }
+
+                        if (pregnancyregistration.summary_delivery_date != null) {
+                            def followup_completed = GeneralUtil.getAgeInDays(pregnancyregistration.summary_delivery_date, LocalDate.now()) >= 120
+                            //after these dates consider completed
+                            pregnancyregistration.summary_followup_completed = followup_completed
+                            pregnancyregistration.save()
+                        }
+                    }
+
                     Element element = createPregnancyRegistration(doc, pregnancyregistration);
                     rootElement.appendChild(element);
 
@@ -2840,6 +2857,8 @@ class SyncFilesService {
     private Element createPregnancyRegistrationFromPregOutcome(Document doc, PregnancyOutcome pregnancyoutcome) {
         Element element = doc.createElement("pregnancyregistration")
 
+        def followup_completed = GeneralUtil.getAgeInDays(pregnancyoutcome.outcomeDate, LocalDate.now()) >= 120 //after these dates consider completed
+
         element.appendChild(createAttributeNonNull(doc, "code", pregnancyoutcome.code))
         element.appendChild(createAttributeNonNull(doc, "motherCode", pregnancyoutcome.motherCode))
         element.appendChild(createAttributeNonNull(doc, "recordedDate", StringUtil.format(pregnancyoutcome.outcomeDate, "yyyy-MM-dd")))
@@ -2862,7 +2881,9 @@ class SyncFilesService {
         element.appendChild(createAttributeNonNull(doc, "summary_first_visit_date", ""))
         element.appendChild(createAttributeNonNull(doc, "summary_has_pregnancy_outcome", "true"))
         element.appendChild(createAttributeNonNull(doc, "summary_nr_outcomes", ""+pregnancyoutcome.numberOfOutcomes))
-        element.appendChild(createAttributeNonNull(doc, "summary_followup_completed", "false"))
+
+
+        element.appendChild(createAttributeNonNull(doc, "summary_followup_completed", followup_completed ? "true" : "false"))
 
         element.appendChild(createAttributeNonNull(doc, "collectedId", pregnancyoutcome.collectedId==null ? "" : pregnancyoutcome.collectedId))
 

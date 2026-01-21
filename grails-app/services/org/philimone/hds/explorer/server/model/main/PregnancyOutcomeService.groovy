@@ -251,6 +251,7 @@ class PregnancyOutcomeService {
             //pregnancyRegistration.summary_last_visit_date = null
             //pregnancyRegistration.summary_first_visit_date = null
             pregnancyRegistration.summary_has_pregnancy_outcome = true
+            pregnancyRegistration.summary_delivery_date = pregnancyOutcome.outcomeDate
             pregnancyRegistration.summary_nr_outcomes = pregnancyOutcome.numberOfOutcomes
 
             pregnancyRegistration.save(flush: true)
