@@ -334,9 +334,9 @@ class ExternalInMigrationService {
         }
 
         //CX. Validate the visitCode with the destinationCode(household being visited)
-        if (!isBlankVisitCode && !isBlankDestinationCode && !externalInMigration.visitCode.startsWith(externalInMigration.destinationCode)){
+        /*if (!isBlankVisitCode && !isBlankDestinationCode && !externalInMigration.visitCode.startsWith(externalInMigration.destinationCode)){
             errors << errorMessageService.getRawMessage(RawEntity.EXTERNAL_INMIGRATION, "validation.field.inmigration.visit.code.prefix.not.current.error", [externalInMigration.visitCode, externalInMigration.destinationCode], ["visitCode","destinationCode"])
-        }
+        }*/
 
         //C2. Check Visit reference existence
         if (!visitExists){
@@ -376,10 +376,10 @@ class ExternalInMigrationService {
             if (isReturningToStudyArea == false) { //Coming from outside the area - its his first entry
 
                 //the codes must be validated (memberCode must contains destinationCode)
-                if (!externalInMigration.memberCode.startsWith(externalInMigration.destinationCode)){
+                /*if (!externalInMigration.memberCode.startsWith(externalInMigration.destinationCode)){
                     errors << errorMessageService.getRawMessage(RawEntity.EXTERNAL_INMIGRATION, "validation.field.inmigration.member.code.invalid.error", [externalInMigration.memberCode, externalInMigration.destinationCode], ["memberCode", "destinationCode"])
                     return errors
-                }
+                }*/
 
                 //this is not duplicated by memberCode - check if this extInMig is entering to the correct household by validating collectedHouseholdId
                 if (destination.collectedId != null && !destination.collectedId.equalsIgnoreCase(externalInMigration.collectedHouseholdId)) {

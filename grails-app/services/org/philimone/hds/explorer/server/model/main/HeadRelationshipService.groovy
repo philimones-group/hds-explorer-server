@@ -574,9 +574,9 @@ class HeadRelationshipService {
             errors << errorMessageService.getRawMessage(RawEntity.HEAD_RELATIONSHIP, "validation.field.dob.head.minage.error", [dateUtil.formatYMD(member.dob), Codes.MIN_HEAD_AGE_VALUE+""], ["member.dob"])
         }
         //C7. Check Current Head Existence and the new relation is not a head of household - We must have a existent Head of Household in order to create new Relationship with the Head
-        if (!headExists && relationshipType != HeadRelationshipType.HEAD_OF_HOUSEHOLD && !headRelationship.isHouseholdRelocation){
+        /*if (!headExists && relationshipType != HeadRelationshipType.HEAD_OF_HOUSEHOLD && !headRelationship.isHouseholdRelocation){
             errors << errorMessageService.getRawMessage(RawEntity.HEAD_RELATIONSHIP, "validation.field.headRelationship.head.not.exists.error", [headRelationship.householdCode], ["householdCode"])
-        }
+        }*///ALLOW TEMPORARY TO PASS PAST HEAD RELATIONSHIPS
 
         //Validation part 2: Previous HeadRelationship against new HeadRelationship
         if (memberExists && householdExists){
@@ -766,7 +766,10 @@ class HeadRelationshipService {
         } else {
 
             def head = getHouseholdHead(headRelationship.household) //should get the current head not the last
-
+            if (head == null) {
+                def hr = getLastHeadOfHouseholdRelationship(headRelationship.household)
+                head = hr?.member
+            } //get the last head even if died
             headRelationship.head = head
             headRelationship.headCode = head?.code
         }
