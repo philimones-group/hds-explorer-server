@@ -126,7 +126,7 @@
 
 							<td style="text-align: center; vertical-align: middle;">${syncProcess.format(syncProcess.notProcessed)}</td>
 
-							<td style="text-align: center; vertical-align: middle;">-</td>
+							<td style="text-align: center; vertical-align: middle;">${syncProcess.format(syncProcess.invalidated)}</td>
 
 						</tr>
 					</g:each>

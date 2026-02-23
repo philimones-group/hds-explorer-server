@@ -628,6 +628,8 @@ class RawDomainController {
         params.expectedDeliveryDate = StringUtil.toLocalDateFromDate(params.getDate('expectedDeliveryDate'))
 
         try {
+            def previousCode = rawPregnancyRegistration.code
+
             bindData(rawPregnancyRegistration, params)
             rawPregnancyRegistration.save(flush:true)
 
