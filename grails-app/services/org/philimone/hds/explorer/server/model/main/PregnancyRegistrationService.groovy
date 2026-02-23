@@ -244,9 +244,9 @@ class PregnancyRegistrationService {
         }
 
         //C6. Check Mother Death Status
-        /*if (motherExists && deathService.isMemberDead(pregnancyRegistration.motherCode)){
+        if (motherExists && deathService.isMemberDead(pregnancyRegistration.motherCode)){
             errors << errorMessageService.getRawMessage(RawEntity.PREGNANCY_REGISTRATION, "validation.field.pregnancy.registration.death.exists.error", [pregnancyRegistration.motherCode], ["motherCode"])
-        }*/
+        }
 
         //C7. Check mother Gender
         if (Codes.GENDER_CHECKING && motherExists && mother.gender==Gender.MALE){

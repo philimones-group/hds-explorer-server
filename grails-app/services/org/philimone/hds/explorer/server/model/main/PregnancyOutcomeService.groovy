@@ -362,14 +362,14 @@ class PregnancyOutcomeService {
         }
 
         //C6. Check Mother Death Status
-        /*if (motherExists && deathService.isMemberDead(pregnancyOutcome.motherCode)){
+        if (motherExists && deathService.isMemberDead(pregnancyOutcome.motherCode)){
             errors << errorMessageService.getRawMessage(RawEntity.PREGNANCY_OUTCOME, "validation.field.pregnancy.outcome.death.exists.error", [pregnancyOutcome.motherCode], ["motherCode"])
-        }*/
+        }
 
         //CX. Check mother Gender
-        /*if (Codes.GENDER_CHECKING && motherExists && mother.gender== Gender.MALE) {
+        if (Codes.GENDER_CHECKING && motherExists && mother.gender== Gender.MALE){
             errors << errorMessageService.getRawMessage(RawEntity.PREGNANCY_OUTCOME, "validation.field.gender.mother.error", [], ["mother.gender"])
-        }*/
+        }
 
         //C7. Check mother Dob must be greater or equal to 12
         if (motherExists && GeneralUtil.getAge(mother.dob) < Codes.MIN_MOTHER_AGE_VALUE ){
@@ -394,13 +394,13 @@ class PregnancyOutcomeService {
         //C9. Check If Mother has a Residency record
         if (motherExists) {
             def residency = residencyService.getCurrentResidency(mother)
-/*
+
             if (residency == null){
                 errors << errorMessageService.getRawMessage(RawEntity.PREGNANCY_OUTCOME, "validation.field.pregnancy.outcome.residency.not.found.error", [pregnancyOutcome.motherCode], ["motherCode"])
-            } /*else if (residency.endType != ResidencyEndType.NOT_APPLICABLE) {
+            } else if (residency.endType != ResidencyEndType.NOT_APPLICABLE) {
                 //Not living in the current house
                 errors << errorMessageService.getRawMessage(RawEntity.PREGNANCY_OUTCOME, "validation.field.pregnancy.outcome.residency.closed.error", [residency.household.code, residency.endType.code], ["motherCode"])
-            }*/
+            }
         }
 
         //C10. Check The Children
@@ -487,9 +487,9 @@ class PregnancyOutcomeService {
         def motherResidency = householdService.getHousehold(visit.householdCode) //residencyService.getCurrentResidency(memberService.getMember(motherCode))
 
         //Check If childCode belongs to the mother current household
-        /*if (!isBlankChildCode && motherResidency != null && !pregnancyChild.childCode.startsWith(motherResidency?.code)){
+        if (!isBlankChildCode && motherResidency != null && !pregnancyChild.childCode.startsWith(motherResidency?.code)){
             errors << errorMessageService.getRawMessage(RawEntity.PREGNANCY_CHILD, "validation.field.pregnancy.child.code.invalid.mother.error", [pregnancyChild.childCode, motherResidency?.code], ["childCode"])
-        }*/
+        }
 
         if (!errors.empty) {
             return errors

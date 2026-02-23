@@ -353,9 +353,9 @@ class InMigrationService {
         }
 
         //CX. Validate the visitCode with the destinationCode(household being visited)
-        /*if (!isBlankVisitCode && !isBlankDestinationCode && !rawInMigration.visitCode.startsWith(rawInMigration.destinationCode)){
+        if (!isBlankVisitCode && !isBlankDestinationCode && !rawInMigration.visitCode.startsWith(rawInMigration.destinationCode)){
             errors << errorMessageService.getRawMessage(RawEntity.IN_MIGRATION, "validation.field.inmigration.visit.code.prefix.not.current.error", [rawInMigration.visitCode, rawInMigration.destinationCode], ["visitCode","destinationCode"])
-        }*/
+        }
 
         //C2. Check Visit reference existence
         if (!visitExists){
@@ -445,10 +445,10 @@ class InMigrationService {
             if (migrationType == InMigrationType.EXTERNAL && currentResidency == null) {
 
                 //if coming from outside and its his first time - the codes must be validated (memberCode must contains destinationCode)
-/*
+
                 if (!rawInMigration.memberCode.startsWith(rawInMigration.destinationCode)){
                     errors << errorMessageService.getRawMessage(RawEntity.IN_MIGRATION, "validation.field.inmigration.member.code.invalid.error", [member.code, rawInMigration.destinationCode], ["memberCode", "destinationCode"])
-                }*/
+                }
 
             }
 

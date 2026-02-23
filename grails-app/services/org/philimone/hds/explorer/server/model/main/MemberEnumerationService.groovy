@@ -383,9 +383,9 @@ class MemberEnumerationService {
         }
 
         //CX. Validate the visitCode with the householdCode(household being visited)
-        /*if (!isBlankVisitCode && !isBlankHouseholdCode && !memberEnu.visitCode.startsWith(memberEnu.householdCode)){
+        if (!isBlankVisitCode && !isBlankHouseholdCode && !memberEnu.visitCode.startsWith(memberEnu.householdCode)){
             errors << errorMessageService.getRawMessage(RawEntity.MEMBER_ENUMERATION, "validation.field.member.enumeration.visit.code.prefix.not.current.error", [memberEnu.visitCode, memberEnu.householdCode], ["visitCode","householdCode"])
-        }*/
+        }
 
         //C2. Check Visit reference existence
         if (!visitExists){
@@ -418,10 +418,10 @@ class MemberEnumerationService {
         if (errors.isEmpty()){
 
             //the codes must be validated (memberCode must contains householdCode)
-            /*if (!memberEnu.code.startsWith(memberEnu.householdCode)){
+            if (!memberEnu.code.startsWith(memberEnu.householdCode)){
                 errors << errorMessageService.getRawMessage(RawEntity.MEMBER_ENUMERATION, "validation.field.member.enumeration.member.code.invalid.error", [memberEnu.code, memberEnu.householdCode], ["memberCode", "householdCode"])
                 return errors
-            }*/
+            }
 
             //this is not duplicated by memberCode - check if this memberEnu is entering to the correct household by validating collectedHouseholdId
             if (household.collectedId != null && !household.collectedId.equalsIgnoreCase(memberEnu.collectedHouseholdId)) {
