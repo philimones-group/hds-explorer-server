@@ -26,7 +26,7 @@ class CoreExtensionService {
     def coreExtensionDatabaseService
 
     CoreExtensionDatabaseService.SqlExecutionResult insertRegionExtension(RawRegion rawObj, Region finalObj) {
-        if (rawObj.extensionForm == null) return null
+        if (rawObj.extensionForm == null || rawObj?.extensionForm?.size()==0) return null
 
         //get form extensions
         def coreFormExt = CoreFormExtension.findByCoreForm(CoreForm.REGION_FORM)
@@ -43,7 +43,7 @@ class CoreExtensionService {
     }
     
     CoreExtensionDatabaseService.SqlExecutionResult insertHouseholdExtension(RawHousehold rawObj, Household finalObj) {
-        if (rawObj.extensionForm == null) return null
+        if (rawObj.extensionForm == null || rawObj?.extensionForm?.size()==0) return null
 
         //get form extensions
         def coreFormExt = CoreFormExtension.findByCoreForm(CoreForm.HOUSEHOLD_FORM)
@@ -60,7 +60,7 @@ class CoreExtensionService {
     }
 
     CoreExtensionDatabaseService.SqlExecutionResult insertVisitExtension(RawVisit rawObj, Visit finalObj) {
-        if (rawObj.extensionForm == null) return null
+        if (rawObj.extensionForm == null || rawObj?.extensionForm?.size()==0) return null
 
         if (rawObj.extensionForm.length == 0) { println("empty extensionForm"); return null }
 
@@ -79,7 +79,7 @@ class CoreExtensionService {
     }
 
     CoreExtensionDatabaseService.SqlExecutionResult insertEnumerationExtension(RawMemberEnu rawObj, Enumeration finalObj) {
-        if (rawObj.extensionForm == null) return null
+        if (rawObj.extensionForm == null || rawObj?.extensionForm?.size()==0) return null
 
         //get form extensions
         def coreFormExt = CoreFormExtension.findByCoreForm(CoreForm.MEMBER_ENU_FORM)
@@ -96,7 +96,7 @@ class CoreExtensionService {
     }
 
     CoreExtensionDatabaseService.SqlExecutionResult insertMaritalRelationshipExtension(RawMaritalRelationship rawObj, MaritalRelationship finalObj) {
-        if (rawObj.extensionForm == null) return null
+        if (rawObj.extensionForm == null || rawObj?.extensionForm?.size()==0) return null
 
         //get form extensions
         def coreFormExt = CoreFormExtension.findByCoreForm(CoreForm.MARITAL_RELATIONSHIP_FORM)
@@ -113,7 +113,7 @@ class CoreExtensionService {
     }
 
     CoreExtensionDatabaseService.SqlExecutionResult insertExternalInMigrationExtension(RawExternalInMigration rawObj, InMigration finalObj) {
-        if (rawObj.extensionForm == null) return null
+        if (rawObj.extensionForm == null || rawObj?.extensionForm?.size()==0) return null
 
         //get form extensions
         def coreFormExt = CoreFormExtension.findByCoreForm(CoreForm.INMIGRATION_FORM)
@@ -130,7 +130,7 @@ class CoreExtensionService {
     }
 
     CoreExtensionDatabaseService.SqlExecutionResult insertInMigrationExtension(RawInMigration rawObj, InMigration finalObj) {
-        if (rawObj.extensionForm == null) return null
+        if (rawObj.extensionForm == null || rawObj?.extensionForm?.size()==0) return null
 
         //get form extensions
         def coreFormExt = CoreFormExtension.findByCoreForm(CoreForm.INMIGRATION_FORM)
@@ -147,7 +147,7 @@ class CoreExtensionService {
     }
     
     CoreExtensionDatabaseService.SqlExecutionResult insertOutMigrationExtension(RawOutMigration rawObj, OutMigration finalObj) {
-        if (rawObj.extensionForm == null) return null
+        if (rawObj.extensionForm == null || rawObj?.extensionForm?.size()==0) return null
 
         //get form extensions
         def coreFormExt = CoreFormExtension.findByCoreForm(CoreForm.OUTMIGRATION_FORM)
@@ -164,7 +164,7 @@ class CoreExtensionService {
     }
 
     CoreExtensionDatabaseService.SqlExecutionResult insertPregnancyRegistrationExtension(RawPregnancyRegistration rawObj, PregnancyRegistration finalObj) {
-        if (rawObj.extensionForm == null) return null
+        if (rawObj.extensionForm == null || rawObj?.extensionForm?.size()==0) return null
 
         //get form extensions
         def coreFormExt = CoreFormExtension.findByCoreForm(CoreForm.PREGNANCY_REGISTRATION_FORM)
@@ -182,7 +182,7 @@ class CoreExtensionService {
 
     CoreExtensionDatabaseService.SqlExecutionResult insertPregnancyOutcomeExtension(RawPregnancyOutcome rawObj, PregnancyOutcome finalObj) {
 
-        if (rawObj.extensionForm == null) return null
+        if (rawObj.extensionForm == null || rawObj?.extensionForm?.size()==0) return null
 
         //get form extensions
         def coreFormExt = CoreFormExtension.findByCoreForm(CoreForm.PREGNANCY_OUTCOME_FORM)
@@ -216,7 +216,7 @@ class CoreExtensionService {
 
     CoreExtensionDatabaseService.SqlExecutionResult insertPregnancyVisitExtension(RawPregnancyVisit rawObj, PregnancyVisit finalObj) {
 
-        if (rawObj.extensionForm == null) return null
+        if (rawObj.extensionForm == null || rawObj?.extensionForm?.size()==0) return null
 
         //get form extensions
         def coreFormExt = CoreFormExtension.findByCoreForm(CoreForm.PREGNANCY_VISIT_FORM)
@@ -249,7 +249,7 @@ class CoreExtensionService {
     }
 
     CoreExtensionDatabaseService.SqlExecutionResult insertDeathExtension(RawDeath rawObj, Death finalObj) {
-        if (rawObj.extensionForm == null) return null
+        if (rawObj.extensionForm == null || rawObj?.extensionForm?.size()==0) return null
 
         //get form extensions
         def coreFormExt = CoreFormExtension.findByCoreForm(CoreForm.DEATH_FORM)
@@ -266,7 +266,7 @@ class CoreExtensionService {
     }
 
     CoreExtensionDatabaseService.SqlExecutionResult insertChangeHeadExtension(RawChangeHead rawObj, HeadRelationship finalObj) {
-        if (rawObj.extensionForm == null) return null
+        if (rawObj.extensionForm == null || rawObj?.extensionForm?.size()==0) return null
 
         //get form extensions
         def coreFormExt = CoreFormExtension.findByCoreForm(CoreForm.CHANGE_HEAD_FORM)
@@ -283,7 +283,7 @@ class CoreExtensionService {
     }
 
     CoreExtensionDatabaseService.SqlExecutionResult insertIncompleteVisitExtension(RawIncompleteVisit rawObj, IncompleteVisit finalObj) {
-        if (rawObj.extensionForm == null) return null
+        if (rawObj.extensionForm == null || rawObj?.extensionForm?.size()==0) return null
 
         //get form extensions
         def coreFormExt = CoreFormExtension.findByCoreForm(CoreForm.INCOMPLETE_VISIT_FORM)
@@ -300,7 +300,7 @@ class CoreExtensionService {
     }
 
     CoreExtensionDatabaseService.SqlExecutionResult insertChangeRegionHeadExtension(RawChangeRegionHead rawObj, RegionHeadRelationship finalObj) {
-        if (rawObj.extensionForm == null) return null
+        if (rawObj.extensionForm == null || rawObj?.extensionForm?.size()==0) return null
 
         //get form extensions
         def coreFormExt = CoreFormExtension.findByCoreForm(CoreForm.CHANGE_REGION_HEAD_FORM)
@@ -317,7 +317,7 @@ class CoreExtensionService {
     }
 
     CoreExtensionDatabaseService.SqlExecutionResult insertHouseholdRelocationExtension(RawHouseholdRelocation rawObj, HouseholdRelocation finalObj) {
-        if (rawObj.extensionForm == null) return null
+        if (rawObj.extensionForm == null || rawObj?.extensionForm?.size()==0) return null
 
         //get form extensions
         def coreFormExt = CoreFormExtension.findByCoreForm(CoreForm.HOUSEHOLD_RELOCATION_FORM)
@@ -334,7 +334,7 @@ class CoreExtensionService {
     }
 
     CoreExtensionDatabaseService.SqlExecutionResult insertHouseholdProxyHeadExtension(RawHouseholdProxyHead rawObj, HouseholdProxyHead finalObj) {
-        if (rawObj.extensionForm == null) return null
+        if (rawObj.extensionForm == null || rawObj?.extensionForm?.size()==0) return null
 
         //get form extensions
         def coreFormExt = CoreFormExtension.findByCoreForm(CoreForm.CHANGE_PROXY_HEAD_FORM)

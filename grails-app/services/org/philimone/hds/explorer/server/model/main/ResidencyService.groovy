@@ -100,9 +100,10 @@ class ResidencyService {
     }
 
     boolean hasOnlyMinorsLeftInHousehold(Household household, Member deadMember) {
+        if (deadMember == null) return hasOnlyMinorsLeftInHousehold(household)
 
         //get residents and exclude the deadMember
-        def residencies = Residency.executeQuery("select r.id from Residency r where r.household=?0 and r.endType=?1 and r.member.code!=?2 and (r.status <> ?3 or r.status is null) order by r.startDate desc", [household, ResidencyEndType.NOT_APPLICABLE, deadMember.code, ValidatableStatus.TEMPORARILY_INACTIVE])
+        def residencies = Residency.executeQuery("select r.id from Residency r where r.household=?0 and r.endType=?1 and r.member.code!=?2 and (r.status <> ?3 or r.status is null) order by r.startDate desc", [household, ResidencyEndType.NOT_APPLICABLE, deadMember?.code, ValidatableStatus.TEMPORARILY_INACTIVE])
 
         def allminors = residencies.size() > 0
 
