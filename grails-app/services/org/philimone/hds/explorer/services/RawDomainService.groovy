@@ -612,19 +612,19 @@ class RawDomainService {
                 if (newStartType==ResidencyStartType.BIRTH || newStartType==ResidencyStartType.ENUMERATION) {
                     return new JActionResult(result: JActionResult.Result.ERROR, message: message("rawDomain.helpers.update.residency.starttype.enu.bir.error.label"))
                 }
-                if (newStartType==ResidencyStartType.INTERNAL_INMIGRATION && previousEndType!=ResidencyEndType.INTERNAL_OUTMIGRATION) {
+                /*if (newStartType==ResidencyStartType.INTERNAL_INMIGRATION && previousEndType!=ResidencyEndType.INTERNAL_OUTMIGRATION) {
                     return new JActionResult(result: JActionResult.Result.ERROR, message: message("rawDomain.helpers.update.residency.starttype.ent.previous.endtype.error.label"))
                 }
                 if (newStartType==ResidencyStartType.EXTERNAL_INMIGRATION && previousEndType!=ResidencyEndType.EXTERNAL_OUTMIGRATION) {
                     return new JActionResult(result: JActionResult.Result.ERROR, message: message("rawDomain.helpers.update.residency.starttype.xen.previous.endtype.error.label"))
-                }
+                }*/
                 if (previousEndType==ResidencyEndType.NOT_APPLICABLE || previousEndType==ResidencyEndType.DEATH) {
                     return new JActionResult(result: JActionResult.Result.ERROR, message: message("rawDomain.helpers.update.residency.starttype.previous.endtype.na.dth.error.label", [columnValue]))
                 }
             } else {
-                if (newStartType==ResidencyStartType.INTERNAL_INMIGRATION) {
+                /*if (newStartType==ResidencyStartType.INTERNAL_INMIGRATION) {
                     return new JActionResult(result: JActionResult.Result.ERROR, message: message("rawDomain.helpers.update.residency.starttype.ent.no.previous.error.label"))
-                }
+                }*/
             }
 
 
@@ -662,18 +662,18 @@ class RawDomainService {
                 if (newEndType==ResidencyEndType.NOT_APPLICABLE || newEndType==ResidencyEndType.DEATH) {
                     return new JActionResult(result: JActionResult.Result.ERROR, message: message("rawDomain.helpers.update.residency.endtype.na.dth.exists.next.error.label", [columnValue]))
                 }
-                if (newEndType==ResidencyEndType.INTERNAL_OUTMIGRATION && nextResidency.startType!=ResidencyStartType.INTERNAL_INMIGRATION) {
+                /*if (newEndType==ResidencyEndType.INTERNAL_OUTMIGRATION && nextResidency.startType!=ResidencyStartType.INTERNAL_INMIGRATION) {
                     return new JActionResult(result: JActionResult.Result.ERROR, message: message("rawDomain.helpers.update.residency.endtype.chg.next.startype.error.label"))
                 }
                 if (newEndType==ResidencyEndType.EXTERNAL_OUTMIGRATION && nextResidency.startType!=ResidencyStartType.EXTERNAL_INMIGRATION) {
                     return new JActionResult(result: JActionResult.Result.ERROR, message: message("rawDomain.helpers.update.residency.endtype.ext.next.startype.error.label"))
-                }
+                }*/
 
             } else {
-                if (newEndType==ResidencyEndType.INTERNAL_OUTMIGRATION) {
+                /*if (newEndType==ResidencyEndType.INTERNAL_OUTMIGRATION) {
                     //Cannot be CHG because there is no a new residency with ENT
                     return new JActionResult(result: JActionResult.Result.ERROR, message: message("rawDomain.helpers.update.residency.endtype.chg.no.next.error.label"))
-                }
+                }*/
             }
 
             residency.endType = newEndType
@@ -747,7 +747,7 @@ class RawDomainService {
                 if (newStartType==HeadRelationshipStartType.BIRTH || newStartType==HeadRelationshipStartType.ENUMERATION) {
                     return new JActionResult(result: JActionResult.Result.ERROR, message: message("rawDomain.helpers.update.headrelationship.starttype.enu.bir.error.label"))
                 }
-                if (newStartType==HeadRelationshipStartType.INTERNAL_INMIGRATION && previousEndType!=HeadRelationshipEndType.INTERNAL_OUTMIGRATION) {
+                /*if (newStartType==HeadRelationshipStartType.INTERNAL_INMIGRATION && previousEndType!=HeadRelationshipEndType.INTERNAL_OUTMIGRATION) {
                     return new JActionResult(result: JActionResult.Result.ERROR, message: message("rawDomain.helpers.update.headrelationship.starttype.ent.previous.endtype.error.label"))
                 }
                 if (newStartType==HeadRelationshipStartType.EXTERNAL_INMIGRATION && previousEndType!=HeadRelationshipEndType.EXTERNAL_OUTMIGRATION) {
@@ -755,14 +755,14 @@ class RawDomainService {
                 }
                 if (newStartType==HeadRelationshipStartType.NEW_HEAD_OF_HOUSEHOLD && (previousEndType!=HeadRelationshipEndType.CHANGE_OF_HEAD_OF_HOUSEHOLD && previousEndType!=HeadRelationshipEndType.DEATH_OF_HEAD_OF_HOUSEHOLD)) {
                     return new JActionResult(result: JActionResult.Result.ERROR, message: message("rawDomain.helpers.update.headrelationship.starttype.nhh.previous.endtype.error.label"))
-                }
-                if (previousEndType==HeadRelationshipEndType.NOT_APPLICABLE || previousEndType==HeadRelationshipEndType.DEATH) {
+                }*/
+                /*if (previousEndType==HeadRelationshipEndType.NOT_APPLICABLE || previousEndType==HeadRelationshipEndType.DEATH) {
                     return new JActionResult(result: JActionResult.Result.ERROR, message: message("rawDomain.helpers.update.headrelationship.starttype.previous.endtype.na.dth.error.label", [columnValue]))
-                }
+                }*/
             } else {
-                if (newStartType==HeadRelationshipStartType.INTERNAL_INMIGRATION) {
+                /*if (newStartType==HeadRelationshipStartType.INTERNAL_INMIGRATION) {
                     return new JActionResult(result: JActionResult.Result.ERROR, message: message("rawDomain.helpers.update.headrelationship.starttype.ent.no.previous.error.label"))
-                }
+                }*/
             }
 
 
@@ -800,24 +800,24 @@ class RawDomainService {
                 if (newEndType==HeadRelationshipEndType.NOT_APPLICABLE || newEndType==HeadRelationshipEndType.DEATH) {
                     return new JActionResult(result: JActionResult.Result.ERROR, message: message("rawDomain.helpers.update.headrelationship.endtype.na.dth.exists.next.error.label", [columnValue]))
                 }
-                if (newEndType==HeadRelationshipEndType.INTERNAL_OUTMIGRATION && nextHeadRelationship.startType!=HeadRelationshipStartType.INTERNAL_INMIGRATION) {
+                /*if (newEndType==HeadRelationshipEndType.INTERNAL_OUTMIGRATION && nextHeadRelationship.startType!=HeadRelationshipStartType.INTERNAL_INMIGRATION) {
                     return new JActionResult(result: JActionResult.Result.ERROR, message: message("rawDomain.helpers.update.headrelationship.endtype.chg.next.startype.error.label"))
                 }
                 if (newEndType==HeadRelationshipEndType.EXTERNAL_OUTMIGRATION && nextHeadRelationship.startType!=HeadRelationshipStartType.EXTERNAL_INMIGRATION) {
                     return new JActionResult(result: JActionResult.Result.ERROR, message: message("rawDomain.helpers.update.headrelationship.endtype.ext.next.startype.error.label"))
-                }
-                if ((newEndType==HeadRelationshipEndType.CHANGE_OF_HEAD_OF_HOUSEHOLD || newEndType==HeadRelationshipEndType.DEATH_OF_HEAD_OF_HOUSEHOLD) && nextHeadRelationship.startType!=HeadRelationshipStartType.NEW_HEAD_OF_HOUSEHOLD) {
+                }*/
+                /*if ((newEndType==HeadRelationshipEndType.CHANGE_OF_HEAD_OF_HOUSEHOLD || newEndType==HeadRelationshipEndType.DEATH_OF_HEAD_OF_HOUSEHOLD) && nextHeadRelationship.startType!=HeadRelationshipStartType.NEW_HEAD_OF_HOUSEHOLD) {
                     return new JActionResult(result: JActionResult.Result.ERROR, message: message("rawDomain.helpers.update.headrelationship.endtype.chh.dhh.next.startype.error.label", [columnValue]))
-                }
+                }*/
 
             } else {
-                if (newEndType==HeadRelationshipEndType.INTERNAL_OUTMIGRATION) {
+                /*if (newEndType==HeadRelationshipEndType.INTERNAL_OUTMIGRATION) {
                     //Cannot be CHG because there is no a new headrelationship with ENT
                     return new JActionResult(result: JActionResult.Result.ERROR, message: message("rawDomain.helpers.update.headrelationship.endtype.chg.no.next.error.label"))
-                }
-                if (newEndType==HeadRelationshipEndType.CHANGE_OF_HEAD_OF_HOUSEHOLD || newEndType==HeadRelationshipEndType.DEATH_OF_HEAD_OF_HOUSEHOLD) {
+                }*/
+                /*if (newEndType==HeadRelationshipEndType.CHANGE_OF_HEAD_OF_HOUSEHOLD || newEndType==HeadRelationshipEndType.DEATH_OF_HEAD_OF_HOUSEHOLD) {
                     return new JActionResult(result: JActionResult.Result.ERROR, message: message("rawDomain.helpers.update.headrelationship.endtype.chh.dhh.no.next.error.label"))
-                }
+                }*/
             }
 
             headRelationship.endType = newEndType
