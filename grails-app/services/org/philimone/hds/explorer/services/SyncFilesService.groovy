@@ -11,6 +11,7 @@ import org.philimone.hds.explorer.server.model.enums.FormType
 import org.philimone.hds.explorer.server.model.enums.PregnancyStatus
 import org.philimone.hds.explorer.server.model.enums.ValidatableStatus
 import org.philimone.hds.explorer.server.model.enums.settings.LogReportCode
+import org.philimone.hds.explorer.server.model.enums.settings.SettingsExportHistoryMode
 import org.philimone.hds.explorer.server.model.logs.LogReport
 import org.philimone.hds.explorer.server.model.logs.LogReportFile
 import org.philimone.hds.explorer.server.model.enums.LogStatus
@@ -44,6 +45,7 @@ import org.philimone.hds.explorer.server.model.main.TrackingList
 import org.philimone.hds.explorer.server.model.main.Visit
 import org.philimone.hds.explorer.server.model.settings.ApplicationParam
 import org.philimone.hds.explorer.server.model.enums.SyncEntity
+import org.philimone.hds.explorer.server.model.settings.Codes
 import org.w3c.dom.Document
 import org.w3c.dom.Element
 
@@ -72,6 +74,8 @@ class SyncFilesService {
     def settingsService
     def residencyService
     def maritalRelationshipService
+
+    def syncFilesOptimizedService
 
     def cleanUpGorm() {
         def session = sessionFactory.currentSession
@@ -102,7 +106,9 @@ class SyncFilesService {
         generateHouseHoldsXML(logReportId)
 
         println("saving members")
-        generateMembersXML(logReportId)
+        //testing claude
+        syncFilesOptimizedService.generateMembersXML_Optimized_C1(logReportId)
+        //generateMembersXML(logReportId)
 
         println("saving residencies")
         generateResidenciesXML(logReportId)
@@ -1375,7 +1381,13 @@ class SyncFilesService {
             def resultResidencies = []
 
             Residency.withTransaction {
-                resultResidencies = Residency.executeQuery("select r.id from Residency r where r.status <> ?0 or r.status is null", [ValidatableStatus.TEMPORARILY_INACTIVE])
+                def exportMode = Codes.SYSTEM_EXPORT_HISTORY_MODE
+
+                if (exportMode == SettingsExportHistoryMode.FULL) {
+                    resultResidencies = Residency.executeQuery("select r.id from Residency r where r.status <> ?0 or r.status is null", [ValidatableStatus.TEMPORARILY_INACTIVE])
+                } else if (exportMode == SettingsExportHistoryMode.LAST_STATE) {
+                    resultResidencies = Residency.executeQuery("select r.id from Residency r where r.startDate = (select max(r2.startDate) from Residency r2 where r2.member = r.member) and (r.status <> ?0 or r.status is null)", [ValidatableStatus.TEMPORARILY_INACTIVE])
+                }
             }
 
 
@@ -1566,10 +1578,19 @@ class SyncFilesService {
             //read forms
             //get most recent visits
             def ids = new ArrayList<String>()
-            def lastVisits = Visit.executeQuery("select v.id, max(v.visitDate) from Visit v group by v.id")
-            def resultVisits = lastVisits.collect { it[0] }
-            lastVisits.clear()
+            //def lastVisits = Visit.executeQuery("select v.id, max(v.visitDate) from Visit v group by v.id")
+            def resultVisits = [] //lastVisits.collect { it[0] }
+            //lastVisits.clear()
 
+            Visit.withTransaction {
+                def exportMode = Codes.SYSTEM_EXPORT_HISTORY_MODE
+
+                if (exportMode == SettingsExportHistoryMode.FULL) {
+                    resultVisits = Visit.executeQuery("select r.id from Visit r")
+                } else if (exportMode == SettingsExportHistoryMode.LAST_STATE) {
+                    resultVisits = Visit.executeQuery("select v.id from Visit v where v.code = (select max(v2.code) from Visit v2 where v2.household = v.household)")
+                }
+            }
 
             println("creating ${filename}.xml of ${resultVisits.size()} records")
             PrintStream outputFile = new PrintStream(new FileOutputStream(SystemPath.generatedFilesPath + "/${filename}.xml"), true)
@@ -1658,8 +1679,17 @@ class SyncFilesService {
         def logStatusValue = LogStatus.FINISHED
 
         try {
-            //Ler todos users
-            def resultHeadRelationships = HeadRelationship.executeQuery("select h.id from HeadRelationship h where h.status <> ?0 or h.status is null", [ValidatableStatus.TEMPORARILY_INACTIVE])
+            def resultHeadRelationships = []
+
+            HeadRelationship.withTransaction {
+                def exportMode = Codes.SYSTEM_EXPORT_HISTORY_MODE
+
+                if (exportMode == SettingsExportHistoryMode.FULL) {
+                    resultHeadRelationships = HeadRelationship.executeQuery("select h.id from HeadRelationship h where h.status <> ?0 or h.status is null", [ValidatableStatus.TEMPORARILY_INACTIVE])
+                } else if (exportMode == SettingsExportHistoryMode.LAST_STATE) {
+                    resultHeadRelationships = HeadRelationship.executeQuery("select h.id from HeadRelationship h where h.startDate = (select max(h2.startDate) from HeadRelationship h2 where h2.member = h.member) and (h.status <> ?0 or h.status is null)", [ValidatableStatus.TEMPORARILY_INACTIVE])
+                }
+            }
 
             println("creating ${filename}.xml of ${resultHeadRelationships.size()} records")
             PrintStream outputFile = new PrintStream(new FileOutputStream(SystemPath.generatedFilesPath + "/${filename}.xml"), true)
