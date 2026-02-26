@@ -26,6 +26,7 @@ import org.philimone.hds.explorer.server.model.enums.VisitReason
 import org.philimone.hds.explorer.server.model.enums.VisitRespondentRelationship
 import org.philimone.hds.explorer.server.model.enums.settings.LogGroupCode
 import org.philimone.hds.explorer.server.model.enums.settings.LogReportCode
+import org.philimone.hds.explorer.server.model.enums.settings.SettingsExportHistoryMode
 import org.philimone.hds.explorer.server.model.json.JConstant
 import org.philimone.hds.explorer.server.model.logs.LogGroup
 import org.philimone.hds.explorer.server.model.logs.LogReport
@@ -468,6 +469,7 @@ class BootStrap {
         def sysSrhs = svc.getConfigValue("${Codes.PARAMS_SYSTEM_REGION_HEAD_SUPPORT}")
         def sysVgps = svc.getConfigValue("${Codes.PARAMS_SYSTEM_VISIT_GPS_REQUIRED}")
         def sysUeth = svc.getConfigValue("${Codes.PARAMS_SYSTEM_USE_ETHIOPIAN_CALENDAR}")
+        def sysExhm = svc.getConfigValue("${Codes.PARAMS_SYSTEM_EXPORT_HISTORY_MODE}")
         def sysPath = svc.getConfigValue("${Codes.PARAMS_SYSTEM_HOMEPATH}")
 
         println "config: ${sysCdgn}, uses ethiopian calendar = "+sysUeth
@@ -487,6 +489,7 @@ class BootStrap {
         aps.addParam(Codes.PARAMS_SYSTEM_REGION_HEAD_SUPPORT, (sysSrhs!=null) ? sysSrhs.equalsIgnoreCase("true") : false)
         aps.addParam(Codes.PARAMS_SYSTEM_VISIT_GPS_REQUIRED, (sysVgps!=null) ? sysVgps.equalsIgnoreCase("true") : false)
         aps.addParam(Codes.PARAMS_SYSTEM_USE_ETHIOPIAN_CALENDAR, (sysUeth!=null) ? sysUeth.equalsIgnoreCase("true") : false)
+        aps.addParam(Codes.PARAMS_SYSTEM_EXPORT_HISTORY_MODE, sysExhm)
         aps.addParam(Codes.PARAMS_SYSTEM_HOMEPATH, sysPath)
 
         aps.addParamNullable(RegionLevel.HIERARCHY_1.code, null)
@@ -866,6 +869,7 @@ class BootStrap {
         def valueSrh = applicationParamService.getBooleanValue(Codes.PARAMS_SYSTEM_REGION_HEAD_SUPPORT)
         def valueVgp = applicationParamService.getBooleanValue(Codes.PARAMS_SYSTEM_VISIT_GPS_REQUIRED)
         def valueUet = applicationParamService.getBooleanValue(Codes.PARAMS_SYSTEM_USE_ETHIOPIAN_CALENDAR)
+        def valueEhm = applicationParamService.getStringValue(Codes.PARAMS_SYSTEM_EXPORT_HISTORY_MODE)
         def valuePth = applicationParamService.getStringValue(Codes.PARAMS_SYSTEM_HOMEPATH)
 
         Codes.MIN_MOTHER_AGE_VALUE = valueAgm != null ? valueAgm : Codes.MIN_MOTHER_AGE_VALUE
@@ -882,6 +886,7 @@ class BootStrap {
         Codes.SYSTEM_REGION_HEAD_SUPPORT = valueSrh != null ? valueSrh : false
         Codes.SYSTEM_VISIT_GPS_REQUIRED = valueVgp != null ? valueVgp : false
         Codes.SYSTEM_USE_ETHIOPIAN_CALENDAR = valueUet != null ? valueUet : false
+        Codes.SYSTEM_EXPORT_HISTORY_MODE = SettingsExportHistoryMode.getFrom(valueEhm) //if null return FULL
         Codes.SYSTEM_HOMEPATH = !StringUtil.isBlank(valuePth) ? valuePth : Codes.SYSTEM_HOMEPATH
         SystemPath.HOME_PATH = Codes.SYSTEM_HOMEPATH
 

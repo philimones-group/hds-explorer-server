@@ -89,6 +89,25 @@
                     </div>
 
                     <div class="fieldcontain ${hasErrors(bean: this.parameters, field: 'code', 'error')} ">
+                        <label for="exportHistoryMode" title="${message(code: 'settings.parameters.export.history.mode.label')}">
+                            <g:message code="settings.parameters.export.history.mode.label" />
+                            <span class="required-indicator">*</span>
+                        </label>
+
+                        <select id="exportHistoryMode" name="exportHistoryMode" required="" value="${selectedExportHistoryMode}" from="${exportHistoryModes}" optionKey="code" optionValue="name" class="many-to-one">
+                            <g:each in="${exportHistoryModes}" var="mode">
+                                <g:if test="${mode.equals(selectedExportHistoryMode)}">
+                                    <option value="${mode.code}" selected><g:message code="${mode.name}" /> </option>
+                                </g:if>
+                                <g:else>
+                                    <option value="${mode.code}" ><g:message code="${mode.name}" /></option>
+                                </g:else>
+
+                            </g:each>
+                        </select>
+                    </div>
+
+                    <div class="fieldcontain ${hasErrors(bean: this.parameters, field: 'code', 'error')} ">
                         <label for="regionHeadSupport" title="${message(code: 'settings.parameters.region.head.support.label')}">
                             <g:message code="settings.parameters.region.head.support.label" />
                             <span class="required-indicator">*</span>

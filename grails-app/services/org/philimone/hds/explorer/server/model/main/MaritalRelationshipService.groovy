@@ -178,7 +178,7 @@ class MaritalRelationshipService {
             case MaritalStartStatus.LIVING_TOGHETER : return MaritalStatus.LIVING_TOGHETER
         }
 
-        return null
+        return MaritalStatus.SINGLE //if none was found consider single
     }
 
     MaritalStatus getMaritalStatusFromEndStatus(MaritalEndStatus status){
@@ -189,12 +189,12 @@ class MaritalRelationshipService {
             case MaritalEndStatus.WIDOWED : return MaritalStatus.WIDOWED
         }
 
-        return null
+        return MaritalStatus.MARRIED //if none is found or incorrectly typed consider married
     }
 
     MaritalStatus getMaritalStatusFrom(MaritalRelationship maritalRelationship) {
         if (maritalRelationship != null) {
-            if (maritalRelationship.endStatus == MaritalEndStatus.NOT_APPLICABLE) {
+            if (maritalRelationship.endStatus == MaritalEndStatus.NOT_APPLICABLE || maritalRelationship.endDate == null) {
                 return getMaritalStatusFromStartStatus(maritalRelationship.startStatus)
             } else {
                 return getMaritalStatusFromEndStatus(maritalRelationship.endStatus)

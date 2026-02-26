@@ -2,6 +2,7 @@ package org.philimone.hds.explorer.controllers
 
 import grails.converters.JSON
 import org.philimone.hds.explorer.server.model.authentication.User
+import org.philimone.hds.explorer.server.model.enums.settings.SettingsExportHistoryMode
 import org.philimone.hds.explorer.server.model.json.JConstant
 import org.philimone.hds.explorer.server.model.json.JLanguage
 import org.philimone.hds.explorer.server.model.main.CoreFormColumnOptions
@@ -31,9 +32,14 @@ class SettingsController {
         def regionHeadSupport = settingsService.getRegionHeadSupport()
         def gpsRequired = settingsService.getVisitGpsRequired()
 
+        //def exportHistoryMode
+        def selectedExportHistoryMode = Codes.SYSTEM_EXPORT_HISTORY_MODE
+        def exportHistoryModes = SettingsExportHistoryMode.values()
+
         [languages: languages, selectedLanguage: currentLanguage.language, calendars: supportedCalendars, selectedCalendar: selectedCalendar, codeGenerators: Codes.SYSTEM_ALL_CODE_GENERATORS,
          codeGeneratorsRules: codeGenIncrementalRules, selectedCodeGenerator: Codes.SYSTEM_CODE_GENERATOR, selectedGpsRequired: gpsRequired,
-         selectedCodeGeneratorIncRule: Codes.SYSTEM_CODE_GENERATOR_INCREMENTAL_RULE, selectedRegionHeadSupport: regionHeadSupport, errorMessages: new ArrayList<String>()]
+         selectedCodeGeneratorIncRule: Codes.SYSTEM_CODE_GENERATOR_INCREMENTAL_RULE, selectedRegionHeadSupport: regionHeadSupport,
+         selectedExportHistoryMode: selectedExportHistoryMode, exportHistoryModes: exportHistoryModes, errorMessages: new ArrayList<String>()]
     }
 
     def updateParameters = {
@@ -44,6 +50,7 @@ class SettingsController {
         def selectedCodeGeneratorIncRule = params.codeGeneratorIncRule
         def selectedRegionHeadSupport = (params.regionHeadSupport==null ? false : params.regionHeadSupport?.equals("on")) as Boolean
         def selectedGpsRequired = (params.gpsRequired==null ? false : params.gpsRequired?.equals("on")) as Boolean
+        def selectedExportHistoryMode = params.exportHistoryMode
         def codeGenIncrementalRules = settingsService.codeGeneratorsIncrementalRules
         def supportedCalendars = generalUtilitiesService.getSystemSupportedCalendars()
         def errorMessages = new ArrayList<String>()
@@ -54,6 +61,7 @@ class SettingsController {
         println "selected cgr: ${selectedCodeGeneratorIncRule}"
         println "selected rhs: ${params.regionHeadSupport}, ${selectedRegionHeadSupport}, Codes.SYSTEM_REGION_HEAD_SUPPORT=${Codes.SYSTEM_REGION_HEAD_SUPPORT}"
         println "selected gps: ${selectedGpsRequired}"
+        println "selected ehm: ${selectedExportHistoryMode}"
 
         try {
 
@@ -114,6 +122,13 @@ class SettingsController {
 
                 Codes.SYSTEM_VISIT_GPS_REQUIRED = selectedGpsRequired
                 applicationParamService.updateApplicationParam(Codes.PARAMS_SYSTEM_VISIT_GPS_REQUIRED, ""+selectedGpsRequired)
+            }
+
+            //Update Export History Mode
+            if (selectedExportHistoryMode != null) {
+                def value = selectedExportHistoryMode instanceof SettingsExportHistoryMode ? selectedExportHistoryMode : SettingsExportHistoryMode.getFrom("${selectedExportHistoryMode}")
+                Codes.SYSTEM_EXPORT_HISTORY_MODE = value
+                applicationParamService.updateApplicationParam(Codes.PARAMS_SYSTEM_EXPORT_HISTORY_MODE, value?.code)
             }
 
             flash.message = message(code: 'settings.parameters.update.success.label')
