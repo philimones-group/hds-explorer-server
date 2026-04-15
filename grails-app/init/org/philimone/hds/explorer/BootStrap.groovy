@@ -472,7 +472,7 @@ class BootStrap {
         def sysExhm = svc.getConfigValue("${Codes.PARAMS_SYSTEM_EXPORT_HISTORY_MODE}")
         def sysPath = svc.getConfigValue("${Codes.PARAMS_SYSTEM_HOMEPATH}")
 
-        println "config: ${sysCdgn}, uses ethiopian calendar = "+sysUeth
+        println "config: ${sysCdgn}, uses ethiopian calendar = "+sysUeth+", history-export-mode="+sysExhm
 
         //Save Application/System Parameters to database, Will persist to the database only when its empty - changing parameters will be done through database
         aps.addParam(Codes.PARAMS_MIN_AGE_OF_MOTHER, StringUtil.getInteger(mmaxAge))
@@ -489,7 +489,7 @@ class BootStrap {
         aps.addParam(Codes.PARAMS_SYSTEM_REGION_HEAD_SUPPORT, (sysSrhs!=null) ? sysSrhs.equalsIgnoreCase("true") : false)
         aps.addParam(Codes.PARAMS_SYSTEM_VISIT_GPS_REQUIRED, (sysVgps!=null) ? sysVgps.equalsIgnoreCase("true") : false)
         aps.addParam(Codes.PARAMS_SYSTEM_USE_ETHIOPIAN_CALENDAR, (sysUeth!=null) ? sysUeth.equalsIgnoreCase("true") : false)
-        aps.addParam(Codes.PARAMS_SYSTEM_EXPORT_HISTORY_MODE, sysExhm)
+        aps.addParam(Codes.PARAMS_SYSTEM_EXPORT_HISTORY_MODE, (sysExhm != null) ? sysExhm : SettingsExportHistoryMode.FULL.code)
         aps.addParam(Codes.PARAMS_SYSTEM_HOMEPATH, sysPath)
 
         aps.addParamNullable(RegionLevel.HIERARCHY_1.code, null)
