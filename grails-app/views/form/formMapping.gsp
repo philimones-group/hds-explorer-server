@@ -132,8 +132,16 @@
 		</div>
 		<div id="show-form" class="content scaffold-show" role="main">
 			<h1><g:message code="formMapping.label" args="[entityName]" /></h1>
+            <g:if test="${true}">
+                <div class="xmessage" role="status">
+                    <p><b>Important</b>: For ODK Collect v2021.2.0+, preloading requires an External Intent call.</p>
+                    <p>Ensure your XLSForm contains a group with <b>appearance</b> <code>field-list</code> and a <b>body::intent</b> column set to <code>org.philimone.hds.explorer.HDS_PRELOAD()</code>.</p>
+                    <p>This ensures compatibility across all Android versions (5 to 15+).</p>
+                </div>
+            </g:if>
+
 			<g:if test="${flash.message}">
-			<div class="message" role="status">${flash.message}</div>
+			    <div class="message" role="status">${flash.message}</div>
 			</g:if>
             <g:hasErrors bean="${this.formMapping}">
                 <ul class="errors" role="alert">

@@ -36,9 +36,16 @@ class SettingsController {
         def selectedExportHistoryMode = Codes.SYSTEM_EXPORT_HISTORY_MODE
         def exportHistoryModes = SettingsExportHistoryMode.values()
 
+        //pregnancy surveillance
+        def maxAntVisits = applicationParamService.getIntegerValue(Codes.PARAMS_MAX_ANTEPARTUM_VISITS)
+        def maxPostVisits = applicationParamService.getIntegerValue(Codes.PARAMS_MAX_POSTPARTUM_VISITS)
+        def antSchedule = applicationParamService.getStringValue(Codes.PARAMS_ANTEPARTUM_SCHEDULE)
+        def postSchedule = applicationParamService.getStringValue(Codes.PARAMS_POSTPARTUM_SCHEDULE)
+
         [languages: languages, selectedLanguage: currentLanguage.language, calendars: supportedCalendars, selectedCalendar: selectedCalendar, codeGenerators: Codes.SYSTEM_ALL_CODE_GENERATORS,
          codeGeneratorsRules: codeGenIncrementalRules, selectedCodeGenerator: Codes.SYSTEM_CODE_GENERATOR, selectedGpsRequired: gpsRequired,
          selectedCodeGeneratorIncRule: Codes.SYSTEM_CODE_GENERATOR_INCREMENTAL_RULE, selectedRegionHeadSupport: regionHeadSupport,
+         maxAntVisits: maxAntVisits, maxPostVisits: maxPostVisits, antSchedule: antSchedule, postSchedule: postSchedule,
          selectedExportHistoryMode: selectedExportHistoryMode, exportHistoryModes: exportHistoryModes, errorMessages: new ArrayList<String>()]
     }
 
@@ -141,18 +148,57 @@ class SettingsController {
         List<JLanguage> languages = generalUtilitiesService.getSystemLanguages()
         JLanguage currentLanguage = generalUtilitiesService.getCurrentSystemLanguage()
 
+        //pregnancy surveillance
+        def maxAntVisits = applicationParamService.getIntegerValue(Codes.PARAMS_MAX_ANTEPARTUM_VISITS)
+        def maxPostVisits = applicationParamService.getIntegerValue(Codes.PARAMS_MAX_POSTPARTUM_VISITS)
+        def antSchedule = applicationParamService.getStringValue(Codes.PARAMS_ANTEPARTUM_SCHEDULE)
+        def postSchedule = applicationParamService.getStringValue(Codes.PARAMS_POSTPARTUM_SCHEDULE)
+
         println "${errorMessages}"
 
         render view: "parameters", model: [languages: languages, selectedLanguage: currentLanguage.language, calendars: supportedCalendars, selectedCalendar: selectedCalendar,
                                            errorMessages: errorMessages, codeGenerators: Codes.SYSTEM_ALL_CODE_GENERATORS, codeGeneratorsRules: codeGenIncrementalRules,
                                            selectedCodeGenerator: Codes.SYSTEM_CODE_GENERATOR, selectedCodeGeneratorIncRule: Codes.SYSTEM_CODE_GENERATOR_INCREMENTAL_RULE,
-                                           selectedRegionHeadSupport: selectedRegionHeadSupport, selectedGpsRequired: selectedGpsRequired]
+                                           selectedRegionHeadSupport: selectedRegionHeadSupport, selectedGpsRequired: selectedGpsRequired,
+                                           maxAntVisits: maxAntVisits, maxPostVisits: maxPostVisits, antSchedule: antSchedule, postSchedule: postSchedule]
     }
 
     def customOptions = {
 
         flash.message = message(code: 'settings.coreformoptions.dataintegrity.info.label')
         [forms: coreFormColumnOptionsService.getCustomOptionsForms()]
+    }
+
+    def updatePregnancyParameters = {
+        def maxAnt = params.maxAntepartumVisits
+        def maxPost = params.maxPostpartumVisits
+
+        // Combine antSchedule_0, antSchedule_1...
+        def antList = []
+        if (maxAnt) {
+            (0..<maxAnt.toInteger()).each { i ->
+                def val = params."antSchedule_${i}"
+                if (val) antList << val
+            }
+        }
+        def antSchedule = antList.join(",")
+
+        def postList = []
+        if (maxPost) {
+            (0..<maxPost.toInteger()).each { i ->
+                def val = params."postSchedule_${i}"
+                if (val) postList << val
+            }
+        }
+        def postSchedule = postList.join(",")
+
+        applicationParamService.updateApplicationParam(Codes.PARAMS_MAX_ANTEPARTUM_VISITS, maxAnt)
+        applicationParamService.updateApplicationParam(Codes.PARAMS_MAX_POSTPARTUM_VISITS, maxPost)
+        applicationParamService.updateApplicationParam(Codes.PARAMS_ANTEPARTUM_SCHEDULE, antSchedule)
+        applicationParamService.updateApplicationParam(Codes.PARAMS_POSTPARTUM_SCHEDULE, postSchedule)
+
+        flash.message = message(code: 'settings.pregnancy.update.success.label')
+        redirect(action: "parameters")
     }
 
     def getCustomOptionsColumns = {

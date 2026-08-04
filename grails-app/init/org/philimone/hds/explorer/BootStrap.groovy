@@ -462,6 +462,8 @@ class BootStrap {
         def rminAge = svc.getConfigValue("${Codes.PARAMS_MIN_AGE_OF_RESPONDENT}")
         def rmaxVap = svc.getConfigValue("${Codes.PARAMS_MAX_ANTEPARTUM_VISITS}")
         def rmaxVpp = svc.getConfigValue("${Codes.PARAMS_MAX_POSTPARTUM_VISITS}")
+        def schedAp = svc.getConfigValue("${Codes.PARAMS_ANTEPARTUM_SCHEDULE}")
+        def schedPp = svc.getConfigValue("${Codes.PARAMS_POSTPARTUM_SCHEDULE}")
         def gndChck = svc.getConfigValue("${Codes.PARAMS_GENDER_CHECKING}")
         def sysLang = svc.getConfigValue("${Codes.PARAMS_SYSTEM_LANGUAGE}")
         def sysCdgn = svc.getConfigValue("${Codes.PARAMS_SYSTEM_CODE_GENERATOR}")
@@ -482,6 +484,8 @@ class BootStrap {
         aps.addParam(Codes.PARAMS_MIN_AGE_OF_RESPONDENT, StringUtil.getInteger(rminAge))
         aps.addParam(Codes.PARAMS_MAX_ANTEPARTUM_VISITS, StringUtil.getInteger(rmaxVap))
         aps.addParam(Codes.PARAMS_MAX_POSTPARTUM_VISITS, StringUtil.getInteger(rmaxVpp))
+        aps.addParam(Codes.PARAMS_ANTEPARTUM_SCHEDULE, schedAp == null ? Codes.ANTEPARTUM_SCHEDULE : schedAp)
+        aps.addParam(Codes.PARAMS_POSTPARTUM_SCHEDULE, schedPp == null ? Codes.POSTPARTUM_SCHEDULE : schedPp)
         aps.addParam(Codes.PARAMS_GENDER_CHECKING, StringUtil.getBoolean(gndChck))
         aps.addParam(Codes.PARAMS_SYSTEM_LANGUAGE, sysLang) //set default language to english
         aps.addParam(Codes.PARAMS_SYSTEM_CODE_GENERATOR, sysCdgn)
@@ -862,6 +866,8 @@ class BootStrap {
         def valueAgr = applicationParamService.getIntegerValue(Codes.PARAMS_MIN_AGE_OF_RESPONDENT)
         def valueVap = applicationParamService.getIntegerValue(Codes.PARAMS_MAX_ANTEPARTUM_VISITS)
         def valueVpp = applicationParamService.getIntegerValue(Codes.PARAMS_MAX_POSTPARTUM_VISITS)
+        def valueSap = applicationParamService.getStringValue(Codes.PARAMS_ANTEPARTUM_SCHEDULE)
+        def valueSpp = applicationParamService.getStringValue(Codes.PARAMS_POSTPARTUM_SCHEDULE)
         def valueGch = applicationParamService.getBooleanValue(Codes.PARAMS_GENDER_CHECKING)
         def valueSlg = applicationParamService.getStringValue(Codes.PARAMS_SYSTEM_LANGUAGE)
         def valueScg = applicationParamService.getStringValue(Codes.PARAMS_SYSTEM_CODE_GENERATOR)
@@ -879,6 +885,8 @@ class BootStrap {
         Codes.MIN_RESPONDENT_AGE_VALUE = valueAgr != null ? valueAgr : Codes.MIN_RESPONDENT_AGE_VALUE
         Codes.MAX_ANTEPARTUM_VISITS = valueVap != null ? valueVap : Codes.MAX_ANTEPARTUM_VISITS
         Codes.MAX_POSTPARTUM_VISITS = valueVpp != null ? valueVpp : Codes.MAX_POSTPARTUM_VISITS
+        Codes.ANTEPARTUM_SCHEDULE = !StringUtil.isBlank(valueSap) ? valueSap : Codes.ANTEPARTUM_SCHEDULE
+        Codes.POSTPARTUM_SCHEDULE = !StringUtil.isBlank(valueSpp) ? valueSpp : Codes.POSTPARTUM_SCHEDULE
         Codes.GENDER_CHECKING =      valueGch != null ? valueGch : Codes.GENDER_CHECKING
         Codes.SYSTEM_LANGUAGE =      !StringUtil.isBlank(valueSlg) ? valueSlg : Codes.SYSTEM_LANGUAGE
         Codes.SYSTEM_CODE_GENERATOR = !StringUtil.isBlank(valueScg) ? valueScg : Codes.SYSTEM_CODE_GENERATOR
