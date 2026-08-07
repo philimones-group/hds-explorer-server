@@ -2,7 +2,11 @@ package org.philimone.hds.explorer.server.model.main
 
 
 import grails.gorm.transactions.Transactional
+import net.betainteractive.io.writers.ZipMaker
 import org.philimone.hds.explorer.server.model.enums.CoreForm
+import org.philimone.hds.forms.model.FormValidationResult
+import org.philimone.hds.forms.model.parsers.ExcelFormParser
+import org.philimone.hds.forms.model.parsers.ExcelFormValidator
 
 @Transactional
 class CoreFormExtensionService {
@@ -27,9 +31,9 @@ class CoreFormExtensionService {
         coreFormExtension.save(flush:true)
     }
 
-    File getFormXLS(CoreFormExtension coreFormExtension){
+    File getSampleFormXLS(CoreFormExtension coreFormExtension){
         try {
-            def url = getClass().classLoader.getResource("samples/extension-forms/xls/${coreFormExtension.extFormId}.xlsx")
+            def url = getClass().classLoader.getResource("samples/extension-forms/xls-hforms/${coreFormExtension.extFormId}.xlsx")
 
             return new File(url.toURI())
         }catch (Exception ex){
@@ -38,6 +42,25 @@ class CoreFormExtensionService {
             return null
         }
 
+    }
+
+    def compressExtFormPath(CoreFormExtension formExtension){
+        if (formExtension == null || formExtension.extFormPath == null) return
+        //zip file
+        ZipMaker zipMaker = new ZipMaker(formExtension.compressedExtFormPath)
+        zipMaker.addFile(formExtension.extFormPath)
+        def b = zipMaker.makeZip()
+
+        println "creating dataset zip file - ${formExtension.compressedExtFormPath} - success="+b
+    }
+
+    String getHFormId(byte[] formBytes) {
+        return ExcelFormParser.getFormId(new ByteArrayInputStream(formBytes))
+    }
+
+    FormValidationResult validateForm(byte[] formBytes) {
+        ExcelFormValidator formValidator = new ExcelFormValidator(formBytes)
+        return formValidator.validate()
     }
 
     String getColumnMapping(CoreForm form) {

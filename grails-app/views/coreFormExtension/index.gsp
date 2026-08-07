@@ -90,7 +90,7 @@
                         <td class="align-middle">${formInstance.extFormId}</td>
 
                         <td class="align-middle">
-                            <g:if test="${formInstance.extFormDefinition==null}" >
+                            <g:if test="${formInstance.extFormPath==null}" >
                                 <b><g:message code="coreFormExtension.notuploaded.label"/></b>
                             </g:if>
                             <g:else>
@@ -140,7 +140,7 @@
                         <td class="align-middle">
                             <g:form controller="coreFormExtension" method="POST" >
                                 <g:hiddenField name="id" value="${formInstance.id}" />
-                                <g:if test="${formInstance?.extFormDefinition == null}" >
+                                <g:if test="${formInstance?.extFormPath == null}" >
                                     <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#div_no_formdef">
                                         <g:message code="coreFormExtension.mapping.button.label"/>
                                     </button>

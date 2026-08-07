@@ -6,6 +6,7 @@ import org.philimone.hds.explorer.server.model.enums.settings.LogReportCode
 import org.philimone.hds.explorer.server.model.enums.SyncEntity
 import org.philimone.hds.explorer.server.model.logs.LogReport
 import org.philimone.hds.explorer.server.model.enums.LogStatus
+import org.philimone.hds.explorer.server.model.main.CoreFormExtension
 import org.philimone.hds.explorer.server.model.main.Dataset
 
 import java.time.LocalDateTime
@@ -48,6 +49,13 @@ class SyncFilesController {
     def coreforms = {
         def file = new File(SystemPath.getGeneratedFilesPath() + File.separator + SyncEntity.CORE_FORMS_EXT.xmlFilename)
         render file: file
+    }
+
+    def coreform(String id){
+        def form = CoreFormExtension.findByFormId(id)
+
+        def file = new File(form.extFormPath)
+        render file: file, fileName: file.name
     }
 
     def coreformsoptions = {
@@ -197,6 +205,17 @@ class SyncFilesController {
     def coreformsZip = {
         def file = new File(SystemPath.getGeneratedFilesPath() + File.separator + SyncEntity.CORE_FORMS_EXT.zipFilename)
         //render file: file, fileName: "forms.zip"
+
+        response.setContentLengthLong(file.size())
+        response.setContentType("application/zip")
+        response.outputStream << file.bytes
+    }
+
+    def coreformZip(String id){
+        def form = CoreFormExtension.findByFormId(id)
+
+        def file = new File(form.compressedExtFormPath)
+        //render file: file, fileName: file.name
 
         response.setContentLengthLong(file.size())
         response.setContentType("application/zip")

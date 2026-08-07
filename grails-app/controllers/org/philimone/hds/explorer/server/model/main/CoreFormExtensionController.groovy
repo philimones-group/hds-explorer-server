@@ -2,11 +2,12 @@ package org.philimone.hds.explorer.server.model.main
 
 
 import grails.converters.JSON
-import net.betainteractive.io.odk.util.XFormReader
+import org.philimone.hds.explorer.io.SystemPath
 import org.philimone.hds.explorer.server.model.enums.CoreForm
 import org.philimone.hds.explorer.server.model.enums.extensions.FormColumnType
-import org.philimone.hds.explorer.server.model.main.extension.CoreExtensionDatabaseService
 import org.philimone.hds.explorer.server.model.main.extension.CoreExtensionService
+import org.philimone.hds.forms.model.FormValidationError
+import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.web.multipart.MultipartFile
 
 class CoreFormExtensionController {
@@ -97,16 +98,16 @@ class CoreFormExtensionController {
 
         def coreFormExt = CoreFormExtension.get(params.id)
 
-        def file = coreFormExtensionService.getFormXLS(coreFormExt)
+        def file = coreFormExtensionService.getSampleFormXLS(coreFormExt)
         render file: file, fileName: file.getName(), contentType:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 
     }
 
     def downloadFormDef = {
         def coreFormExt = CoreFormExtension.get(params.id)
-        def filename = coreFormExt.extFormId + ".xml"
-        def file = coreFormExtensionService.getFormXLS(coreFormExt)
-        render file: coreFormExt.extFormDefinition, fileName: filename, contentType:"application/xml"
+        //def filename = coreFormExt.extFormId + ".xlsx"
+        def file = new File(coreFormExt.extFormPath)
+        render file: file, fileName: file.name, contentType:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     }
 
     def uploadFormDef = {
@@ -118,7 +119,7 @@ class CoreFormExtensionController {
         def xmlBytes = file?.getBytes()
 
         //get form id, and compare to the coreext form id
-        def xmlFormId = XFormReader.getFormId(xmlBytes)
+        def xmlFormId = coreFormExtensionService.getHFormId(xmlBytes)
 
         println "${xmlFormId}, ${formId}"
 
@@ -147,8 +148,39 @@ class CoreFormExtensionController {
             return
         }
 
-        coreFormExtension.extFormDefinition = xmlBytes
+        //validate the hform
+        def result = coreFormExtensionService.validateForm(xmlBytes)
+        println "result ${result}"
+
+        if (result != null && result.hasErrors()) {
+            def errorMessages = new ArrayList<String>()
+
+            for (FormValidationError error : result.getErrors()) {
+                def locale = LocaleContextHolder.getLocale()
+                def message = error.getLocalizedMessage(locale)
+                errorMessages.add(message)
+            }
+
+            render view: "index", model:[coreFormExtensionList: getCoreFormExtensionList(params), coreFormExtensionCount: getCoreFormExtensionListCount(params), errorMessages : errorMessages]
+            return
+
+        } else if (result == null) {
+            def errorMessages = ["COULDNT READ THE VALIDATION OF HFORM RESULT - CONTACT THE DEVELOPER"] //THIS SHOULDNT HAPPEN
+            render view: "index", model:[coreFormExtensionList: getCoreFormExtensionList(params), coreFormExtensionCount: getCoreFormExtensionListCount(params), errorMessages : errorMessages]
+            return
+        }
+
+        //save xls form to a-docs path
+        def newFilePath = SystemPath.externalDocsPath + File.separator + fileName
+        file.transferTo(new File(newFilePath))
+
+        //coreFormExtension.extFormDefinition = xmlBytes
+        coreFormExtension.extFormPath = newFilePath
         coreFormExtension.save(flush:true)
+
+        //compress the file
+        coreFormExtensionService.compressExtFormPath(coreFormExtension)
+
         flash.message = g.message(code: "coreFormExtension.uploadForm.success.label", args: [fileName, formId])
 
         render view: "index", model:[coreFormExtensionList: getCoreFormExtensionList(params), coreFormExtensionCount: getCoreFormExtensionListCount(params)]
@@ -219,7 +251,7 @@ class CoreFormExtensionController {
         def coreFormExtension = CoreFormExtension.get(params.id)
         //println "gen: ${coreFormExtension}"
 
-        if (coreFormExtension?.extFormDefinition == null) {
+        if (coreFormExtension?.extFormPath == null) {
             println "no form definition uploaded"
             return
         }

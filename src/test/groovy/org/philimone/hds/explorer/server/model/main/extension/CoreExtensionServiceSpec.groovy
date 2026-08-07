@@ -29,6 +29,7 @@ class CoreExtensionServiceSpec extends Specification implements ServiceUnitTest<
         coreFormExt.formId = "rawHousehold"
         coreFormExt.extFormId = "household_ext"
         coreFormExt.extFormDefinition = Files.readAllBytes(Paths.get(xformPath))
+        coreFormExt.extFormPath = xformPath
         coreFormExt.required=false
         coreFormExt.enabled=true
         coreFormExt.columnsMapping = "core_form_id<#>rawHousehold;collected_id<#>#id;household_code<#>#householdCode;household_name<#>#householdName;visit_code<#>#visitCode;head_code<#>#headCode;head_name<#>#headName"

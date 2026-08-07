@@ -10,6 +10,7 @@ class CoreFormExtension {
     String formId
     String extFormId
     byte[] extFormDefinition /* ODK Form Definition (The XML XFORM Definition file)*/
+    String extFormPath
     boolean required = false /*Collection REQUIRED OR OPTIONAL*/
     boolean enabled = false
     String columnsMapping
@@ -24,6 +25,18 @@ class CoreFormExtension {
         this.columnsMapping = str
     }
 
+    String getCompressedExtFormPath(){
+
+        if (extFormPath == null) return null
+
+        def f = new File(extFormPath)
+        def fn = f.name
+        int i = fn.lastIndexOf(".")
+        def nfn = (i==-1 ? fn : fn.substring(0,i)) +".zip"
+
+        return f.parent + File.separator + nfn
+    }
+
 
     static constraints = {
         id maxSize: 32
@@ -31,6 +44,7 @@ class CoreFormExtension {
         formId unique: true
         extFormId nullable: false, blank: false
         extFormDefinition nullable: true
+        extFormPath nullable: true
         required nullable: false
         enabled nullable: false
 
@@ -46,6 +60,7 @@ class CoreFormExtension {
         formId column: "form_id"
         extFormId column: "ext_form_id"
         extFormDefinition column: "ext_form_definition", sqlType: "mediumblob"
+        extFormPath column: "ext_form_path"
         required column: "collection_required"
         enabled column: "enabled"
 

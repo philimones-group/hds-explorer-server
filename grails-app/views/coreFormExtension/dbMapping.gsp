@@ -63,7 +63,7 @@
                     <li class="fieldcontain">
                         <span id="extFormDefinition-label" class="property-label"><g:message code="coreFormExtension.extFormDefinition.label" /></span>
                         <span class="property-value" aria-labelledby="extFormDefinition-label">
-                            <g:if test="${this.coreFormExtension?.extFormDefinition==null}" >
+                            <g:if test="${this.coreFormExtension?.extFormPath==null}" >
                                 <b><g:message code="coreFormExtension.notuploaded.label"/></b>
                             </g:if>
                             <g:else>
@@ -99,7 +99,7 @@
             <fieldset class="navbar navbar-dark bg-dark">
                 <g:form controller="coreFormExtension" method="POST">
                     <g:hiddenField name="id" value="${this.coreFormExtension?.id}" />
-                    <g:if test="${this.coreFormExtension?.extFormDefinition != null}" >
+                    <g:if test="${this.coreFormExtension?.extFormPath != null}" >
                         <g:actionSubmit name="btinit" class="btn btn-danger" action="generateDatabaseModel" value="${g.message(code: 'coreFormExtension.mapping.button.init.label')}" />
                     </g:if>
                     &nbsp;

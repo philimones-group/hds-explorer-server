@@ -42,4 +42,5 @@ databaseChangeLog = {
     include file: 'update-changehead_reason-data-20250816.groovy'
     include file: 'add-household_institution_n_proxy_heads.groovy'
     include file: 'add-delivery_date-to-pregnancy_reg-table.groovy'
+    include file: 'alter-coreform-ext-addr-extformpath.groovy'
 }
