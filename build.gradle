@@ -123,6 +123,9 @@ dependencies {
     //odk javarosa to read xforms instances
     implementation 'org.getodk:javarosa:4.2.0'
 
+    //add hds-forms-lib the model plugin
+    implementation 'org.philimone.hds.forms.model:hds-forms-model-lib:1.0.1'
+
     //load local libraries
     implementation fileTree(dir: 'lib', include: '*.jar')
 }

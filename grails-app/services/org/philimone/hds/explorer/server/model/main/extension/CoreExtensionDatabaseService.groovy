@@ -19,6 +19,11 @@ import org.philimone.hds.explorer.server.model.enums.extensions.FormColumnType
 import org.philimone.hds.explorer.server.model.json.JActionResult
 import org.philimone.hds.explorer.server.model.main.CoreFormExtension
 import org.philimone.hds.explorer.server.model.main.CoreFormExtensionModel
+import org.philimone.hds.forms.model.Column
+import org.philimone.hds.forms.model.ColumnGroup
+import org.philimone.hds.forms.model.ColumnRepeatGroup
+import org.philimone.hds.forms.model.enums.ColumnType
+import org.philimone.hds.forms.model.parsers.ExcelFormParser
 
 import java.sql.Connection
 import java.sql.SQLException
@@ -31,17 +36,190 @@ class CoreExtensionDatabaseService {
     def errorMessageService
 
     def generateDatabaseModel(CoreFormExtension coreFormExtension) {
-        if (coreFormExtension.extFormDefinition != null) {
-            def formDef = XFormReader.getFormDefinition(coreFormExtension.extFormDefinition)
-            def formInstance = formDef.getMainInstance()
-            def rootElement = formInstance.getRoot()
-            def columnIndex = 0
+        if (coreFormExtension.extFormPath != null) {
+            def inputStream = new FileInputStream(new File(coreFormExtension.extFormPath))
+            def hForm = new ExcelFormParser(inputStream).getForm()
 
-            //iterate treeElement - match the types and create the model
-            def tableName = coreFormExtension.extFormId
-            def repeatCountCols = findRepeatCountColumns(formDef)
-            generateDatabaseModelProcessChildren(coreFormExtension, tableName, formDef, rootElement, columnIndex, null, repeatCountCols)
+            if (hForm != null) {
+                def columnIndex = 0
+                def tableName = coreFormExtension.extFormId
+
+                hForm.columns.each { columnGroup ->
+                    columnIndex = processColumnGroup(coreFormExtension, tableName, columnGroup, columnIndex, null)
+                }
+            }
         }
+    }
+
+    def int processColumnGroup(CoreFormExtension coreFormExtension, String tableName, ColumnGroup columnGroup, int columnIndex, CoreFormExtensionModel parentGroupModel) {
+
+        if (columnGroup instanceof ColumnRepeatGroup) {
+            def repeatGroup = (ColumnRepeatGroup) columnGroup
+            def forname = repeatGroup.getName()
+            def colname = (parentGroupModel == null) ? forname : "${parentGroupModel.dbColumnName}_#_${forname}"
+
+            // Check if it's a special pregnancy repeat
+            if (coreFormExtension.coreForm == CoreForm.PREGNANCY_OUTCOME_FORM && forname == "childs") {
+                repeatGroup.columnsGroups.each { innerGroup ->
+                    columnIndex = processColumnGroup(coreFormExtension, CoreExtensionService.PREGNANCY_CHILD_EXT_TABLE, innerGroup, columnIndex, null)
+                }
+                return columnIndex
+            }
+
+            if (coreFormExtension.coreForm == CoreForm.PREGNANCY_VISIT_FORM && forname == "childs") {
+                repeatGroup.columnsGroups.each { innerGroup ->
+                    columnIndex = processColumnGroup(coreFormExtension, CoreExtensionService.PREGNANCY_VISIT_CHILD_EXT_TABLE, innerGroup, columnIndex, null)
+                }
+                return columnIndex
+            }
+
+            // Create repeat datamodel
+            def model = new CoreFormExtensionModel(coreForm: coreFormExtension, extFormId: coreFormExtension.extFormId)
+            model.dbColumnIndex = columnIndex++
+            model.dbColumnTable = tableName
+            model.dbColumnName = colname
+            model.dbColumnType = DatabaseColumnType.NOT_APPLICABLE
+            model.dbColumnSize = -1
+            model.formColumnName = forname
+            model.formColumnType = FormColumnType.REPEAT_GROUP
+            model.formRepeatGroup = (parentGroupModel == null) ? null : parentGroupModel.dbColumnName
+            model.formRepeatLength = 2 // default min - get the constant number - but also can be variable/dynamic in such cases we must create a separated table
+            model.formChoiceList = false
+            model.formChoiceValue = null
+            model.parentGroup = parentGroupModel
+            model.save(flush: true)
+
+            // Process inner groups
+            repeatGroup.columnsGroups.each { innerGroup ->
+                columnIndex = processColumnGroup(coreFormExtension, tableName, innerGroup, columnIndex, model)
+            }
+
+        } else {
+            // Regular ColumnGroup
+            columnGroup.columns.each { column ->
+                columnIndex = processColumn(coreFormExtension, tableName, column, columnIndex, parentGroupModel)
+            }
+        }
+
+        return columnIndex
+    }
+
+    def int processColumn(CoreFormExtension coreFormExtension, String tableName, Column column, int columnIndex, CoreFormExtensionModel parentGroupModel) {
+        def forname = column.getName()
+
+        // Ignore internal ODK/HForm variables if present in the list
+        if (["instanceID", "instanceName", "id", "start", "end", "device_id", "postExecution", "media_collected"].contains(forname)) return columnIndex
+
+        def colname = (parentGroupModel == null) ? forname : "${parentGroupModel.dbColumnName}_#_${forname}"
+        def fortype = column.getType()
+
+        if (fortype == ColumnType.MULTI_SELECT) {
+            // Create multiple choice data model answers
+            def options = column.getTypeOptions()
+            if (options) {
+                def maxChoiceLength = options.keySet().collect { it.length() }.max() ?: 0
+                def maxLength = (int) ((Math.floor(maxChoiceLength / 10) * 10) + 10)
+
+                options.eachWithIndex { entry, index ->
+                    def choiceValue = entry.key
+                    def strIndex = String.format("%02d", index)
+
+                    def model = new CoreFormExtensionModel(coreForm: coreFormExtension, extFormId: coreFormExtension.extFormId)
+                    model.dbColumnIndex = columnIndex++
+                    model.dbColumnTable = tableName
+                    model.dbColumnName = "${colname}_${strIndex}"
+                    model.dbColumnType = DatabaseColumnType.STRING
+                    model.dbColumnSize = maxLength
+                    model.formColumnName = forname
+                    model.formColumnType = FormColumnType.MULTIPLE_ITEMS
+                    model.formRepeatGroup = (parentGroupModel == null) ? null : parentGroupModel.dbColumnName
+                    model.formRepeatLength = 0
+                    model.formChoiceList = true
+                    model.formChoiceValue = choiceValue
+                    model.parentGroup = parentGroupModel
+                    model.save(flush: true)
+                }
+            }
+            return columnIndex
+        }
+
+        if (fortype == ColumnType.GPS) {
+            ["lat", "lng", "alt", "acc"].each { gpsSuffix ->
+                def model = new CoreFormExtensionModel(coreForm: coreFormExtension, extFormId: coreFormExtension.extFormId)
+                model.dbColumnIndex = columnIndex++
+                model.dbColumnTable = tableName
+                model.dbColumnName = "${colname}_${gpsSuffix}"
+                model.dbColumnType = DatabaseColumnType.DOUBLE
+                model.dbColumnSize = -1
+                model.formColumnName = forname
+                model.formColumnType = FormColumnType.GEOPOINT
+                model.formRepeatGroup = (parentGroupModel == null) ? null : parentGroupModel.dbColumnName
+                model.formRepeatLength = 0
+                model.formChoiceList = false
+                model.formChoiceValue = gpsSuffix
+                model.parentGroup = parentGroupModel
+                model.save(flush: true)
+            }
+            return columnIndex
+        }
+
+        // Handle other types
+        DatabaseColumnType dbColumnType = null
+        int dbColumnSize = -1
+        FormColumnType fColumnType = null
+
+        switch (fortype) {
+            case ColumnType.STRING:
+                dbColumnType = DatabaseColumnType.STRING; dbColumnSize = 255; fColumnType = FormColumnType.TEXT; break
+            case ColumnType.INTEGER:
+                dbColumnType = DatabaseColumnType.INTEGER; fColumnType = FormColumnType.INTEGER; break
+            case ColumnType.DECIMAL:
+                dbColumnType = DatabaseColumnType.DECIMAL; fColumnType = FormColumnType.DECIMAL; break
+            case ColumnType.DATE:
+                dbColumnType = DatabaseColumnType.DATETIME; fColumnType = FormColumnType.DATE; break
+            case ColumnType.TIME:
+                dbColumnType = DatabaseColumnType.DATETIME; fColumnType = FormColumnType.TIME; break
+            case ColumnType.DATETIME:
+                dbColumnType = DatabaseColumnType.DATETIME; fColumnType = FormColumnType.DATE_TIME; break
+            case ColumnType.SELECT:
+                dbColumnType = DatabaseColumnType.STRING; fColumnType = FormColumnType.CHOICE
+                def options = column.getTypeOptions()
+                if (options) {
+                    def maxChoiceLength = options.keySet().collect { it.length() }.max() ?: 0
+                    dbColumnSize = (int) ((Math.floor(maxChoiceLength / 10) * 10) + 10)
+                } else {
+                    dbColumnSize = 40
+                }
+                break
+            case ColumnType.BARCODE:
+                dbColumnType = DatabaseColumnType.STRING; dbColumnSize = 100; fColumnType = FormColumnType.BARCODE; break
+            case ColumnType.IMAGE:
+            case ColumnType.AUDIO:
+            case ColumnType.VIDEO:
+                //dbColumnType = DatabaseColumnType.BLOB; fColumnType = FormColumnType.BINARY; break
+                dbColumnType = DatabaseColumnType.STRING; dbColumnSize = 255; fColumnType = FormColumnType.TEXT; break
+            case ColumnType.NOTE:
+                return columnIndex
+            default:
+                dbColumnType = DatabaseColumnType.STRING; dbColumnSize = 255; fColumnType = FormColumnType.UNSUPPORTED; break
+        }
+
+        def model = new CoreFormExtensionModel(coreForm: coreFormExtension, extFormId: coreFormExtension.extFormId)
+        model.dbColumnIndex = columnIndex++
+        model.dbColumnTable = tableName
+        model.dbColumnName = colname
+        model.dbColumnType = dbColumnType
+        model.dbColumnSize = dbColumnSize
+        model.formColumnName = forname
+        model.formColumnType = fColumnType
+        model.formRepeatGroup = (parentGroupModel == null) ? null : parentGroupModel.dbColumnName
+        model.formRepeatLength = 0
+        model.formChoiceList = false
+        model.formChoiceValue = null
+        model.parentGroup = parentGroupModel
+        model.save(flush: true)
+
+        return columnIndex
     }
 
     List<String[]> executeSqlCommands(String commandsText) {
@@ -128,178 +306,6 @@ class CoreExtensionDatabaseService {
         result.mappedValues = mapValues
 
         return result
-    }
-
-    private int generateDatabaseModelProcessChildren(CoreFormExtension coreFormExtension, String tableName, FormDef formDef, TreeElement rootElement, int columnIndex, CoreFormExtensionModel repeatGroupModel, List<TreeReference> repeatCountColumns) {
-        for (int i=0; i < rootElement.numChildren; i++) {
-            def element = rootElement.getChildAt(i)
-            def questDef = FormDef.findQuestionByRef(element.getRef(), formDef)
-
-            def forname = element.getName()
-            def colname = (repeatGroupModel==null) ? element.getName() : "${repeatGroupModel.dbColumnName}_#_${element.getName()}"  //ANALYSE SUFFIXES
-            def fortype = element.getDataType()
-            def repeatgroup = element.repeatable
-            def hasChoices = questDef?.getNumChoices() > 0
-            def choices = hasChoices ? questDef?.choices : null
-
-            if (["instanceID", "instanceName"].contains(element.getName())) continue /* ignore these variables */
-
-            if (fortype == DataType.NULL.value && !repeatgroup && element.numChildren > 0) { //Its a group
-                generateDatabaseModelProcessChildren(coreFormExtension, tableName, formDef, element, columnIndex, repeatGroupModel, repeatCountColumns)
-                continue
-            }
-
-            if (forname.endsWith("_count") && fortype == DataType.TEXT.value){ //check if is a jr:count variable
-                def ref = element.getRef().genericize()
-
-                //println("ref found: "+ref+" "+repeatCountColumns.contains(ref))
-
-                if (repeatCountColumns.contains(ref)) {
-                    continue
-                }
-            }
-
-            if (fortype == DataType.NULL.value && repeatgroup) { //its a repeat group initiation
-
-                if (coreFormExtension.coreForm == CoreForm.PREGNANCY_OUTCOME_FORM && forname.equals("childs")) {
-
-                    columnIndex = generateDatabaseModelProcessChildren(coreFormExtension, CoreExtensionService.PREGNANCY_CHILD_EXT_TABLE, formDef, element, columnIndex, null, repeatCountColumns)
-                    continue
-                }
-
-                if (coreFormExtension.coreForm == CoreForm.PREGNANCY_VISIT_FORM && forname.equals("childs")) {
-
-                    columnIndex = generateDatabaseModelProcessChildren(coreFormExtension, CoreExtensionService.PREGNANCY_VISIT_CHILD_EXT_TABLE, formDef, element, columnIndex, null, repeatCountColumns)
-                    continue
-                }
-
-                //create repeat datamodel
-                def model = new CoreFormExtensionModel(coreForm: coreFormExtension, extFormId: coreFormExtension.extFormId)
-                model.dbColumnIndex = columnIndex++
-                model.dbColumnTable = tableName
-                model.dbColumnName = colname
-                model.dbColumnType = DatabaseColumnType.NOT_APPLICABLE
-                model.dbColumnSize = -1
-                model.formColumnName = forname
-                model.formColumnType = FormColumnType.REPEAT_GROUP
-                model.formRepeatGroup = (repeatGroupModel==null) ? null : repeatGroupModel.dbColumnName
-                model.formRepeatLength = 2 //min 2
-                model.formChoiceList = false
-                model.formChoiceValue = null
-                model.parentGroup = repeatGroupModel
-                model.save(flush:true)
-
-                //process the repeat childs
-                columnIndex = generateDatabaseModelProcessChildren(coreFormExtension, tableName, formDef, element, columnIndex, model, repeatCountColumns)
-                continue
-            }
-
-            if (fortype == DataType.MULTIPLE_ITEMS.value) {
-                //Create multiple choice data model answers
-                if (hasChoices) {
-
-                    def maxChoice = choices.max { it.value.length() }
-                    def maxLength = (int) ((Math.floor(maxChoice?.value?.length()/10)*10) + 10) //round to next 10th
-
-                    choices.eachWithIndex{ SelectChoice choice, int index ->
-                        def strIndex = String.format("%02d", index)
-
-                        def model = new CoreFormExtensionModel(coreForm: coreFormExtension, extFormId: coreFormExtension.extFormId)
-                        model.dbColumnIndex = columnIndex++
-                        model.dbColumnTable = tableName
-                        model.dbColumnName = "${colname}_${strIndex}" //rgroup_1_habitations
-                        model.dbColumnType = DatabaseColumnType.STRING
-                        model.dbColumnSize = maxLength
-                        model.formColumnName = forname
-                        model.formColumnType = FormColumnType.getFrom(fortype)
-                        model.formRepeatGroup = (repeatGroupModel==null) ? null : repeatGroupModel.dbColumnName
-                        model.formRepeatLength = 0
-                        model.formChoiceList = true
-                        model.formChoiceValue = choice.value
-                        model.parentGroup = repeatGroupModel
-                        model.save(flush:true)
-                    }
-                }
-
-                continue
-            }
-
-            if (fortype == DataType.GEOPOINT.value) {
-                //create gps variables
-                ["lat", "lng", "alt", "acc"].each { gpsSuffix ->
-
-                    def model = new CoreFormExtensionModel(coreForm: coreFormExtension, extFormId: coreFormExtension.extFormId)
-                    model.dbColumnIndex = columnIndex++
-                    model.dbColumnTable = tableName
-                    model.dbColumnName = "${colname}_${gpsSuffix}"
-                    model.dbColumnType = DatabaseColumnType.DOUBLE
-                    model.dbColumnSize = -1
-                    model.formColumnName = forname
-                    model.formColumnType = FormColumnType.GEOPOINT
-                    model.formRepeatGroup = (repeatGroupModel==null) ? null : repeatGroupModel.dbColumnName
-                    model.formRepeatLength = 0
-                    model.formChoiceList = false
-                    model.formChoiceValue = gpsSuffix
-                    model.parentGroup = repeatGroupModel
-                    model.save(flush:true)
-
-                }
-
-                continue
-            }
-
-            //handle other dataTypes
-            DatabaseColumnType dbColumnType = null
-            int dbColumnSize = -1
-
-            /* retrieve database column type */
-            switch (fortype) {
-                case DataType.TEXT.value:    dbColumnType = DatabaseColumnType.STRING; dbColumnSize = 255; break;
-                case DataType.INTEGER.value: dbColumnType = DatabaseColumnType.INTEGER; break;
-                case DataType.DECIMAL.value: dbColumnType = DatabaseColumnType.DECIMAL; break;
-                case DataType.DATE.value:    dbColumnType = DatabaseColumnType.DATETIME; break;
-                case DataType.TIME.value:    dbColumnType = DatabaseColumnType.DATETIME; break;
-                case DataType.DATE_TIME.value: dbColumnType = DatabaseColumnType.DATETIME; break;
-                case DataType.CHOICE.value:
-                    dbColumnType = DatabaseColumnType.STRING;
-                    if (hasChoices) {
-                        def maxChoice = choices.max { it.value.length() }
-                        def maxLength = (int) ((Math.floor(maxChoice?.value?.length()/10)*10) + 10) //round to next 10th
-                        dbColumnSize = maxLength
-                    } else {
-                        dbColumnSize = 40
-                    }
-                    break;
-                case DataType.MULTIPLE_ITEMS.value: dbColumnType = DatabaseColumnType.STRING; break;
-                case DataType.BOOLEAN.value: dbColumnType = DatabaseColumnType.BOOLEAN; break;
-                case DataType.GEOPOINT.value: /*dbColumnType = DatabaseColumnType.GEOPOINT;*/ break
-                case DataType.GEOTRACE.value: /* Question with location trace. */ break;
-                case DataType.GEOSHAPE.value: /* Question with location trace. */ break;
-                case DataType.BARCODE.value: dbColumnType = DatabaseColumnType.STRING; dbColumnSize = 100; /* guessing */ break;
-                case DataType.BINARY.value:  dbColumnType = DatabaseColumnType.BLOB; break;
-                case DataType.NULL.value: break;
-                case DataType.UNSUPPORTED.value: dbColumnType = DatabaseColumnType.STRING; dbColumnSize = 255; break;
-                default: break
-            }
-
-            //others types
-            def model = new CoreFormExtensionModel(coreForm: coreFormExtension, extFormId: coreFormExtension.extFormId)
-            model.dbColumnIndex = columnIndex++
-            model.dbColumnTable = tableName
-            model.dbColumnName = colname
-            model.dbColumnType = dbColumnType
-            model.dbColumnSize = dbColumnSize
-            model.formColumnName = forname
-            model.formColumnType = FormColumnType.getFrom(fortype)
-            model.formRepeatGroup = (repeatGroupModel==null) ? null : repeatGroupModel.dbColumnName
-            model.formRepeatLength = 0
-            model.formChoiceList = false
-            model.formChoiceValue = null
-            model.parentGroup = repeatGroupModel
-            model.save(flush:true)
-        }
-
-        return columnIndex
     }
 
     def removeNonExistentColumns(String tableName, LinkedHashMap<String, Object> mapValues) {
@@ -481,35 +487,6 @@ class CoreExtensionDatabaseService {
             return new JActionResult(result: JActionResult.Result.SUCCESS, message: generalUtilitiesService.getMessageWeb("settings.coreformoptions.message.deleted.label"))
         } else {
             return new JActionResult(result: JActionResult.Result.ERROR.name(), message: "" + errorMessageService.formatErrors(model))
-        }
-    }
-
-    private List<TreeReference> findRepeatCountColumns(FormDef formDef) {
-        def list = new ArrayList<TreeReference>()
-
-        if (formDef.children)
-            for (int i = 0; i < formDef.children.size(); i++) {
-                findRepeatCountColumns(formDef.children.get(i), list);
-            }
-
-        return list
-    }
-
-    private def findRepeatCountColumns(IFormElement fe, List<TreeReference> list) {
-        if (fe instanceof GroupDef) {
-            def groupDef = (GroupDef) fe;
-            def countRef = groupDef?.countReference
-
-            if (groupDef.repeat && countRef != null) {
-                def ref = countRef.reference as TreeReference
-                list.add(ref)
-            }
-        }
-
-        if (fe.children != null) {
-            for (int i = 0; i < fe.children.size(); i++) {
-                findRepeatCountColumns(fe.getChild(i), list);
-            }
         }
     }
 

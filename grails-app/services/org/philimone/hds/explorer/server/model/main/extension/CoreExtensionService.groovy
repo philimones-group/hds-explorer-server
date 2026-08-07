@@ -14,7 +14,15 @@ import org.philimone.hds.explorer.server.model.enums.CoreForm
 import org.philimone.hds.explorer.server.model.enums.extensions.DatabaseColumnType
 import org.philimone.hds.explorer.server.model.enums.extensions.FormColumnType
 import org.philimone.hds.explorer.server.model.main.*
+import org.philimone.hds.forms.model.HForm
+import org.philimone.hds.forms.model.RepeatObject
+import org.philimone.hds.forms.model.parsers.ExcelFormParser
+import org.w3c.dom.Document
+import org.w3c.dom.Node
+import org.w3c.dom.NodeList
 
+import javax.xml.parsers.DocumentBuilder
+import javax.xml.parsers.DocumentBuilderFactory
 import java.time.format.DateTimeFormatter
 
 @Transactional
@@ -30,10 +38,10 @@ class CoreExtensionService {
 
         //get form extensions
         def coreFormExt = CoreFormExtension.findByCoreForm(CoreForm.REGION_FORM)
-        if (!coreFormExt?.enabled || coreFormExt?.extFormDefinition == null) return null
+        if (!coreFormExt?.enabled || coreFormExt?.extFormPath == null) return null
 
         //read xml data to map
-        def mapInstanceValues = getInstanceMappedValues(coreFormExt, coreFormExt.extFormDefinition, rawObj.extensionForm)
+        def mapInstanceValues = getInstanceMappedValues(coreFormExt, new File(coreFormExt.extFormPath), rawObj.extensionForm)
         //insert into
         def result = coreExtensionDatabaseService.executeSqlInsert(coreFormExt.extFormId, mapInstanceValues)
 
@@ -47,10 +55,10 @@ class CoreExtensionService {
 
         //get form extensions
         def coreFormExt = CoreFormExtension.findByCoreForm(CoreForm.HOUSEHOLD_FORM)
-        if (!coreFormExt?.enabled || coreFormExt?.extFormDefinition == null) return null
+        if (!coreFormExt?.enabled || coreFormExt?.extFormPath == null) return null
 
         //read xml data to map
-        def mapInstanceValues = getInstanceMappedValues(coreFormExt, coreFormExt.extFormDefinition, rawObj.extensionForm)
+        def mapInstanceValues = getInstanceMappedValues(coreFormExt, new File(coreFormExt.extFormPath), rawObj.extensionForm)
         //insert into
         def result = coreExtensionDatabaseService.executeSqlInsert(coreFormExt.extFormId, mapInstanceValues)
 
@@ -66,10 +74,10 @@ class CoreExtensionService {
 
         //get form extensions
         def coreFormExt = CoreFormExtension.findByCoreForm(CoreForm.VISIT_FORM)
-        if (!coreFormExt?.enabled || coreFormExt?.extFormDefinition == null) return null
+        if (!coreFormExt?.enabled || coreFormExt?.extFormPath == null) return null
 
         //read xml data to map
-        def mapInstanceValues = getInstanceMappedValues(coreFormExt, coreFormExt.extFormDefinition, rawObj.extensionForm)
+        def mapInstanceValues = getInstanceMappedValues(coreFormExt, new File(coreFormExt.extFormPath), rawObj.extensionForm)
         //insert into
         def result = coreExtensionDatabaseService.executeSqlInsert(coreFormExt.extFormId, mapInstanceValues)
 
@@ -83,10 +91,10 @@ class CoreExtensionService {
 
         //get form extensions
         def coreFormExt = CoreFormExtension.findByCoreForm(CoreForm.MEMBER_ENU_FORM)
-        if (!coreFormExt?.enabled || coreFormExt?.extFormDefinition == null) return null
+        if (!coreFormExt?.enabled || coreFormExt?.extFormPath == null) return null
 
         //read xml data to map
-        def mapInstanceValues = getInstanceMappedValues(coreFormExt, coreFormExt.extFormDefinition, rawObj.extensionForm)
+        def mapInstanceValues = getInstanceMappedValues(coreFormExt, new File(coreFormExt.extFormPath), rawObj.extensionForm)
         //insert into
         def result = coreExtensionDatabaseService.executeSqlInsert(coreFormExt.extFormId, mapInstanceValues)
 
@@ -100,10 +108,10 @@ class CoreExtensionService {
 
         //get form extensions
         def coreFormExt = CoreFormExtension.findByCoreForm(CoreForm.MARITAL_RELATIONSHIP_FORM)
-        if (!coreFormExt?.enabled || coreFormExt?.extFormDefinition == null) return null
+        if (!coreFormExt?.enabled || coreFormExt?.extFormPath == null) return null
 
         //read xml data to map
-        def mapInstanceValues = getInstanceMappedValues(coreFormExt, coreFormExt.extFormDefinition, rawObj.extensionForm)
+        def mapInstanceValues = getInstanceMappedValues(coreFormExt, new File(coreFormExt.extFormPath), rawObj.extensionForm)
         //insert into
         def result = coreExtensionDatabaseService.executeSqlInsert(coreFormExt.extFormId, mapInstanceValues)
 
@@ -117,10 +125,10 @@ class CoreExtensionService {
 
         //get form extensions
         def coreFormExt = CoreFormExtension.findByCoreForm(CoreForm.INMIGRATION_FORM)
-        if (!coreFormExt?.enabled || coreFormExt?.extFormDefinition == null) return null
+        if (!coreFormExt?.enabled || coreFormExt?.extFormPath == null) return null
 
         //read xml data to map
-        def mapInstanceValues = getInstanceMappedValues(coreFormExt, coreFormExt.extFormDefinition, rawObj.extensionForm)
+        def mapInstanceValues = getInstanceMappedValues(coreFormExt, new File(coreFormExt.extFormPath), rawObj.extensionForm)
         //insert into
         def result = coreExtensionDatabaseService.executeSqlInsert(coreFormExt.extFormId, mapInstanceValues)
 
@@ -134,10 +142,10 @@ class CoreExtensionService {
 
         //get form extensions
         def coreFormExt = CoreFormExtension.findByCoreForm(CoreForm.INMIGRATION_FORM)
-        if (!coreFormExt?.enabled || coreFormExt?.extFormDefinition == null) return null
+        if (!coreFormExt?.enabled || coreFormExt?.extFormPath == null) return null
 
         //read xml data to map
-        def mapInstanceValues = getInstanceMappedValues(coreFormExt, coreFormExt.extFormDefinition, rawObj.extensionForm)
+        def mapInstanceValues = getInstanceMappedValues(coreFormExt, new File(coreFormExt.extFormPath), rawObj.extensionForm)
         //insert into
         def result = coreExtensionDatabaseService.executeSqlInsert(coreFormExt.extFormId, mapInstanceValues)
 
@@ -151,10 +159,10 @@ class CoreExtensionService {
 
         //get form extensions
         def coreFormExt = CoreFormExtension.findByCoreForm(CoreForm.OUTMIGRATION_FORM)
-        if (!coreFormExt?.enabled || coreFormExt?.extFormDefinition == null) return null
+        if (!coreFormExt?.enabled || coreFormExt?.extFormPath == null) return null
 
         //read xml data to map
-        def mapInstanceValues = getInstanceMappedValues(coreFormExt, coreFormExt.extFormDefinition, rawObj.extensionForm)
+        def mapInstanceValues = getInstanceMappedValues(coreFormExt, new File(coreFormExt.extFormPath), rawObj.extensionForm)
         //insert into
         def result = coreExtensionDatabaseService.executeSqlInsert(coreFormExt.extFormId, mapInstanceValues)
 
@@ -168,10 +176,10 @@ class CoreExtensionService {
 
         //get form extensions
         def coreFormExt = CoreFormExtension.findByCoreForm(CoreForm.PREGNANCY_REGISTRATION_FORM)
-        if (!coreFormExt?.enabled || coreFormExt?.extFormDefinition == null) return null
+        if (!coreFormExt?.enabled || coreFormExt?.extFormPath == null) return null
 
         //read xml data to map
-        def mapInstanceValues = getInstanceMappedValues(coreFormExt, coreFormExt.extFormDefinition, rawObj.extensionForm)
+        def mapInstanceValues = getInstanceMappedValues(coreFormExt, new File(coreFormExt.extFormPath), rawObj.extensionForm)
         //insert into
         def result = coreExtensionDatabaseService.executeSqlInsert(coreFormExt.extFormId, mapInstanceValues)
 
@@ -186,10 +194,10 @@ class CoreExtensionService {
 
         //get form extensions
         def coreFormExt = CoreFormExtension.findByCoreForm(CoreForm.PREGNANCY_OUTCOME_FORM)
-        if (!coreFormExt?.enabled || coreFormExt?.extFormDefinition == null) return null
+        if (!coreFormExt?.enabled || coreFormExt?.extFormPath == null) return null
 
         //read xml data to map - in this form we have a special repeat (childs) -> that will be sent to a separated table
-        def instanceMappedValues = getExtraInstanceMappedValues(coreFormExt, ["childs"], coreFormExt.extFormDefinition, rawObj.extensionForm)
+        def instanceMappedValues = getExtraInstanceMappedValues(coreFormExt, ["childs"], new File(coreFormExt.extFormPath), rawObj.extensionForm)
 
         //insert into pregnancy_outcome_ext
         def result = coreExtensionDatabaseService.executeSqlInsert(coreFormExt.extFormId, instanceMappedValues.mainFormValues)
@@ -220,10 +228,10 @@ class CoreExtensionService {
 
         //get form extensions
         def coreFormExt = CoreFormExtension.findByCoreForm(CoreForm.PREGNANCY_VISIT_FORM)
-        if (!coreFormExt?.enabled || coreFormExt?.extFormDefinition == null) return null
+        if (!coreFormExt?.enabled || coreFormExt?.extFormPath == null) return null
 
         //read xml data to map - in this form we have a special repeat (childs) -> that will be sent to a separated table
-        def instanceMappedValues = getExtraInstanceMappedValues(coreFormExt, ["childs"], coreFormExt.extFormDefinition, rawObj.extensionForm)
+        def instanceMappedValues = getExtraInstanceMappedValues(coreFormExt, ["childs"], new File(coreFormExt.extFormPath), rawObj.extensionForm)
 
         //insert into pregnancy_outcome_ext
         def result = coreExtensionDatabaseService.executeSqlInsert(coreFormExt.extFormId, instanceMappedValues.mainFormValues)
@@ -253,10 +261,10 @@ class CoreExtensionService {
 
         //get form extensions
         def coreFormExt = CoreFormExtension.findByCoreForm(CoreForm.DEATH_FORM)
-        if (!coreFormExt?.enabled || coreFormExt?.extFormDefinition == null) return null
+        if (!coreFormExt?.enabled || coreFormExt?.extFormPath == null) return null
 
         //read xml data to map
-        def mapInstanceValues = getInstanceMappedValues(coreFormExt, coreFormExt.extFormDefinition, rawObj.extensionForm)
+        def mapInstanceValues = getInstanceMappedValues(coreFormExt, new File(coreFormExt.extFormPath), rawObj.extensionForm)
         //insert into
         def result = coreExtensionDatabaseService.executeSqlInsert(coreFormExt.extFormId, mapInstanceValues)
 
@@ -270,10 +278,10 @@ class CoreExtensionService {
 
         //get form extensions
         def coreFormExt = CoreFormExtension.findByCoreForm(CoreForm.CHANGE_HEAD_FORM)
-        if (!coreFormExt?.enabled || coreFormExt?.extFormDefinition == null) return null
+        if (!coreFormExt?.enabled || coreFormExt?.extFormPath == null) return null
 
         //read xml data to map
-        def mapInstanceValues = getInstanceMappedValues(coreFormExt, coreFormExt.extFormDefinition, rawObj.extensionForm)
+        def mapInstanceValues = getInstanceMappedValues(coreFormExt, new File(coreFormExt.extFormPath), rawObj.extensionForm)
         //insert into
         def result = coreExtensionDatabaseService.executeSqlInsert(coreFormExt.extFormId, mapInstanceValues)
 
@@ -287,10 +295,10 @@ class CoreExtensionService {
 
         //get form extensions
         def coreFormExt = CoreFormExtension.findByCoreForm(CoreForm.INCOMPLETE_VISIT_FORM)
-        if (!coreFormExt?.enabled || coreFormExt?.extFormDefinition == null) return null
+        if (!coreFormExt?.enabled || coreFormExt?.extFormPath == null) return null
 
         //read xml data to map
-        def mapInstanceValues = getInstanceMappedValues(coreFormExt, coreFormExt.extFormDefinition, rawObj.extensionForm)
+        def mapInstanceValues = getInstanceMappedValues(coreFormExt, new File(coreFormExt.extFormPath), rawObj.extensionForm)
         //insert into
         def result = coreExtensionDatabaseService.executeSqlInsert(coreFormExt.extFormId, mapInstanceValues)
 
@@ -304,10 +312,10 @@ class CoreExtensionService {
 
         //get form extensions
         def coreFormExt = CoreFormExtension.findByCoreForm(CoreForm.CHANGE_REGION_HEAD_FORM)
-        if (!coreFormExt?.enabled || coreFormExt?.extFormDefinition == null) return null
+        if (!coreFormExt?.enabled || coreFormExt?.extFormPath == null) return null
 
         //read xml data to map
-        def mapInstanceValues = getInstanceMappedValues(coreFormExt, coreFormExt.extFormDefinition, rawObj.extensionForm)
+        def mapInstanceValues = getInstanceMappedValues(coreFormExt, new File(coreFormExt.extFormPath), rawObj.extensionForm)
         //insert into
         def result = coreExtensionDatabaseService.executeSqlInsert(coreFormExt.extFormId, mapInstanceValues)
 
@@ -321,10 +329,10 @@ class CoreExtensionService {
 
         //get form extensions
         def coreFormExt = CoreFormExtension.findByCoreForm(CoreForm.HOUSEHOLD_RELOCATION_FORM)
-        if (!coreFormExt?.enabled || coreFormExt?.extFormDefinition == null) return null
+        if (!coreFormExt?.enabled || coreFormExt?.extFormPath == null) return null
 
         //read xml data to map
-        def mapInstanceValues = getInstanceMappedValues(coreFormExt, coreFormExt.extFormDefinition, rawObj.extensionForm)
+        def mapInstanceValues = getInstanceMappedValues(coreFormExt, new File(coreFormExt.extFormPath), rawObj.extensionForm)
         //insert into
         def result = coreExtensionDatabaseService.executeSqlInsert(coreFormExt.extFormId, mapInstanceValues)
 
@@ -338,10 +346,10 @@ class CoreExtensionService {
 
         //get form extensions
         def coreFormExt = CoreFormExtension.findByCoreForm(CoreForm.CHANGE_PROXY_HEAD_FORM)
-        if (!coreFormExt?.enabled || coreFormExt?.extFormDefinition == null) return null
+        if (!coreFormExt?.enabled || coreFormExt?.extFormPath == null) return null
 
         //read xml data to map
-        def mapInstanceValues = getInstanceMappedValues(coreFormExt, coreFormExt.extFormDefinition, rawObj.extensionForm)
+        def mapInstanceValues = getInstanceMappedValues(coreFormExt, new File(coreFormExt.extFormPath), rawObj.extensionForm)
         //insert into
         def result = coreExtensionDatabaseService.executeSqlInsert(coreFormExt.extFormId, mapInstanceValues)
 
@@ -350,291 +358,177 @@ class CoreExtensionService {
         return result
     }
 
-    LinkedHashMap<String, Object> getInstanceMappedValues(CoreFormExtension coreFormExt, byte[] formDefBytes, byte[] instanceBytes) {
-
+    LinkedHashMap<String, Object> getInstanceMappedValues(CoreFormExtension coreFormExt, File formDefFile , byte[] instanceBytes) {
         def mapValues = new LinkedHashMap<String, Object>()
+        byte[] formDefBytes = formDefFile.bytes
+        def hForm = new ExcelFormParser(new ByteArrayInputStream(formDefBytes)).getForm()
+        def xmlData = getXmlMappedData(instanceBytes, hForm)
 
-        def formDef = XFormReader.getFormDefinition(formDefBytes)
-        def instanceXml = XFormReader.getFormInstanceFrom(instanceBytes)
-
-        if (instanceXml != null) {
-            //open HouseholdExt
-            //get mapping models, navigate xml (attention to Repeat, CHOICE_LIST, GEOPOINT)
+        if (xmlData) {
             def repeatIndexes = new LinkedHashMap<String, Integer>()
-            readElementChildren(coreFormExt, formDef, instanceXml.getRoot(), mapValues, null, 0, repeatIndexes, new String[1])
+            readElementChildren(coreFormExt, xmlData, mapValues, repeatIndexes, new String[1])
         }
 
         return mapValues
     }
 
-    InstanceMappedValues getExtraInstanceMappedValues(CoreFormExtension coreFormExt, List<String> innerChilds, byte[] formDefBytes, byte[] instanceBytes) {
-
+    InstanceMappedValues getExtraInstanceMappedValues(CoreFormExtension coreFormExt, List<String> innerChilds, File formDefFile, byte[] instanceBytes) {
         def instanceMapValues = new InstanceMappedValues()
+        byte[] formDefBytes = formDefFile.bytes
+        def hForm = new ExcelFormParser(new ByteArrayInputStream(formDefBytes)).getForm()
+        def xmlData = getXmlMappedData(instanceBytes, hForm)
 
-        def formDef = XFormReader.getFormDefinition(formDefBytes)
-        def instanceXml = XFormReader.getFormInstanceFrom(instanceBytes)
-
-        if (instanceXml != null) {
-            //open HouseholdExt
-            //get mapping models, navigate xml (attention to Repeat, CHOICE_LIST, GEOPOINT)
-
-            //def mapValues = new LinkedHashMap<String, Object>()
+        if (xmlData) {
             def repeatIndexes = new LinkedHashMap<String, Integer>()
-            readExtraElementChildren(coreFormExt, innerChilds, formDef, instanceXml.getRoot(), instanceMapValues, instanceMapValues.mainFormValues, null, 0, repeatIndexes, new String[1])
+            readExtraElementChildren(coreFormExt, innerChilds, xmlData, instanceMapValues, instanceMapValues.mainFormValues, repeatIndexes, new String[1])
         }
 
         return instanceMapValues
     }
 
-    def readElementChildren(CoreFormExtension coreFormExtension, FormDef formDef, TreeElement instanceElement, Map<String, Object> mapValues, String repeatGroup, int repeatLength, LinkedHashMap<String, Integer> repeatIndexes, String[] lastReadedRepeatGroup) {
-        for (int i=0; i < instanceElement.numChildren; i++) {
-            def insChildElement = instanceElement.getChildAt(i)
-            def insChildRef = insChildElement.getRef()
-            def questDef = formDef.findQuestionByRef(insChildRef, formDef)
-            def defChildElement = formDef.getMainInstance()?.getTemplatePath(insChildRef)
-
-            def formColName = defChildElement?.getName()
-            def dataType = defChildElement?.dataType
-            def answerData = insChildElement?.value
-            def textValue = answerData?.displayText
-            def repeatgroup = defChildElement?.repeatable
-
-
-            /* ignore these variables */
-            if (["instanceID", "instanceName"].contains(insChildElement.getName())) continue
-
-            //Handling Groups
-            if (dataType == DataType.NULL.value && !repeatgroup && insChildElement.numChildren > 0) {
-                readElementChildren(coreFormExtension, formDef, insChildElement, mapValues, repeatGroup, repeatLength, repeatIndexes)
-                continue
+    private Map<String, Object> getXmlMappedData(byte[] instanceBytes, HForm form) {
+        Map<String, Object> map = new LinkedHashMap<>()
+        try {
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance()
+            DocumentBuilder builder = factory.newDocumentBuilder()
+            Document doc = builder.parse(new ByteArrayInputStream(instanceBytes))
+            Node node = doc.getElementsByTagName(form.getFormId()).item(0)
+            if (node != null) {
+                readMainNodes(node, map, form)
             }
+        } catch (Exception e) {
+            e.printStackTrace()
+        }
+        return map
+    }
 
-            //Handling Repeat Groups
-            if (dataType == DataType.NULL.value && repeatgroup) {
-                //process the repeat childs, get repeat model
-                def repeatModel = CoreFormExtensionModel.findByCoreFormAndFormColumnNameAndFormColumnType(coreFormExtension, formColName, FormColumnType.REPEAT_GROUP)
-
-                if (lastReadedRepeatGroup[0] != null) {
-                    if (!lastReadedRepeatGroup[0].equals(repeatModel.dbColumnName)) {
-                        //root repeats should not be removed
-                        if (!lastReadedRepeatGroup[0].equals(repeatModel.formRepeatGroup)) {
-                            //if the last repeated is the parent of this repeat do not remove the last repeat
-                            repeatIndexes.remove(lastReadedRepeatGroup[0])  //remove the counting of that repeatgroup to reset counters of inner repeat groups
-                        }
-                    }
-                }
-
-                def repeatIndex = !repeatIndexes.containsKey(repeatModel.dbColumnName) ? 1 : (repeatIndexes.get(repeatModel.dbColumnName)+1)
-                repeatIndexes.put(repeatModel.dbColumnName, repeatIndex)
-
-                lastReadedRepeatGroup[0] = repeatModel.dbColumnName
-
-                readElementChildren(coreFormExtension, formDef, insChildElement, mapValues, repeatModel.dbColumnName, repeatModel.formRepeatLength, repeatIndexes, lastReadedRepeatGroup)
-
-                continue
-            }
-
-            if (dataType == DataType.MULTIPLE_ITEMS.value && answerData != null) {
-                //Read the answers Create multiple choice data model answers
-                if (answerData instanceof MultipleItemsData) {
-                    answerData.value.each {
-                        //get the model
-                        //    db_col           odk_col   ock_choice
-                        //1. custom_quest_00,custom_quest,LBR
-                        def model = CoreFormExtensionModel.findByCoreFormAndFormColumnNameAndFormColumnTypeAndFormChoiceValue(coreFormExtension, formColName, FormColumnType.MULTIPLE_ITEMS, it?.value as String)
-
-                        if (model != null) {
-                            if (model.formRepeatGroup == null) { //not under repeat
-                                mapValues.put(model.dbColumnName, it?.value)
-                            } else { //under a repeat group
-                                def finalColumnName = getFinalColumnName(model, repeatIndexes)
-                                mapValues.put(finalColumnName, it?.value)
+    private void readMainNodes(Node node, Map<String, Object> map, HForm form) {
+        NodeList nodes = node.getChildNodes()
+        for (int i = 0; i < nodes.getLength(); i++) {
+            Node n = nodes.item(i)
+            if (n.getNodeType() == Node.ELEMENT_NODE) {
+                if (n.hasChildNodes() && form.isRepeatColumnName(n.getNodeName())) {
+                    String repeatNodeName = n.getNodeName()
+                    NodeList repeatChilds = n.getChildNodes()
+                    RepeatObject newRepObjList = new RepeatObject()
+                    for (int ri = 0; ri < repeatChilds.getLength(); ri++) {
+                        Node nodeRepObj = repeatChilds.item(ri)
+                        if (nodeRepObj.getNodeType() == Node.ELEMENT_NODE) {
+                            NodeList childElements = nodeRepObj.getChildNodes()
+                            Map<String, String> obj = newRepObjList.createNewObject()
+                            for (int j = 0; j < childElements.getLength(); j++) {
+                                Node elementNode = childElements.item(j)
+                                if (elementNode.getNodeType() == Node.ELEMENT_NODE) {
+                                    obj.put(elementNode.getNodeName(), elementNode.getTextContent() ?: "")
+                                }
                             }
-                        } else {
-                            throw new Exception("Error model is null")
                         }
-
                     }
+                    map.put(repeatNodeName, newRepObjList)
+                } else {
+                    map.put(n.getNodeName(), n.getTextContent() ?: "")
                 }
-
-                continue
             }
-
-            if (dataType == DataType.GEOPOINT.value) {
-                //create gps variables
-                if (!StringUtil.isBlank(textValue)) {
-                    answerData = XFormAnswerDataParser.getAnswerData(textValue, dataType, questDef)
-                    def geoData = (GeoPointData) answerData
-
-                    ["lat", "lng", "alt", "acc"].eachWithIndex { gpsSuffix, geoIndex ->
-                        def model = CoreFormExtensionModel.findByCoreFormAndFormColumnNameAndFormColumnTypeAndFormChoiceValue(coreFormExtension, formColName, FormColumnType.GEOPOINT, gpsSuffix)
-                        def finalColumnName = getFinalColumnName(model, repeatIndexes)
-                        mapValues.put(finalColumnName, new Double(geoData.getPart(geoIndex)))
-                    }
-                }
-
-                continue
-            }
-
-
-            //any other type
-            def model = CoreFormExtensionModel.findByCoreFormAndFormColumnNameAndFormColumnType(coreFormExtension, formColName, FormColumnType.getFrom(dataType))
-
-            if (model != null) {
-                //println("var: ${formColName}")
-
-                if (textValue != null) { //if the value is null, we dont need to map it
-                    Object objValue = getObjectValueByType(model.dbColumnType, textValue)
-
-                    if (model.formRepeatGroup == null) { //not under repeat
-                        mapValues.put(model.dbColumnName, objValue)
-                    } else {
-                        //under a repeat group
-                        //habitation_#_rooms_#_type, habitation_#_rooms, habitation
-                        //substitution of cardinals
-                        def finalColumnName = getFinalColumnName(model, repeatIndexes)
-
-                        mapValues.put(finalColumnName, objValue)
-                    }
-                }
-
-            } else {
-                //throw new Exception("Error")
-            }
-
         }
     }
 
-    def readExtraElementChildren(CoreFormExtension coreFormExtension, List<String> innerChilds, FormDef formDef, TreeElement instanceElement, InstanceMappedValues instanceMappedValues, Map<String, Object> mapValues, String repeatGroup, int repeatLength, LinkedHashMap<String, Integer> repeatIndexes, String[] lastReadedRepeatGroup) {
+    private void readElementChildren(CoreFormExtension coreFormExtension, Map<String, Object> xmlData, Map<String, Object> mapValues, LinkedHashMap<String, Integer> repeatIndexes, String[] lastReadedRepeatGroup) {
+        xmlData.each { key, value ->
+            if (["instanceID", "instanceName"].contains(key)) return
 
-        for (int i=0; i < instanceElement.numChildren; i++) {
-            def insChildElement = instanceElement.getChildAt(i)
-            def insChildRef = insChildElement.getRef()
-            def questDef = formDef.findQuestionByRef(insChildRef, formDef)
-            def defChildElement = formDef.getMainInstance()?.getTemplatePath(insChildRef)
-
-            def formColName = defChildElement?.getName()
-            def dataType = defChildElement?.dataType
-            def answerData = insChildElement?.value
-            def textValue = answerData?.displayText
-            def repeatgroup = defChildElement?.repeatable
-
-
-            /* ignore these variables */
-            if (["instanceID", "instanceName"].contains(insChildElement.getName())) continue
-
-            //Handling Groups
-            if (dataType == DataType.NULL.value && !repeatgroup && insChildElement.numChildren > 0) {
-                readExtraElementChildren(coreFormExtension, innerChilds, formDef, insChildElement, instanceMappedValues, mapValues, repeatGroup, repeatLength, repeatIndexes)
-                continue
-            }
-
-            //Handling Repeat Groups
-            if (dataType == DataType.NULL.value && repeatgroup) {
-
-                if (innerChilds.contains(formColName)) { //a inner repeat - that maps to a separated table
-
-                    def list = instanceMappedValues.childFormValues.containsKey(formColName) ? instanceMappedValues.childFormValues.get(formColName) : new ArrayList<LinkedHashMap<String, Object>>()
-                    instanceMappedValues.childFormValues.put(formColName, list)
-
-                    def newMappedValues = new LinkedHashMap<String, Object>()
-                    list.add(newMappedValues)
-
-                    readExtraElementChildren(coreFormExtension, innerChilds, formDef, insChildElement, instanceMappedValues, newMappedValues, null, repeatLength, repeatIndexes)
-
-                    continue
-                }
-
-                //process the repeat childs, get repeat model
-                def repeatModel = CoreFormExtensionModel.findByCoreFormAndFormColumnNameAndFormColumnType(coreFormExtension, formColName, FormColumnType.REPEAT_GROUP)
-
-                if (lastReadedRepeatGroup[0] != null) {
-                    if (!lastReadedRepeatGroup[0].equals(repeatModel.dbColumnName)) {
-                        //root repeats should not be removed
-                        if (!lastReadedRepeatGroup[0].equals(repeatModel.formRepeatGroup)) {
-                            //if the last repeated is the parent of this repeat do not remove the last repeat
-                            repeatIndexes.remove(lastReadedRepeatGroup[0])  //remove the counting of that repeatgroup to reset counters of inner repeat groups
-                        }
-                    }
-                }
-
-                def repeatIndex = !repeatIndexes.containsKey(repeatModel.dbColumnName) ? 1 : (repeatIndexes.get(repeatModel.dbColumnName)+1)
-                repeatIndexes.put(repeatModel.dbColumnName, repeatIndex)
-
-                lastReadedRepeatGroup[0] = repeatModel.dbColumnName
-
-                readExtraElementChildren(coreFormExtension, innerChilds, formDef, insChildElement, instanceMappedValues, mapValues, repeatModel.dbColumnName, repeatModel.formRepeatLength, repeatIndexes, lastReadedRepeatGroup)
-
-                continue
-            }
-
-            if (dataType == DataType.MULTIPLE_ITEMS.value && answerData != null) {
-                //Read the answers Create multiple choice data model answers
-                if (answerData instanceof MultipleItemsData) {
-                    answerData.value.each {
-                        //get the model
-                        //    db_col           odk_col   ock_choice
-                        //1. custom_quest_00,custom_quest,LBR
-                        def model = CoreFormExtensionModel.findByCoreFormAndFormColumnNameAndFormColumnTypeAndFormChoiceValue(coreFormExtension, formColName, FormColumnType.MULTIPLE_ITEMS, it?.value as String)
-
-                        if (model != null) {
-                            if (model.formRepeatGroup == null) { //not under repeat
-                                mapValues.put(model.dbColumnName, it?.value)
-                            } else { //under a repeat group
-                                def finalColumnName = getFinalColumnName(model, repeatIndexes)
-                                mapValues.put(finalColumnName, it?.value)
+            if (value instanceof RepeatObject) {
+                def repeatModel = CoreFormExtensionModel.findByCoreFormAndFormColumnNameAndFormColumnType(coreFormExtension, key, FormColumnType.REPEAT_GROUP)
+                if (repeatModel) {
+                    if (lastReadedRepeatGroup[0] != null) {
+                        if (!lastReadedRepeatGroup[0].equals(repeatModel.dbColumnName)) {
+                            if (!lastReadedRepeatGroup[0].equals(repeatModel.formRepeatGroup)) {
+                                repeatIndexes.remove(lastReadedRepeatGroup[0])
                             }
-                        } else {
-                            throw new Exception("Error model is null")
                         }
+                    }
+                    lastReadedRepeatGroup[0] = repeatModel.dbColumnName
 
+                    value.getList().eachWithIndex { Map<String, String> itemMap, int index ->
+                        def currentRepeatIndexes = new LinkedHashMap(repeatIndexes)
+                        currentRepeatIndexes.put(repeatModel.dbColumnName, index + 1)
+                        readElementChildren(coreFormExtension, itemMap, mapValues, currentRepeatIndexes, lastReadedRepeatGroup)
                     }
                 }
-
-                continue
-            }
-
-            if (dataType == DataType.GEOPOINT.value) {
-                //create gps variables
-                if (!StringUtil.isBlank(textValue)) {
-                    answerData = XFormAnswerDataParser.getAnswerData(textValue, dataType, questDef)
-                    def geoData = (GeoPointData) answerData
-
-                    ["lat", "lng", "alt", "acc"].eachWithIndex { gpsSuffix, geoIndex ->
-                        def model = CoreFormExtensionModel.findByCoreFormAndFormColumnNameAndFormColumnTypeAndFormChoiceValue(coreFormExtension, formColName, FormColumnType.GEOPOINT, gpsSuffix)
-                        def finalColumnName = getFinalColumnName(model, repeatIndexes)
-                        mapValues.put(finalColumnName, new Double(geoData.getPart(geoIndex)))
-                    }
-                }
-
-                continue
-            }
-
-
-            //any other type
-            def model = CoreFormExtensionModel.findByCoreFormAndFormColumnNameAndFormColumnType(coreFormExtension, formColName, FormColumnType.getFrom(dataType))
-
-            if (model != null) {
-
-                if (textValue != null) { //if the value is null, we dont need to map it
-                    Object objValue = getObjectValueByType(model.dbColumnType, textValue)
-
-                    if (model.formRepeatGroup == null) { //not under repeat
-                        mapValues.put(model.dbColumnName, objValue)
-                    } else {
-                        //under a repeat group
-                        //habitation_#_rooms_#_type, habitation_#_rooms, habitation
-                        //substitution of cardinals
-                        def finalColumnName = getFinalColumnName(model, repeatIndexes)
-
-                        mapValues.put(finalColumnName, objValue)
-                    }
-                }
-
             } else {
-                //throw new Exception("Error")
+                processNodeValue(coreFormExtension, key, value as String, mapValues, repeatIndexes)
             }
+        }
+    }
 
+    private void readExtraElementChildren(CoreFormExtension coreFormExtension, List<String> innerChilds, Map<String, Object> xmlData, InstanceMappedValues instanceMappedValues, Map<String, Object> mapValues, LinkedHashMap<String, Integer> repeatIndexes, String[] lastReadedRepeatGroup) {
+        xmlData.each { key, value ->
+            if (["instanceID", "instanceName"].contains(key)) return
+
+            if (value instanceof RepeatObject) {
+                if (innerChilds.contains(key)) {
+                    def list = instanceMappedValues.childFormValues.computeIfAbsent(key, { k -> new ArrayList<LinkedHashMap<String, Object>>() })
+                    value.getList().each { Map<String, String> itemMap ->
+                        def newMappedValues = new LinkedHashMap<String, Object>()
+                        list.add(newMappedValues)
+                        readExtraElementChildren(coreFormExtension, innerChilds, itemMap, instanceMappedValues, newMappedValues, repeatIndexes, lastReadedRepeatGroup)
+                    }
+                    return
+                }
+
+                def repeatModel = CoreFormExtensionModel.findByCoreFormAndFormColumnNameAndFormColumnType(coreFormExtension, key, FormColumnType.REPEAT_GROUP)
+                if (repeatModel) {
+                    if (lastReadedRepeatGroup[0] != null) {
+                        if (!lastReadedRepeatGroup[0].equals(repeatModel.dbColumnName)) {
+                            if (!lastReadedRepeatGroup[0].equals(repeatModel.formRepeatGroup)) {
+                                repeatIndexes.remove(lastReadedRepeatGroup[0])
+                            }
+                        }
+                    }
+                    lastReadedRepeatGroup[0] = repeatModel.dbColumnName
+
+                    value.getList().eachWithIndex { Map<String, String> itemMap, int index ->
+                        def currentRepeatIndexes = new LinkedHashMap(repeatIndexes)
+                        currentRepeatIndexes.put(repeatModel.dbColumnName, index + 1)
+                        readExtraElementChildren(coreFormExtension, innerChilds, itemMap, instanceMappedValues, mapValues, currentRepeatIndexes, lastReadedRepeatGroup)
+                    }
+                }
+            } else {
+                processNodeValue(coreFormExtension, key, value as String, mapValues, repeatIndexes)
+            }
+        }
+    }
+
+    private void processNodeValue(CoreFormExtension coreFormExtension, String key, String textValue, Map<String, Object> mapValues, LinkedHashMap<String, Integer> repeatIndexes) {
+
+        def multiModels = CoreFormExtensionModel.findAllByCoreFormAndFormColumnNameAndFormColumnType(coreFormExtension, key, FormColumnType.MULTIPLE_ITEMS)
+        if (multiModels) {
+            def choices = textValue.split(",")
+            multiModels.each { model ->
+                if (choices.contains(model.formChoiceValue)) {
+                    def finalColName = getFinalColumnName(model, repeatIndexes)
+                    mapValues.put(finalColName, model.formChoiceValue)
+                }
+            }
+            return
+        }
+
+        if (key.contains("_")) {
+            def suffix = key.substring(key.lastIndexOf("_") + 1)
+            if (["lat", "lng", "alt", "acc"].contains(suffix)) {
+                def baseName = key.substring(0, key.lastIndexOf("_"))
+                def gpsModel = CoreFormExtensionModel.findByCoreFormAndFormColumnNameAndFormColumnTypeAndFormChoiceValue(coreFormExtension, baseName, FormColumnType.GEOPOINT, suffix)
+                if (gpsModel) {
+                    def finalColName = getFinalColumnName(gpsModel, repeatIndexes)
+                    mapValues.put(finalColName, Double.parseDouble(textValue))
+                    return
+                }
+            }
+        }
+
+        def model = CoreFormExtensionModel.findByCoreFormAndFormColumnName(coreFormExtension, key)
+        if (model && model.formColumnType != FormColumnType.REPEAT_GROUP) {
+            def finalColName = getFinalColumnName(model, repeatIndexes)
+            mapValues.put(finalColName, getObjectValueByType(model.dbColumnType, textValue))
         }
     }
 
