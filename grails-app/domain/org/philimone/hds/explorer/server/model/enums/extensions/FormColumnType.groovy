@@ -19,7 +19,8 @@ enum FormColumnType {
     LONG            (13),
     GEOSHAPE        (14),
     GEOTRACE        (15),
-    REPEAT_GROUP    (40);
+    REPEAT_GROUP    (40),
+    SYSTEM          (41);
 
 
     Integer code

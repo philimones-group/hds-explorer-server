@@ -669,38 +669,44 @@ public class StringUtil {
         return str
     }
 
-    public static String toSnakeCase(String s){
-        String ss = "";
-        String last = "";
-        int repeatNr = 0;
-        boolean lastIsUpper = false
+    public static String toSnakeCase(String s) {
+        if (!s) return s
 
-        for (int i=0; i < s.length(); i++) {
+        def ss = new StringBuilder()
+        int len = s.length()
 
+        for (int i = 0; i < len; i++) {
             char ch = s.charAt(i)
-            String it = ""+ch+"";
 
-            if (i==0 || lastIsUpper){
-                it = it.toLowerCase() //first character will be always lowercase
-                ch = ch.toLowerCase()
+            if (i > 0) {
+                char prev = s.charAt(i - 1)
+                boolean currUpper = Character.isUpperCase(ch)
+                boolean prevUpper = Character.isUpperCase(prev)
+                boolean currDigit = Character.isDigit(ch)
+                boolean prevDigit = Character.isDigit(prev)
+
+                // 1. Handle standard CamelCase boundary (e.g., 'l' to 'C' in camelCase)
+                boolean isCamelBoundary = currUpper && !prevUpper
+
+                // 2. Handle Acronym boundary (e.g., 'R' in URLRequest -> looks ahead to see 'e')
+                boolean isAcronymBoundary = currUpper && prevUpper && (i + 1 < len && Character.isLowerCase(s.charAt(i + 1)))
+
+                // 3. Handle Number boundaries (e.g., 'user123' -> 'user_123')
+                boolean isNumberBoundary = (currDigit && !prevDigit) || (!currDigit && prevDigit)
+
+                if (isCamelBoundary || isAcronymBoundary || isNumberBoundary) {
+                    // Prevent duplicate underscores
+                    if (ss.length() > 0 && ss.charAt(ss.length() - 1) != (char)'_') {
+                        ss << '_'
+                    }
+                }
             }
 
-            repeatNr = it.matches("[0-9]+") ? ++repeatNr : 0;
-            //println "rp "+repeatNr
-
-            if (Character.isUpperCase(ch)){
-
-                if (repeatNr<2) {ss += "_" + it;} else {ss += it;}
-
-            }else{
-                ss += it;
-            }
-            last = it;
-
-            lastIsUpper = Character.isUpperCase(s.charAt(i)) //last/current char is uppercase
+            // Groovy's left-shift operator (<<) appends to StringBuilder efficiently
+            ss << Character.toLowerCase(ch)
         }
 
-        return ss;
+        return ss.toString()
     }
 
     public static String removePackageNames(String text){

@@ -197,7 +197,7 @@ class CoreFormExtensionController {
         def coreFormExtension = CoreFormExtension.get(params.id)
         def models = CoreFormExtensionModel.findAllByCoreForm(coreFormExtension, [sort: "dbColumnIndex", order: "asc"])
 
-        def sqlCommands = coreExtensionDatabaseService.generateSqlCommandsFrom(models)
+        def sqlCommands = coreExtensionDatabaseService.generateSqlCommandsFrom(coreFormExtension, models)
         def databaseSystem = coreExtensionDatabaseService.getDatabaseSystemName()
         def totalColumns = models.findAll { it.formColumnType != FormColumnType.REPEAT_GROUP}.size()
 

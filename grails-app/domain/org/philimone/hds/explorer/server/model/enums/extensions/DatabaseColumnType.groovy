@@ -9,7 +9,8 @@ enum DatabaseColumnType {
     DOUBLE (4),
     INTEGER (5),
     DATETIME (6),
-    STRING (7)
+    STRING (7),
+    LONG (8)
 
     public Integer code
     public String name

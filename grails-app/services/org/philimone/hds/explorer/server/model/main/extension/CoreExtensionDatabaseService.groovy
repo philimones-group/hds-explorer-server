@@ -2,17 +2,9 @@ package org.philimone.hds.explorer.server.model.main.extension
 
 import grails.gorm.transactions.Transactional
 import groovy.sql.Sql
-import net.betainteractive.io.odk.util.XFormReader
 import net.betainteractive.utilities.StringUtil
 import org.hibernate.Session
 import org.hibernate.jdbc.Work
-import org.javarosa.core.model.DataType
-import org.javarosa.core.model.FormDef
-import org.javarosa.core.model.GroupDef
-import org.javarosa.core.model.IFormElement
-import org.javarosa.core.model.SelectChoice
-import org.javarosa.core.model.instance.TreeElement
-import org.javarosa.core.model.instance.TreeReference
 import org.philimone.hds.explorer.server.model.enums.CoreForm
 import org.philimone.hds.explorer.server.model.enums.extensions.DatabaseColumnType
 import org.philimone.hds.explorer.server.model.enums.extensions.FormColumnType
@@ -23,6 +15,7 @@ import org.philimone.hds.forms.model.Column
 import org.philimone.hds.forms.model.ColumnGroup
 import org.philimone.hds.forms.model.ColumnRepeatGroup
 import org.philimone.hds.forms.model.enums.ColumnType
+import org.philimone.hds.forms.model.enums.RepeatCountType
 import org.philimone.hds.forms.model.parsers.ExcelFormParser
 
 import java.sql.Connection
@@ -42,7 +35,7 @@ class CoreExtensionDatabaseService {
 
             if (hForm != null) {
                 def columnIndex = 0
-                def tableName = coreFormExtension.extFormId
+                def tableName = coreFormExtension.extFormId //main table - already exists
 
                 hForm.columns.each { columnGroup ->
                     columnIndex = processColumnGroup(coreFormExtension, tableName, columnGroup, columnIndex, null)
@@ -51,69 +44,75 @@ class CoreExtensionDatabaseService {
         }
     }
 
-    def int processColumnGroup(CoreFormExtension coreFormExtension, String tableName, ColumnGroup columnGroup, int columnIndex, CoreFormExtensionModel parentGroupModel) {
+    def int processColumnGroup(CoreFormExtension coreFormExtension, String tableName, ColumnGroup columnGroup, int columnIndex, CoreFormExtensionModel parentRepeatModel) {
 
         if (columnGroup instanceof ColumnRepeatGroup) {
             def repeatGroup = (ColumnRepeatGroup) columnGroup
-            def forname = repeatGroup.getName()
-            def colname = (parentGroupModel == null) ? forname : "${parentGroupModel.dbColumnName}_#_${forname}"
+            def repeatName = repeatGroup.getName()
+            def dbRepeatName = StringUtil.toSnakeCase(repeatName)
+            def nextTableName = "${tableName}_${dbRepeatName}"
 
-            // Check if it's a special pregnancy repeat
-            if (coreFormExtension.coreForm == CoreForm.PREGNANCY_OUTCOME_FORM && forname == "childs") {
+            // Check if it's a special repeat - basically means that they have a unique table name
+            if (coreFormExtension.coreForm == CoreForm.PREGNANCY_OUTCOME_FORM && repeatName == "childs") {
                 repeatGroup.columnsGroups.each { innerGroup ->
                     columnIndex = processColumnGroup(coreFormExtension, CoreExtensionService.PREGNANCY_CHILD_EXT_TABLE, innerGroup, columnIndex, null)
                 }
                 return columnIndex
             }
 
-            if (coreFormExtension.coreForm == CoreForm.PREGNANCY_VISIT_FORM && forname == "childs") {
+            if (coreFormExtension.coreForm == CoreForm.PREGNANCY_VISIT_FORM && repeatName == "childs") {
                 repeatGroup.columnsGroups.each { innerGroup ->
                     columnIndex = processColumnGroup(coreFormExtension, CoreExtensionService.PREGNANCY_VISIT_CHILD_EXT_TABLE, innerGroup, columnIndex, null)
                 }
                 return columnIndex
             }
 
+            //all repeat groups must create an extra database table
             // Create repeat datamodel
-            def model = new CoreFormExtensionModel(coreForm: coreFormExtension, extFormId: coreFormExtension.extFormId)
-            model.dbColumnIndex = columnIndex++
-            model.dbColumnTable = tableName
-            model.dbColumnName = colname
-            model.dbColumnType = DatabaseColumnType.NOT_APPLICABLE
-            model.dbColumnSize = -1
-            model.formColumnName = forname
-            model.formColumnType = FormColumnType.REPEAT_GROUP
-            model.formRepeatGroup = (parentGroupModel == null) ? null : parentGroupModel.dbColumnName
-            model.formRepeatLength = 2 // default min - get the constant number - but also can be variable/dynamic in such cases we must create a separated table
-            model.formChoiceList = false
-            model.formChoiceValue = null
-            model.parentGroup = parentGroupModel
-            model.save(flush: true)
+            def repeatModel = new CoreFormExtensionModel(coreForm: coreFormExtension, extFormId: coreFormExtension.extFormId)
+            repeatModel.dbColumnIndex = columnIndex++
+            repeatModel.dbColumnTable = nextTableName
+            repeatModel.dbColumnName = nextTableName
+            repeatModel.dbColumnType = DatabaseColumnType.NOT_APPLICABLE
+            repeatModel.dbColumnSize = -1
+            repeatModel.formColumnName = repeatName
+            repeatModel.formColumnType = FormColumnType.REPEAT_GROUP
+            repeatModel.formRepeatGroup = (parentRepeatModel == null) ? null : parentRepeatModel.dbColumnName
+            repeatModel.formRepeatLength = -1
+            repeatModel.formChoiceList = false
+            repeatModel.formChoiceValue = null
+            repeatModel.repeatPerTable = true
+            repeatModel.parentGroup = parentRepeatModel
+            repeatModel.save(flush: true)
+
+            //add default system columns
+            columnIndex = addSystemColumns(coreFormExtension, nextTableName, columnIndex, parentRepeatModel)
 
             // Process inner groups
             repeatGroup.columnsGroups.each { innerGroup ->
-                columnIndex = processColumnGroup(coreFormExtension, tableName, innerGroup, columnIndex, model)
+                columnIndex = processColumnGroup(coreFormExtension, nextTableName, innerGroup, columnIndex, repeatModel)
             }
 
         } else {
             // Regular ColumnGroup
             columnGroup.columns.each { column ->
-                columnIndex = processColumn(coreFormExtension, tableName, column, columnIndex, parentGroupModel)
+                columnIndex = processColumn(coreFormExtension, tableName, column, columnIndex, parentRepeatModel)
             }
         }
 
         return columnIndex
     }
 
-    def int processColumn(CoreFormExtension coreFormExtension, String tableName, Column column, int columnIndex, CoreFormExtensionModel parentGroupModel) {
-        def forname = column.getName()
+    def int processColumn(CoreFormExtension coreFormExtension, String tableName, Column column, int columnIndex, CoreFormExtensionModel parentRepeatModel) {
+        def formColName = column.getName()
+        def formColType = column.getType()
 
-        // Ignore internal ODK/HForm variables if present in the list
-        if (["instanceID", "instanceName", "id", "start", "end", "device_id", "postExecution", "media_collected"].contains(forname)) return columnIndex
+        // Ignore internal HForm variables if present in the list
+        if (["id", "start", "end", "device_id", "postExecution", "media_collected"].contains(formColName)) return columnIndex
 
-        def colname = (parentGroupModel == null) ? forname : "${parentGroupModel.dbColumnName}_#_${forname}"
-        def fortype = column.getType()
+        def dbColName = StringUtil.toSnakeCase(formColName)
 
-        if (fortype == ColumnType.MULTI_SELECT) {
+        if (formColType == ColumnType.MULTI_SELECT) {
             // Create multiple choice data model answers
             def options = column.getTypeOptions()
             if (options) {
@@ -127,37 +126,37 @@ class CoreExtensionDatabaseService {
                     def model = new CoreFormExtensionModel(coreForm: coreFormExtension, extFormId: coreFormExtension.extFormId)
                     model.dbColumnIndex = columnIndex++
                     model.dbColumnTable = tableName
-                    model.dbColumnName = "${colname}_${strIndex}"
+                    model.dbColumnName = "${dbColName}_${strIndex}"
                     model.dbColumnType = DatabaseColumnType.STRING
                     model.dbColumnSize = maxLength
-                    model.formColumnName = forname
+                    model.formColumnName = formColName
                     model.formColumnType = FormColumnType.MULTIPLE_ITEMS
-                    model.formRepeatGroup = (parentGroupModel == null) ? null : parentGroupModel.dbColumnName
+                    model.formRepeatGroup = (parentRepeatModel == null) ? null : parentRepeatModel.dbColumnName
                     model.formRepeatLength = 0
                     model.formChoiceList = true
                     model.formChoiceValue = choiceValue
-                    model.parentGroup = parentGroupModel
+                    model.parentGroup = parentRepeatModel
                     model.save(flush: true)
                 }
             }
             return columnIndex
         }
 
-        if (fortype == ColumnType.GPS) {
+        if (formColType == ColumnType.GPS) {
             ["lat", "lng", "alt", "acc"].each { gpsSuffix ->
                 def model = new CoreFormExtensionModel(coreForm: coreFormExtension, extFormId: coreFormExtension.extFormId)
                 model.dbColumnIndex = columnIndex++
                 model.dbColumnTable = tableName
-                model.dbColumnName = "${colname}_${gpsSuffix}"
+                model.dbColumnName = "${dbColName}_${gpsSuffix}"
                 model.dbColumnType = DatabaseColumnType.DOUBLE
                 model.dbColumnSize = -1
-                model.formColumnName = forname
+                model.formColumnName = formColName
                 model.formColumnType = FormColumnType.GEOPOINT
-                model.formRepeatGroup = (parentGroupModel == null) ? null : parentGroupModel.dbColumnName
+                model.formRepeatGroup = (parentRepeatModel == null) ? null : parentRepeatModel.dbColumnName
                 model.formRepeatLength = 0
                 model.formChoiceList = false
                 model.formChoiceValue = gpsSuffix
-                model.parentGroup = parentGroupModel
+                model.parentGroup = parentRepeatModel
                 model.save(flush: true)
             }
             return columnIndex
@@ -168,7 +167,7 @@ class CoreExtensionDatabaseService {
         int dbColumnSize = -1
         FormColumnType fColumnType = null
 
-        switch (fortype) {
+        switch (formColType) {
             case ColumnType.STRING:
                 dbColumnType = DatabaseColumnType.STRING; dbColumnSize = 255; fColumnType = FormColumnType.TEXT; break
             case ColumnType.INTEGER:
@@ -207,17 +206,69 @@ class CoreExtensionDatabaseService {
         def model = new CoreFormExtensionModel(coreForm: coreFormExtension, extFormId: coreFormExtension.extFormId)
         model.dbColumnIndex = columnIndex++
         model.dbColumnTable = tableName
-        model.dbColumnName = colname
+        model.dbColumnName = dbColName
         model.dbColumnType = dbColumnType
         model.dbColumnSize = dbColumnSize
-        model.formColumnName = forname
+        model.formColumnName = formColName
         model.formColumnType = fColumnType
-        model.formRepeatGroup = (parentGroupModel == null) ? null : parentGroupModel.dbColumnName
+        model.formRepeatGroup = (parentRepeatModel == null) ? null : parentRepeatModel.dbColumnName
         model.formRepeatLength = 0
         model.formChoiceList = false
         model.formChoiceValue = null
-        model.parentGroup = parentGroupModel
+        model.parentGroup = parentRepeatModel
         model.save(flush: true)
+
+        return columnIndex
+    }
+
+    private int addSystemColumns(CoreFormExtension coreFormExtension, String tableName, int columnIndex, CoreFormExtensionModel parentRepeatModel) {
+        // id BIGINT
+        def idModel = new CoreFormExtensionModel(coreForm: coreFormExtension, extFormId: coreFormExtension.extFormId)
+        idModel.dbColumnIndex = columnIndex++
+        idModel.dbColumnTable = tableName
+        idModel.dbColumnName = ExtensionDatabaseColumns.ID
+        idModel.dbColumnType = DatabaseColumnType.LONG
+        idModel.dbColumnSize = -1
+        idModel.formColumnName = ExtensionDatabaseColumns.ID
+        idModel.formColumnType = FormColumnType.SYSTEM
+        idModel.parentGroup = parentRepeatModel
+        idModel.save(flush: true)
+
+        // collected_id STRING
+        def collIdModel = new CoreFormExtensionModel(coreForm: coreFormExtension, extFormId: coreFormExtension.extFormId)
+        collIdModel.dbColumnIndex = columnIndex++
+        collIdModel.dbColumnTable = tableName
+        collIdModel.dbColumnName = ExtensionDatabaseColumns.COLLECTED_ID
+        collIdModel.dbColumnType = DatabaseColumnType.STRING
+        collIdModel.dbColumnSize = 32
+        collIdModel.formColumnName = ExtensionDatabaseColumns.COLLECTED_ID
+        collIdModel.formColumnType = FormColumnType.SYSTEM
+        collIdModel.parentGroup = parentRepeatModel
+        collIdModel.save(flush: true)
+
+        // parent_id BIGINT
+        def parentIdModel = new CoreFormExtensionModel(coreForm: coreFormExtension, extFormId: coreFormExtension.extFormId)
+        parentIdModel.dbColumnIndex = columnIndex++
+        parentIdModel.dbColumnTable = tableName
+        parentIdModel.dbColumnName = "${parentRepeatModel?.dbColumnTable ?: coreFormExtension.extFormId}_id"
+        parentIdModel.dbColumnType = DatabaseColumnType.LONG
+        parentIdModel.dbColumnSize = -1
+        parentIdModel.formColumnName = ExtensionDatabaseColumns.FORM_PARENT_ID
+        parentIdModel.formColumnType = FormColumnType.SYSTEM
+        parentIdModel.parentGroup = parentRepeatModel
+        parentIdModel.save(flush: true)
+
+        // ordinal_number INTEGER
+        def ordinalModel = new CoreFormExtensionModel(coreForm: coreFormExtension, extFormId: coreFormExtension.extFormId)
+        ordinalModel.dbColumnIndex = columnIndex++
+        ordinalModel.dbColumnTable = tableName
+        ordinalModel.dbColumnName = ExtensionDatabaseColumns.ORDINAL_NUMBER
+        ordinalModel.dbColumnType = DatabaseColumnType.INTEGER
+        ordinalModel.dbColumnSize = -1
+        ordinalModel.formColumnName = ExtensionDatabaseColumns.ORDINAL_NUMBER
+        ordinalModel.formColumnType = FormColumnType.SYSTEM
+        ordinalModel.parentGroup = parentRepeatModel
+        ordinalModel.save(flush: true)
 
         return columnIndex
     }
@@ -340,82 +391,39 @@ class CoreExtensionDatabaseService {
         return list
     }
 
-    List<String> generateSqlCommandsFrom(List<CoreFormExtensionModel> models) {
+    List<String> generateSqlCommandsFrom(CoreFormExtension coreFormExtension, List<CoreFormExtensionModel> models) {
         def sqlcommands = new ArrayList<String>()
-
-        //def modelsList = models.findAll { it.dbColumnType != DatabaseColumnType.NOT_APPLICABLE}
-        //alter table TABLE_NAME ADD new_column TYPE(SIZE);
-
-        def repeatIndexes = new LinkedHashMap<String, Integer>()
 
         models.each {model ->
             def sql = ""
 
-            if (model.formColumnType == FormColumnType.REPEAT_GROUP && model.formRepeatGroup == null) { //get root repeat groups
-                //deal with repeats
-                //get all inner groups of these repeat
+            if (model.formColumnType == FormColumnType.REPEAT_GROUP) {
+                def repeatModel = model
 
-                repeatIndexes.put(model.dbColumnName, 1)
+                //all repeat groups are separated tables - must create a table and then iterate the inner columns
 
-                def resultList = generateSqlComandsFromRepeat(model, models, repeatIndexes)
-                sqlcommands.addAll(resultList)
+                def parentIdModel = models.find { it.parentGroup == repeatModel && it.formColumnName == ExtensionDatabaseColumns.FORM_PARENT_ID}
+                def createSql = "CREATE TABLE IF NOT EXISTS ${repeatModel.dbColumnTable} (" +
+                                "${ExtensionDatabaseColumns.ID} BIGINT NOT NULL AUTO_INCREMENT, " +
+                                "${ExtensionDatabaseColumns.COLLECTED_ID} VARCHAR(32), " +
+                                "${parentIdModel.dbColumnName} BIGINT, " +
+                                "${ExtensionDatabaseColumns.ORDINAL_NUMBER} INT, " +
+                                "PRIMARY KEY (${ExtensionDatabaseColumns.ID})" +
+                                ");"
+                sqlcommands.add(createSql)
 
-                return
-            } else if (model.formRepeatGroup != null) { //cols belongs to inner groups
-                return
             } else {
                 //regular columns
+                if (model.formColumnType == FormColumnType.SYSTEM) return //ignore system columns - they are already created
 
-                def databaseTypeSize = getDatabaseTypeSize(model)
-                sql = "alter table ${model.dbColumnTable} add ${model.dbColumnName} ${databaseTypeSize};"
+                //alter table TABLE_NAME ADD new_column TYPE(SIZE);
+                def databaseTypeAndSize = getDatabaseTypeAndSize(model)
+                sql = "alter table ${model.dbColumnTable} add ${model.dbColumnName} ${databaseTypeAndSize};"
                 sqlcommands.add(sql)
             }
         }
-        return sqlcommands
-    }
-
-    List<String> generateSqlComandsFromRepeat(CoreFormExtensionModel repeatModel, List<CoreFormExtensionModel> models, HashMap<String, Integer> repeatIndexes) {
-        def sqlcommands = new ArrayList<String>()
-        def innermodels = models.findAll { it.parentGroup==repeatModel}
-
-        for (int i=1; i <= repeatModel.formRepeatLength; i++) {
-
-            repeatIndexes.put(repeatModel.dbColumnName, i)
-
-            innermodels.each {model ->
-                if (model.formColumnType == FormColumnType.REPEAT_GROUP) {
-                    def resultList = generateSqlComandsFromRepeat(model, models, repeatIndexes)
-                    sqlcommands.addAll(resultList)
-                } else {
-                    //regular variable
-                    def columnName = getFinalColumnName(model, repeatIndexes)
-                    def databaseTypeSize = getDatabaseTypeSize(model)
-                    def sql = "alter table ${model.dbColumnTable} add ${columnName} ${databaseTypeSize};"
-                    sqlcommands.add(sql)
-                }
-            }
-        }
 
         return sqlcommands
-    }
-
-    String getFinalColumnName(CoreFormExtensionModel modelLoop, HashMap<String, Integer> repeatIndexes) {
-        def finalColumnName = ""
-
-        while (modelLoop != null) {
-            def origName = modelLoop.dbColumnName
-            def remParName = (modelLoop.formRepeatGroup != null) ? origName.replace(modelLoop.formRepeatGroup, "") : origName
-
-            //remove the parent repeat group from the naming
-            def parIndex = repeatIndexes.get((modelLoop.formRepeatGroup != null) ? modelLoop.formRepeatGroup : origName)
-            remParName = remParName.replace("#", "${String.format('%02d', parIndex)}")
-
-            finalColumnName = remParName + finalColumnName
-
-            modelLoop = modelLoop.parentGroup
-        }
-
-        return finalColumnName
     }
 
     String getDatabaseSystemName() {
@@ -435,7 +443,7 @@ class CoreExtensionDatabaseService {
         return result
     }
 
-    String getDatabaseTypeSize(CoreFormExtensionModel model) {
+    String getDatabaseTypeAndSize(CoreFormExtensionModel model) {
         def result = ""
 
         switch (model.dbColumnType) {
@@ -444,6 +452,7 @@ class CoreExtensionDatabaseService {
             case DatabaseColumnType.DECIMAL: result = "DECIMAL(38,10)"; break;
             case DatabaseColumnType.DOUBLE: result = "DOUBLE"; break;
             case DatabaseColumnType.INTEGER: result = "INT"; break;
+            case DatabaseColumnType.LONG: result = "BIGINT"; break;
             case DatabaseColumnType.DATETIME: result = "DATETIME"; break;
             case DatabaseColumnType.STRING: result = "VARCHAR(${model.dbColumnSize})"; break;
             case DatabaseColumnType.NOT_APPLICABLE: break;
