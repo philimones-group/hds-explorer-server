@@ -86,7 +86,7 @@ class CoreExtensionDatabaseService {
             repeatModel.save(flush: true)
 
             //add default system columns
-            columnIndex = addSystemColumns(coreFormExtension, nextTableName, columnIndex, parentRepeatModel)
+            columnIndex = addSystemColumns(coreFormExtension, nextTableName, columnIndex, repeatModel)
 
             // Process inner groups
             repeatGroup.columnsGroups.each { innerGroup ->
@@ -143,14 +143,14 @@ class CoreExtensionDatabaseService {
         }
 
         if (formColType == ColumnType.GPS) {
-            ["lat", "lng", "alt", "acc"].each { gpsSuffix ->
+            ["Lat", "Lon", "Alt", "Acc"].each { gpsSuffix ->
                 def model = new CoreFormExtensionModel(coreForm: coreFormExtension, extFormId: coreFormExtension.extFormId)
                 model.dbColumnIndex = columnIndex++
                 model.dbColumnTable = tableName
-                model.dbColumnName = "${dbColName}_${gpsSuffix}"
+                model.dbColumnName = "${dbColName}_${gpsSuffix.toLowerCase()}"
                 model.dbColumnType = DatabaseColumnType.DOUBLE
                 model.dbColumnSize = -1
-                model.formColumnName = formColName
+                model.formColumnName = "${formColName}${gpsSuffix}"
                 model.formColumnType = FormColumnType.GEOPOINT
                 model.formRepeatGroup = (parentRepeatModel == null) ? null : parentRepeatModel.dbColumnName
                 model.formRepeatLength = 0
@@ -250,7 +250,7 @@ class CoreExtensionDatabaseService {
         def parentIdModel = new CoreFormExtensionModel(coreForm: coreFormExtension, extFormId: coreFormExtension.extFormId)
         parentIdModel.dbColumnIndex = columnIndex++
         parentIdModel.dbColumnTable = tableName
-        parentIdModel.dbColumnName = "${parentRepeatModel?.dbColumnTable ?: coreFormExtension.extFormId}_id"
+        parentIdModel.dbColumnName = "${parentRepeatModel?.parentGroup?.dbColumnTable ?: coreFormExtension.extFormId}_id"
         parentIdModel.dbColumnType = DatabaseColumnType.LONG
         parentIdModel.dbColumnSize = -1
         parentIdModel.formColumnName = ExtensionDatabaseColumns.FORM_PARENT_ID
