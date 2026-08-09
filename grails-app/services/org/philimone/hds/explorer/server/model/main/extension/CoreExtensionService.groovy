@@ -1,21 +1,13 @@
 package org.philimone.hds.explorer.server.model.main.extension
 
 import grails.gorm.transactions.Transactional
-import net.betainteractive.io.odk.util.XFormReader
 import net.betainteractive.utilities.StringUtil
-import org.javarosa.core.model.DataType
-import org.javarosa.core.model.FormDef
-import org.javarosa.core.model.data.GeoPointData
-import org.javarosa.core.model.data.MultipleItemsData
-import org.javarosa.core.model.instance.TreeElement
-import org.javarosa.xform.util.XFormAnswerDataParser
 import org.philimone.hds.explorer.server.model.collect.raw.*
 import org.philimone.hds.explorer.server.model.enums.CoreForm
 import org.philimone.hds.explorer.server.model.enums.extensions.DatabaseColumnType
 import org.philimone.hds.explorer.server.model.enums.extensions.FormColumnType
 import org.philimone.hds.explorer.server.model.main.*
 import org.philimone.hds.forms.model.HForm
-import org.philimone.hds.forms.model.RepeatObject
 import org.philimone.hds.forms.model.parsers.ExcelFormParser
 import org.w3c.dom.Document
 import org.w3c.dom.Node
@@ -28,508 +20,247 @@ import java.time.format.DateTimeFormatter
 @Transactional
 class CoreExtensionService {
 
-    static final PREGNANCY_CHILD_EXT_TABLE = "pregnancy_child_ext"
-    static final PREGNANCY_VISIT_CHILD_EXT_TABLE = "pregnancy_visit_child_ext"
-
     def coreExtensionDatabaseService
 
     CoreExtensionDatabaseService.SqlExecutionResult insertRegionExtension(RawRegion rawObj, Region finalObj) {
-        if (rawObj.extensionForm == null || rawObj?.extensionForm?.size()==0) return null
-
-        //get form extensions
-        def coreFormExt = CoreFormExtension.findByCoreForm(CoreForm.REGION_FORM)
-        if (!coreFormExt?.enabled || coreFormExt?.extFormPath == null) return null
-
-        //read xml data to map
-        def mapInstanceValues = getInstanceMappedValues(coreFormExt, new File(coreFormExt.extFormPath), rawObj.extensionForm)
-        //insert into
-        def result = coreExtensionDatabaseService.executeSqlInsert(coreFormExt.extFormId, mapInstanceValues)
-
-        println "Inserting extension for (${rawObj.regionCode}) - result=${result.success}, msg: ${result.errorMessage}"
-
-        return result
+        return insertExtension(CoreForm.REGION_FORM, finalObj.collectedId, rawObj.extensionForm)
     }
     
     CoreExtensionDatabaseService.SqlExecutionResult insertHouseholdExtension(RawHousehold rawObj, Household finalObj) {
-        if (rawObj.extensionForm == null || rawObj?.extensionForm?.size()==0) return null
-
-        //get form extensions
-        def coreFormExt = CoreFormExtension.findByCoreForm(CoreForm.HOUSEHOLD_FORM)
-        if (!coreFormExt?.enabled || coreFormExt?.extFormPath == null) return null
-
-        //read xml data to map
-        def mapInstanceValues = getInstanceMappedValues(coreFormExt, new File(coreFormExt.extFormPath), rawObj.extensionForm)
-        //insert into
-        def result = coreExtensionDatabaseService.executeSqlInsert(coreFormExt.extFormId, mapInstanceValues)
-
-        println "Inserting extension for (${rawObj.householdCode}) - result=${result.success}, msg: ${result.errorMessage}"
-
-        return result
+        return insertExtension(CoreForm.HOUSEHOLD_FORM, finalObj.collectedId, rawObj.extensionForm)
     }
 
     CoreExtensionDatabaseService.SqlExecutionResult insertVisitExtension(RawVisit rawObj, Visit finalObj) {
-        if (rawObj.extensionForm == null || rawObj?.extensionForm?.size()==0) return null
-
-        if (rawObj.extensionForm.length == 0) { println("empty extensionForm"); return null }
-
-        //get form extensions
-        def coreFormExt = CoreFormExtension.findByCoreForm(CoreForm.VISIT_FORM)
-        if (!coreFormExt?.enabled || coreFormExt?.extFormPath == null) return null
-
-        //read xml data to map
-        def mapInstanceValues = getInstanceMappedValues(coreFormExt, new File(coreFormExt.extFormPath), rawObj.extensionForm)
-        //insert into
-        def result = coreExtensionDatabaseService.executeSqlInsert(coreFormExt.extFormId, mapInstanceValues)
-
-        println "Inserting extension for (${rawObj.householdCode}) - result=${result.success}, msg: ${result.errorMessage}"
-
-        return result
+        return insertExtension(CoreForm.VISIT_FORM, finalObj.collectedId, rawObj.extensionForm)
     }
 
     CoreExtensionDatabaseService.SqlExecutionResult insertEnumerationExtension(RawMemberEnu rawObj, Enumeration finalObj) {
-        if (rawObj.extensionForm == null || rawObj?.extensionForm?.size()==0) return null
-
-        //get form extensions
-        def coreFormExt = CoreFormExtension.findByCoreForm(CoreForm.MEMBER_ENU_FORM)
-        if (!coreFormExt?.enabled || coreFormExt?.extFormPath == null) return null
-
-        //read xml data to map
-        def mapInstanceValues = getInstanceMappedValues(coreFormExt, new File(coreFormExt.extFormPath), rawObj.extensionForm)
-        //insert into
-        def result = coreExtensionDatabaseService.executeSqlInsert(coreFormExt.extFormId, mapInstanceValues)
-
-        println "Inserting extension for (${rawObj.code}) - result=${result.success}, msg: ${result.errorMessage}"
-
-        return result
+        return insertExtension(CoreForm.MEMBER_ENU_FORM, finalObj.collectedId, rawObj.extensionForm)
     }
 
     CoreExtensionDatabaseService.SqlExecutionResult insertMaritalRelationshipExtension(RawMaritalRelationship rawObj, MaritalRelationship finalObj) {
-        if (rawObj.extensionForm == null || rawObj?.extensionForm?.size()==0) return null
-
-        //get form extensions
-        def coreFormExt = CoreFormExtension.findByCoreForm(CoreForm.MARITAL_RELATIONSHIP_FORM)
-        if (!coreFormExt?.enabled || coreFormExt?.extFormPath == null) return null
-
-        //read xml data to map
-        def mapInstanceValues = getInstanceMappedValues(coreFormExt, new File(coreFormExt.extFormPath), rawObj.extensionForm)
-        //insert into
-        def result = coreExtensionDatabaseService.executeSqlInsert(coreFormExt.extFormId, mapInstanceValues)
-
-        println "Inserting extension for (${rawObj.memberA}) - result=${result.success}, msg: ${result.errorMessage}"
-
-        return result
+        return insertExtension(CoreForm.MARITAL_RELATIONSHIP_FORM, finalObj.collectedId, rawObj.extensionForm)
     }
 
     CoreExtensionDatabaseService.SqlExecutionResult insertExternalInMigrationExtension(RawExternalInMigration rawObj, InMigration finalObj) {
-        if (rawObj.extensionForm == null || rawObj?.extensionForm?.size()==0) return null
-
-        //get form extensions
-        def coreFormExt = CoreFormExtension.findByCoreForm(CoreForm.INMIGRATION_FORM)
-        if (!coreFormExt?.enabled || coreFormExt?.extFormPath == null) return null
-
-        //read xml data to map
-        def mapInstanceValues = getInstanceMappedValues(coreFormExt, new File(coreFormExt.extFormPath), rawObj.extensionForm)
-        //insert into
-        def result = coreExtensionDatabaseService.executeSqlInsert(coreFormExt.extFormId, mapInstanceValues)
-
-        println "Inserting extension for (${rawObj.memberCode}) - result=${result.success}, msg: ${result.errorMessage}"
-
-        return result
+        return insertExtension(CoreForm.INMIGRATION_FORM, finalObj.collectedId, rawObj.extensionForm)
     }
 
     CoreExtensionDatabaseService.SqlExecutionResult insertInMigrationExtension(RawInMigration rawObj, InMigration finalObj) {
-        if (rawObj.extensionForm == null || rawObj?.extensionForm?.size()==0) return null
-
-        //get form extensions
-        def coreFormExt = CoreFormExtension.findByCoreForm(CoreForm.INMIGRATION_FORM)
-        if (!coreFormExt?.enabled || coreFormExt?.extFormPath == null) return null
-
-        //read xml data to map
-        def mapInstanceValues = getInstanceMappedValues(coreFormExt, new File(coreFormExt.extFormPath), rawObj.extensionForm)
-        //insert into
-        def result = coreExtensionDatabaseService.executeSqlInsert(coreFormExt.extFormId, mapInstanceValues)
-
-        println "Inserting extension for (${rawObj.memberCode}) - result=${result.success}, msg: ${result.errorMessage}"
-
-        return result
+        return insertExtension(CoreForm.INMIGRATION_FORM, finalObj.collectedId, rawObj.extensionForm)
     }
     
     CoreExtensionDatabaseService.SqlExecutionResult insertOutMigrationExtension(RawOutMigration rawObj, OutMigration finalObj) {
-        if (rawObj.extensionForm == null || rawObj?.extensionForm?.size()==0) return null
-
-        //get form extensions
-        def coreFormExt = CoreFormExtension.findByCoreForm(CoreForm.OUTMIGRATION_FORM)
-        if (!coreFormExt?.enabled || coreFormExt?.extFormPath == null) return null
-
-        //read xml data to map
-        def mapInstanceValues = getInstanceMappedValues(coreFormExt, new File(coreFormExt.extFormPath), rawObj.extensionForm)
-        //insert into
-        def result = coreExtensionDatabaseService.executeSqlInsert(coreFormExt.extFormId, mapInstanceValues)
-
-        println "Inserting extension for (${rawObj.memberCode}) - result=${result.success}, msg: ${result.errorMessage}"
-
-        return result
+        return insertExtension(CoreForm.OUTMIGRATION_FORM, finalObj.collectedId, rawObj.extensionForm)
     }
 
     CoreExtensionDatabaseService.SqlExecutionResult insertPregnancyRegistrationExtension(RawPregnancyRegistration rawObj, PregnancyRegistration finalObj) {
-        if (rawObj.extensionForm == null || rawObj?.extensionForm?.size()==0) return null
-
-        //get form extensions
-        def coreFormExt = CoreFormExtension.findByCoreForm(CoreForm.PREGNANCY_REGISTRATION_FORM)
-        if (!coreFormExt?.enabled || coreFormExt?.extFormPath == null) return null
-
-        //read xml data to map
-        def mapInstanceValues = getInstanceMappedValues(coreFormExt, new File(coreFormExt.extFormPath), rawObj.extensionForm)
-        //insert into
-        def result = coreExtensionDatabaseService.executeSqlInsert(coreFormExt.extFormId, mapInstanceValues)
-
-        println "Inserting extension for (${rawObj.motherCode}) - result=${result.success}, msg: ${result.errorMessage}"
-
-        return result
+        return insertExtension(CoreForm.PREGNANCY_REGISTRATION_FORM, finalObj.collectedId, rawObj.extensionForm)
     }
 
     CoreExtensionDatabaseService.SqlExecutionResult insertPregnancyOutcomeExtension(RawPregnancyOutcome rawObj, PregnancyOutcome finalObj) {
-
-        if (rawObj.extensionForm == null || rawObj?.extensionForm?.size()==0) return null
-
-        //get form extensions
-        def coreFormExt = CoreFormExtension.findByCoreForm(CoreForm.PREGNANCY_OUTCOME_FORM)
-        if (!coreFormExt?.enabled || coreFormExt?.extFormPath == null) return null
-
-        //read xml data to map - in this form we have a special repeat (childs) -> that will be sent to a separated table
-        def instanceMappedValues = getExtraInstanceMappedValues(coreFormExt, ["childs"], new File(coreFormExt.extFormPath), rawObj.extensionForm)
-
-        //insert into pregnancy_outcome_ext
-        def result = coreExtensionDatabaseService.executeSqlInsert(coreFormExt.extFormId, instanceMappedValues.mainFormValues)
-
-        //insert into pregnancy_child_ext
-        if (result != null && result.success) {
-            def id = result.keys?.first()
-
-            instanceMappedValues.childFormValues.get("childs").each {map ->
-                //insert secondary key and others
-                map.put("collected_id", finalObj.collectedId)
-                map.put("pregnancy_outcome_ext_id", id)
-
-                def cresult = coreExtensionDatabaseService.executeSqlInsert(PREGNANCY_CHILD_EXT_TABLE, map)
-
-                println "Inserting child extension for (${rawObj.motherCode}) - result=${cresult.success}, msg: ${cresult.keys}"
-            }
-        }
-
-        println "Inserting extension for (${rawObj.motherCode}) - result=${result.success}, msg: ${result.errorMessage}"
-
-        return result
+        return insertExtension(CoreForm.PREGNANCY_OUTCOME_FORM, finalObj.collectedId, rawObj.extensionForm)
     }
 
     CoreExtensionDatabaseService.SqlExecutionResult insertPregnancyVisitExtension(RawPregnancyVisit rawObj, PregnancyVisit finalObj) {
-
-        if (rawObj.extensionForm == null || rawObj?.extensionForm?.size()==0) return null
-
-        //get form extensions
-        def coreFormExt = CoreFormExtension.findByCoreForm(CoreForm.PREGNANCY_VISIT_FORM)
-        if (!coreFormExt?.enabled || coreFormExt?.extFormPath == null) return null
-
-        //read xml data to map - in this form we have a special repeat (childs) -> that will be sent to a separated table
-        def instanceMappedValues = getExtraInstanceMappedValues(coreFormExt, ["childs"], new File(coreFormExt.extFormPath), rawObj.extensionForm)
-
-        //insert into pregnancy_outcome_ext
-        def result = coreExtensionDatabaseService.executeSqlInsert(coreFormExt.extFormId, instanceMappedValues.mainFormValues)
-
-        //insert into pregnancy_child_ext
-        if (result != null && result.success) {
-            def id = result.keys?.first()
-
-            instanceMappedValues.childFormValues.get("childs").each {map ->
-                //insert secondary key and others
-                map.put("collected_id", finalObj.collectedId)
-                map.put("pregnancy_visit_ext_id", id)
-
-                def cresult = coreExtensionDatabaseService.executeSqlInsert(PREGNANCY_VISIT_CHILD_EXT_TABLE, map)
-
-                println "Inserting child extension for (${rawObj.motherCode}) - result=${cresult.success}, msg: ${cresult.keys}"
-            }
-        }
-
-        println "Inserting extension for (${rawObj.motherCode}) - result=${result.success}, msg: ${result.errorMessage}"
-
-        return result
+        return insertExtension(CoreForm.PREGNANCY_VISIT_FORM, finalObj.collectedId, rawObj.extensionForm)
     }
 
     CoreExtensionDatabaseService.SqlExecutionResult insertDeathExtension(RawDeath rawObj, Death finalObj) {
-        if (rawObj.extensionForm == null || rawObj?.extensionForm?.size()==0) return null
-
-        //get form extensions
-        def coreFormExt = CoreFormExtension.findByCoreForm(CoreForm.DEATH_FORM)
-        if (!coreFormExt?.enabled || coreFormExt?.extFormPath == null) return null
-
-        //read xml data to map
-        def mapInstanceValues = getInstanceMappedValues(coreFormExt, new File(coreFormExt.extFormPath), rawObj.extensionForm)
-        //insert into
-        def result = coreExtensionDatabaseService.executeSqlInsert(coreFormExt.extFormId, mapInstanceValues)
-
-        println "Inserting extension for (${rawObj.memberCode}) - result=${result.success}, msg: ${result.errorMessage}"
-
-        return result
+        return insertExtension(CoreForm.DEATH_FORM, finalObj.collectedId, rawObj.extensionForm)
     }
 
     CoreExtensionDatabaseService.SqlExecutionResult insertChangeHeadExtension(RawChangeHead rawObj, HeadRelationship finalObj) {
-        if (rawObj.extensionForm == null || rawObj?.extensionForm?.size()==0) return null
-
-        //get form extensions
-        def coreFormExt = CoreFormExtension.findByCoreForm(CoreForm.CHANGE_HEAD_FORM)
-        if (!coreFormExt?.enabled || coreFormExt?.extFormPath == null) return null
-
-        //read xml data to map
-        def mapInstanceValues = getInstanceMappedValues(coreFormExt, new File(coreFormExt.extFormPath), rawObj.extensionForm)
-        //insert into
-        def result = coreExtensionDatabaseService.executeSqlInsert(coreFormExt.extFormId, mapInstanceValues)
-
-        println "Inserting extension for (${rawObj.householdCode}) - result=${result.success}, msg: ${result.errorMessage}"
-
-        return result
+        return insertExtension(CoreForm.CHANGE_HEAD_FORM, finalObj.collectedId, rawObj.extensionForm)
     }
 
     CoreExtensionDatabaseService.SqlExecutionResult insertIncompleteVisitExtension(RawIncompleteVisit rawObj, IncompleteVisit finalObj) {
-        if (rawObj.extensionForm == null || rawObj?.extensionForm?.size()==0) return null
-
-        //get form extensions
-        def coreFormExt = CoreFormExtension.findByCoreForm(CoreForm.INCOMPLETE_VISIT_FORM)
-        if (!coreFormExt?.enabled || coreFormExt?.extFormPath == null) return null
-
-        //read xml data to map
-        def mapInstanceValues = getInstanceMappedValues(coreFormExt, new File(coreFormExt.extFormPath), rawObj.extensionForm)
-        //insert into
-        def result = coreExtensionDatabaseService.executeSqlInsert(coreFormExt.extFormId, mapInstanceValues)
-
-        println "Inserting extension for (${rawObj.householdCode}) - result=${result.success}, msg: ${result.errorMessage}"
-
-        return result
+        return insertExtension(CoreForm.INCOMPLETE_VISIT_FORM, finalObj.collectedId, rawObj.extensionForm)
     }
 
     CoreExtensionDatabaseService.SqlExecutionResult insertChangeRegionHeadExtension(RawChangeRegionHead rawObj, RegionHeadRelationship finalObj) {
-        if (rawObj.extensionForm == null || rawObj?.extensionForm?.size()==0) return null
-
-        //get form extensions
-        def coreFormExt = CoreFormExtension.findByCoreForm(CoreForm.CHANGE_REGION_HEAD_FORM)
-        if (!coreFormExt?.enabled || coreFormExt?.extFormPath == null) return null
-
-        //read xml data to map
-        def mapInstanceValues = getInstanceMappedValues(coreFormExt, new File(coreFormExt.extFormPath), rawObj.extensionForm)
-        //insert into
-        def result = coreExtensionDatabaseService.executeSqlInsert(coreFormExt.extFormId, mapInstanceValues)
-
-        println "Inserting extension for (${rawObj.regionCode}) - result=${result.success}, msg: ${result.errorMessage}"
-
-        return result
+        return insertExtension(CoreForm.CHANGE_REGION_HEAD_FORM, finalObj.collectedId, rawObj.extensionForm)
     }
 
     CoreExtensionDatabaseService.SqlExecutionResult insertHouseholdRelocationExtension(RawHouseholdRelocation rawObj, HouseholdRelocation finalObj) {
-        if (rawObj.extensionForm == null || rawObj?.extensionForm?.size()==0) return null
-
-        //get form extensions
-        def coreFormExt = CoreFormExtension.findByCoreForm(CoreForm.HOUSEHOLD_RELOCATION_FORM)
-        if (!coreFormExt?.enabled || coreFormExt?.extFormPath == null) return null
-
-        //read xml data to map
-        def mapInstanceValues = getInstanceMappedValues(coreFormExt, new File(coreFormExt.extFormPath), rawObj.extensionForm)
-        //insert into
-        def result = coreExtensionDatabaseService.executeSqlInsert(coreFormExt.extFormId, mapInstanceValues)
-
-        println "Inserting extension for hhr(${rawObj.originCode}) - result=${result.success}, msg: ${result.errorMessage}"
-
-        return result
+        return insertExtension(CoreForm.HOUSEHOLD_RELOCATION_FORM, finalObj.collectedId, rawObj.extensionForm)
     }
 
     CoreExtensionDatabaseService.SqlExecutionResult insertHouseholdProxyHeadExtension(RawHouseholdProxyHead rawObj, HouseholdProxyHead finalObj) {
-        if (rawObj.extensionForm == null || rawObj?.extensionForm?.size()==0) return null
+        return insertExtension(CoreForm.CHANGE_PROXY_HEAD_FORM, finalObj.collectedId, rawObj.extensionForm)
+    }
 
-        //get form extensions
-        def coreFormExt = CoreFormExtension.findByCoreForm(CoreForm.CHANGE_PROXY_HEAD_FORM)
+    CoreExtensionDatabaseService.SqlExecutionResult insertExtension(CoreForm coreForm, String collectedId, byte[] extensionFormXml) {
+        if (extensionFormXml == null || extensionFormXml.size() == 0) return null
+
+        def coreFormExt = CoreFormExtension.findByCoreForm(coreForm)
         if (!coreFormExt?.enabled || coreFormExt?.extFormPath == null) return null
 
-        //read xml data to map
-        def mapInstanceValues = getInstanceMappedValues(coreFormExt, new File(coreFormExt.extFormPath), rawObj.extensionForm)
-        //insert into
-        def result = coreExtensionDatabaseService.executeSqlInsert(coreFormExt.extFormId, mapInstanceValues)
+        return insertExtensionData(coreFormExt, collectedId, extensionFormXml)
+    }
 
-        println "Inserting extension for hhr(${rawObj.householdCode}) - result=${result.success}, msg: ${result.errorMessage}"
+    CoreExtensionDatabaseService.SqlExecutionResult insertExtensionData(CoreFormExtension coreFormExt, String collectedId, byte[] instanceBytes) {
+        byte[] formDefBytes = new File(coreFormExt.extFormPath).bytes
+        def hForm = new ExcelFormParser(new ByteArrayInputStream(formDefBytes)).getForm()
+        def xmlData = getXmlMappedData(instanceBytes, hForm)
+
+        if (xmlData) {
+            def result = insertTableRecordRecursive(coreFormExt, coreFormExt.extFormId, xmlData, null, collectedId, 0)
+
+            if (result != null && !result.success) {
+                // SOMETHING FAILED in the tree - Wipe everything for this collectedId
+                cleanupExtensionData(coreFormExt, collectedId)
+            }
+
+            return result
+        }
+        return null
+    }
+
+    private CoreExtensionDatabaseService.SqlExecutionResult insertTableRecordRecursive(CoreFormExtension coreFormExt, String tableName, Map<String, Object> xmlData, Long parentId, String collectedId, int ordinalNumber) {
+        def mapValues = new LinkedHashMap<String, Object>()
+        def childRepeats = new LinkedHashMap<String, List<Map<String, Object>>>()
+
+        // 1. Map columns for the current table
+        mapXmlToTableValues(coreFormExt, tableName, xmlData, mapValues, childRepeats)
+
+        // Add system columns
+        mapValues.put(ExtensionDatabaseColumns.COLLECTED_ID, collectedId)
+        if (parentId != null) {
+            def parentIdModel = CoreFormExtensionModel.findByCoreFormAndDbColumnTableAndFormColumnName(coreFormExt, tableName, ExtensionDatabaseColumns.FORM_PARENT_ID)
+            if (parentIdModel) {
+                mapValues.put(parentIdModel.dbColumnName, parentId)
+            }
+        }
+        if (ordinalNumber > 0) {
+            mapValues.put(ExtensionDatabaseColumns.ORDINAL_NUMBER, ordinalNumber)
+        }
+
+        // 2. Insert current record
+        def result = coreExtensionDatabaseService.executeSqlInsert(tableName, mapValues)
+        if (result != null && result.success) {
+            def currentId = result.keys?.first() as Long
+
+            // 3. Process child repeats recursively
+            childRepeats.each { repeatName, instances ->
+                def repeatModel = CoreFormExtensionModel.findByCoreFormAndFormColumnNameAndFormColumnType(coreFormExt, repeatName, FormColumnType.REPEAT_GROUP)
+                if (repeatModel && repeatModel.repeatPerTable) {
+                    instances.eachWithIndex { instanceData, index ->
+                        def innerResult = insertTableRecordRecursive(coreFormExt, repeatModel.dbColumnTable, (Map<String, Object>) instanceData, currentId, collectedId, index + 1)
+
+                        if (!innerResult.success) {
+                            // Propagate error up and stop processing
+                            result.success = false
+                            result.errorMessage = innerResult.errorMessage
+                            return result
+                        }
+                    }
+                }
+            }
+        }
 
         return result
     }
 
-    LinkedHashMap<String, Object> getInstanceMappedValues(CoreFormExtension coreFormExt, File formDefFile , byte[] instanceBytes) {
-        def mapValues = new LinkedHashMap<String, Object>()
-        byte[] formDefBytes = formDefFile.bytes
-        def hForm = new ExcelFormParser(new ByteArrayInputStream(formDefBytes)).getForm()
-        def xmlData = getXmlMappedData(instanceBytes, hForm)
-
-        if (xmlData) {
-            def repeatIndexes = new LinkedHashMap<String, Integer>()
-            readElementChildren(coreFormExt, xmlData, mapValues, repeatIndexes, new String[1])
+    private void cleanupExtensionData(CoreFormExtension coreFormExt, String collectedId) {
+        def models = CoreFormExtensionModel.findAllByCoreForm(coreFormExt)
+        def tables = models.collect { it.dbColumnTable }.unique()
+        tables.each { tableName ->
+            coreExtensionDatabaseService.executeSqlDeleteByCollectedId(tableName, collectedId)
         }
-
-        return mapValues
+        // Also clean the main table
+        coreExtensionDatabaseService.executeSqlDeleteByCollectedId(coreFormExt.extFormId, collectedId)
     }
 
-    InstanceMappedValues getExtraInstanceMappedValues(CoreFormExtension coreFormExt, List<String> innerChilds, File formDefFile, byte[] instanceBytes) {
-        def instanceMapValues = new InstanceMappedValues()
-        byte[] formDefBytes = formDefFile.bytes
-        def hForm = new ExcelFormParser(new ByteArrayInputStream(formDefBytes)).getForm()
-        def xmlData = getXmlMappedData(instanceBytes, hForm)
+    private void mapXmlToTableValues(CoreFormExtension coreFormExt, String tableName, Map<String, Object> xmlData, Map<String, Object> mapValues, Map<String, List<Map<String, Object>>> childRepeats) {
+        xmlData.each { key, value ->
+            if (value instanceof List) {
+                childRepeats.put(key, (List<Map<String, Object>>) value)
+            } else if (value instanceof Map) {
+                mapXmlToTableValues(coreFormExt, tableName, (Map<String, Object>) value, mapValues, childRepeats)
+            } else {
+                processNodeValueForTable(coreFormExt, tableName, key, value as String, mapValues)
+            }
+        }
+    }
 
-        if (xmlData) {
-            def repeatIndexes = new LinkedHashMap<String, Integer>()
-            readExtraElementChildren(coreFormExt, innerChilds, xmlData, instanceMapValues, instanceMapValues.mainFormValues, repeatIndexes, new String[1])
+    private void processNodeValueForTable(CoreFormExtension coreFormExtension, String tableName, String key, String textValue, Map<String, Object> mapValues) {
+
+        def multiModels = CoreFormExtensionModel.findAllByCoreFormAndDbColumnTableAndFormColumnNameAndFormColumnType(coreFormExtension, tableName, key, FormColumnType.MULTIPLE_ITEMS)
+        if (multiModels) {
+            def choices = textValue.split(",")
+            multiModels.each { model ->
+                if (choices.contains(model.formChoiceValue)) {
+                    mapValues.put(model.dbColumnName, model.formChoiceValue)
+                }
+            }
+            return
         }
 
-        return instanceMapValues
+        def model = CoreFormExtensionModel.findByCoreFormAndDbColumnTableAndFormColumnName(coreFormExtension, tableName, key)
+        if (model && model.formColumnType != FormColumnType.REPEAT_GROUP) {
+            mapValues.put(model.dbColumnName, getObjectValueByType(model.dbColumnType, textValue))
+        }
     }
 
     private Map<String, Object> getXmlMappedData(byte[] instanceBytes, HForm form) {
-        Map<String, Object> map = new LinkedHashMap<>()
         try {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance()
             DocumentBuilder builder = factory.newDocumentBuilder()
             Document doc = builder.parse(new ByteArrayInputStream(instanceBytes))
             Node node = doc.getElementsByTagName(form.getFormId()).item(0)
             if (node != null) {
-                readMainNodes(node, map, form)
+                return readNodesRecursive(node, form)
             }
         } catch (Exception e) {
             e.printStackTrace()
         }
-        return map
+        return new LinkedHashMap<String, Object>()
     }
 
-    private void readMainNodes(Node node, Map<String, Object> map, HForm form) {
-        NodeList nodes = node.getChildNodes()
+    private Map<String, Object> readNodesRecursive(Node parentNode, HForm form) {
+        Map<String, Object> map = new LinkedHashMap<>()
+        NodeList nodes = parentNode.getChildNodes()
         for (int i = 0; i < nodes.getLength(); i++) {
             Node n = nodes.item(i)
             if (n.getNodeType() == Node.ELEMENT_NODE) {
-                if (n.hasChildNodes() && form.isRepeatColumnName(n.getNodeName())) {
-                    String repeatNodeName = n.getNodeName()
-                    NodeList repeatChilds = n.getChildNodes()
-                    RepeatObject newRepObjList = new RepeatObject()
-                    for (int ri = 0; ri < repeatChilds.getLength(); ri++) {
-                        Node nodeRepObj = repeatChilds.item(ri)
-                        if (nodeRepObj.getNodeType() == Node.ELEMENT_NODE) {
-                            NodeList childElements = nodeRepObj.getChildNodes()
-                            Map<String, String> obj = newRepObjList.createNewObject()
-                            for (int j = 0; j < childElements.getLength(); j++) {
-                                Node elementNode = childElements.item(j)
-                                if (elementNode.getNodeType() == Node.ELEMENT_NODE) {
-                                    obj.put(elementNode.getNodeName(), elementNode.getTextContent() ?: "")
-                                }
-                            }
+                String nodeName = n.getNodeName()
+                if (form.isRepeatColumnName(nodeName)) {
+                    // Handle Repeat Group
+                    List<Map<String, Object>> repeatList = (List<Map<String, Object>>) map.get(nodeName)
+                    if (repeatList == null) {
+                        repeatList = new ArrayList<Map<String, Object>>()
+                        map.put(nodeName, repeatList)
+                    }
+
+                    // Each child of a repeat node is an instance of the repeat
+                    NodeList instances = n.getChildNodes()
+                    for (int j = 0; j < instances.getLength(); j++) {
+                        Node instanceNode = instances.item(j)
+                        if (instanceNode.getNodeType() == Node.ELEMENT_NODE) {
+                            repeatList.add(readNodesRecursive(instanceNode, form))
                         }
                     }
-                    map.put(repeatNodeName, newRepObjList)
+                } else if (hasElementChildren(n)) {
+                    // Handle Group (nested elements but not a repeat)
+                    map.put(nodeName, readNodesRecursive(n, form))
                 } else {
-                    map.put(n.getNodeName(), n.getTextContent() ?: "")
+                    // Simple leaf node
+                    map.put(nodeName, n.getTextContent()?.trim() ?: "")
                 }
             }
         }
+        return map
     }
 
-    private void readElementChildren(CoreFormExtension coreFormExtension, Map<String, Object> xmlData, Map<String, Object> mapValues, LinkedHashMap<String, Integer> repeatIndexes, String[] lastReadedRepeatGroup) {
-        xmlData.each { key, value ->
-            if (["instanceID", "instanceName"].contains(key)) return
-
-            if (value instanceof RepeatObject) {
-                def repeatModel = CoreFormExtensionModel.findByCoreFormAndFormColumnNameAndFormColumnType(coreFormExtension, key, FormColumnType.REPEAT_GROUP)
-                if (repeatModel) {
-                    if (lastReadedRepeatGroup[0] != null) {
-                        if (!lastReadedRepeatGroup[0].equals(repeatModel.dbColumnName)) {
-                            if (!lastReadedRepeatGroup[0].equals(repeatModel.formRepeatGroup)) {
-                                repeatIndexes.remove(lastReadedRepeatGroup[0])
-                            }
-                        }
-                    }
-                    lastReadedRepeatGroup[0] = repeatModel.dbColumnName
-
-                    value.getList().eachWithIndex { Map<String, String> itemMap, int index ->
-                        def currentRepeatIndexes = new LinkedHashMap(repeatIndexes)
-                        currentRepeatIndexes.put(repeatModel.dbColumnName, index + 1)
-                        readElementChildren(coreFormExtension, itemMap, mapValues, currentRepeatIndexes, lastReadedRepeatGroup)
-                    }
-                }
-            } else {
-                processNodeValue(coreFormExtension, key, value as String, mapValues, repeatIndexes)
+    private boolean hasElementChildren(Node node) {
+        NodeList children = node.getChildNodes()
+        for (int i = 0; i < children.getLength(); i++) {
+            if (children.item(i).getNodeType() == Node.ELEMENT_NODE) {
+                return true
             }
         }
-    }
-
-    private void readExtraElementChildren(CoreFormExtension coreFormExtension, List<String> innerChilds, Map<String, Object> xmlData, InstanceMappedValues instanceMappedValues, Map<String, Object> mapValues, LinkedHashMap<String, Integer> repeatIndexes, String[] lastReadedRepeatGroup) {
-        xmlData.each { key, value ->
-            if (["instanceID", "instanceName"].contains(key)) return
-
-            if (value instanceof RepeatObject) {
-                if (innerChilds.contains(key)) {
-                    def list = instanceMappedValues.childFormValues.computeIfAbsent(key, { k -> new ArrayList<LinkedHashMap<String, Object>>() })
-                    value.getList().each { Map<String, String> itemMap ->
-                        def newMappedValues = new LinkedHashMap<String, Object>()
-                        list.add(newMappedValues)
-                        readExtraElementChildren(coreFormExtension, innerChilds, itemMap, instanceMappedValues, newMappedValues, repeatIndexes, lastReadedRepeatGroup)
-                    }
-                    return
-                }
-
-                def repeatModel = CoreFormExtensionModel.findByCoreFormAndFormColumnNameAndFormColumnType(coreFormExtension, key, FormColumnType.REPEAT_GROUP)
-                if (repeatModel) {
-                    if (lastReadedRepeatGroup[0] != null) {
-                        if (!lastReadedRepeatGroup[0].equals(repeatModel.dbColumnName)) {
-                            if (!lastReadedRepeatGroup[0].equals(repeatModel.formRepeatGroup)) {
-                                repeatIndexes.remove(lastReadedRepeatGroup[0])
-                            }
-                        }
-                    }
-                    lastReadedRepeatGroup[0] = repeatModel.dbColumnName
-
-                    value.getList().eachWithIndex { Map<String, String> itemMap, int index ->
-                        def currentRepeatIndexes = new LinkedHashMap(repeatIndexes)
-                        currentRepeatIndexes.put(repeatModel.dbColumnName, index + 1)
-                        readExtraElementChildren(coreFormExtension, innerChilds, itemMap, instanceMappedValues, mapValues, currentRepeatIndexes, lastReadedRepeatGroup)
-                    }
-                }
-            } else {
-                processNodeValue(coreFormExtension, key, value as String, mapValues, repeatIndexes)
-            }
-        }
-    }
-
-    private void processNodeValue(CoreFormExtension coreFormExtension, String key, String textValue, Map<String, Object> mapValues, LinkedHashMap<String, Integer> repeatIndexes) {
-
-        def multiModels = CoreFormExtensionModel.findAllByCoreFormAndFormColumnNameAndFormColumnType(coreFormExtension, key, FormColumnType.MULTIPLE_ITEMS)
-        if (multiModels) {
-            def choices = textValue.split(",")
-            multiModels.each { model ->
-                if (choices.contains(model.formChoiceValue)) {
-                    def finalColName = getFinalColumnName(model, repeatIndexes)
-                    mapValues.put(finalColName, model.formChoiceValue)
-                }
-            }
-            return
-        }
-
-        if (key.contains("_")) {
-            def suffix = key.substring(key.lastIndexOf("_") + 1)
-            if (["lat", "lng", "alt", "acc"].contains(suffix)) {
-                def baseName = key.substring(0, key.lastIndexOf("_"))
-                def gpsModel = CoreFormExtensionModel.findByCoreFormAndFormColumnNameAndFormColumnTypeAndFormChoiceValue(coreFormExtension, baseName, FormColumnType.GEOPOINT, suffix)
-                if (gpsModel) {
-                    def finalColName = getFinalColumnName(gpsModel, repeatIndexes)
-                    mapValues.put(finalColName, Double.parseDouble(textValue))
-                    return
-                }
-            }
-        }
-
-        def model = CoreFormExtensionModel.findByCoreFormAndFormColumnName(coreFormExtension, key)
-        if (model && model.formColumnType != FormColumnType.REPEAT_GROUP) {
-            def finalColName = getFinalColumnName(model, repeatIndexes)
-            mapValues.put(finalColName, getObjectValueByType(model.dbColumnType, textValue))
-        }
+        return false
     }
 
     Object getObjectValueByType(DatabaseColumnType dbColumnType, String textValue) {
@@ -547,37 +278,5 @@ class CoreExtensionService {
         }
 
         return objValue;
-    }
-
-    String getFinalColumnName(CoreFormExtensionModel modelLoop, LinkedHashMap<String, Integer> repeatIndexes) {
-        def finalColumnName = ""
-
-        while (modelLoop != null) {
-            def origName = modelLoop.dbColumnName
-            def remParName = (modelLoop.formRepeatGroup != null) ? origName.replace(modelLoop.formRepeatGroup, "") : origName
-
-            //remove the parent repeat group from the naming
-            def parIndex = repeatIndexes.get((modelLoop.formRepeatGroup != null) ? modelLoop.formRepeatGroup : origName)
-            remParName = remParName.replace("#", "${String.format('%02d', parIndex)}")
-
-            finalColumnName = remParName + finalColumnName
-
-            modelLoop = modelLoop.parentGroup
-        }
-
-        return finalColumnName
-    }
-
-    /*
-     * Used to store readed values of pregnancy_outcome_ext XML instance (contails childs that will be stored in a separated table)
-     */
-    class InstanceMappedValues {
-        LinkedHashMap<String, Object> mainFormValues
-        LinkedHashMap<String, List<LinkedHashMap<String, Object>>> childFormValues
-
-        public InstanceMappedValues() {
-            this.mainFormValues = new LinkedHashMap<>()
-            this.childFormValues = new LinkedHashMap<>()
-        }
     }
 }

@@ -28,6 +28,9 @@ class CoreExtensionDatabaseService {
     def generalUtilitiesService
     def errorMessageService
 
+    static final PREGNANCY_CHILD_EXT_TABLE = "pregnancy_child_ext"
+    static final PREGNANCY_VISIT_CHILD_EXT_TABLE = "pregnancy_visit_child_ext"
+
     def generateDatabaseModel(CoreFormExtension coreFormExtension) {
         if (coreFormExtension.extFormPath != null) {
             def inputStream = new FileInputStream(new File(coreFormExtension.extFormPath))
@@ -55,14 +58,14 @@ class CoreExtensionDatabaseService {
             // Check if it's a special repeat - basically means that they have a unique table name
             if (coreFormExtension.coreForm == CoreForm.PREGNANCY_OUTCOME_FORM && repeatName == "childs") {
                 repeatGroup.columnsGroups.each { innerGroup ->
-                    columnIndex = processColumnGroup(coreFormExtension, CoreExtensionService.PREGNANCY_CHILD_EXT_TABLE, innerGroup, columnIndex, null)
+                    columnIndex = processColumnGroup(coreFormExtension, PREGNANCY_CHILD_EXT_TABLE, innerGroup, columnIndex, null)
                 }
                 return columnIndex
             }
 
             if (coreFormExtension.coreForm == CoreForm.PREGNANCY_VISIT_FORM && repeatName == "childs") {
                 repeatGroup.columnsGroups.each { innerGroup ->
-                    columnIndex = processColumnGroup(coreFormExtension, CoreExtensionService.PREGNANCY_VISIT_CHILD_EXT_TABLE, innerGroup, columnIndex, null)
+                    columnIndex = processColumnGroup(coreFormExtension, PREGNANCY_VISIT_CHILD_EXT_TABLE, innerGroup, columnIndex, null)
                 }
                 return columnIndex
             }
@@ -86,7 +89,7 @@ class CoreExtensionDatabaseService {
             repeatModel.save(flush: true)
 
             //add default system columns
-            columnIndex = addSystemColumns(coreFormExtension, nextTableName, columnIndex, repeatModel)
+            columnIndex = addSystemColumns(coreFormExtension, nextTableName, columnIndex, tableName, repeatModel)
 
             // Process inner groups
             repeatGroup.columnsGroups.each { innerGroup ->
@@ -221,7 +224,7 @@ class CoreExtensionDatabaseService {
         return columnIndex
     }
 
-    private int addSystemColumns(CoreFormExtension coreFormExtension, String tableName, int columnIndex, CoreFormExtensionModel parentRepeatModel) {
+    def int addSystemColumns(CoreFormExtension coreFormExtension, String tableName, int columnIndex, String parentTableName, CoreFormExtensionModel parentRepeatModel) {
         // id BIGINT
         def idModel = new CoreFormExtensionModel(coreForm: coreFormExtension, extFormId: coreFormExtension.extFormId)
         idModel.dbColumnIndex = columnIndex++
@@ -250,7 +253,7 @@ class CoreExtensionDatabaseService {
         def parentIdModel = new CoreFormExtensionModel(coreForm: coreFormExtension, extFormId: coreFormExtension.extFormId)
         parentIdModel.dbColumnIndex = columnIndex++
         parentIdModel.dbColumnTable = tableName
-        parentIdModel.dbColumnName = "${parentRepeatModel?.parentGroup?.dbColumnTable ?: coreFormExtension.extFormId}_id"
+        parentIdModel.dbColumnName = "${parentRepeatModel?.parentGroup?.dbColumnTable ?: parentTableName}_id"
         parentIdModel.dbColumnType = DatabaseColumnType.LONG
         parentIdModel.dbColumnSize = -1
         parentIdModel.formColumnName = ExtensionDatabaseColumns.FORM_PARENT_ID
@@ -356,6 +359,18 @@ class CoreExtensionDatabaseService {
         return result
     }
 
+    def executeSqlDeleteByCollectedId(String tableName, String collectedId) {
+        String sqlDelete = "DELETE FROM ${tableName} WHERE ${ExtensionDatabaseColumns.COLLECTED_ID} = ?;"
+        CoreFormExtension.withSession { Session session ->
+            session.doWork new Work() {
+                void execute(Connection connection) throws SQLException {
+                    def sql = new Sql(connection)
+                    sql.execute(sqlDelete, [collectedId])
+                }
+            }
+        }
+    }
+
     def removeNonExistentColumns(String tableName, LinkedHashMap<String, Object> mapValues) {
         def existentColumns = getDatabaseColumns(tableName).collect { it.name }
         def cols = new ArrayList<>(mapValues.keySet())
@@ -373,14 +388,18 @@ class CoreExtensionDatabaseService {
         CoreFormExtension.withSession { Session session ->
             session.doWork new Work() {
                 void execute(Connection connection) throws SQLException {
-                    def sql = new Sql(connection)
-                    sql.rows("select * from "+tableName, 0, 1, { metadata ->
-                        int cols = metadata.getColumnCount()
-                        for (int i=1; i <= cols; i++) {
-                            list.add(new JDatabaseColumn(table: tableName, name: metadata.getColumnName(i), type: metadata.getColumnTypeName(i), size: metadata.getColumnDisplaySize(i)+""))
-                            //println "name: ${metadata.getColumnName(i)}, type: ${metadata.getColumnTypeName(i)}, dsize: ${metadata.getColumnDisplaySize(i)}"
-                        }
-                    })
+                    try {
+                        def sql = new Sql(connection)
+                        sql.rows("select * from " + tableName, 0, 1, { metadata ->
+                            int cols = metadata.getColumnCount()
+                            for (int i = 1; i <= cols; i++) {
+                                list.add(new JDatabaseColumn(table: tableName, name: metadata.getColumnName(i), type: metadata.getColumnTypeName(i), size: metadata.getColumnDisplaySize(i) + ""))
+                                //println "name: ${metadata.getColumnName(i)}, type: ${metadata.getColumnTypeName(i)}, dsize: ${metadata.getColumnDisplaySize(i)}"
+                            }
+                        })
+                    }catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
                 }
             }
         }
