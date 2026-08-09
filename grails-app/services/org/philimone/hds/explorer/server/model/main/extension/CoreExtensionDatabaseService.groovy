@@ -273,12 +273,9 @@ class CoreExtensionDatabaseService {
         return columnIndex
     }
 
-    List<String[]> executeSqlCommands(String commandsText) {
+    List<String[]> executeSqlCommands(List<String> listCommands) {
 
         def resultMessages = new ArrayList<String[]>()
-
-        commandsText = commandsText.replace("\n", "")
-        List<String> listCommands = commandsText.split(";").collect {"${it};"}
 
         CoreFormExtension.withSession { Session session ->
             session.doWork new Work() {

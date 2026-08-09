@@ -62,7 +62,7 @@
 
                 <div class="whitebox_panel">
                     <label for="exampleFormControlTextarea1"><g:message code="coreFormExtension.columns.sql.execute.title.label" /></label>
-                    <g:textArea class="form-control bg-dark text-light" name="sqlCommands" value="${sqlCommands}" rows="10" cols="40"/>
+                    <g:textArea class="form-control bg-dark text-light" name="sqlCommands" value="${sqlCommands}" rows="10" cols="40" readonly="readonly"/>
                 </div>
 
                 <div class="whitebox_panel">

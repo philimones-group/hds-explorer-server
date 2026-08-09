@@ -266,10 +266,12 @@ class CoreFormExtensionController {
     def executeAlterTable = {
         def coreFormExtension = CoreFormExtension.get(params.id)
 
-        def sqlCommands = params.sqlCommands
         def databaseSystem = params.databaseSystem
         def totalColumns = params.totalColumns as Integer
 
+        //generate sql again:
+        def models = CoreFormExtensionModel.findAllByCoreForm(coreFormExtension, [sort: "dbColumnIndex", order: "asc"])
+        def sqlCommands = coreExtensionDatabaseService.generateSqlCommandsFrom(coreFormExtension, models)
         def resultMessages = coreExtensionDatabaseService.executeSqlCommands(sqlCommands)
 
         flash.message = g.message(code: "coreFormExtension.columns.executed.label")
