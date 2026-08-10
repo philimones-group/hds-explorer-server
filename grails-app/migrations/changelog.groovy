@@ -43,4 +43,5 @@ databaseChangeLog = {
     include file: 'add-household_institution_n_proxy_heads.groovy'
     include file: 'add-delivery_date-to-pregnancy_reg-table.groovy'
     include file: 'alter-coreform-ext-addr-extformpath.groovy'
+    include file: 'alter-pregnancy-child-n-visitchild-extensions-add-ordinal-collected_id.groovy'
 }

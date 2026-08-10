@@ -2,6 +2,8 @@ package org.philimone.hds.explorer.server.model.main.extension
 
 class PregnancyVisitChildExt {
 
+    String collected_id
+    Integer ordinal_number
     String child_outcome_type
     String child_code
     String child_name
@@ -12,6 +14,9 @@ class PregnancyVisitChildExt {
 
     static constraints = {
         visit nullable: false
+
+        collected_id nullable: true
+        ordinal_number nullable: true
 
         child_outcome_type nullable: false
         child_code nullable: false
@@ -24,6 +29,9 @@ class PregnancyVisitChildExt {
         table 'pregnancy_visit_child_ext'
 
         version false
+
+        collected_id column: 'collected_id'
+        ordinal_number column: 'ordinal_number', defaultValue: "0"
 
         visit column: "pregnancy_visit_ext_id"
 

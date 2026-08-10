@@ -3,6 +3,7 @@ package org.philimone.hds.explorer.server.model.main.extension
 class PregnancyChildExt {
 
     String collected_id
+    Integer ordinal_number
     String child_outcome_type
     String child_code
     String child_name
@@ -12,6 +13,7 @@ class PregnancyChildExt {
 
     static constraints = {
         collected_id nullable: false
+        ordinal_number nullable: true
 
         outcome nullable: false
 
@@ -27,6 +29,7 @@ class PregnancyChildExt {
         version false
 
         collected_id column: 'collected_id'
+        ordinal_number column: 'ordinal_number', defaultValue: "0"
 
         outcome column: "pregnancy_outcome_ext_id"
 

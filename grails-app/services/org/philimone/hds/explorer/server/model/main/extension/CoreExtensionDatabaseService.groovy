@@ -57,17 +57,11 @@ class CoreExtensionDatabaseService {
 
             // Check if it's a special repeat - basically means that they have a unique table name
             if (coreFormExtension.coreForm == CoreForm.PREGNANCY_OUTCOME_FORM && repeatName == "childs") {
-                repeatGroup.columnsGroups.each { innerGroup ->
-                    columnIndex = processColumnGroup(coreFormExtension, PREGNANCY_CHILD_EXT_TABLE, innerGroup, columnIndex, null)
-                }
-                return columnIndex
+                nextTableName = PREGNANCY_CHILD_EXT_TABLE
             }
 
             if (coreFormExtension.coreForm == CoreForm.PREGNANCY_VISIT_FORM && repeatName == "childs") {
-                repeatGroup.columnsGroups.each { innerGroup ->
-                    columnIndex = processColumnGroup(coreFormExtension, PREGNANCY_VISIT_CHILD_EXT_TABLE, innerGroup, columnIndex, null)
-                }
-                return columnIndex
+                nextTableName = PREGNANCY_VISIT_CHILD_EXT_TABLE
             }
 
             //all repeat groups must create an extra database table

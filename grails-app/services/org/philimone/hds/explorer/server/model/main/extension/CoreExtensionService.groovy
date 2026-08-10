@@ -142,10 +142,16 @@ class CoreExtensionService {
             def currentId = result.keys?.first() as Long
 
             // 3. Process child repeats recursively
-            childRepeats.each { repeatName, instances ->
+            for (def entry : childRepeats){
+                def repeatName = entry.key
+                def instances = entry.value
                 def repeatModel = CoreFormExtensionModel.findByCoreFormAndFormColumnNameAndFormColumnType(coreFormExt, repeatName, FormColumnType.REPEAT_GROUP)
+
                 if (repeatModel && repeatModel.repeatPerTable) {
-                    instances.eachWithIndex { instanceData, index ->
+                    def index = -1
+                    for (def instance : instances) {
+                        def instanceData = instance
+                        index += 1
                         def innerResult = insertTableRecordRecursive(coreFormExt, repeatModel.dbColumnTable, (Map<String, Object>) instanceData, currentId, collectedId, index + 1)
 
                         if (!innerResult.success) {
