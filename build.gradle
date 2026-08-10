@@ -15,7 +15,7 @@ buildscript {
     }
 }
 
-version "1.1.5 build 432"
+version "1.2 build 442"
 group "org.philimone.hds.explorer"
 
 apply plugin:"eclipse"
@@ -124,7 +124,7 @@ dependencies {
     implementation 'org.getodk:javarosa:4.2.0'
 
     //add hds-forms-lib the model plugin
-    implementation 'org.philimone.hds.forms.model:hds-forms-model-lib:1.0.1'
+    implementation 'org.philimone.hds.forms.model:hds-forms-model-lib:1.0.2'
 
     //load local libraries
     implementation fileTree(dir: 'lib', include: '*.jar')

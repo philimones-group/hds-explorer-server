@@ -2,6 +2,7 @@ package org.philimone.hds.explorer.server.model.collect.raw.api
 
 import groovy.xml.XmlSlurper
 import groovy.xml.slurpersupport.NodeChild
+import org.philimone.hds.explorer.io.SystemPath
 import org.philimone.hds.explorer.server.model.collect.raw.*
 import org.philimone.hds.explorer.server.model.collect.raw.editors.RawEditHousehold
 import org.philimone.hds.explorer.server.model.collect.raw.editors.RawEditMember
@@ -10,6 +11,8 @@ import org.philimone.hds.explorer.server.model.enums.RawEntity
 import org.philimone.hds.explorer.server.model.main.collect.raw.RawExecutionResult
 import org.philimone.hds.explorer.server.model.main.collect.raw.RawParseResult
 import org.springframework.http.HttpStatus
+import org.springframework.web.multipart.MultipartFile
+import org.springframework.web.multipart.MultipartHttpServletRequest
 
 class RawImportApiController {
 
@@ -39,6 +42,9 @@ class RawImportApiController {
                              edithouseholds: "POST",
                              editmembers: "POST"]
 
+    static PARAMS_CORE_XML_NAME = "core_xml"
+    static PARAMS_CORE_MEDIA_FILES_NAME = "core_media_files"
+
     def rawImportApiService
     def rawExecutionService
     def rawEditExecutionService
@@ -46,14 +52,24 @@ class RawImportApiController {
 
     def regions = {
 
-        if (request.format != "xml") {
+        // Ensure the incoming request is multipart
+        if (!(request instanceof MultipartHttpServletRequest)) {
+            render text: "Expected multipart/form-data request", status: HttpStatus.BAD_REQUEST
+            return
+        }
+
+        // Extract the Core XML
+        def multipartRequest = (MultipartHttpServletRequest) request
+        def xmlPart = multipartRequest.getFile(PARAMS_CORE_XML_NAME)
+
+        if (!xmlPart || xmlPart.empty) {
             def message = message(code: 'validation.field.raw.xml.invalid.error')
-            render text: message, status:  HttpStatus.BAD_REQUEST // Only XML expected
+            render text: message, status: HttpStatus.BAD_REQUEST
             return
         }
 
         RawParseResult<RawRegion> parseResult = null
-        String xmlContent = request.reader?.text
+        String xmlContent = new String(xmlPart.bytes, "UTF-8")
         String extensionXml = rawImportApiService.getExtensionXmlText(xmlContent, RawEntity.REGION)
 
         try {
@@ -73,6 +89,21 @@ class RawImportApiController {
 
         def rawInstance = parseResult.domainInstance
         rawInstance.extensionForm = extensionXml?.getBytes()
+
+        // Handle incoming attachment files (images, audio, etc.) - we save relative filename in database columns - files are saved in a-docs path
+        List<MultipartFile> mediaFiles = multipartRequest.getFiles(PARAMS_CORE_MEDIA_FILES_NAME)
+        mediaFiles.each { MultipartFile mediaFile ->
+            if (!mediaFile.empty) {
+                String filename = mediaFile.originalFilename // e.g., "photo_123.jpg"
+                String contentType = mediaFile.contentType   // e.g., "image/jpeg"
+
+                def adocsFile = new File(SystemPath.externalDocsPath, filename)
+                mediaFile.transferTo(adocsFile)
+
+                // Logic to save the file to your storage service
+                log.info "Received media: ${filename}[${contentType}] (${mediaFile.size} bytes)"
+            }
+        }
 
         def resultSave = rawInstance.save(flush: true)
 
@@ -95,14 +126,25 @@ class RawImportApiController {
 
     def prehouseholds = {
 
-        if (request.format != "xml") {
+        // Ensure the incoming request is multipart
+        if (!(request instanceof MultipartHttpServletRequest)) {
+            render text: "Expected multipart/form-data request", status: HttpStatus.BAD_REQUEST
+            return
+        }
+
+        def multipartRequest = (MultipartHttpServletRequest) request
+
+        // Extract the Core XML
+        def xmlPart = multipartRequest.getFile(PARAMS_CORE_XML_NAME)
+        if (!xmlPart || xmlPart.empty) {
             def message = message(code: 'validation.field.raw.xml.invalid.error')
-            render text: message, status:  HttpStatus.BAD_REQUEST // Only XML expected
+            render text: message, status: HttpStatus.BAD_REQUEST
             return
         }
 
         RawParseResult<RawHousehold> parseResult = null
-        String xmlContent = request.reader?.text
+        String xmlContent = new String(xmlPart.bytes, "UTF-8")
+        String extensionXml = rawImportApiService.getExtensionXmlText(xmlContent, RawEntity.HOUSEHOLD)
 
         try {
             def node = new XmlSlurper().parseText(xmlContent) as NodeChild
@@ -120,6 +162,15 @@ class RawImportApiController {
         }
 
         def rawInstance = parseResult.domainInstance
+        rawInstance.extensionForm = extensionXml?.getBytes()
+
+        // Handle incoming attachment files (images, audio, etc.)
+        List<MultipartFile> mediaFiles = multipartRequest.getFiles(PARAMS_CORE_MEDIA_FILES_NAME)
+        mediaFiles.each { MultipartFile mediaFile ->
+            if (!mediaFile.empty) {
+                mediaFile.transferTo(new File(SystemPath.externalDocsPath, mediaFile.originalFilename))
+            }
+        }
 
         def resultSave = rawInstance.save(flush: true)
 
@@ -142,14 +193,24 @@ class RawImportApiController {
 
     def households = {
 
-        if (request.format != "xml") {
+        // Ensure the incoming request is multipart
+        if (!(request instanceof MultipartHttpServletRequest)) {
+            render text: "Expected multipart/form-data request", status: HttpStatus.BAD_REQUEST
+            return
+        }
+
+        def multipartRequest = (MultipartHttpServletRequest) request
+
+        // Extract the Core XML
+        def xmlPart = multipartRequest.getFile(PARAMS_CORE_XML_NAME)
+        if (!xmlPart || xmlPart.empty) {
             def message = message(code: 'validation.field.raw.xml.invalid.error')
-            render text: message, status:  HttpStatus.BAD_REQUEST // Only XML expected
+            render text: message, status: HttpStatus.BAD_REQUEST
             return
         }
 
         RawParseResult<RawHousehold> parseResult = null
-        String xmlContent = request.reader?.text
+        String xmlContent = new String(xmlPart.bytes, "UTF-8")
         String extensionXml = rawImportApiService.getExtensionXmlText(xmlContent, RawEntity.HOUSEHOLD)
 
         try {
@@ -169,6 +230,14 @@ class RawImportApiController {
 
         def rawInstance = parseResult.domainInstance
         rawInstance.extensionForm = extensionXml?.getBytes()
+
+        // Handle incoming attachment files (images, audio, etc.)
+        List<MultipartFile> mediaFiles = multipartRequest.getFiles(PARAMS_CORE_MEDIA_FILES_NAME)
+        mediaFiles.each { MultipartFile mediaFile ->
+            if (!mediaFile.empty) {
+                mediaFile.transferTo(new File(SystemPath.externalDocsPath, mediaFile.originalFilename))
+            }
+        }
 
         def resultSave = rawInstance.save(flush: true)
 
@@ -239,14 +308,24 @@ class RawImportApiController {
 
     def visits = {
 
-        if (request.format != "xml") {
+        // Ensure the incoming request is multipart
+        if (!(request instanceof MultipartHttpServletRequest)) {
+            render text: "Expected multipart/form-data request", status: HttpStatus.BAD_REQUEST
+            return
+        }
+
+        def multipartRequest = (MultipartHttpServletRequest) request
+
+        // Extract the Core XML
+        def xmlPart = multipartRequest.getFile(PARAMS_CORE_XML_NAME)
+        if (!xmlPart || xmlPart.empty) {
             def message = message(code: 'validation.field.raw.xml.invalid.error')
-            render text: message, status:  HttpStatus.BAD_REQUEST // Only XML expected
+            render text: message, status: HttpStatus.BAD_REQUEST
             return
         }
 
         RawParseResult<RawVisit> parseResult = null
-        String xmlContent = request.reader?.text
+        String xmlContent = new String(xmlPart.bytes, "UTF-8")
         String extensionXml = rawImportApiService.getExtensionXmlText(xmlContent, RawEntity.VISIT)
 
         try {
@@ -266,6 +345,14 @@ class RawImportApiController {
 
         def rawInstance = parseResult.domainInstance
         rawInstance.extensionForm = extensionXml?.getBytes()
+
+        // Handle incoming attachment files (images, audio, etc.)
+        List<MultipartFile> mediaFiles = multipartRequest.getFiles(PARAMS_CORE_MEDIA_FILES_NAME)
+        mediaFiles.each { MultipartFile mediaFile ->
+            if (!mediaFile.empty) {
+                mediaFile.transferTo(new File(SystemPath.externalDocsPath, mediaFile.originalFilename))
+            }
+        }
 
         def resultSave = rawInstance.save(flush: true)
 
@@ -288,14 +375,24 @@ class RawImportApiController {
 
     def memberenus = {
 
-        if (request.format != "xml") {
+        // Ensure the incoming request is multipart
+        if (!(request instanceof MultipartHttpServletRequest)) {
+            render text: "Expected multipart/form-data request", status: HttpStatus.BAD_REQUEST
+            return
+        }
+
+        def multipartRequest = (MultipartHttpServletRequest) request
+
+        // Extract the Core XML
+        def xmlPart = multipartRequest.getFile(PARAMS_CORE_XML_NAME)
+        if (!xmlPart || xmlPart.empty) {
             def message = message(code: 'validation.field.raw.xml.invalid.error')
-            render text: message, status:  HttpStatus.BAD_REQUEST // Only XML expected
+            render text: message, status: HttpStatus.BAD_REQUEST
             return
         }
 
         RawParseResult<RawMemberEnu> parseResult = null
-        String xmlContent = request.reader?.text
+        String xmlContent = new String(xmlPart.bytes, "UTF-8")
         String extensionXml = rawImportApiService.getExtensionXmlText(xmlContent, RawEntity.MEMBER_ENUMERATION)
 
         try {
@@ -315,6 +412,14 @@ class RawImportApiController {
 
         def rawInstance = parseResult.domainInstance
         rawInstance.extensionForm = extensionXml?.getBytes()
+
+        // Handle incoming attachment files (images, audio, etc.)
+        List<MultipartFile> mediaFiles = multipartRequest.getFiles(PARAMS_CORE_MEDIA_FILES_NAME)
+        mediaFiles.each { MultipartFile mediaFile ->
+            if (!mediaFile.empty) {
+                mediaFile.transferTo(new File(SystemPath.externalDocsPath, mediaFile.originalFilename))
+            }
+        }
 
         def resultSave = rawInstance.save(flush: true)
 
@@ -337,14 +442,24 @@ class RawImportApiController {
 
     def externalinmigrations = {
 
-        if (request.format != "xml") {
+        // Ensure the incoming request is multipart
+        if (!(request instanceof MultipartHttpServletRequest)) {
+            render text: "Expected multipart/form-data request", status: HttpStatus.BAD_REQUEST
+            return
+        }
+
+        def multipartRequest = (MultipartHttpServletRequest) request
+
+        // Extract the Core XML
+        def xmlPart = multipartRequest.getFile(PARAMS_CORE_XML_NAME)
+        if (!xmlPart || xmlPart.empty) {
             def message = message(code: 'validation.field.raw.xml.invalid.error')
-            render text: message, status:  HttpStatus.BAD_REQUEST // Only XML expected
+            render text: message, status: HttpStatus.BAD_REQUEST
             return
         }
 
         RawParseResult<RawExternalInMigration> parseResult = null
-        String xmlContent = request.reader?.text
+        String xmlContent = new String(xmlPart.bytes, "UTF-8")
         String extensionXml = rawImportApiService.getExtensionXmlText(xmlContent, RawEntity.EXTERNAL_INMIGRATION)
 
         try {
@@ -364,6 +479,14 @@ class RawImportApiController {
 
         def rawInstance = parseResult.domainInstance
         rawInstance.extensionForm = extensionXml?.getBytes()
+
+        // Handle incoming attachment files (images, audio, etc.)
+        List<MultipartFile> mediaFiles = multipartRequest.getFiles(PARAMS_CORE_MEDIA_FILES_NAME)
+        mediaFiles.each { MultipartFile mediaFile ->
+            if (!mediaFile.empty) {
+                mediaFile.transferTo(new File(SystemPath.externalDocsPath, mediaFile.originalFilename))
+            }
+        }
 
         def resultSave = rawInstance.save(flush: true)
 
@@ -386,14 +509,24 @@ class RawImportApiController {
 
     def inmigrations = {
 
-        if (request.format != "xml") {
+        // Ensure the incoming request is multipart
+        if (!(request instanceof MultipartHttpServletRequest)) {
+            render text: "Expected multipart/form-data request", status: HttpStatus.BAD_REQUEST
+            return
+        }
+
+        def multipartRequest = (MultipartHttpServletRequest) request
+
+        // Extract the Core XML
+        def xmlPart = multipartRequest.getFile(PARAMS_CORE_XML_NAME)
+        if (!xmlPart || xmlPart.empty) {
             def message = message(code: 'validation.field.raw.xml.invalid.error')
-            render text: message, status:  HttpStatus.BAD_REQUEST // Only XML expected
+            render text: message, status: HttpStatus.BAD_REQUEST
             return
         }
 
         RawParseResult<RawInMigration> parseResult = null
-        String xmlContent = request.reader?.text
+        String xmlContent = new String(xmlPart.bytes, "UTF-8")
         String extensionXml = rawImportApiService.getExtensionXmlText(xmlContent, RawEntity.IN_MIGRATION)
 
         try {
@@ -413,6 +546,14 @@ class RawImportApiController {
 
         def rawInstance = parseResult.domainInstance
         rawInstance.extensionForm = extensionXml?.getBytes()
+
+        // Handle incoming attachment files (images, audio, etc.)
+        List<MultipartFile> mediaFiles = multipartRequest.getFiles(PARAMS_CORE_MEDIA_FILES_NAME)
+        mediaFiles.each { MultipartFile mediaFile ->
+            if (!mediaFile.empty) {
+                mediaFile.transferTo(new File(SystemPath.externalDocsPath, mediaFile.originalFilename))
+            }
+        }
 
         def resultSave = rawInstance.save(flush: true)
 
@@ -435,14 +576,24 @@ class RawImportApiController {
 
     def outmigrations = {
 
-        if (request.format != "xml") {
+        // Ensure the incoming request is multipart
+        if (!(request instanceof MultipartHttpServletRequest)) {
+            render text: "Expected multipart/form-data request", status: HttpStatus.BAD_REQUEST
+            return
+        }
+
+        def multipartRequest = (MultipartHttpServletRequest) request
+
+        // Extract the Core XML
+        def xmlPart = multipartRequest.getFile(PARAMS_CORE_XML_NAME)
+        if (!xmlPart || xmlPart.empty) {
             def message = message(code: 'validation.field.raw.xml.invalid.error')
-            render text: message, status:  HttpStatus.BAD_REQUEST // Only XML expected
+            render text: message, status: HttpStatus.BAD_REQUEST
             return
         }
 
         RawParseResult<RawOutMigration> parseResult = null
-        String xmlContent = request.reader?.text
+        String xmlContent = new String(xmlPart.bytes, "UTF-8")
         String extensionXml = rawImportApiService.getExtensionXmlText(xmlContent, RawEntity.OUT_MIGRATION)
 
         try {
@@ -462,6 +613,14 @@ class RawImportApiController {
 
         def rawInstance = parseResult.domainInstance
         rawInstance.extensionForm = extensionXml?.getBytes()
+
+        // Handle incoming attachment files (images, audio, etc.)
+        List<MultipartFile> mediaFiles = multipartRequest.getFiles(PARAMS_CORE_MEDIA_FILES_NAME)
+        mediaFiles.each { MultipartFile mediaFile ->
+            if (!mediaFile.empty) {
+                mediaFile.transferTo(new File(SystemPath.externalDocsPath, mediaFile.originalFilename))
+            }
+        }
 
         def resultSave = rawInstance.save(flush: true)
 
@@ -531,14 +690,24 @@ class RawImportApiController {
 
     def maritalrelationships = {
 
-        if (request.format != "xml") {
+        // Ensure the incoming request is multipart
+        if (!(request instanceof MultipartHttpServletRequest)) {
+            render text: "Expected multipart/form-data request", status: HttpStatus.BAD_REQUEST
+            return
+        }
+
+        def multipartRequest = (MultipartHttpServletRequest) request
+
+        // Extract the Core XML
+        def xmlPart = multipartRequest.getFile(PARAMS_CORE_XML_NAME)
+        if (!xmlPart || xmlPart.empty) {
             def message = message(code: 'validation.field.raw.xml.invalid.error')
-            render text: message, status:  HttpStatus.BAD_REQUEST // Only XML expected
+            render text: message, status: HttpStatus.BAD_REQUEST
             return
         }
 
         RawParseResult<RawMaritalRelationship> parseResult = null
-        String xmlContent = request.reader?.text
+        String xmlContent = new String(xmlPart.bytes, "UTF-8")
         String extensionXml = rawImportApiService.getExtensionXmlText(xmlContent, RawEntity.MARITAL_RELATIONSHIP)
 
         try {
@@ -558,6 +727,14 @@ class RawImportApiController {
 
         def rawInstance = parseResult.domainInstance
         rawInstance.extensionForm = extensionXml?.getBytes()
+
+        // Handle incoming attachment files (images, audio, etc.)
+        List<MultipartFile> mediaFiles = multipartRequest.getFiles(PARAMS_CORE_MEDIA_FILES_NAME)
+        mediaFiles.each { MultipartFile mediaFile ->
+            if (!mediaFile.empty) {
+                mediaFile.transferTo(new File(SystemPath.externalDocsPath, mediaFile.originalFilename))
+            }
+        }
 
         def resultSave = rawInstance.save(flush: true)
 
@@ -580,14 +757,24 @@ class RawImportApiController {
 
     def pregnancyregistrations = {
 
-        if (request.format != "xml") {
+        // Ensure the incoming request is multipart
+        if (!(request instanceof MultipartHttpServletRequest)) {
+            render text: "Expected multipart/form-data request", status: HttpStatus.BAD_REQUEST
+            return
+        }
+
+        def multipartRequest = (MultipartHttpServletRequest) request
+
+        // Extract the Core XML
+        def xmlPart = multipartRequest.getFile(PARAMS_CORE_XML_NAME)
+        if (!xmlPart || xmlPart.empty) {
             def message = message(code: 'validation.field.raw.xml.invalid.error')
-            render text: message, status:  HttpStatus.BAD_REQUEST // Only XML expected
+            render text: message, status: HttpStatus.BAD_REQUEST
             return
         }
 
         RawParseResult<RawPregnancyRegistration> parseResult = null
-        String xmlContent = request.reader?.text
+        String xmlContent = new String(xmlPart.bytes, "UTF-8")
         String extensionXml = rawImportApiService.getExtensionXmlText(xmlContent, RawEntity.PREGNANCY_REGISTRATION)
 
         try {
@@ -607,6 +794,14 @@ class RawImportApiController {
 
         def rawInstance = parseResult.domainInstance
         rawInstance.extensionForm = extensionXml?.getBytes()
+
+        // Handle incoming attachment files (images, audio, etc.)
+        List<MultipartFile> mediaFiles = multipartRequest.getFiles(PARAMS_CORE_MEDIA_FILES_NAME)
+        mediaFiles.each { MultipartFile mediaFile ->
+            if (!mediaFile.empty) {
+                mediaFile.transferTo(new File(SystemPath.externalDocsPath, mediaFile.originalFilename))
+            }
+        }
 
         def resultSave = rawInstance.save(flush: true)
 
@@ -629,14 +824,24 @@ class RawImportApiController {
 
     def pregnancyoutcomes = {
 
-        if (request.format != "xml") {
+        // Ensure the incoming request is multipart
+        if (!(request instanceof MultipartHttpServletRequest)) {
+            render text: "Expected multipart/form-data request", status: HttpStatus.BAD_REQUEST
+            return
+        }
+
+        def multipartRequest = (MultipartHttpServletRequest) request
+
+        // Extract the Core XML
+        def xmlPart = multipartRequest.getFile(PARAMS_CORE_XML_NAME)
+        if (!xmlPart || xmlPart.empty) {
             def message = message(code: 'validation.field.raw.xml.invalid.error')
-            render text: message, status:  HttpStatus.BAD_REQUEST // Only XML expected
+            render text: message, status: HttpStatus.BAD_REQUEST
             return
         }
 
         RawParseResult<RawPregnancyOutcome> parseResult = null
-        String xmlContent = request.reader?.text
+        String xmlContent = new String(xmlPart.bytes, "UTF-8")
         String extensionXml = rawImportApiService.getExtensionXmlText(xmlContent, RawEntity.PREGNANCY_OUTCOME)
 
         try {
@@ -656,6 +861,14 @@ class RawImportApiController {
 
         def rawInstance = parseResult.domainInstance
         rawInstance.extensionForm = extensionXml?.getBytes()
+
+        // Handle incoming attachment files (images, audio, etc.)
+        List<MultipartFile> mediaFiles = multipartRequest.getFiles(PARAMS_CORE_MEDIA_FILES_NAME)
+        mediaFiles.each { MultipartFile mediaFile ->
+            if (!mediaFile.empty) {
+                mediaFile.transferTo(new File(SystemPath.externalDocsPath, mediaFile.originalFilename))
+            }
+        }
 
         def resultSave = rawInstance.save(flush: true)
 
@@ -678,14 +891,24 @@ class RawImportApiController {
 
     def pregnancyvisits = {
 
-        if (request.format != "xml") {
+        // Ensure the incoming request is multipart
+        if (!(request instanceof MultipartHttpServletRequest)) {
+            render text: "Expected multipart/form-data request", status: HttpStatus.BAD_REQUEST
+            return
+        }
+
+        def multipartRequest = (MultipartHttpServletRequest) request
+
+        // Extract the Core XML
+        def xmlPart = multipartRequest.getFile(PARAMS_CORE_XML_NAME)
+        if (!xmlPart || xmlPart.empty) {
             def message = message(code: 'validation.field.raw.xml.invalid.error')
-            render text: message, status:  HttpStatus.BAD_REQUEST // Only XML expected
+            render text: message, status: HttpStatus.BAD_REQUEST
             return
         }
 
         RawParseResult<RawPregnancyVisit> parseResult = null
-        String xmlContent = request.reader?.text
+        String xmlContent = new String(xmlPart.bytes, "UTF-8")
         String extensionXml = rawImportApiService.getExtensionXmlText(xmlContent, RawEntity.PREGNANCY_VISIT)
 
         try {
@@ -705,6 +928,14 @@ class RawImportApiController {
 
         def rawInstance = parseResult.domainInstance
         rawInstance.extensionForm = extensionXml?.getBytes()
+
+        // Handle incoming attachment files (images, audio, etc.)
+        List<MultipartFile> mediaFiles = multipartRequest.getFiles(PARAMS_CORE_MEDIA_FILES_NAME)
+        mediaFiles.each { MultipartFile mediaFile ->
+            if (!mediaFile.empty) {
+                mediaFile.transferTo(new File(SystemPath.externalDocsPath, mediaFile.originalFilename))
+            }
+        }
 
         def resultSave = rawInstance.save(flush: true)
 
@@ -727,14 +958,24 @@ class RawImportApiController {
 
     def deaths = {
 
-        if (request.format != "xml") {
+        // Ensure the incoming request is multipart
+        if (!(request instanceof MultipartHttpServletRequest)) {
+            render text: "Expected multipart/form-data request", status: HttpStatus.BAD_REQUEST
+            return
+        }
+
+        def multipartRequest = (MultipartHttpServletRequest) request
+
+        // Extract the Core XML
+        def xmlPart = multipartRequest.getFile(PARAMS_CORE_XML_NAME)
+        if (!xmlPart || xmlPart.empty) {
             def message = message(code: 'validation.field.raw.xml.invalid.error')
-            render text: message, status:  HttpStatus.BAD_REQUEST // Only XML expected
+            render text: message, status: HttpStatus.BAD_REQUEST
             return
         }
 
         RawParseResult<RawDeath> parseResult = null
-        String xmlContent = request.reader?.text
+        String xmlContent = new String(xmlPart.bytes, "UTF-8")
         String extensionXml = rawImportApiService.getExtensionXmlText(xmlContent, RawEntity.DEATH)
 
         try {
@@ -754,6 +995,14 @@ class RawImportApiController {
 
         def rawInstance = parseResult.domainInstance
         rawInstance.extensionForm = extensionXml?.getBytes()
+
+        // Handle incoming attachment files (images, audio, etc.)
+        List<MultipartFile> mediaFiles = multipartRequest.getFiles(PARAMS_CORE_MEDIA_FILES_NAME)
+        mediaFiles.each { MultipartFile mediaFile ->
+            if (!mediaFile.empty) {
+                mediaFile.transferTo(new File(SystemPath.externalDocsPath, mediaFile.originalFilename))
+            }
+        }
 
         def resultSave = rawInstance.save(flush: true)
 
@@ -776,14 +1025,24 @@ class RawImportApiController {
 
     def changeheads = {
 
-        if (request.format != "xml") {
+        // Ensure the incoming request is multipart
+        if (!(request instanceof MultipartHttpServletRequest)) {
+            render text: "Expected multipart/form-data request", status: HttpStatus.BAD_REQUEST
+            return
+        }
+
+        def multipartRequest = (MultipartHttpServletRequest) request
+
+        // Extract the Core XML
+        def xmlPart = multipartRequest.getFile(PARAMS_CORE_XML_NAME)
+        if (!xmlPart || xmlPart.empty) {
             def message = message(code: 'validation.field.raw.xml.invalid.error')
-            render text: message, status:  HttpStatus.BAD_REQUEST // Only XML expected
+            render text: message, status: HttpStatus.BAD_REQUEST
             return
         }
 
         RawParseResult<RawChangeHead> parseResult = null
-        String xmlContent = request.reader?.text
+        String xmlContent = new String(xmlPart.bytes, "UTF-8")
         String extensionXml = rawImportApiService.getExtensionXmlText(xmlContent, RawEntity.CHANGE_HEAD_OF_HOUSEHOLD)
 
         try {
@@ -803,6 +1062,14 @@ class RawImportApiController {
 
         def rawInstance = parseResult.domainInstance
         rawInstance.extensionForm = extensionXml?.getBytes()
+
+        // Handle incoming attachment files (images, audio, etc.)
+        List<MultipartFile> mediaFiles = multipartRequest.getFiles(PARAMS_CORE_MEDIA_FILES_NAME)
+        mediaFiles.each { MultipartFile mediaFile ->
+            if (!mediaFile.empty) {
+                mediaFile.transferTo(new File(SystemPath.externalDocsPath, mediaFile.originalFilename))
+            }
+        }
 
         def resultSave = rawInstance.save(flush: true)
 
@@ -825,14 +1092,24 @@ class RawImportApiController {
 
     def incompletevisits = {
 
-        if (request.format != "xml") {
+        // Ensure the incoming request is multipart
+        if (!(request instanceof MultipartHttpServletRequest)) {
+            render text: "Expected multipart/form-data request", status: HttpStatus.BAD_REQUEST
+            return
+        }
+
+        def multipartRequest = (MultipartHttpServletRequest) request
+
+        // Extract the Core XML
+        def xmlPart = multipartRequest.getFile(PARAMS_CORE_XML_NAME)
+        if (!xmlPart || xmlPart.empty) {
             def message = message(code: 'validation.field.raw.xml.invalid.error')
-            render text: message, status:  HttpStatus.BAD_REQUEST // Only XML expected
+            render text: message, status: HttpStatus.BAD_REQUEST
             return
         }
 
         RawParseResult<RawIncompleteVisit> parseResult = null
-        String xmlContent = request.reader?.text
+        String xmlContent = new String(xmlPart.bytes, "UTF-8")
         String extensionXml = rawImportApiService.getExtensionXmlText(xmlContent, RawEntity.INCOMPLETE_VISIT)
 
         try {
@@ -852,6 +1129,14 @@ class RawImportApiController {
 
         def rawInstance = parseResult.domainInstance
         rawInstance.extensionForm = extensionXml?.getBytes()
+
+        // Handle incoming attachment files (images, audio, etc.)
+        List<MultipartFile> mediaFiles = multipartRequest.getFiles(PARAMS_CORE_MEDIA_FILES_NAME)
+        mediaFiles.each { MultipartFile mediaFile ->
+            if (!mediaFile.empty) {
+                mediaFile.transferTo(new File(SystemPath.externalDocsPath, mediaFile.originalFilename))
+            }
+        }
 
         def resultSave = rawInstance.save(flush: true)
 
@@ -874,14 +1159,24 @@ class RawImportApiController {
 
     def changeregionheads = {
 
-        if (request.format != "xml") {
+        // Ensure the incoming request is multipart
+        if (!(request instanceof MultipartHttpServletRequest)) {
+            render text: "Expected multipart/form-data request", status: HttpStatus.BAD_REQUEST
+            return
+        }
+
+        def multipartRequest = (MultipartHttpServletRequest) request
+
+        // Extract the Core XML
+        def xmlPart = multipartRequest.getFile(PARAMS_CORE_XML_NAME)
+        if (!xmlPart || xmlPart.empty) {
             def message = message(code: 'validation.field.raw.xml.invalid.error')
-            render text: message, status:  HttpStatus.BAD_REQUEST // Only XML expected
+            render text: message, status: HttpStatus.BAD_REQUEST
             return
         }
 
         RawParseResult<RawChangeRegionHead> parseResult = null
-        String xmlContent = request.reader?.text
+        String xmlContent = new String(xmlPart.bytes, "UTF-8")
         String extensionXml = rawImportApiService.getExtensionXmlText(xmlContent, RawEntity.CHANGE_HEAD_OF_REGION)
 
         try {
@@ -901,6 +1196,14 @@ class RawImportApiController {
 
         def rawInstance = parseResult.domainInstance
         rawInstance.extensionForm = extensionXml?.getBytes()
+
+        // Handle incoming attachment files (images, audio, etc.)
+        List<MultipartFile> mediaFiles = multipartRequest.getFiles(PARAMS_CORE_MEDIA_FILES_NAME)
+        mediaFiles.each { MultipartFile mediaFile ->
+            if (!mediaFile.empty) {
+                mediaFile.transferTo(new File(SystemPath.externalDocsPath, mediaFile.originalFilename))
+            }
+        }
 
         def resultSave = rawInstance.save(flush: true)
 
@@ -922,14 +1225,24 @@ class RawImportApiController {
     }
 
     def householdrelocations = {
-        if (request.format != "xml") {
+        // Ensure the incoming request is multipart
+        if (!(request instanceof MultipartHttpServletRequest)) {
+            render text: "Expected multipart/form-data request", status: HttpStatus.BAD_REQUEST
+            return
+        }
+
+        def multipartRequest = (MultipartHttpServletRequest) request
+
+        // Extract the Core XML
+        def xmlPart = multipartRequest.getFile(PARAMS_CORE_XML_NAME)
+        if (!xmlPart || xmlPart.empty) {
             def message = message(code: 'validation.field.raw.xml.invalid.error')
-            render text: message, status:  HttpStatus.BAD_REQUEST // Only XML expected
+            render text: message, status: HttpStatus.BAD_REQUEST
             return
         }
 
         RawParseResult<RawHouseholdRelocation> parseResult = null
-        String xmlContent = request.reader?.text
+        String xmlContent = new String(xmlPart.bytes, "UTF-8")
         String extensionXml = rawImportApiService.getExtensionXmlText(xmlContent, RawEntity.HOUSEHOLD_RELOCATION)
 
         try {
@@ -950,6 +1263,14 @@ class RawImportApiController {
         def rawInstance = parseResult.domainInstance
         rawInstance.extensionForm = extensionXml?.getBytes()
 
+        // Handle incoming attachment files (images, audio, etc.)
+        List<MultipartFile> mediaFiles = multipartRequest.getFiles(PARAMS_CORE_MEDIA_FILES_NAME)
+        mediaFiles.each { MultipartFile mediaFile ->
+            if (!mediaFile.empty) {
+                mediaFile.transferTo(new File(SystemPath.externalDocsPath, mediaFile.originalFilename))
+            }
+        }
+
         def resultSave = rawInstance.save(flush: true)
 
         if (rawInstance.hasErrors()){
@@ -958,7 +1279,7 @@ class RawImportApiController {
         }
 
         if (resultSave.postExecution){ //execute creation
-            def result = rawExecutionService.createChangeRegionHead(resultSave, "")
+            def result = rawExecutionService.createHouseholdRelocation(resultSave, "")
 
             if (result.status== RawExecutionResult.Status.ERROR){
                 render text: errorMessageService.getRawMessagesText(result.errorMessages), status: HttpStatus.BAD_REQUEST
@@ -971,14 +1292,24 @@ class RawImportApiController {
 
     def changeproxyheads = {
 
-        if (request.format != "xml") {
+        // Ensure the incoming request is multipart
+        if (!(request instanceof MultipartHttpServletRequest)) {
+            render text: "Expected multipart/form-data request", status: HttpStatus.BAD_REQUEST
+            return
+        }
+
+        def multipartRequest = (MultipartHttpServletRequest) request
+
+        // Extract the Core XML
+        def xmlPart = multipartRequest.getFile(PARAMS_CORE_XML_NAME)
+        if (!xmlPart || xmlPart.empty) {
             def message = message(code: 'validation.field.raw.xml.invalid.error')
-            render text: message, status:  HttpStatus.BAD_REQUEST // Only XML expected
+            render text: message, status: HttpStatus.BAD_REQUEST
             return
         }
 
         RawParseResult<RawHouseholdProxyHead> parseResult = null
-        String xmlContent = request.reader?.text
+        String xmlContent = new String(xmlPart.bytes, "UTF-8")
         String extensionXml = rawImportApiService.getExtensionXmlText(xmlContent, RawEntity.CHANGE_PROXY_HEAD)
 
         try {
@@ -999,8 +1330,16 @@ class RawImportApiController {
         def rawInstance = parseResult.domainInstance
         rawInstance.extensionForm = extensionXml?.getBytes()
 
+        // Handle incoming attachment files (images, audio, etc.)
+        List<MultipartFile> mediaFiles = multipartRequest.getFiles(PARAMS_CORE_MEDIA_FILES_NAME)
+        mediaFiles.each { MultipartFile mediaFile ->
+            if (!mediaFile.empty) {
+                mediaFile.transferTo(new File(SystemPath.externalDocsPath, mediaFile.originalFilename))
+            }
+        }
+
         def resultSave = rawInstance.save(flush: true)
-print(rawInstance.errors)
+
         if (rawInstance.hasErrors()){
             render text: errorMessageService.getRawMessagesText(rawInstance), status: HttpStatus.BAD_REQUEST
             return
@@ -1019,15 +1358,24 @@ print(rawInstance.errors)
     }
 
     def editregions = {
-        if (request.format != "xml") {
+        // Ensure the incoming request is multipart
+        if (!(request instanceof MultipartHttpServletRequest)) {
+            render text: "Expected multipart/form-data request", status: HttpStatus.BAD_REQUEST
+            return
+        }
+
+        def multipartRequest = (MultipartHttpServletRequest) request
+
+        // Extract the Core XML
+        def xmlPart = multipartRequest.getFile(PARAMS_CORE_XML_NAME)
+        if (!xmlPart || xmlPart.empty) {
             def message = message(code: 'validation.field.raw.xml.invalid.error')
-            render text: message, status:  HttpStatus.BAD_REQUEST // Only XML expected
+            render text: message, status: HttpStatus.BAD_REQUEST
             return
         }
 
         RawParseResult<RawEditRegion> parseResult = null
-        String xmlContent = request.reader?.text
-        //String extensionXml = rawImportApiService.getExtensionXmlText(xmlContent, RawEntity.REGION)
+        String xmlContent = new String(xmlPart.bytes, "UTF-8")
 
         try {
             def node = new XmlSlurper().parseText(xmlContent) as NodeChild
@@ -1045,7 +1393,6 @@ print(rawInstance.errors)
         }
 
         def rawInstance = parseResult.domainInstance
-        //rawInstance.extensionForm = extensionXml?.getBytes()
 
         def resultSave = rawInstance.save(flush: true)
 
@@ -1066,15 +1413,24 @@ print(rawInstance.errors)
     }
 
     def edithouseholds = {
-        if (request.format != "xml") {
+        // Ensure the incoming request is multipart
+        if (!(request instanceof MultipartHttpServletRequest)) {
+            render text: "Expected multipart/form-data request", status: HttpStatus.BAD_REQUEST
+            return
+        }
+
+        def multipartRequest = (MultipartHttpServletRequest) request
+
+        // Extract the Core XML
+        def xmlPart = multipartRequest.getFile(PARAMS_CORE_XML_NAME)
+        if (!xmlPart || xmlPart.empty) {
             def message = message(code: 'validation.field.raw.xml.invalid.error')
-            render text: message, status:  HttpStatus.BAD_REQUEST // Only XML expected
+            render text: message, status: HttpStatus.BAD_REQUEST
             return
         }
 
         RawParseResult<RawEditHousehold> parseResult = null
-        String xmlContent = request.reader?.text
-        //String extensionXml = rawImportApiService.getExtensionXmlText(xmlContent, RawEntity.REGION)
+        String xmlContent = new String(xmlPart.bytes, "UTF-8")
 
         try {
             def node = new XmlSlurper().parseText(xmlContent) as NodeChild
@@ -1092,7 +1448,6 @@ print(rawInstance.errors)
         }
 
         def rawInstance = parseResult.domainInstance
-        //rawInstance.extensionForm = extensionXml?.getBytes()
 
         def resultSave = rawInstance.save(flush: true)
 
@@ -1114,15 +1469,24 @@ print(rawInstance.errors)
 
     def editmembers = {
 
-        if (request.format != "xml") {
+        // Ensure the incoming request is multipart
+        if (!(request instanceof MultipartHttpServletRequest)) {
+            render text: "Expected multipart/form-data request", status: HttpStatus.BAD_REQUEST
+            return
+        }
+
+        def multipartRequest = (MultipartHttpServletRequest) request
+
+        // Extract the Core XML
+        def xmlPart = multipartRequest.getFile(PARAMS_CORE_XML_NAME)
+        if (!xmlPart || xmlPart.empty) {
             def message = message(code: 'validation.field.raw.xml.invalid.error')
-            render text: message, status:  HttpStatus.BAD_REQUEST // Only XML expected
+            render text: message, status: HttpStatus.BAD_REQUEST
             return
         }
 
         RawParseResult<RawEditMember> parseResult = null
-        String xmlContent = request.reader?.text
-        //String extensionXml = rawImportApiService.getExtensionXmlText(xmlContent, RawEntity.REGION)
+        String xmlContent = new String(xmlPart.bytes, "UTF-8")
 
         try {
             def node = new XmlSlurper().parseText(xmlContent) as NodeChild
@@ -1140,7 +1504,6 @@ print(rawInstance.errors)
         }
 
         def rawInstance = parseResult.domainInstance
-        //rawInstance.extensionForm = extensionXml?.getBytes()
 
         def resultSave = rawInstance.save(flush: true)
 
