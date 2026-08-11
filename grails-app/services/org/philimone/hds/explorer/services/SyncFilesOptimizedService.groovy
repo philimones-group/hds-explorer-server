@@ -11,6 +11,7 @@ import org.philimone.hds.explorer.server.model.logs.LogReport
 import org.philimone.hds.explorer.server.model.logs.LogReportFile
 import org.philimone.hds.explorer.server.model.main.*
 
+import java.time.LocalDate
 import java.time.LocalDateTime
 
 /**
@@ -52,7 +53,7 @@ class SyncFilesOptimizedService {
         try {
             // 1. Fetch all Member IDs first to drive the batching
             println "Step 1/4: Reading Member IDs..."
-            def memberIds = Member.executeQuery("select m.id from Member m")
+            def memberIds = Member.executeQuery("select m.id from Member m order by m.code")
 
             // 2. BULK FETCH RESIDENCIES: 1 query instead of 438,689
             println "Step 2/4: Bulk loading latest Residencies..."
@@ -70,15 +71,23 @@ class SyncFilesOptimizedService {
             println "Step 3/4: Bulk loading Marital Relationships..."
             def maritalMap = new HashMap<String, Object[]>(450000)
             // Fetching raw data columns to keep memory footprint lean
-            def mrRows = MaritalRelationship.executeQuery("select m.memberA.id, m.memberB.id, m.memberA.code, m.memberB.code, m.memberA.name, m.memberB.name, m.startDate, m.maritalStatus from MaritalRelationship m where (m.status <> ?0 or m.status is null) order by m.startDate asc", [ValidatableStatus.TEMPORARILY_INACTIVE])
+            def mrRows = MaritalRelationship.executeQuery("select m.memberA.id, m.memberB.id, m.memberA.code, m.memberB.code, m.memberA.name, m.memberB.name, m.startDate, m.startStatus, m.endStatus from MaritalRelationship m where (m.status <> ?0 or m.status is null) order by m.startDate asc", [ValidatableStatus.TEMPORARILY_INACTIVE])
 
             mrRows.each { row ->
-                // row[0]=idA, row[1]=idB, row[2]=codeA, row[3]=codeB, row[4]=nameA, row[5]=nameB, row[6]=startDate, row[7]=maritalStatus
+                // row[0]=idA, row[1]=idB, row[2]=codeA, row[3]=codeB, row[4]=nameA, row[5]=nameB, row[6]=startDate, row[7]=startStatus, row[8]=endStatus
                 // Mapping to both member IDs involved so either lookup works
                 maritalMap.put(row[0], row)
                 maritalMap.put(row[1], row)
             }
             mrRows = null // Clear memory
+
+            // 3.5 BULK FETCH PREGNANCY STATUS
+            println "Step 3.5/4: Bulk loading Pregnancy Status..."
+            def pregnantMothers = PregnancyRegistration.executeQuery("select p.mother.id from PregnancyRegistration p where p.status = ?0", [PregnancyStatus.PREGNANT]) as Set
+
+            def limitDate = LocalDate.now().minusDays(56)
+            def postpartumMothers = PregnancyOutcome.executeQuery("select p.mother.id, max(p.outcomeDate) from PregnancyOutcome p where p.outcomeDate >= :limitDate group by p.mother.id", [limitDate: limitDate])
+            def postpartumMap = postpartumMothers.collectEntries { [it[0], it[1]] }
 
             // 4. GENERATE XML
             println "Step 4/4: Generating XML for ${memberIds.size()} records..."
@@ -96,8 +105,10 @@ class SyncFilesOptimizedService {
                     count++
                     def resData = latestResMap.get(m.id)
                     def marData = maritalMap.get(m.id)
+                    def isPregnant = pregnantMothers.contains(m.id)
+                    def postpartumDate = postpartumMap.get(m.id)
 
-                    outputFile.print(toMemberXML_Optimized_G1(m, resData, marData))
+                    outputFile.print(toMemberXML_Optimized_G1(m, resData, marData, isPregnant, postpartumDate))
 
                     if (count % 2000 == 0) {
                         cleanUpGorm()
@@ -150,7 +161,7 @@ class SyncFilesOptimizedService {
         output.close();
     }
 
-    private String toMemberXML_Optimized_G1(Member m, Object[] r, Object[] mr) {
+    private String toMemberXML_Optimized_G1(Member m, Object[] r, Object[] mr, boolean isPregnant, def postpartumDate) {
         // Residency Extraction
         def householdCode = r ? r[1] : null
         def householdName = r ? r[2] : null
@@ -160,12 +171,13 @@ class SyncFilesOptimizedService {
         def endDate       = r ? r[6] : null
 
         // Marital Status Extraction (Handling memberA/memberB logic in-memory)
-        def maritalStatus = null
+        def maritalStatus = MaritalStatus.SINGLE
         def spouseCode = null
         def spouseName = null
 
         if (mr) {
-            maritalStatus = mr[7] // maritalStatus enum
+            maritalStatus = maritalRelationshipService.getMaritalStatusFrom(mr[7] as MaritalStartStatus, mr[8] as MaritalEndStatus)  // startStatus, endStatus enum
+
             if (mr[2].equals(m.code)) { // If I am memberA, spouse is memberB
                 spouseCode = mr[3]
                 spouseName = mr[5]
@@ -174,6 +186,9 @@ class SyncFilesOptimizedService {
                 spouseName = mr[4]
             }
         }
+
+        // Pregnancy Status logic
+        def pregnancyStatus = isPregnant ? "PREGNANT" : (postpartumDate ? "POSTPARTUM" : "NONE")
 
         // StringBuilder is much faster for 438k iterations than String + String
         StringBuilder sb = new StringBuilder()
@@ -218,8 +233,13 @@ class SyncFilesOptimizedService {
         sb.append((m.gpsLatitude == null) ? "<gpsLatitude />" : "<gpsLatitude>${m.gpsLatitude}</gpsLatitude>")
         sb.append((m.gpsLongitude == null) ? "<gpsLongitude />" : "<gpsLongitude>${m.gpsLongitude}</gpsLongitude>")
 
+        sb.append((pregnancyStatus == null) ? "<pregnancyStatus />" : "<pregnancyStatus>${pregnancyStatus}</pregnancyStatus>")
+        sb.append((postpartumDate == null) ? "<pregnancyOutcomeDate />" : "<pregnancyOutcomeDate>${StringUtil.format(postpartumDate)}</pregnancyOutcomeDate>")
+
         sb.append((m.collectedId == null) ? "<collectedId />" : "<collectedId>${m.collectedId}</collectedId>")
         sb.append((m.modules.empty) ? "<modules />" : "<modules>${moduleService.getListModulesAsText(m.modules)}</modules>")
+
+
         sb.append("</member>")
 
         return sb.toString()
@@ -238,11 +258,20 @@ class SyncFilesOptimizedService {
 
         try {
             println "reading members"
-            def memberIds = Member.executeQuery("select m.id from Member m")
+            def memberIds = Member.executeQuery("select m.id from Member m order by m.code")
 
             println "creating xml file ${memberIds.size()}"
             PrintStream outputFile = new PrintStream(new FileOutputStream(SystemPath.generatedFilesPath + "/members.xml"), true)
             outputFile.print("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?><members>")
+
+            // FETCH PREGNANCY STATUS
+            println "Step 3.5/4: Bulk loading Pregnancy Status..."
+            def pregnantMothers = PregnancyRegistration.executeQuery("select p.mother.id from PregnancyRegistration p where p.status = ?0", [PregnancyStatus.PREGNANT]) as Set
+
+            def limitDate = LocalDate.now().minusDays(56)
+            def postpartumMothers = PregnancyOutcome.executeQuery("select p.mother.id, max(p.outcomeDate) from PregnancyOutcome p where p.outcomeDate >= :limitDate group by p.mother.id", [limitDate: limitDate])
+            def postpartumMap = postpartumMothers.collectEntries { [it[0], it[1]] }
+
 
             int count = 0
 
@@ -320,7 +349,9 @@ class SyncFilesOptimizedService {
                     count++
                     def resRow = residencyMap[m.id]
                     def mr     = maritalMap[m.id]
-                    outputFile.print(toMemberXML_Optimized_C1(m, resRow, mr))
+                    def isPregnant = pregnantMothers.contains(m.id)
+                    def postpartumDate = postpartumMap.get(m.id)
+                    outputFile.print(toMemberXML_Optimized_C1(m, resRow, mr, isPregnant, postpartumDate))
                     m = null
 
                     if (count % 2000 == 0) {
@@ -379,7 +410,7 @@ class SyncFilesOptimizedService {
  *                or null if the member has no current residency.
  * @param mr      Pre-fetched MaritalRelationship entity, or null.
  */
-    private String toMemberXML_Optimized_C1(Member m, def resRow, def mr) {
+    private String toMemberXML_Optimized_C1(Member m, def resRow, def mr, boolean isPregnant, def postpartumDate) {
 
         def householdCode = resRow != null ? resRow[1] : null
         def householdName = resRow != null ? resRow[2] : null
@@ -392,55 +423,62 @@ class SyncFilesOptimizedService {
         m.maritalStatus = maritalRelationshipService.getMaritalStatusFrom(mr)
         m.spouseCode    = spouse?.code
         m.spouseName    = spouse?.name
+        // Pregnancy Status logic
+        def pregnancyStatus = isPregnant ? "PREGNANT" : (postpartumDate ? "POSTPARTUM" : "NONE")
 
-        return  ("<member>") +
-                ((m.code==null || m.code.isEmpty()) ?                   "<code />" : "<code>${m.code}</code>") +
-                ((m.name==null || m.name.isEmpty()) ?                   "<name />" : "<name>${m.name}</name>") +
-                ((m.gender==null ) ?                                    "<gender />" : "<gender>${m.gender.code}</gender>") +
-                ((m.dob==null) ?                                        "<dob />" : "<dob>${StringUtil.format(m.dob)}</dob>") +
-                ((m.age==null) ?                                        "<age />" : "<age>${m.age}</age>") +
+        def sb = new StringBuilder()
 
-                ((m.ageAtDeath==null) ?                                 "<ageAtDeath />" : "<ageAtDeath>${m.ageAtDeath}</ageAtDeath>") +
+        sb.append("<member>")
+        sb.append((m.code==null || m.code.isEmpty()) ?                   "<code />" : "<code>${m.code}</code>")
+        sb.append((m.name==null || m.name.isEmpty()) ?                   "<name />" : "<name>${m.name}</name>")
+        sb.append((m.gender==null ) ?                                    "<gender />" : "<gender>${m.gender.code}</gender>")
+        sb.append((m.dob==null) ?                                        "<dob />" : "<dob>${StringUtil.format(m.dob)}</dob>")
+        sb.append((m.age==null) ?                                        "<age />" : "<age>${m.age}</age>")
 
-                ((m.motherCode==null || m.motherCode.isEmpty()) ?       "<motherCode />" : "<motherCode>${m.motherCode}</motherCode>") +
-                ((m.motherName==null || m.motherName.isEmpty()) ?       "<motherName />" : "<motherName>${m.motherName}</motherName>") +
-                ((m.fatherCode==null || m.fatherCode.isEmpty()) ?       "<fatherCode />" : "<fatherCode>${m.fatherCode}</fatherCode>") +
-                ((m.fatherName==null || m.fatherName.isEmpty()) ?       "<fatherName />" : "<fatherName>${m.fatherName}</fatherName>") +
+        sb.append((m.ageAtDeath==null) ?                                 "<ageAtDeath />" : "<ageAtDeath>${m.ageAtDeath}</ageAtDeath>")
 
-                ((m.maritalStatus==null) ?                              "<maritalStatus />" : "<maritalStatus>${m.maritalStatus.code}</maritalStatus>") +
-                ((m.spouseCode==null || m.spouseCode.isEmpty()) ?       "<spouseCode />" : "<spouseCode>${m.spouseCode}</spouseCode>") +
-                ((m.spouseName==null || m.spouseName.isEmpty()) ?       "<spouseName />" : "<spouseName>${m.spouseName}</spouseName>") +
+        sb.append((m.motherCode==null || m.motherCode.isEmpty()) ?       "<motherCode />" : "<motherCode>${m.motherCode}</motherCode>")
+        sb.append((m.motherName==null || m.motherName.isEmpty()) ?       "<motherName />" : "<motherName>${m.motherName}</motherName>")
+        sb.append((m.fatherCode==null || m.fatherCode.isEmpty()) ?       "<fatherCode />" : "<fatherCode>${m.fatherCode}</fatherCode>")
+        sb.append((m.fatherName==null || m.fatherName.isEmpty()) ?       "<fatherName />" : "<fatherName>${m.fatherName}</fatherName>")
 
-                ((m.education==null || m.education.isEmpty()) ?         "<education />" : "<education>${m.education}</education>") +
-                ((m.religion==null || m.religion.isEmpty()) ?           "<religion />" : "<religion>${m.religion}</religion>") +
+        sb.append((m.maritalStatus==null) ?                              "<maritalStatus />" : "<maritalStatus>${m.maritalStatus.code}</maritalStatus>")
+        sb.append((m.spouseCode==null || m.spouseCode.isEmpty()) ?       "<spouseCode />" : "<spouseCode>${m.spouseCode}</spouseCode>")
+        sb.append((m.spouseName==null || m.spouseName.isEmpty()) ?       "<spouseName />" : "<spouseName>${m.spouseName}</spouseName>")
 
-                ((m.phonePrimary==null || m.phonePrimary.isEmpty()) ?         "<phonePrimary />" : "<phonePrimary>${m.phonePrimary}</phonePrimary>") +
-                ((m.phoneAlternative==null || m.phoneAlternative.isEmpty()) ? "<phoneAlternative />" : "<phoneAlternative>${m.phoneAlternative}</phoneAlternative>") +
+        sb.append((m.education==null || m.education.isEmpty()) ?         "<education />" : "<education>${m.education}</education>")
+        sb.append((m.religion==null || m.religion.isEmpty()) ?           "<religion />" : "<religion>${m.religion}</religion>")
 
-                ((householdCode==null || householdCode?.isEmpty()) ? "<householdCode />" : "<householdCode>${householdCode}</householdCode>") +
-                ((householdName==null || householdName?.isEmpty()) ? "<householdName />" : "<householdName>${householdName}</householdName>") +
+        sb.append((m.phonePrimary==null || m.phonePrimary.isEmpty()) ?         "<phonePrimary />" : "<phonePrimary>${m.phonePrimary}</phonePrimary>")
+        sb.append((m.phoneAlternative==null || m.phoneAlternative.isEmpty()) ? "<phoneAlternative />" : "<phoneAlternative>${m.phoneAlternative}</phoneAlternative>")
 
-                ((startType==null) ?                                 "<startType />" : "<startType>${startType.code}</startType>") +
-                ((startDate==null) ?                                 "<startDate />" : "<startDate>${StringUtil.format(startDate)}</startDate>") +
-                ((endType==null)   ?                                 "<endType />"   : "<endType>${endType.code}</endType>") +
-                ((endDate==null)   ?                                 "<endDate />"   : "<endDate>${StringUtil.format(endDate)}</endDate>") +
+        sb.append((householdCode==null || householdCode?.isEmpty()) ? "<householdCode />" : "<householdCode>${householdCode}</householdCode>")
+        sb.append((householdName==null || householdName?.isEmpty()) ? "<householdName />" : "<householdName>${householdName}</householdName>")
 
-                ((m.entryHousehold==null || m.entryHousehold.isEmpty()) ? "<entryHousehold />" : "<entryHousehold>${m.entryHousehold}</entryHousehold>") +
-                ((m.entryType==null) ?                               "<entryType />" : "<entryType>${m.entryType.code}</entryType>") +
-                ((m.entryDate==null) ?                               "<entryDate />" : "<entryDate>${StringUtil.format(m.entryDate)}</entryDate>") +
+        sb.append((startType==null) ?                                 "<startType />" : "<startType>${startType.code}</startType>")
+        sb.append((startDate==null) ?                                 "<startDate />" : "<startDate>${StringUtil.format(startDate)}</startDate>")
+        sb.append((endType==null)   ?                                 "<endType />"   : "<endType>${endType.code}</endType>")
+        sb.append((endDate==null)   ?                                 "<endDate />"   : "<endDate>${StringUtil.format(endDate)}</endDate>")
 
-                ((m.headRelationshipType==null) ? "<headRelationshipType />" : "<headRelationshipType>${m.headRelationshipType.code}</headRelationshipType>") +
-                ((m.headRelationshipType==null) ? "<isHouseholdHead />" : "<isHouseholdHead>${m.isHouseholdHead()}</isHouseholdHead>") +
+        sb.append((m.entryHousehold==null || m.entryHousehold.isEmpty()) ? "<entryHousehold />" : "<entryHousehold>${m.entryHousehold}</entryHousehold>")
+        sb.append((m.entryType==null) ?                               "<entryType />" : "<entryType>${m.entryType.code}</entryType>")
+        sb.append((m.entryDate==null) ?                               "<entryDate />" : "<entryDate>${StringUtil.format(m.entryDate)}</entryDate>")
 
-                ((m.gpsAccuracy == null)  ? "<gpsAccuracy />"  : "<gpsAccuracy>${m.gpsAccuracy}</gpsAccuracy>") +
-                ((m.gpsAltitude == null)  ? "<gpsAltitude />"  : "<gpsAltitude>${m.gpsAltitude}</gpsAltitude>") +
-                ((m.gpsLatitude == null)  ? "<gpsLatitude />"  : "<gpsLatitude>${m.gpsLatitude}</gpsLatitude>") +
-                ((m.gpsLongitude == null) ? "<gpsLongitude />" : "<gpsLongitude>${m.gpsLongitude}</gpsLongitude>") +
+        sb.append((m.headRelationshipType==null) ? "<headRelationshipType />" : "<headRelationshipType>${m.headRelationshipType.code}</headRelationshipType>")
+        sb.append((m.headRelationshipType==null) ? "<isHouseholdHead />" : "<isHouseholdHead>${m.isHouseholdHead()}</isHouseholdHead>")
 
-                ((m.collectedId == null) ? "<collectedId />" : "<collectedId>${m.collectedId}</collectedId>") +
+        sb.append((m.gpsAccuracy == null)  ? "<gpsAccuracy />"  : "<gpsAccuracy>${m.gpsAccuracy}</gpsAccuracy>")
+        sb.append((m.gpsAltitude == null)  ? "<gpsAltitude />"  : "<gpsAltitude>${m.gpsAltitude}</gpsAltitude>")
+        sb.append((m.gpsLatitude == null)  ? "<gpsLatitude />"  : "<gpsLatitude>${m.gpsLatitude}</gpsLatitude>")
+        sb.append((m.gpsLongitude == null) ? "<gpsLongitude />" : "<gpsLongitude>${m.gpsLongitude}</gpsLongitude>")
+        sb.append((pregnancyStatus == null) ? "<pregnancyStatus />" : "<pregnancyStatus>${pregnancyStatus}</pregnancyStatus>")
+        sb.append((postpartumDate == null) ?  "<pregnancyOutcomeDate />" : "<pregnancyOutcomeDate>${StringUtil.format(postpartumDate)}</pregnancyOutcomeDate>")
 
-                ((m.modules.empty) ? "<modules />" : "<modules>${moduleService.getListModulesAsText(m.modules)}</modules>") +
+        sb.append((m.collectedId == null) ? "<collectedId />" : "<collectedId>${m.collectedId}</collectedId>")
+        sb.append((m.modules.empty) ? "<modules />" : "<modules>${moduleService.getListModulesAsText(m.modules)}</modules>")
 
-                ("</member>")
+        sb.append("</member>")
+        
+        return sb.toString()
     }
 }

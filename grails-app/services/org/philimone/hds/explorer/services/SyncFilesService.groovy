@@ -1,6 +1,7 @@
 package org.philimone.hds.explorer.services
 
 import grails.gorm.transactions.Transactional
+import groovy.time.TimeCategory
 import net.betainteractive.io.LogOutput
 import net.betainteractive.io.writers.ZipMaker
 import net.betainteractive.utilities.StringUtil
@@ -107,8 +108,11 @@ class SyncFilesService {
 
         println("saving members")
         //testing claude
-        syncFilesOptimizedService.generateMembersXML_Optimized_C1(logReportId)
+        Date start = new Date()
+        //syncFilesOptimizedService.generateMembersXML_Optimized_C1(logReportId)
+        syncFilesOptimizedService.generateMembersXML_Optimized_G1(logReportId)
         //generateMembersXML(logReportId)
+        println("member execution duration G1: ${TimeCategory.minus(new Date(), start)}")
 
         println("saving residencies")
         generateResidenciesXML(logReportId)
