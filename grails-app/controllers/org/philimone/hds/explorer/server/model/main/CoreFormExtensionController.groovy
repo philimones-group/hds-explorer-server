@@ -5,6 +5,7 @@ import grails.converters.JSON
 import org.philimone.hds.explorer.io.SystemPath
 import org.philimone.hds.explorer.server.model.enums.CoreForm
 import org.philimone.hds.explorer.server.model.enums.extensions.FormColumnType
+import org.philimone.hds.explorer.server.model.main.extension.CoreExtensionDatabaseService
 import org.philimone.hds.explorer.server.model.main.extension.CoreExtensionService
 import org.philimone.hds.forms.model.FormValidationError
 import org.springframework.context.i18n.LocaleContextHolder
@@ -210,12 +211,12 @@ class CoreFormExtensionController {
         def colsList = coreExtensionDatabaseService.getDatabaseColumns(coreFormExtension.extFormId)
 
         if (coreFormExtension.coreForm == CoreForm.PREGNANCY_OUTCOME_FORM) {
-            def moreCols = coreExtensionDatabaseService.getDatabaseColumns(CoreExtensionService.PREGNANCY_CHILD_EXT_TABLE)
+            def moreCols = coreExtensionDatabaseService.getDatabaseColumns(CoreExtensionDatabaseService.PREGNANCY_CHILD_EXT_TABLE)
             colsList.addAll(moreCols)
         }
 
         if (coreFormExtension.coreForm == CoreForm.PREGNANCY_VISIT_FORM) {
-            def moreCols = coreExtensionDatabaseService.getDatabaseColumns(CoreExtensionService.PREGNANCY_VISIT_CHILD_EXT_TABLE)
+            def moreCols = coreExtensionDatabaseService.getDatabaseColumns(CoreExtensionDatabaseService.PREGNANCY_VISIT_CHILD_EXT_TABLE)
             colsList.addAll(moreCols)
         }
 

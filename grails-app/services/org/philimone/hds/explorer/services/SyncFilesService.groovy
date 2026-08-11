@@ -3075,98 +3075,104 @@ class SyncFilesService {
 
     /* Convert to XML */
     private String toXML(Household h){
-        return ("<household>") +
-                ((h.code == null || h.code.isEmpty()) ?               "<code />"   : "<code>${h.code}</code>") +
-                ((h.region == null || h.region.isEmpty()) ?           "<region />" : "<region>${h.region}</region>") +
+        StringBuilder sb = new StringBuilder()
+        sb.append("<household>")
+        sb.append((h.code == null || h.code.isEmpty()) ?               "<code />"   : "<code>${h.code}</code>")
+        sb.append((h.region == null || h.region.isEmpty()) ?           "<region />" : "<region>${h.region}</region>")
 
-                ((h.type == null) ?                                   "<type />" : "<type>${h.type.code}</type>") +
-                ((h.institutionType == null) ?                        "<institutionType />" : "<institutionType>${h.institutionType.code}</institutionType>") +
-                ((StringUtil.isBlank(h.institutionTypeOther)) ?       "<institutionTypeOther />" : "<institutionTypeOther>${h.institutionTypeOther}</institutionTypeOther>") +
+        sb.append((h.type == null) ?                                   "<type />" : "<type>${h.type.code}</type>")
+        sb.append((h.institutionType == null) ?                        "<institutionType />" : "<institutionType>${h.institutionType.code}</institutionType>")
+        sb.append((StringUtil.isBlank(h.institutionTypeOther)) ?       "<institutionTypeOther />" : "<institutionTypeOther>${h.institutionTypeOther}</institutionTypeOther>")
 
-                ((h.name == null || h.name.isEmpty()) ?               "<name />"   : "<name>${h.name}</name>") +
+        sb.append((h.name == null || h.name.isEmpty()) ?               "<name />"   : "<name>${h.name}</name>")
 
-                ((h.headCode == null || h.headCode.isEmpty()) ?       "<headCode />" : "<headCode>${h.headCode}</headCode>") +
-                ((h.headName == null || h.headName.isEmpty()) ?       "<headName />" : "<headName>${h.headName}</headName>") +
+        sb.append((h.headCode == null || h.headCode.isEmpty()) ?       "<headCode />" : "<headCode>${h.headCode}</headCode>")
+        sb.append((h.headName == null || h.headName.isEmpty()) ?       "<headName />" : "<headName>${h.headName}</headName>")
 
-                ((h.proxyHead?.proxyHeadType == null) ?               "<proxyHeadType />" : "<proxyHeadType>${h.proxyHead.proxyHeadType?.code}</proxyHeadType>") +
-                ((StringUtil.isBlank(h.proxyHead?.proxyHeadCode)) ?   "<proxyHeadCode />" : "<proxyHeadCode>${h.proxyHead.proxyHeadCode}</proxyHeadCode>") +
-                ((StringUtil.isBlank(h.proxyHead?.proxyHeadName)) ?   "<proxyHeadName />" : "<proxyHeadName>${h.proxyHead.proxyHeadName}</proxyHeadName>") +
-                ((h.proxyHead?.proxyHeadRole == null) ?               "<proxyHeadRole />" : "<proxyHeadRole>${h.proxyHead.proxyHeadRole?.code}</proxyHeadRole>") +
+        sb.append((h.proxyHead?.proxyHeadType == null) ?               "<proxyHeadType />" : "<proxyHeadType>${h.proxyHead.proxyHeadType?.code}</proxyHeadType>")
+        sb.append((StringUtil.isBlank(h.proxyHead?.proxyHeadCode)) ?   "<proxyHeadCode />" : "<proxyHeadCode>${h.proxyHead.proxyHeadCode}</proxyHeadCode>")
+        sb.append((StringUtil.isBlank(h.proxyHead?.proxyHeadName)) ?   "<proxyHeadName />" : "<proxyHeadName>${h.proxyHead.proxyHeadName}</proxyHeadName>")
+        sb.append((h.proxyHead?.proxyHeadRole == null) ?               "<proxyHeadRole />" : "<proxyHeadRole>${h.proxyHead.proxyHeadRole?.code}</proxyHeadRole>")
 
-                ((h.hierarchy1 == null || h.hierarchy1.isEmpty()) ? "<hierarchy1 />" : "<hierarchy1>${h.hierarchy1}</hierarchy1>") +
-                ((h.hierarchy2 == null || h.hierarchy2.isEmpty()) ? "<hierarchy2 />" : "<hierarchy2>${h.hierarchy2}</hierarchy2>") +
-                ((h.hierarchy3 == null || h.hierarchy3.isEmpty()) ? "<hierarchy3 />" : "<hierarchy3>${h.hierarchy3}</hierarchy3>") +
-                ((h.hierarchy4 == null || h.hierarchy4.isEmpty()) ? "<hierarchy4 />" : "<hierarchy4>${h.hierarchy4}</hierarchy4>") +
-                ((h.hierarchy5 == null || h.hierarchy5.isEmpty()) ? "<hierarchy5 />" : "<hierarchy5>${h.hierarchy5}</hierarchy5>") +
-                ((h.hierarchy6 == null || h.hierarchy6.isEmpty()) ? "<hierarchy6 />" : "<hierarchy6>${h.hierarchy6}</hierarchy6>") +
-                ((h.hierarchy7 == null || h.hierarchy7.isEmpty()) ? "<hierarchy7 />" : "<hierarchy7>${h.hierarchy7}</hierarchy7>") +
-                ((h.hierarchy8 == null || h.hierarchy8.isEmpty()) ? "<hierarchy8 />" : "<hierarchy8>${h.hierarchy8}</hierarchy8>") +
+        sb.append((h.hierarchy1 == null || h.hierarchy1.isEmpty()) ? "<hierarchy1 />" : "<hierarchy1>${h.hierarchy1}</hierarchy1>")
+        sb.append((h.hierarchy2 == null || h.hierarchy2.isEmpty()) ? "<hierarchy2 />" : "<hierarchy2>${h.hierarchy2}</hierarchy2>")
+        sb.append((h.hierarchy3 == null || h.hierarchy3.isEmpty()) ? "<hierarchy3 />" : "<hierarchy3>${h.hierarchy3}</hierarchy3>")
+        sb.append((h.hierarchy4 == null || h.hierarchy4.isEmpty()) ? "<hierarchy4 />" : "<hierarchy4>${h.hierarchy4}</hierarchy4>")
+        sb.append((h.hierarchy5 == null || h.hierarchy5.isEmpty()) ? "<hierarchy5 />" : "<hierarchy5>${h.hierarchy5}</hierarchy5>")
+        sb.append((h.hierarchy6 == null || h.hierarchy6.isEmpty()) ? "<hierarchy6 />" : "<hierarchy6>${h.hierarchy6}</hierarchy6>")
+        sb.append((h.hierarchy7 == null || h.hierarchy7.isEmpty()) ? "<hierarchy7 />" : "<hierarchy7>${h.hierarchy7}</hierarchy7>")
+        sb.append((h.hierarchy8 == null || h.hierarchy8.isEmpty()) ? "<hierarchy8 />" : "<hierarchy8>${h.hierarchy8}</hierarchy8>")
 
-                ((h.gpsAccuracy == null) ?   "<gpsAccuracy />" : "<gpsAccuracy>${h.gpsAccuracy}</gpsAccuracy>") +
-                ((h.gpsAltitude == null) ?   "<gpsAltitude />" : "<gpsAltitude>${h.gpsAltitude}</gpsAltitude>") +
-                ((h.gpsLatitude == null) ?   "<gpsLatitude />" : "<gpsLatitude>${h.gpsLatitude}</gpsLatitude>") +
-                ((h.gpsLongitude == null) ? "<gpsLongitude />" : "<gpsLongitude>${h.gpsLongitude}</gpsLongitude>") +
+        sb.append((h.gpsAccuracy == null) ?   "<gpsAccuracy />" : "<gpsAccuracy>${h.gpsAccuracy}</gpsAccuracy>")
+        sb.append((h.gpsAltitude == null) ?   "<gpsAltitude />" : "<gpsAltitude>${h.gpsAltitude}</gpsAltitude>")
+        sb.append((h.gpsLatitude == null) ?   "<gpsLatitude />" : "<gpsLatitude>${h.gpsLatitude}</gpsLatitude>")
+        sb.append((h.gpsLongitude == null) ? "<gpsLongitude />" : "<gpsLongitude>${h.gpsLongitude}</gpsLongitude>")
 
-                ((h.preRegistered == null) ? "<preRegistered />" : "<preRegistered>${h.preRegistered}</preRegistered>") +
+        sb.append((h.preRegistered == null) ? "<preRegistered />" : "<preRegistered>${h.preRegistered}</preRegistered>")
 
-                ((h.collectedId == null) ? "<collectedId />" : "<collectedId>${h.collectedId}</collectedId>") +
+        sb.append((h.collectedId == null) ? "<collectedId />" : "<collectedId>${h.collectedId}</collectedId>")
 
-                ((h.modules.empty)        ?  "<modules />"     : "<modules>${moduleService.getListModulesAsText(h.modules)}</modules>")+
-                ("</household>")
+        sb.append((h.modules.empty)        ?  "<modules />"     : "<modules>${moduleService.getListModulesAsText(h.modules)}</modules>")
+        sb.append("</household>")
+        
+        return sb.toString()
     }
 
     private String toXML(Member m){
-        return  ("<member>") +
-                ((m.code==null || m.code.isEmpty()) ?                   "<code />" : "<code>${m.code}</code>") +
-                ((m.name==null || m.name.isEmpty()) ?                   "<name />" : "<name>${m.name}</name>") +
-                ((m.gender==null ) ?                                    "<gender />" : "<gender>${m.gender.code}</gender>") +
-                ((m.dob==null) ?                                        "<dob />" : "<dob>${StringUtil.format(m.dob)}</dob>") +
-                ((m.age==null) ?                                        "<age />" : "<age>${m.age}</age>") +
+        StringBuilder sb = new StringBuilder()
+        sb.append("<member>")
+        sb.append((m.code==null || m.code.isEmpty()) ?                   "<code />" : "<code>${m.code}</code>")
+        sb.append((m.name==null || m.name.isEmpty()) ?                   "<name />" : "<name>${m.name}</name>")
+        sb.append((m.gender==null ) ?                                    "<gender />" : "<gender>${m.gender.code}</gender>")
+        sb.append((m.dob==null) ?                                        "<dob />" : "<dob>${StringUtil.format(m.dob)}</dob>")
+        sb.append((m.age==null) ?                                        "<age />" : "<age>${m.age}</age>")
 
-                ((m.ageAtDeath==null) ?                                 "<ageAtDeath />" : "<ageAtDeath>${m.ageAtDeath}</ageAtDeath>") +
+        sb.append((m.ageAtDeath==null) ?                                 "<ageAtDeath />" : "<ageAtDeath>${m.ageAtDeath}</ageAtDeath>")
 
-                ((m.motherCode==null || m.motherCode.isEmpty()) ?       "<motherCode />" : "<motherCode>${m.motherCode}</motherCode>") +
-                ((m.motherName==null || m.motherName.isEmpty()) ?       "<motherName />" : "<motherName>${m.motherName}</motherName>") +
-                ((m.fatherCode==null || m.fatherCode.isEmpty()) ?       "<fatherCode />" : "<fatherCode>${m.fatherCode}</fatherCode>") +
-                ((m.fatherName==null || m.fatherName.isEmpty()) ?       "<fatherName />" : "<fatherName>${m.fatherName}</fatherName>") +
+        sb.append((m.motherCode==null || m.motherCode.isEmpty()) ?       "<motherCode />" : "<motherCode>${m.motherCode}</motherCode>")
+        sb.append((m.motherName==null || m.motherName.isEmpty()) ?       "<motherName />" : "<motherName>${m.motherName}</motherName>")
+        sb.append((m.fatherCode==null || m.fatherCode.isEmpty()) ?       "<fatherCode />" : "<fatherCode>${m.fatherCode}</fatherCode>")
+        sb.append((m.fatherName==null || m.fatherName.isEmpty()) ?       "<fatherName />" : "<fatherName>${m.fatherName}</fatherName>")
 
-                ((m.maritalStatus==null) ?                              "<maritalStatus />" : "<maritalStatus>${m.maritalStatus.code}</maritalStatus>") +
-                ((m.spouseCode==null || m.spouseCode.isEmpty()) ?       "<spouseCode />" : "<spouseCode>${m.spouseCode}</spouseCode>") +
-                ((m.spouseName==null || m.spouseName.isEmpty()) ?       "<spouseName />" : "<spouseName>${m.spouseName}</spouseName>") +
+        sb.append((m.maritalStatus==null) ?                              "<maritalStatus />" : "<maritalStatus>${m.maritalStatus.code}</maritalStatus>")
+        sb.append((m.spouseCode==null || m.spouseCode.isEmpty()) ?       "<spouseCode />" : "<spouseCode>${m.spouseCode}</spouseCode>")
+        sb.append((m.spouseName==null || m.spouseName.isEmpty()) ?       "<spouseName />" : "<spouseName>${m.spouseName}</spouseName>")
 
-                ((m.education==null || m.education.isEmpty()) ?       "<education />" : "<education>${m.education}</education>") +
-                ((m.religion==null || m.religion.isEmpty()) ?       "<religion />" : "<religion>${m.religion}</religion>") +
+        sb.append((m.education==null || m.education.isEmpty()) ?       "<education />" : "<education>${m.education}</education>")
+        sb.append((m.religion==null || m.religion.isEmpty()) ?       "<religion />" : "<religion>${m.religion}</religion>")
 
-                ((m.phonePrimary==null || m.phonePrimary.isEmpty()) ?         "<phonePrimary />" : "<phonePrimary>${m.phonePrimary}</phonePrimary>") +
-                ((m.phoneAlternative==null || m.phoneAlternative.isEmpty()) ? "<phoneAlternative />" : "<phoneAlternative>${m.phoneAlternative}</phoneAlternative>") +
+        sb.append((m.phonePrimary==null || m.phonePrimary.isEmpty()) ?         "<phonePrimary />" : "<phonePrimary>${m.phonePrimary}</phonePrimary>")
+        sb.append((m.phoneAlternative==null || m.phoneAlternative.isEmpty()) ? "<phoneAlternative />" : "<phoneAlternative>${m.phoneAlternative}</phoneAlternative>")
 
-                /*((m.spouseType==null || m.spouseType.isEmpty()) ?       "<spouseType />" : "<spouseType>${m.spouseType}</spouseType>") + */
-                ((m.householdCode==null || m.householdCode.isEmpty()) ? "<householdCode />" : "<householdCode>${m.householdCode}</householdCode>") +
-                ((m.householdName==null || m.householdName.isEmpty()) ? "<householdName />" : "<householdName>${m.householdName}</householdName>") +
+                /*((m.spouseType==null || m.spouseType.isEmpty()) ?       "<spouseType />" : "<spouseType>${m.spouseType}</spouseType>") */
+        sb.append((m.householdCode==null || m.householdCode.isEmpty()) ? "<householdCode />" : "<householdCode>${m.householdCode}</householdCode>")
+        sb.append((m.householdName==null || m.householdName.isEmpty()) ? "<householdName />" : "<householdName>${m.householdName}</householdName>")
 
-                ((m.startType==null) ?         "<startType />" : "<startType>${m.startType.code}</startType>") +
-                ((m.startDate==null)                        ?           "<startDate />" : "<startDate>${StringUtil.format(m.startDate)}</startDate>") +
-                ((m.endType==null)     ?         "<endType />"   : "<endType>${m.endType.code}</endType>") +
-                ((m.endDate==null)                          ?           "<endDate />"   : "<endDate>${StringUtil.format(m.endDate)}</endDate>") +
+        sb.append((m.startType==null) ?         "<startType />" : "<startType>${m.startType.code}</startType>")
+        sb.append((m.startDate==null)                        ?           "<startDate />" : "<startDate>${StringUtil.format(m.startDate)}</startDate>")
+        sb.append((m.endType==null)     ?         "<endType />"   : "<endType>${m.endType.code}</endType>")
+        sb.append((m.endDate==null)                          ?           "<endDate />"   : "<endDate>${StringUtil.format(m.endDate)}</endDate>")
 
-                ((m.entryHousehold==null || m.entryHousehold.isEmpty()) ? "<entryHousehold />" : "<entryHousehold>${m.entryHousehold}</entryHousehold>") +
-                ((m.entryType==null)           ? "<entryType />" : "<entryType>${m.entryType.code}</entryType>") +
-                ((m.entryDate==null)                                    ? "<entryDate />" : "<entryDate>${StringUtil.format(m.entryDate)}</entryDate>") +
+        sb.append((m.entryHousehold==null || m.entryHousehold.isEmpty()) ? "<entryHousehold />" : "<entryHousehold>${m.entryHousehold}</entryHousehold>")
+        sb.append((m.entryType==null)           ? "<entryType />" : "<entryType>${m.entryType.code}</entryType>")
+        sb.append((m.entryDate==null)                                    ? "<entryDate />" : "<entryDate>${StringUtil.format(m.entryDate)}</entryDate>")
 
-                ((m.headRelationshipType==null)                       ? "<headRelationshipType />" : "<headRelationshipType>${m.headRelationshipType.code}</headRelationshipType>") +
-                ((m.headRelationshipType==null)                       ? "<isHouseholdHead />" : "<isHouseholdHead>${m.isHouseholdHead()}</isHouseholdHead>") +
-                //((m.isSecHouseholdHead==null)                         ? "<isSecHouseholdHead />" : "<isSecHouseholdHead>${m.isSecHouseholdHead}</isSecHouseholdHead>") +
+        sb.append((m.headRelationshipType==null)                       ? "<headRelationshipType />" : "<headRelationshipType>${m.headRelationshipType.code}</headRelationshipType>")
+        sb.append((m.headRelationshipType==null)                       ? "<isHouseholdHead />" : "<isHouseholdHead>${m.isHouseholdHead()}</isHouseholdHead>")
+                //((m.isSecHouseholdHead==null)                         ? "<isSecHouseholdHead />" : "<isSecHouseholdHead>${m.isSecHouseholdHead}</isSecHouseholdHead>")
 
-                ((m.gpsAccuracy == null)                              ? "<gpsAccuracy />" : "<gpsAccuracy>${m.gpsAccuracy}</gpsAccuracy>") +
-                ((m.gpsAltitude == null)                              ? "<gpsAltitude />" : "<gpsAltitude>${m.gpsAltitude}</gpsAltitude>") +
-                ((m.gpsLatitude == null)                              ? "<gpsLatitude />" : "<gpsLatitude>${m.gpsLatitude}</gpsLatitude>") +
-                ((m.gpsLongitude == null)                             ? "<gpsLongitude />" : "<gpsLongitude>${m.gpsLongitude}</gpsLongitude>") +
+        sb.append((m.gpsAccuracy == null)                              ? "<gpsAccuracy />" : "<gpsAccuracy>${m.gpsAccuracy}</gpsAccuracy>")
+        sb.append((m.gpsAltitude == null)                              ? "<gpsAltitude />" : "<gpsAltitude>${m.gpsAltitude}</gpsAltitude>")
+        sb.append((m.gpsLatitude == null)                              ? "<gpsLatitude />" : "<gpsLatitude>${m.gpsLatitude}</gpsLatitude>")
+        sb.append((m.gpsLongitude == null)                             ? "<gpsLongitude />" : "<gpsLongitude>${m.gpsLongitude}</gpsLongitude>")
 
-                ((m.collectedId == null) ? "<collectedId />" : "<collectedId>${m.collectedId}</collectedId>") +
+        sb.append((m.collectedId == null) ? "<collectedId />" : "<collectedId>${m.collectedId}</collectedId>")
 
-                ((m.modules.empty)        ?  "<modules />"     : "<modules>${moduleService.getListModulesAsText(m.modules)}</modules>")+
+        sb.append((m.modules.empty)        ?  "<modules />"     : "<modules>${moduleService.getListModulesAsText(m.modules)}</modules>")
 
-                ("</member>")
+        sb.append("</member>")
+        
+        return sb.toString()
     }
 
     private String toMemberXML(Member m){
@@ -3192,57 +3198,61 @@ class SyncFilesService {
         m.spouseCode = spouse?.code
         m.spouseName = spouse?.name
 
-        return  ("<member>") +
-                ((m.code==null || m.code.isEmpty()) ?                   "<code />" : "<code>${m.code}</code>") +
-                ((m.name==null || m.name.isEmpty()) ?                   "<name />" : "<name>${m.name}</name>") +
-                ((m.gender==null ) ?                                    "<gender />" : "<gender>${m.gender.code}</gender>") +
-                ((m.dob==null) ?                                        "<dob />" : "<dob>${StringUtil.format(m.dob)}</dob>") +
-                ((m.age==null) ?                                        "<age />" : "<age>${m.age}</age>") +
+        StringBuilder sb = new StringBuilder()
+        
+        sb.append("<member>")
+        sb.append((m.code==null || m.code.isEmpty()) ?                   "<code />" : "<code>${m.code}</code>")
+        sb.append((m.name==null || m.name.isEmpty()) ?                   "<name />" : "<name>${m.name}</name>")
+        sb.append((m.gender==null ) ?                                    "<gender />" : "<gender>${m.gender.code}</gender>")
+        sb.append((m.dob==null) ?                                        "<dob />" : "<dob>${StringUtil.format(m.dob)}</dob>")
+        sb.append((m.age==null) ?                                        "<age />" : "<age>${m.age}</age>")
 
-                ((m.ageAtDeath==null) ?                                 "<ageAtDeath />" : "<ageAtDeath>${m.ageAtDeath}</ageAtDeath>") +
+        sb.append((m.ageAtDeath==null) ?                                 "<ageAtDeath />" : "<ageAtDeath>${m.ageAtDeath}</ageAtDeath>")
 
-                ((m.motherCode==null || m.motherCode.isEmpty()) ?       "<motherCode />" : "<motherCode>${m.motherCode}</motherCode>") +
-                ((m.motherName==null || m.motherName.isEmpty()) ?       "<motherName />" : "<motherName>${m.motherName}</motherName>") +
-                ((m.fatherCode==null || m.fatherCode.isEmpty()) ?       "<fatherCode />" : "<fatherCode>${m.fatherCode}</fatherCode>") +
-                ((m.fatherName==null || m.fatherName.isEmpty()) ?       "<fatherName />" : "<fatherName>${m.fatherName}</fatherName>") +
+        sb.append((m.motherCode==null || m.motherCode.isEmpty()) ?       "<motherCode />" : "<motherCode>${m.motherCode}</motherCode>")
+        sb.append((m.motherName==null || m.motherName.isEmpty()) ?       "<motherName />" : "<motherName>${m.motherName}</motherName>")
+        sb.append((m.fatherCode==null || m.fatherCode.isEmpty()) ?       "<fatherCode />" : "<fatherCode>${m.fatherCode}</fatherCode>")
+        sb.append((m.fatherName==null || m.fatherName.isEmpty()) ?       "<fatherName />" : "<fatherName>${m.fatherName}</fatherName>")
 
-                ((m.maritalStatus==null) ?                              "<maritalStatus />" : "<maritalStatus>${m.maritalStatus.code}</maritalStatus>") +
-                ((m.spouseCode==null || m.spouseCode.isEmpty()) ?       "<spouseCode />" : "<spouseCode>${m.spouseCode}</spouseCode>") +
-                ((m.spouseName==null || m.spouseName.isEmpty()) ?       "<spouseName />" : "<spouseName>${m.spouseName}</spouseName>") +
+        sb.append((m.maritalStatus==null) ?                              "<maritalStatus />" : "<maritalStatus>${m.maritalStatus.code}</maritalStatus>")
+        sb.append((m.spouseCode==null || m.spouseCode.isEmpty()) ?       "<spouseCode />" : "<spouseCode>${m.spouseCode}</spouseCode>")
+        sb.append((m.spouseName==null || m.spouseName.isEmpty()) ?       "<spouseName />" : "<spouseName>${m.spouseName}</spouseName>")
 
-                ((m.education==null || m.education.isEmpty()) ?       "<education />" : "<education>${m.education}</education>") +
-                ((m.religion==null || m.religion.isEmpty()) ?       "<religion />" : "<religion>${m.religion}</religion>") +
+        sb.append((m.education==null || m.education.isEmpty()) ?       "<education />" : "<education>${m.education}</education>")
+        sb.append((m.religion==null || m.religion.isEmpty()) ?       "<religion />" : "<religion>${m.religion}</religion>")
 
-                ((m.phonePrimary==null || m.phonePrimary.isEmpty()) ?         "<phonePrimary />" : "<phonePrimary>${m.phonePrimary}</phonePrimary>") +
-                ((m.phoneAlternative==null || m.phoneAlternative.isEmpty()) ? "<phoneAlternative />" : "<phoneAlternative>${m.phoneAlternative}</phoneAlternative>") +
+        sb.append((m.phonePrimary==null || m.phonePrimary.isEmpty()) ?         "<phonePrimary />" : "<phonePrimary>${m.phonePrimary}</phonePrimary>")
+        sb.append((m.phoneAlternative==null || m.phoneAlternative.isEmpty()) ? "<phoneAlternative />" : "<phoneAlternative>${m.phoneAlternative}</phoneAlternative>")
 
-                /*((m.spouseType==null || m.spouseType.isEmpty()) ?       "<spouseType />" : "<spouseType>${m.spouseType}</spouseType>") + */
-                ((householdCode==null || householdCode?.isEmpty()) ? "<householdCode />" : "<householdCode>${householdCode}</householdCode>") +
-                ((householdName==null || householdName?.isEmpty()) ? "<householdName />" : "<householdName>${householdName}</householdName>") +
+                /*((m.spouseType==null || m.spouseType.isEmpty()) ?       "<spouseType />" : "<spouseType>${m.spouseType}</spouseType>") */
+        sb.append((householdCode==null || householdCode?.isEmpty()) ? "<householdCode />" : "<householdCode>${householdCode}</householdCode>")
+        sb.append((householdName==null || householdName?.isEmpty()) ? "<householdName />" : "<householdName>${householdName}</householdName>")
 
-                ((startType==null) ?                                 "<startType />" : "<startType>${startType.code}</startType>") +
-                ((startDate==null)                        ?          "<startDate />" : "<startDate>${StringUtil.format(startDate)}</startDate>") +
-                ((endType==null)     ?                               "<endType />"   : "<endType>${endType.code}</endType>") +
-                ((endDate==null)                          ?          "<endDate />"   : "<endDate>${StringUtil.format(endDate)}</endDate>") +
+        sb.append((startType==null) ?                                 "<startType />" : "<startType>${startType.code}</startType>")
+        sb.append((startDate==null)                        ?          "<startDate />" : "<startDate>${StringUtil.format(startDate)}</startDate>")
+        sb.append((endType==null)     ?                               "<endType />"   : "<endType>${endType.code}</endType>")
+        sb.append((endDate==null)                          ?          "<endDate />"   : "<endDate>${StringUtil.format(endDate)}</endDate>")
 
-                ((m.entryHousehold==null || m.entryHousehold.isEmpty()) ? "<entryHousehold />" : "<entryHousehold>${m.entryHousehold}</entryHousehold>") +
-                ((m.entryType==null)           ?                     "<entryType />" : "<entryType>${m.entryType.code}</entryType>") +
-                ((m.entryDate==null)                               ? "<entryDate />" : "<entryDate>${StringUtil.format(m.entryDate)}</entryDate>") +
+        sb.append((m.entryHousehold==null || m.entryHousehold.isEmpty()) ? "<entryHousehold />" : "<entryHousehold>${m.entryHousehold}</entryHousehold>")
+        sb.append((m.entryType==null)           ?                     "<entryType />" : "<entryType>${m.entryType.code}</entryType>")
+        sb.append((m.entryDate==null)                               ? "<entryDate />" : "<entryDate>${StringUtil.format(m.entryDate)}</entryDate>")
 
-                ((m.headRelationshipType==null)                       ? "<headRelationshipType />" : "<headRelationshipType>${m.headRelationshipType.code}</headRelationshipType>") +
-                ((m.headRelationshipType==null)                       ? "<isHouseholdHead />" : "<isHouseholdHead>${m.isHouseholdHead()}</isHouseholdHead>") +
-                //((m.isSecHouseholdHead==null)                         ? "<isSecHouseholdHead />" : "<isSecHouseholdHead>${m.isSecHouseholdHead}</isSecHouseholdHead>") +
+        sb.append((m.headRelationshipType==null)                       ? "<headRelationshipType />" : "<headRelationshipType>${m.headRelationshipType.code}</headRelationshipType>")
+        sb.append((m.headRelationshipType==null)                       ? "<isHouseholdHead />" : "<isHouseholdHead>${m.isHouseholdHead()}</isHouseholdHead>")
+                //((m.isSecHouseholdHead==null)                         ? "<isSecHouseholdHead />" : "<isSecHouseholdHead>${m.isSecHouseholdHead}</isSecHouseholdHead>")
 
-                ((m.gpsAccuracy == null)                              ? "<gpsAccuracy />" : "<gpsAccuracy>${m.gpsAccuracy}</gpsAccuracy>") +
-                ((m.gpsAltitude == null)                              ? "<gpsAltitude />" : "<gpsAltitude>${m.gpsAltitude}</gpsAltitude>") +
-                ((m.gpsLatitude == null)                              ? "<gpsLatitude />" : "<gpsLatitude>${m.gpsLatitude}</gpsLatitude>") +
-                ((m.gpsLongitude == null)                             ? "<gpsLongitude />" : "<gpsLongitude>${m.gpsLongitude}</gpsLongitude>") +
+        sb.append((m.gpsAccuracy == null)                              ? "<gpsAccuracy />" : "<gpsAccuracy>${m.gpsAccuracy}</gpsAccuracy>")
+        sb.append((m.gpsAltitude == null)                              ? "<gpsAltitude />" : "<gpsAltitude>${m.gpsAltitude}</gpsAltitude>")
+        sb.append((m.gpsLatitude == null)                              ? "<gpsLatitude />" : "<gpsLatitude>${m.gpsLatitude}</gpsLatitude>")
+        sb.append((m.gpsLongitude == null)                             ? "<gpsLongitude />" : "<gpsLongitude>${m.gpsLongitude}</gpsLongitude>")
 
-                ((m.collectedId == null) ? "<collectedId />" : "<collectedId>${m.collectedId}</collectedId>") +
+        sb.append((m.collectedId == null) ? "<collectedId />" : "<collectedId>${m.collectedId}</collectedId>")
 
-                ((m.modules.empty)        ?  "<modules />"     : "<modules>${moduleService.getListModulesAsText(m.modules)}</modules>")+
+        sb.append((m.modules.empty)        ?  "<modules />"     : "<modules>${moduleService.getListModulesAsText(m.modules)}</modules>")
 
-                ("</member>")
+        sb.append("</member>")
+        
+        return sb.toString()
     }
 
     private String toXML(Residency r) {

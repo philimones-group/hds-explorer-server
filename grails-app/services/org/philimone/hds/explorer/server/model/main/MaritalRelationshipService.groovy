@@ -204,6 +204,16 @@ class MaritalRelationshipService {
         return MaritalStatus.SINGLE
     }
 
+    MaritalStatus getMaritalStatusFrom(MaritalStartStatus startStatus, MaritalEndStatus endStatus) {
+
+        if (endStatus == MaritalEndStatus.NOT_APPLICABLE || endStatus == null) {
+            return getMaritalStatusFromStartStatus(startStatus)
+        } else {
+            return getMaritalStatusFromEndStatus(endStatus)
+        }
+        return MaritalStatus.SINGLE
+    }
+
     RawMaritalRelationship convertToRaw(MaritalRelationship maritalRelationship){
 
         if (maritalRelationship == null) return null
