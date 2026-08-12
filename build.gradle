@@ -193,3 +193,7 @@ assets {
     minifyJs = true
     minifyCss = true
 }
+
+tasks.withType(War).configureEach {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
