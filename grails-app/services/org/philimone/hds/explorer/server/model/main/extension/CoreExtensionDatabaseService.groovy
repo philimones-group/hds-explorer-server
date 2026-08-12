@@ -189,6 +189,10 @@ class CoreExtensionDatabaseService {
                 break
             case ColumnType.BARCODE:
                 dbColumnType = DatabaseColumnType.STRING; dbColumnSize = 100; fColumnType = FormColumnType.BARCODE; break
+            case ColumnType.START_TIMESTAMP:
+            case ColumnType.END_TIMESTAMP:
+            case ColumnType.TIMESTAMP:
+                dbColumnType = DatabaseColumnType.TIMESTAMP; fColumnType = FormColumnType.TIMESTAMP; break
             case ColumnType.IMAGE:
             case ColumnType.AUDIO:
             case ColumnType.VIDEO:
@@ -334,6 +338,8 @@ class CoreExtensionDatabaseService {
                             result.keys.addAll(queryResult.first())
                         }
 
+                        //println "sql = " + sqlinsert
+                        //println "query result = ${queryResult}"
                         //println "result id=" + result.keys + ", type="+result.keys
                         //println "result id=" + result.keys?.first() + ", type="+result.keys?.first()?.getClass()
 

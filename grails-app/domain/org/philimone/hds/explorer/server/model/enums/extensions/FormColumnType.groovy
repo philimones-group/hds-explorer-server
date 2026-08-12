@@ -20,7 +20,8 @@ enum FormColumnType {
     GEOSHAPE        (14),
     GEOTRACE        (15),
     REPEAT_GROUP    (40),
-    SYSTEM          (41);
+    SYSTEM          (41),
+    TIMESTAMP       (42);
 
 
     Integer code

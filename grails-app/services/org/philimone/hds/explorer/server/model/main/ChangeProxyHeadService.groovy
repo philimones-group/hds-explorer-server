@@ -274,6 +274,7 @@ class ChangeProxyHeadService {
 		householdProxyHead.endDate = null;
 		householdProxyHead.reason = ProxyHeadChangeReason.getFrom(rawHouseholdProxyHead.reason)
 		householdProxyHead.reasonOther = rawHouseholdProxyHead.reasonOther
+		householdProxyHead.collectedId = rawHouseholdProxyHead.id
 
 		householdProxyHead.status = ValidatableStatus.ACTIVE
 

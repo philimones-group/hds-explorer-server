@@ -406,7 +406,7 @@ class ExternalInMigrationService {
     private RawMember createNewRawMemberFrom(RawExternalInMigration externalInMigration){
 
         return new RawMember(
-                id: externalInMigration.collectedMemberId,
+                id: externalInMigration.collectedMemberId==null ? externalInMigration.id : externalInMigration.collectedMemberId,
                 code: externalInMigration.memberCode,
                 name: externalInMigration.memberName,
                 gender: externalInMigration.memberGender,
@@ -418,18 +418,19 @@ class ExternalInMigrationService {
                 religion: externalInMigration.religion,
                 phonePrimary: externalInMigration.phonePrimary,
                 phoneAlternative: externalInMigration.phoneAlternative,
-                collectedId: externalInMigration.collectedMemberId,
+                collectedId: externalInMigration.collectedMemberId==null ? externalInMigration.id : externalInMigration.collectedMemberId,
                 collectedBy: externalInMigration.collectedBy,
                 collectedDate: externalInMigration.collectedDate,
                 collectedDeviceId: externalInMigration.collectedDeviceId,
                 collectedHouseholdId: externalInMigration.collectedHouseholdId,
-                collectedMemberId: externalInMigration.collectedMemberId,
+                collectedMemberId: externalInMigration.collectedMemberId==null ? externalInMigration.id : externalInMigration.collectedMemberId,
                 modules: externalInMigration.modules)
     }
 
     private RawInMigration createRawInMigration(RawExternalInMigration rawExternalInMigration) {
         def rawInMig = new RawInMigration()
 
+        rawInMig.id = rawExternalInMigration.id
         rawInMig.visitCode = rawExternalInMigration.visitCode
         rawInMig.memberCode = rawExternalInMigration.memberCode
         rawInMig.migrationType = InMigrationType.EXTERNAL.code

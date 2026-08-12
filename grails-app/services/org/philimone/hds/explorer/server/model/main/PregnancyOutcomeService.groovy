@@ -520,6 +520,7 @@ class PregnancyOutcomeService {
         def motherCode = pregnancyOutcome.motherCode
 
         return new RawMember(
+                id: pregnancyChild.childCollectedId,
                 code: pregnancyChild.childCode,
                 name: pregnancyChild.childName,
                 gender: pregnancyChild.childGender,

@@ -462,6 +462,7 @@ class MemberEnumerationService {
     private RawMember createNewRawMemberFrom(RawMemberEnu memberEnu){
 
         return new RawMember(
+                id: memberEnu.id,
                 code: memberEnu.code,
                 name: memberEnu.name,
                 gender: memberEnu.gender,
@@ -474,11 +475,11 @@ class MemberEnumerationService {
                 phonePrimary: memberEnu.phonePrimary,
                 phoneAlternative: memberEnu.phoneAlternative,
                 modules: memberEnu.modules,
-                collectedId: memberEnu.collectedMemberId,
+                collectedId: memberEnu.id,
                 collectedBy: memberEnu.collectedBy,
                 collectedDeviceId: memberEnu.collectedDeviceId,
                 collectedHouseholdId: memberEnu.collectedHouseholdId,
-                collectedMemberId: memberEnu.collectedMemberId,
+                collectedMemberId: memberEnu.id,
                 collectedDate: memberEnu.collectedDate,
                 uploadedDate: memberEnu.uploadedDate
         )

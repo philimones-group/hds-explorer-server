@@ -71,7 +71,7 @@ class CoreExtensionService {
     }
 
     CoreExtensionDatabaseService.SqlExecutionResult insertChangeHeadExtension(RawChangeHead rawObj, HeadRelationship finalObj) {
-        return insertExtension(CoreForm.CHANGE_HEAD_FORM, finalObj.collectedId, rawObj.extensionForm)
+        return insertExtension(CoreForm.CHANGE_HEAD_FORM, rawObj.id, rawObj.extensionForm) //this raw table dont have a specific final table
     }
 
     CoreExtensionDatabaseService.SqlExecutionResult insertIncompleteVisitExtension(RawIncompleteVisit rawObj, IncompleteVisit finalObj) {
@@ -79,7 +79,7 @@ class CoreExtensionService {
     }
 
     CoreExtensionDatabaseService.SqlExecutionResult insertChangeRegionHeadExtension(RawChangeRegionHead rawObj, RegionHeadRelationship finalObj) {
-        return insertExtension(CoreForm.CHANGE_REGION_HEAD_FORM, finalObj.collectedId, rawObj.extensionForm)
+        return insertExtension(CoreForm.CHANGE_REGION_HEAD_FORM, rawObj.id, rawObj.extensionForm) //this raw table dont have a specific final table
     }
 
     CoreExtensionDatabaseService.SqlExecutionResult insertHouseholdRelocationExtension(RawHouseholdRelocation rawObj, HouseholdRelocation finalObj) {
@@ -271,14 +271,16 @@ class CoreExtensionService {
 
     Object getObjectValueByType(DatabaseColumnType dbColumnType, String textValue) {
         Object objValue = textValue
+
         //println("type: ${dbColumnType?.name()}, value: ${textValue}")
         switch (dbColumnType) {
-            case DatabaseColumnType.BLOB:    objValue = new ByteArrayInputStream(textValue.getBytes()); break;
-            case DatabaseColumnType.BOOLEAN: objValue = Boolean.parseBoolean(textValue); break;
-            case DatabaseColumnType.DECIMAL: objValue = BigDecimal.valueOf(Double.parseDouble(textValue)); break;
-            case DatabaseColumnType.DOUBLE: objValue = Double.parseDouble(textValue); break;
-            case DatabaseColumnType.INTEGER: objValue = Integer.parseInt(textValue); break;
-            case DatabaseColumnType.DATETIME: objValue = StringUtil.toLocalDateTime(textValue, DateTimeFormatter.ISO_OFFSET_DATE_TIME); break;
+            case DatabaseColumnType.BLOB:    objValue = StringUtil.isBlank(textValue) ? null : new ByteArrayInputStream(textValue.getBytes()); break;
+            case DatabaseColumnType.BOOLEAN: objValue = StringUtil.isBlank(textValue) ? null : Boolean.parseBoolean(textValue); break;
+            case DatabaseColumnType.DECIMAL: objValue = StringUtil.isBlank(textValue) ? null : BigDecimal.valueOf(Double.parseDouble(textValue)); break;
+            case DatabaseColumnType.DOUBLE: objValue = StringUtil.isBlank(textValue) ? null : Double.parseDouble(textValue); break;
+            case DatabaseColumnType.INTEGER: objValue = StringUtil.isBlank(textValue) ? null : Integer.parseInt(textValue); break;
+            case DatabaseColumnType.DATETIME: objValue = StringUtil.isBlank(textValue) ? null : StringUtil.toLocalDateTime(textValue); break;//y-m-d hh:mm:ss
+            case DatabaseColumnType.TIMESTAMP: objValue = StringUtil.isBlank(textValue) ? null : StringUtil.toLocalDateTimePrecise(textValue); break
             case DatabaseColumnType.STRING: break;
             case DatabaseColumnType.NOT_APPLICABLE: break;
         }

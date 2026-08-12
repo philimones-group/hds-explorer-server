@@ -288,7 +288,7 @@ class MemberService {
         member.collectedBy = userService.getUser(rm.collectedBy)
         member.collectedDeviceId = rm.collectedDeviceId
         member.collectedHouseholdId = rm.collectedHouseholdId
-        member.collectedMemberId = rm.collectedMemberId
+        member.collectedMemberId = rm.collectedMemberId==null ? rm.id : rm.collectedMemberId
         member.collectedStart = rm.collectedStart
         member.collectedEnd = rm.collectedEnd
         member.collectedDate = rm.collectedDate
