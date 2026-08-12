@@ -41,6 +41,18 @@
             <br>
             <p><g:message code="default.main.welcome.msg" /></p>
             <br>
+            <div id="community">
+                <h2><g:message code="default.main.community.title" /></h2>
+                <p><g:message code="default.main.community.msg" /></p>
+
+                <p>
+                    <g:link url="https://hds-explorer.org/register.html"
+                            target="_blank"
+                            class="community_link">
+                        <g:message code="default.main.community.register" />
+                    </g:link>
+                </p>
+            </div>
             <br>
             <br>
             <div id="controllers" role="navigation">
@@ -50,14 +62,9 @@
                     <li class="controller"> <g:link url="https://github.com/philimones-group/hds-explorer-tablet"><g:message code="default.main.welcome.mobile.source" /></g:link></li>
                     <li class="controller"> <g:link controller="syncFiles" action="downloadAndroidApk"><g:message code="default.main.welcome.mobile.apk.download" /></g:link></li>
                 </ul>
+
+                <br>
             </div>
-
-            <br>
-            <br>
-            <br>
-            <p><g:message code="default.main.welcome.developer" /></p>
-            <p><g:message code="default.main.welcome.developer_email" /></p>
-
 
         </section>
 	</body>

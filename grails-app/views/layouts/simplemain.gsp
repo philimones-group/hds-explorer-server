@@ -88,8 +88,7 @@
     <section id="footer">
         <div id="footerMenu">
             <div id="siteInfo" class="siteInfo" align="right">
-                <a href="#">Paulo Filimone </a> | &copy;2026
-            HDS-Explorer Server <g:meta name="info.app.version"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <a href="mailto:paulphilimone@gmail.com">Paulo Filimone</a> | &copy;2026 HDS-Explorer Server <g:meta name="info.app.version"/> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
             </div>
 
         </div>
