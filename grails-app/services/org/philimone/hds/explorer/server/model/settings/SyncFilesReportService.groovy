@@ -33,4 +33,8 @@ class SyncFilesReportService {
 
         SyncFilesReport.findByName(entity)
     }
+
+    def clearReports() {
+        SyncFilesReport.deleteAll();
+    }
 }

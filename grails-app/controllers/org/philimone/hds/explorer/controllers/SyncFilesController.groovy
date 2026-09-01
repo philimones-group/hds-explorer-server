@@ -46,12 +46,12 @@ class SyncFilesController {
         render file: file
     }
 
-    def coreforms = {
+    def coreformsext = {
         def file = new File(SystemPath.getGeneratedFilesPath() + File.separator + SyncEntity.CORE_FORMS_EXT.xmlFilename)
         render file: file
     }
 
-    def coreform(String id){
+    def coreformext(String id){
         def form = CoreFormExtension.findByFormId(id)
 
         def file = new File(form.extFormPath)
@@ -203,6 +203,15 @@ class SyncFilesController {
     }
 
     def coreformsZip = {
+        def file = new File(SystemPath.getGeneratedFilesPath() + File.separator + SyncEntity.CORE_FORMS.zipFilename)
+        //render file: file, fileName: "forms.zip"
+
+        response.setContentLengthLong(file.size())
+        response.setContentType("application/zip")
+        response.outputStream << file.bytes
+    }
+
+    def coreformsextZip = {
         def file = new File(SystemPath.getGeneratedFilesPath() + File.separator + SyncEntity.CORE_FORMS_EXT.zipFilename)
         //render file: file, fileName: "forms.zip"
 
@@ -211,7 +220,7 @@ class SyncFilesController {
         response.outputStream << file.bytes
     }
 
-    def coreformZip(String id){
+    def coreformextZip(String id){
         def form = CoreFormExtension.findByFormId(id)
 
         def file = new File(form.compressedExtFormPath)
@@ -458,6 +467,8 @@ class SyncFilesController {
     }
 
     def exportAll = {
+
+        syncFilesReportService.clearReports();
 
         createLogStartup(LogReportCode.REPORT_GENERATE_SETTINGS_ZIP_XML_FILES)
         new Thread(new Runnable() {

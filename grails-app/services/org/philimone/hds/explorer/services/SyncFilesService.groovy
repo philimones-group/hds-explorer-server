@@ -91,6 +91,7 @@ class SyncFilesService {
         generateAppParametersXML(logReportId)
         generateModulesXML(logReportId)
         generateFormsXML(logReportId)
+        generateCoreFormsZip(logReportId)
         generateCoreFormsXML(logReportId)
         generateCoreFormsOptionsXML(logReportId)
         generateUsersXML(logReportId)
@@ -655,6 +656,77 @@ class SyncFilesService {
 
             //Save number of records
             syncFilesReportService.update(SyncEntity.FORMS, count)
+
+        } catch (Exception ex) {
+            ex.printStackTrace()
+            processed = 0
+            errors = 1
+            output.println(ex.toString())
+
+            logStatusValue = LogStatus.ERROR
+        }
+
+        LogReport.withTransaction {
+            LogReport logReport = LogReport.findByReportId(logReportId)
+            LogReportFile reportFile = new LogReportFile(creationDate: LocalDateTime.now(), fileName: log.logFileName, logReport: logReport)
+            reportFile.keyTimestamp = logReport.keyTimestamp
+            reportFile.start = start
+            reportFile.end = LocalDateTime.now()
+            reportFile.creationDate = LocalDateTime.now()
+            reportFile.processedCount = processed
+            reportFile.errorsCount = errors
+
+            logReport.end = LocalDateTime.now()
+            logReport.status = logStatusValue
+            logReport.addToLogFiles(reportFile)
+            logReport.save()
+
+            //println("errors: ${logReport.errors}")
+        }
+
+        output.close();
+
+    }
+
+    def generateCoreFormsZip(LogReportCode logReportId) { //read forms
+
+        LogOutput log = generalUtilitiesService.getOutput(SystemPath.getLogsPath(), "generate-core-forms-zip");
+        PrintStream output = log.output
+        if (output == null) return;
+
+        def start = LocalDateTime.now();
+        int processed = 0
+        int errors = 0
+        def logStatusValue = LogStatus.FINISHED
+
+        try {
+            //read forms
+            def resultForms = []
+
+            CoreFormExtension.withTransaction {
+                resultForms = CoreFormExtension.list() //get only the enabled forms
+            }
+
+            def dirUrl = getClass().classLoader.getResource("core-forms/xls-hforms/")
+            def directory = new File(dirUrl.toURI())
+
+            //zip file
+            ZipMaker zipMaker = new ZipMaker(SystemPath.getGeneratedFilesPath() + "/${SyncEntity.CORE_FORMS.zipFilename}")
+
+            if (directory.exists()) {
+                directory.listFiles().each {file ->
+                    if (file.getName().endsWith(".xlsx")) {
+                        zipMaker.addFile(file.getAbsolutePath())
+                        processed++
+                    }
+                }
+            }
+
+            def b = zipMaker.makeZip()
+            println "creating zip - ${SyncEntity.CORE_FORMS.zipFilename} - success=" + b
+
+            //Save number of records
+            syncFilesReportService.update(SyncEntity.CORE_FORMS, processed)
 
         } catch (Exception ex) {
             ex.printStackTrace()
