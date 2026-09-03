@@ -47,13 +47,14 @@ class PregnancyOutcome extends CollectableEntity {
         id column: "id", generator: 'uuid'
 
         code column: "code"
-        mother column: "mother_id"
+        // Composite Index: idx_pregout_mother_date (mother_id, outcome_date) - Fast maternal outcome history lookup
+        mother column: "mother_id", index: "idx_pregout_mother_date"
         motherCode column: "mother_code", index: "idx_mother_code"
         father column: "father_id"
         fatherCode column: "father_code", index: "idx_father_code"
         numberOfOutcomes column: "number_of_outcomes"
         numberOfLivebirths column: "number_of_livebirths"
-        outcomeDate column: "outcome_date"
+        outcomeDate column: "outcome_date", index: "idx_pregout_mother_date"
         birthPlace column: "birthplace", enumType: "identity"
         birthPlaceOther column: "birthplace_other"
 

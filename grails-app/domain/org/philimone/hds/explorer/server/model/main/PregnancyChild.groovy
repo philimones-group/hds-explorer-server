@@ -34,10 +34,11 @@ class PregnancyChild {
 
         id column: "id", generator: 'uuid'
 
-        outcome column: "pregnancy_outcome_id"
+        // Composite Index: idx_pregchild_outcome_child (pregnancy_outcome_id, child_id) - Fast outcome to child join
+        outcome column: "pregnancy_outcome_id", index: "idx_pregchild_outcome_child"
         outcomeCode column: "pregnancy_outcome_code", index: "idx_outcome_code"
         outcomeType column: "outcome_type", enumType: "identity"
-        child column: "child_id"
+        child column: "child_id", index: "idx_pregchild_outcome_child"
         childCollectedId column: "child_collected_id", index: "idx_child_coll_id"
         childCode column: "child_code", index: "idx_child_code"
         childOrdinalPosition column: "child_ordinal_pos"

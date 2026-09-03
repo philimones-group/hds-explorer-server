@@ -44,17 +44,18 @@ class MaritalRelationship extends CollectableEntity {
 
         id column: "id", generator: 'uuid'
 
-        memberA column: "member_a_id"
-        memberB column: "member_b_id"
+        // Composite Indexes: idx_marrel_member_a (member_a_id, start_date DESC, status), idx_marrel_member_b (member_b_id, start_date DESC, status)
+        memberA column: "member_a_id", index: "idx_marrel_member_a"
+        memberB column: "member_b_id", index: "idx_marrel_member_b"
         memberA_code column: "member_a_code", index: "idx_member_a_code"
         memberB_code column: "member_b_code", index: "idx_member_b_code"
         isPolygamic column: "is_polygamic"
         polygamicId column: "polygamic_id", index: "idx_polygamic_id"
         startStatus column: "start_status", enumType: "identity"
-        startDate column: "start_date"
+        startDate column: "start_date", index: "idx_marrel_member_a,idx_marrel_member_b"
         endStatus column: "end_status", enumType: "identity"
         endDate column: "end_date"
 
-        status column: "status", enumType: "identity"
+        status column: "status", enumType: "identity", index: "idx_marrel_member_a,idx_marrel_member_b"
     }
 }

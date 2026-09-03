@@ -118,9 +118,10 @@ class Household extends CollectableEntity {
 
         parentRegion column: 'region_id'
 
-        hierarchy1 column: 'hierarchy1'
-        hierarchy2 column: 'hierarchy2'
-        hierarchy3 column: 'hierarchy3'
+        // Composite Index: idx_hh_hierarchies (hierarchy1, hierarchy2, hierarchy3) - Fast geographic scope filtering
+        hierarchy1 column: 'hierarchy1', index: 'idx_hh_hierarchies'
+        hierarchy2 column: 'hierarchy2', index: 'idx_hh_hierarchies'
+        hierarchy3 column: 'hierarchy3', index: 'idx_hh_hierarchies'
         hierarchy4 column: 'hierarchy4'
         hierarchy5 column: 'hierarchy5'
         hierarchy6 column: 'hierarchy6'

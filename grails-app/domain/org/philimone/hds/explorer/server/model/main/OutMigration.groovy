@@ -90,20 +90,22 @@ class OutMigration extends CollectableEntity {
 
         id column: "id", generator: 'uuid'
 
-        member     column: "member_id"
+        // Composite Index: idx_outmig_member_date (member_id, migration_date) - Fast member out-migration lookup
+        member     column: "member_id", index: "idx_outmig_member_date"
         memberCode column: "member_code", index: "idx_member_code"
 
         migrationType       column: "type", enumType: "identity"
 
-        origin          column: "origin_id"
+        // Composite Index: idx_outmig_origin_dest (origin_id, destination_id) - Fast movement lookup
+        origin          column: "origin_id", index: "idx_outmig_origin_dest"
         originCode      column: "origin_code", index: "idx_origin_code"
         originResidency column: "origin_residency"
 
-        destination      column: "destination_id"
+        destination      column: "destination_id", index: "idx_outmig_origin_dest"
         destinationCode  column: "destination_code", index: "idx_destination_code"
         destinationOther column: "destination_other"
 
-        migrationDate   column: "migration_date"
+        migrationDate   column: "migration_date", index: "idx_outmig_member_date"
         migrationReason column: "migration_reason"
 
         visit column: "visit_id"

@@ -50,20 +50,21 @@ class HeadRelationship extends AuditableEntity {
 
         id column: "id", generator: 'uuid'
 
+        // Composite Index: idx_headrel_member_start_stat (member_id, start_date DESC, status) - Fast latest head relationship lookup
         household column: "household_id"
-        member column: "member_id"
+        member column: "member_id", index: "idx_headrel_member_start_stat"
         head column: "head_id"
         householdCode column: "household_code", index: "idx_household_code"
         memberCode column: "member_code", index: "idx_member_code"
         headCode column: "head_code", index: "idx_head_code"
         relationshipType column: "relationship_type", enumType: "identity"
         startType column: "start_type", enumType: "identity"
-        startDate column: "start_date"
+        startDate column: "start_date", index: "idx_headrel_member_start_stat"
         endType column: "end_type", enumType: "identity"
         endDate column: "end_date"
 
         residency column: "residency_id"
 
-        status column: "status", enumType: "identity"
+        status column: "status", enumType: "identity", index: "idx_headrel_member_start_stat"
     }
 }

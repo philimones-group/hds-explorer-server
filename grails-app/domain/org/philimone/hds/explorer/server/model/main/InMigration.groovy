@@ -108,21 +108,23 @@ class InMigration extends CollectableEntity {
 
         id column: "id", generator: 'uuid'
 
-        member     column: "member_id"
+        // Composite Index: idx_inmig_member_date (member_id, migration_date) - Fast member migration history lookup
+        member     column: "member_id", index: "idx_inmig_member_date"
         memberCode column: "member_code", index: "idx_member_code"
 
         type       column: "type", enumType: "identity"
         extMigType column: "ext_migtype", enumType: "string"
 
-        origin      column: "origin_id"
+        // Composite Index: idx_inmig_origin_dest (origin_id, destination_id) - Fast movement lookup
+        origin      column: "origin_id", index: "idx_inmig_origin_dest"
         originCode  column: "origin_code", index: "idx_origin_code"
         originOther column: "origin_other"
 
-        destination          column: "destination_id"
+        destination          column: "destination_id", index: "idx_inmig_origin_dest"
         destinationCode      column: "destination_code", index: "idx_destination_code"
         destinationResidency column: "destination_residency"
 
-        migrationDate   column: "migration_date"
+        migrationDate   column: "migration_date", index: "idx_inmig_member_date"
         migrationReason column: "migration_reason"
 
         education column: "education"

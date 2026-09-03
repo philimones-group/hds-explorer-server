@@ -214,8 +214,9 @@ class Member extends CollectableEntity {
 
         code column: 'code'
         name column: 'name'
-        gender column: 'gender', enumType: 'identity'
-        dob column: 'dob'
+        // Composite Index: idx_member_dob_gender (dob, gender) - Fast demographic cohort filtering
+        gender column: 'gender', enumType: 'identity', index: 'idx_member_dob_gender'
+        dob column: 'dob', index: 'idx_member_dob_gender'
         //age column: 'age'
         ageAtDeath column: 'age_at_death'
 
@@ -268,7 +269,7 @@ class Member extends CollectableEntity {
         cosLongitude column: 'cos_longitude'
         sinLongitude column: 'sin_longitude'
 
-        status column: 'status'
+        status column: 'status', index: 'idx_member_status'
 
         modules column: "modules", type: StringCollectionType, index: "idx_modules"
     }
