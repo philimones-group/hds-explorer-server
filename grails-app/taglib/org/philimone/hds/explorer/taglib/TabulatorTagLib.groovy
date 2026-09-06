@@ -355,7 +355,11 @@ class TabulatorTagLib {
 
                     out << "                             }\n"
                     out << "                             toastMessage.html(jmessage);\n"
-                    out << "                             toast.toast('show');\n"
+                    out << "                             if (typeof bootstrap !== 'undefined' && bootstrap.Toast) {\n"
+                    out << "                                 bootstrap.Toast.getOrCreateInstance(toast[0]).show();\n"
+                    out << "                             } else {\n"
+                    out << "                                 toast.toast('show');\n"
+                    out << "                             }\n"
 
                     //closing success function and menu brackets
                     def isLastItem = menusJson.size()-1==i
@@ -506,7 +510,11 @@ class TabulatorTagLib {
             out << "                     }\n"
             out << "                     \n"
             out << "                     toastMessage.html(message);\n"
-            out << "                     toast.toast('show');\n"
+            out << "                     if (typeof bootstrap !== 'undefined' && bootstrap.Toast) {\n"
+            out << "                         bootstrap.Toast.getOrCreateInstance(toast[0]).show();\n"
+            out << "                     } else {\n"
+            out << "                         toast.toast('show');\n"
+            out << "                     }\n"
             out << "                 }\n"
             out << "            });\n"
             out << "        });\n"
@@ -587,15 +595,14 @@ class TabulatorTagLib {
             out << "                <div class=\"position-fixed p-4\" style=\"z-index: 9999995; right: 30px; position: relative;\">\n"
         }
 
-        out <<  "                    <div id=\"${toastid}\" class=\"toast hide\" style=\"background-color: #fff; opacity: 1;\" role=\"alert\" aria-live=\"assertive\" aria-atomic=\"true\" data-autohide=\"false\" >\n" + //data-delay=\"6000\"
+        out <<  "                    <div id=\"${toastid}\" class=\"toast hide\" style=\"background-color: #fff; opacity: 1;\" role=\"alert\" aria-live=\"assertive\" aria-atomic=\"true\" data-bs-autohide=\"false\" >\n" + //data-bs-delay=\"6000\"
                 "                        <div class=\"toast-header\">\n" +
-                "                            <img id=\"${toastid}_icon_info\" src=\"${infoUrl}\" class=\"rounded mr-2\" />\n" +
-                "                            <img id=\"${toastid}_icon_error\" src=\"${erroUrl}\" class=\"rounded mr-2\" />\n" +
-                "                            <strong id=\"${toastid}_info_title\" class=\"mr-auto\">${infotitle}</strong>\n" +
-                "                            <strong id=\"${toastid}_erro_title\" class=\"mr-auto\">${errotitle}</strong>\n" +
+                "                            <img id=\"${toastid}_icon_info\" src=\"${infoUrl}\" class=\"rounded me-2\" />\n" +
+                "                            <img id=\"${toastid}_icon_error\" src=\"${erroUrl}\" class=\"rounded me-2\" />\n" +
+                "                            <strong id=\"${toastid}_info_title\" class=\"me-auto\">${infotitle}</strong>\n" +
+                "                            <strong id=\"${toastid}_erro_title\" class=\"me-auto\">${errotitle}</strong>\n" +
                 "                            <small></small>\n" +
-                "                            <button type=\"button\" class=\"ml-2 mb-1 close\" data-dismiss=\"toast\" aria-label=\"Close\">\n" +
-                "                                <span aria-hidden=\"true\">&times;</span>\n" +
+                "                            <button type=\"button\" class=\"btn-close ms-2 mb-1\" data-bs-dismiss=\"toast\" aria-label=\"Close\">\n" +
                 "                            </button>\n" +
                 "                        </div>\n" +
                 "                        <div class=\"toast-body\">\n" +

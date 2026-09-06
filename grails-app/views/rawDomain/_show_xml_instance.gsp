@@ -9,15 +9,14 @@
                 <h5 class="modal-title" id="staticBackdropLabel">
                     <g:message code="rawDomain.helpers.show.xml.instance.title.label" />
                 </h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
                 </button>
             </div>
             <div class="modal-body">
                 <pre id="xmlContent" style="white-space: pre-wrap; word-break: break-word;"><b>${xmlInstance}</b></pre>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal"><g:message code="rawDomain.helpers.close.label" /></button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><g:message code="rawDomain.helpers.close.label" /></button>
             </div>
 
         </div>

@@ -44,7 +44,7 @@ class UserController {
         def fileName = file.originalFilename
         def newFile = File.createTempFile("userslist-web-${GeneralUtil.generateUUID()}", "xlsx") //SystemPath.externalDocsPath + File.separator + fileName
 
-        file.transferTo(new File(newFile))
+        file.transferTo(newFile)
 
         //read xls file
         //validate lists first

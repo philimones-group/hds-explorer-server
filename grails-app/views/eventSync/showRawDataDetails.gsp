@@ -22,6 +22,7 @@
 
 		<div id="show-logReport" class="content scaffold-show" role="main">
 			<h1><g:message code="logreport.show.raw.data.label" args="[reportName]" /></h1>
+			<br>
 			<g:if test="${flash.message}">
 				<div class="message" role="status">${flash.message}</div>
 			</g:if>
@@ -29,8 +30,8 @@
 
 			<div class="whitebox_panel">
 				<fieldset class="form-group">
-					<div class="fieldcontain required">
-						<label for="rawDomain">
+					<div class="mb-3 required">
+						<label for="rawDomain" class="form-label" >
 							<g:message code="logreport.show.raw.entity.label"/><span class="required-indicator">*</span>
 						</label>
 

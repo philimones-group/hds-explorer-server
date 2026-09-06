@@ -5,15 +5,14 @@
 
             <div class="modal-header">
                 <h5 class="modal-title" id="staticBackdropLabel">${region_hrelationships_title}</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
                 </button>
             </div>
             <div class="modal-body">
                 <g:render template="region_hrelationships"/>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal"><g:message code="rawDomain.helpers.close.label" /></button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><g:message code="rawDomain.helpers.close.label" /></button>
             </div>
 
         </div>

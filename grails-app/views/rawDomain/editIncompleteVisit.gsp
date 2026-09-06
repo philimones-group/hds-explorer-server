@@ -110,7 +110,7 @@
                         <g:message code="rawDomain.helpers.show.xml.instance.property.label" />
                     </span>
                     <span class="property-valuex" aria-labelledby="extensionForm-label">
-                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#show_xml_instance">
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#show_xml_instance">
                             <g:message code="rawDomain.helpers.show.xml.instance.label" />
                         </button>
                     </span>
@@ -136,7 +136,7 @@
                 <g:if test="${dependencyResult.hasDependencyError==true}">
                     <g:hiddenField name="dependencyEventId" value="${dependencyResult.dependencyEventId}" />
 
-                    <button type="submit" class="btn btn-primary" data-toggle="button" >
+                    <button type="submit" class="btn btn-primary" data-bs-toggle="button" >
                         <g:message code="rawDomain.helpers.button.show.dependency.label" />
                     </button>
                 </g:if>

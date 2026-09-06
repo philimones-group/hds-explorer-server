@@ -69,7 +69,7 @@
                     <!-- <g:link class="edit" action="edit" resource="${this.member}"><g:message code="default.button.edit.label" default="Edit" /></g:link> -->
                     <input class="delete" type="submit" value="${message(code: 'default.button.delete.label', default: 'Delete')}" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');" />
 
-                    <input class="list" type="button" data-toggle="modal" data-target="#show_member_residencies_hrelationships" value="${message(code: 'rawDomain.helpers.button.member.residencies_and_headrelationships.label', default: 'Show Residents')}" />
+                    <input class="list" type="button" data-bs-toggle="modal" data-bs-target="#show_member_residencies_hrelationships" value="${message(code: 'rawDomain.helpers.button.member.residencies_and_headrelationships.label', default: 'Show Residents')}" />
 
                     <g:render template="show_member_residencies_hrelationships"/>
 

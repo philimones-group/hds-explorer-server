@@ -50,7 +50,7 @@ class TrackingListController {
         def fileName = file.originalFilename
         def newFile = File.createTempFile("tracklist-web-${GeneralUtil.generateUUID()}", "xlsx")//SystemPath.externalDocsPath + File.separator + fileName
 
-        file.transferTo(new File(newFile))
+        file.transferTo(newFile)
 
         //read xls file and read tracking lists
         //validate tracking lists first
@@ -169,7 +169,7 @@ class TrackingListController {
         def fileName = file.originalFilename
         def newFile = File.createTempFile("tracklist-web-${GeneralUtil.generateUUID()}", "xlsx") //SystemPath.externalDocsPath + File.separator + fileName
 
-        file.transferTo(new File(newFile))
+        file.transferTo(newFile)
 
 
         println "name=${fileName}"

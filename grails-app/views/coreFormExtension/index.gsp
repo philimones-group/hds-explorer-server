@@ -99,7 +99,7 @@
                         </td>
 
                         <td class="align-middle">
-                            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#upload_${formInstance.extFormId}">
+                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#upload_${formInstance.extFormId}">
                                 <g:message code="coreFormExtension.uploadFormDefinition.button.label"/>
                             </button>
 
@@ -110,8 +110,7 @@
                                         <g:uploadForm controller="coreFormExtension" action="uploadFormDef" >
                                             <div class="modal-header">
                                                 <h5 class="modal-title" id="staticBackdropLabel"><g:message code="coreFormExtension.uploadFormDefinition.title.label" /></h5>
-                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                    <span aria-hidden="true">&times;</span>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" />
                                                 </button>
                                             </div>
                                             <div class="modal-body">
@@ -121,7 +120,7 @@
                                                 <br>
                                             </div>
                                             <div class="modal-footer">
-                                                <button type="button" class="btn btn-secondary" data-dismiss="modal"><g:message code="coreFormExtension.uploadFormDefinition.close.label" /></button>
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><g:message code="coreFormExtension.uploadFormDefinition.close.label" /></button>
                                                 <g:submitButton name="create" class="btn btn-primary" value="${message(code: 'coreFormExtension.uploadFormDefinition.save.label')}" />
                                             </div>
                                         </g:uploadForm>
@@ -141,7 +140,7 @@
                             <g:form controller="coreFormExtension" method="POST" >
                                 <g:hiddenField name="id" value="${formInstance.id}" />
                                 <g:if test="${formInstance?.extFormPath == null}" >
-                                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#div_no_formdef">
+                                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#div_no_formdef">
                                         <g:message code="coreFormExtension.mapping.button.label"/>
                                     </button>
                                 </g:if>
@@ -163,8 +162,7 @@
                     <div class="modal-content">
                         <div class="modal-header">
                             <h5 class="modal-title" id="staticBackdropLabel2"><g:message code="coreFormExtension.mapcolumns.title.label" /></h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
                             </button>
                         </div>
                         <div class="modal-body">
@@ -172,7 +170,7 @@
                             <br>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal"><g:message code="coreFormExtension.uploadFormDefinition.close.label" /></button>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><g:message code="coreFormExtension.uploadFormDefinition.close.label" /></button>
                         </div>
                     </div>
                 </div>

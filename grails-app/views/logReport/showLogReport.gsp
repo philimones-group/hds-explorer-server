@@ -75,70 +75,66 @@
 					<span class="property-value" aria-labelledby="end-label"><bi:formatDate date="${logReportInstance?.end}" format="yyyy-MM-dd HH:mm:ss" /></span>
 				</li>
 				</g:if>
+			</ol>
+
+			<g:if test="${logReportInstance?.logFiles}">
+				<g:set var="keyGroup" value="${ (logReportInstance.keyTimestamp!=null) ? logReportInstance.keyTimestamp : "" }" />
+				<dt:table id="reportsTable">
+					<thead>
+					<tr>
+						<g:sortableColumn property="fileName" title="${message(code: 'logReportFile.fileName.label', default: 'File Name')}" />
+
+						<g:sortableColumn property="processedCount" title="${message(code: 'logReportFile.processedCount.label', default: 'Processed Count')}" />
+
+						<g:sortableColumn property="errorsCount" title="${message(code: 'logReportFile.errorsCount.label', default: 'Errors Count')}" />
+
+						<g:sortableColumn property="syncDate" title="${message(code: 'logReportFile.creationDate.label', default: 'Creation Date')}" />
+
+						<g:sortableColumn property="start" title="${message(code: 'logReportFile.start.label', default: 'Process Started')}" />
+
+						<g:sortableColumn property="end" title="${message(code: 'logReportFile.end.label', default: 'Process Ended')}" />
+
+					</tr>
+					</thead>
+					<tbody>
+					<g:each in="${logFiles}" status="i" var="logFileInstance">
 
 
-				<g:if test="${logReportInstance?.logFiles}">
+						<g:if test="${logFileInstance.keyTimestamp != keyGroup}">
+							<tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
+								<td><b>Synched on: ${bi.formatDate(date: logFileInstance.start)}</b></td>
+								<td></td>
+								<td></td>
+								<td></td>
+								<td></td>
+								<td></td>
+							</tr>
+						</g:if>
 
-					<g:set var="keyGroup" value="${ (logReportInstance.keyTimestamp!=null) ? logReportInstance.keyTimestamp : "" }" />
 
-					<dt:table id="reportsTable">
-						<thead>
-						<tr>
-							<g:sortableColumn property="fileName" title="${message(code: 'logReportFile.fileName.label', default: 'File Name')}" />
+						<g:set var="keyGroup" value="${ logFileInstance.keyTimestamp }" />
 
-							<g:sortableColumn property="processedCount" title="${message(code: 'logReportFile.processedCount.label', default: 'Processed Count')}" />
+						<tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
 
-							<g:sortableColumn property="errorsCount" title="${message(code: 'logReportFile.errorsCount.label', default: 'Errors Count')}" />
+							<td><g:link action="downloadLogFile" id="${logFileInstance.id}">${fieldValue(bean: logFileInstance, field: "fileName")}</g:link></td>
 
-							<g:sortableColumn property="syncDate" title="${message(code: 'logReportFile.creationDate.label', default: 'Creation Date')}" />
+							<td>${fieldValue(bean: logFileInstance, field: "processedCount")}</td>
 
-							<g:sortableColumn property="start" title="${message(code: 'logReportFile.start.label', default: 'Process Started')}" />
+							<td>${fieldValue(bean: logFileInstance, field: "errorsCount")}</td>
 
-							<g:sortableColumn property="end" title="${message(code: 'logReportFile.end.label', default: 'Process Ended')}" />
+							<td><bi:formatDate date="${logFileInstance.creationDate}" format="yyyy-MM-dd HH:mm:ss" /></td>
+
+							<td><bi:formatDate date="${logFileInstance.start}" format="yyyy-MM-dd HH:mm:ss" /></td>
+
+							<td><bi:formatDate date="${logFileInstance.end}" format="yyyy-MM-dd HH:mm:ss" /></td>
 
 						</tr>
-						</thead>
-						<tbody>
-						<g:each in="${logFiles}" status="i" var="logFileInstance">
 
+					</g:each>
+					</tbody>
+				</dt:table>
+			</g:if>
 
-							<g:if test="${logFileInstance.keyTimestamp != keyGroup}">
-								<tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
-									<td><b>Synched on: ${bi.formatDate(date: logFileInstance.start)}</b></td>
-									<td></td>
-									<td></td>
-									<td></td>
-									<td></td>
-									<td></td>
-								</tr>
-							</g:if>
-
-
-							<g:set var="keyGroup" value="${ logFileInstance.keyTimestamp }" />
-
-							<tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
-
-								<td><g:link action="downloadLogFile" id="${logFileInstance.id}">${fieldValue(bean: logFileInstance, field: "fileName")}</g:link></td>
-
-								<td>${fieldValue(bean: logFileInstance, field: "processedCount")}</td>
-
-								<td>${fieldValue(bean: logFileInstance, field: "errorsCount")}</td>
-
-								<td><bi:formatDate date="${logFileInstance.creationDate}" format="yyyy-MM-dd HH:mm:ss" /></td>
-
-								<td><bi:formatDate date="${logFileInstance.start}" format="yyyy-MM-dd HH:mm:ss" /></td>
-
-								<td><bi:formatDate date="${logFileInstance.end}" format="yyyy-MM-dd HH:mm:ss" /></td>
-
-							</tr>
-
-						</g:each>
-						</tbody>
-					</dt:table>
-
-				</g:if>
-			
-			</ol>
 			<g:form url="[resource:logReportInstance, action:'delete']" method="DELETE">
 				<fieldset class="buttons">
 					<g:actionSubmit class="delete" action="delete" value="${message(code: 'default.button.delete.label', default: 'Delete')}" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');" />

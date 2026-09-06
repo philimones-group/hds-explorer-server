@@ -65,7 +65,7 @@
                     <!-- <g:link class="edit" action="edit" resource="${this.household}"><g:message code="default.button.edit.label" default="Edit" /></g:link> -->
                     <input class="delete" type="submit" value="${message(code: 'default.button.delete.label', default: 'Delete')}" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');" />
 
-                    <input class="list" type="button" data-toggle="modal" data-target="#show_household_residents" value="${message(code: 'rawDomain.helpers.button.household.residents.label', default: 'Show Residents')}" />
+                    <input class="list" type="button" data-bs-toggle="modal" data-bs-target="#show_household_residents" value="${message(code: 'rawDomain.helpers.button.household.residents.label', default: 'Show Residents')}" />
 
                     <g:render template="show_household_residents"/>
 
