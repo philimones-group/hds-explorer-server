@@ -103,7 +103,7 @@ class Household extends CollectableEntity {
         id column: "id", generator: 'uuid'
 
         code column: 'code'
-        region column: 'region'
+        region column: 'region', index: 'idx_hh_region'
 
         type column: 'type', enumType: 'identity', index: 'idx_hh_type', defaultValue: "'REGULAR'"
         institutionType column: 'institution_type', enumType: 'identity', index: 'idx_inst_type'
@@ -118,15 +118,14 @@ class Household extends CollectableEntity {
 
         parentRegion column: 'region_id'
 
-        // Composite Index: idx_hh_hierarchies (hierarchy1, hierarchy2, hierarchy3) - Fast geographic scope filtering
-        hierarchy1 column: 'hierarchy1', index: 'idx_hh_hierarchies'
-        hierarchy2 column: 'hierarchy2', index: 'idx_hh_hierarchies'
-        hierarchy3 column: 'hierarchy3', index: 'idx_hh_hierarchies'
-        hierarchy4 column: 'hierarchy4'
-        hierarchy5 column: 'hierarchy5'
-        hierarchy6 column: 'hierarchy6'
-        hierarchy7 column: 'hierarchy7'
-        hierarchy8 column: 'hierarchy8'
+        hierarchy1 column: 'hierarchy1', index: 'idx_hh_h1'
+        hierarchy2 column: 'hierarchy2', index: 'idx_hh_h2'
+        hierarchy3 column: 'hierarchy3', index: 'idx_hh_h3'
+        hierarchy4 column: 'hierarchy4', index: 'idx_hh_h4'
+        hierarchy5 column: 'hierarchy5', index: 'idx_hh_h5'
+        hierarchy6 column: 'hierarchy6', index: 'idx_hh_h6'
+        hierarchy7 column: 'hierarchy7', index: 'idx_hh_h7'
+        hierarchy8 column: 'hierarchy8', index: 'idx_hh_h8'
 
         gpsNull column: 'gps_is_null'
         gpsAccuracy column: 'gps_accuracy'

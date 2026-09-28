@@ -46,4 +46,6 @@ databaseChangeLog = {
     include file: 'alter-pregnancy-child-n-visitchild-extensions-add-ordinal-collected_id.groovy'
     include file: 'add-id-autoincrement_to_household_proxy_ext.groovy'
     include file: 'add-indexes-for-faster-joins.groovy'
+    include file: 'add-data_export_report_table.groovy'
+    include file: 'alter-household-table-indexes.groovy'
 }
