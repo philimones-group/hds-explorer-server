@@ -21,6 +21,7 @@ import org.philimone.hds.explorer.server.model.main.Residency
 
 import javax.transaction.Transactional
 import java.time.LocalDate
+import java.time.Period
 
 @Transactional
 class DashboardService {
@@ -75,6 +76,9 @@ class DashboardService {
         return totals
     }
 
+    /*
+    * old slow method
+    */
     List<PyramidBar> retrievePopulationPyramid() {
 
         def groups = pyramidGroups.clone() as List<PyramidBar>
@@ -89,6 +93,37 @@ class DashboardService {
                     LocalDate.now(), ResidencyEndType.NOT_APPLICABLE, Gender.FEMALE, bar.minAge, bar.maxAge).first()
 
             bar.female *= -1
+        }
+
+        return groups
+    }
+
+    List<PyramidBar> retrievePopulationPyramid2() {
+        def groups = pyramidGroups.collect {
+            new PyramidBar(id: it.id, minAge: it.minAge, maxAge: it.maxAge, ageRange: it.ageRange, male: 0, female: 0)
+        }
+        def today = LocalDate.now()
+
+        // 1. Single database query
+        def residents = Residency.executeQuery(
+                "select r.member.gender, r.member.dob from Residency r where r.endType=?0 and r.member.dob is not null",
+                ResidencyEndType.NOT_APPLICABLE
+        )
+
+        // 2. Aggregate in memory
+        residents.each { row ->
+            Gender gender = row[0] as Gender
+            LocalDate dob = row[1] as LocalDate
+            int age = Period.between(dob, today).years
+
+            def bar = groups.find { age >= it.minAge && age <= it.maxAge }
+            if (bar) {
+                if (gender == Gender.MALE) {
+                    bar.male++
+                } else if (gender == Gender.FEMALE) {
+                    bar.female-- // keep negative for pyramid chart display
+                }
+            }
         }
 
         return groups
@@ -209,40 +244,41 @@ class DashboardService {
     //This Round
 
     List<PieStatus> retrieveEducationRates() {
-        def list = new ArrayList<PieStatus>()
+        def educationOpts = CoreFormColumnOptions.findAllByColumnName("education", [sort: "ordinal", order: "asc"])
 
-        def educationOpts = CoreFormColumnOptions.findAllByColumnName("education", [sort:"ordinal", order: "asc"])
+        // Total members excluding system UNK member
+        def totalMembers = Member.countByCodeNotEqual("UNK")
+        if (totalMembers <= 0) return []
 
-        def totalMembers = Member.count() - 1
+        // Single query grouping counts by education code
+        def countsMap = Member.executeQuery("select m.education, count(m.id) from Member m where m.code != 'UNK' group by m.education")
+                .collectEntries { [(it[0]): it[1]] }
 
-        educationOpts.each { opt ->
-            def count = Member.countByEducation(opt.optionValue)
-            def label = generalUtilitiesService.getMessageWeb(opt.optionLabelCode)
-            label = label==null ? opt.optionLabel : label
+        return educationOpts.collect { opt ->
+            long count = (countsMap[opt.optionValue] ?: 0) as long
+            def label = generalUtilitiesService.getMessageWeb(opt.optionLabelCode) ?: opt.optionLabel
+            double percentage = (count * 100.0) / totalMembers
 
-            def status = new PieStatus(id: opt.ordinal, name: label, total: Math.round(count*100D / totalMembers*1D))
-            list.add(status)
+            new PieStatus(id: opt.ordinal, name: label, total: Math.round(percentage))
         }
-
-        return list
     }
 
     List<PieStatus> retrieveReligionRates() {
-        def list = new ArrayList<PieStatus>()
+        def religionOpts = CoreFormColumnOptions.findAllByColumnName("religion", [sort: "ordinal", order: "asc"])
 
-        def religionOpts = CoreFormColumnOptions.findAllByColumnName("religion", [sort:"ordinal", order: "asc"])
+        def totalMembers = Member.countByCodeNotEqual("UNK")
+        if (totalMembers <= 0) return []
 
-        def totalMembers = Member.count() - 1
+        // Single query grouping counts by religion code
+        def countsMap = Member.executeQuery("select m.religion, count(m.id) from Member m where m.code != 'UNK' group by m.religion")
+                .collectEntries { [(it[0]): it[1]] }
 
-        religionOpts.each { opt ->
-            def count = Member.countByReligion(opt.optionValue)
-            def label = generalUtilitiesService.getMessageWeb(opt.optionLabelCode)
-            label = label==null ? opt.optionLabel : label
+        return religionOpts.collect { opt ->
+            long count = (countsMap[opt.optionValue] ?: 0) as long
+            def label = generalUtilitiesService.getMessageWeb(opt.optionLabelCode) ?: opt.optionLabel
+            double percentage = (count * 100.0) / totalMembers
 
-            def status = new PieStatus(id: opt.ordinal, name: label, total: Math.round(count*100D / totalMembers*1D))
-            list.add(status)
+            new PieStatus(id: opt.ordinal, name: label, total: Math.round(percentage))
         }
-
-        return list
     }
 }

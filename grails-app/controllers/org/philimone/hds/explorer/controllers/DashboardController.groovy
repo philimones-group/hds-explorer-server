@@ -15,7 +15,7 @@ class DashboardController {
     }
 
     def populationPyramid = {
-        def pyramidBars = dashboardService.retrievePopulationPyramid()
+        def pyramidBars = dashboardService.retrievePopulationPyramid2()
 
         //println "py : ${groovy.json.JsonOutput.toJson(pyramidBars)}"
 

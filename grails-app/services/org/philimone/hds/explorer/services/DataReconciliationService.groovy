@@ -34,6 +34,7 @@ class DataReconciliationService {
     def maritalRelationshipService
     def headRelationshipService
     def residencyService
+    def regionService
     def generalUtilitiesService
 
     def cleanUpGorm() {
@@ -112,6 +113,7 @@ class DataReconciliationService {
                 //get residencies to determine household status and update members
                 def residencies = Residency.countByHouseholdAndEndType(household, ResidencyEndType.NOT_APPLICABLE)
                 def head = HeadRelationship.findByHouseholdAndRelationshipTypeAndEndType(household, HeadRelationshipType.HEAD_OF_HOUSEHOLD, HeadRelationshipEndType.NOT_APPLICABLE, [sort: "startDate", order: "desc"])
+                def hierarchies = regionService.getHierarchies(household.parentRegion?.code)
 
                 //UPDATE HOUSEHOLD STATUS
                 household.status = residencies > 0 ? HouseholdStatus.HOUSE_OCCUPIED : !finalStatuses.contains(household.status) ? HouseholdStatus.HOUSE_VACANT : household.status
@@ -126,6 +128,16 @@ class DataReconciliationService {
                     household.headCode = null
                     household.headName = null
                 }
+
+                //UPDATE HIERARCHIES REGIONS
+                household.hierarchy1 = hierarchies?.hierarchy1
+                household.hierarchy2 = hierarchies?.hierarchy2
+                household.hierarchy3 = hierarchies?.hierarchy3
+                household.hierarchy4 = hierarchies?.hierarchy4
+                household.hierarchy5 = hierarchies?.hierarchy5
+                household.hierarchy6 = hierarchies?.hierarchy6
+                household.hierarchy7 = hierarchies?.hierarchy7
+                household.hierarchy8 = hierarchies?.hierarchy8
 
                 //household.save()
                 Household.executeUpdate("update Household h set h.status=?0, h.headMember=?1, h.headCode=?2, h.headName=?3 where h.id=?4", [household.status, household.headMember, household.headCode, household.headName, household.id])
