@@ -422,7 +422,7 @@ class DataDictionaryService {
         }
     }
 
-    private String extractEnumTypeName(String dataType) {
+    String extractEnumTypeName(String dataType) {
         if (!dataType) return null
         Matcher matcher = ENUM_PATTERN.matcher(dataType.trim())
         if (matcher.matches()) {
