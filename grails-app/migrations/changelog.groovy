@@ -48,4 +48,5 @@ databaseChangeLog = {
     include file: 'add-indexes-for-faster-joins.groovy'
     include file: 'add-data_export_report_table.groovy'
     include file: 'alter-household-table-indexes.groovy'
+    include file: 'add-selected_columns-to-data_export_report.groovy'
 }

@@ -420,8 +420,8 @@
                                     <i class="fa-solid fa-database"></i>
                                 </div>
                                 <div>
-                                    <div class="fw-bold text-dark fs-6">${activeReport.datasetLabel}</div>
-                                    <div class="text-muted fs-8">Active Export Job</div>
+                                    <div class="fw-bold text-dark fs-6" style="font-size: 0.95rem;">${activeReport.datasetLabel}</div>
+                                    <div class="text-muted fs-8" style="font-size: 0.9rem;">Active Export Job</div>
                                 </div>
                             </div>
                         </div>
@@ -454,9 +454,9 @@
 
                     <!-- EXPORT DETAILS CARD -->
                     <div class="card-custom p-3 mb-3">
-                        <h6 class="fw-bold text-dark fs-6 mb-3">Active Export Details</h6>
+                        <h6 class="fw-bold text-dark fs-6 mb-3" style="font-size: 0.95rem;">Active Export Details</h6>
 
-                        <div class="d-flex flex-column gap-2" style="font-size: 13px;">
+                        <div class="d-flex flex-column gap-2" style="font-size: 0.9rem;">
                             <div class="d-flex align-items-center gap-2 text-muted">
                                 <i class="fa-solid fa-calendar w-20"></i> <span>Started On:</span> <b class="text-dark ms-auto">${activeReport.createdDate?.toString()?.replace('T', ' ')?.substring(0, 16)}</b>
                             </div>
@@ -486,14 +486,14 @@
                     <!-- IDLE SYSTEM STATUS CARD -->
                     <div class="card-custom p-3 mb-3" style="background: #f0fdf4; border-color: #bbf7d0;">
                         <div class="d-flex align-items-center justify-content-between mb-2">
-                            <span class="fw-bold text-success fs-7">
+                            <span class="fw-bold text-success fs-7" style="font-size: 0.95rem;">
                                 <i class="fa-solid fa-circle-check me-1"></i> System Status
                             </span>
                             <span class="badge bg-success rounded-pill px-2 py-1">READY</span>
                         </div>
 
-                        <div class="fw-bold text-dark fs-6 mb-1">Export Engine Idle</div>
-                        <p class="text-muted fs-8 mb-3">
+                        <div class="fw-bold text-dark fs-6 mb-1" style="font-size: 0.9rem;">Export Engine Idle</div>
+                        <p class="text-muted fs-8 mb-3" style="font-size: 0.9rem;">
                             No active export jobs currently in queue. You can configure and run a new dataset export anytime.
                         </p>
 
@@ -504,11 +504,11 @@
 
                     <!-- REAL STORAGE & USAGE STATS -->
                     <div class="card-custom p-3 mb-3">
-                        <h6 class="fw-bold text-dark fs-7 mb-3">
+                        <h6 class="fw-bold text-dark fs-7 mb-3" style="font-size: 0.95rem;">
                             <i class="fa-solid fa-chart-pie me-2 text-primary"></i> Storage & Usage Stats
                         </h6>
 
-                        <div class="d-flex flex-column gap-2 fs-7">
+                        <div class="d-flex flex-column gap-2 fs-7" style="font-size: 0.9rem;">
                             <div class="d-flex justify-content-between py-1 border-bottom">
                                 <span class="text-muted">Total Exports Run:</span>
                                 <b class="text-dark">${totalExports ?: 0}</b>
@@ -535,10 +535,10 @@
 
                 <!-- DATA GOVERNANCE ALERT -->
                 <div class="card-custom p-3" style="background: #eff6ff; border-color: #bfdbfe;">
-                    <div class="d-flex align-items-start gap-2 text-primary-emphasis fs-8">
+                    <div class="d-flex align-items-start gap-2 text-primary-emphasis fs-8" style="font-size: 0.9rem;">
                         <i class="fa-solid fa-shield-halved fs-6 mt-1 text-primary"></i>
                         <div>
-                            <b>Data Governance Policy:</b> Generated dataset files are retained for 7 days before automatic cleanup. Ensure PII anonymization guidelines are followed.
+                            <b>Data Governance Policy:</b> Generated dataset files are securely retained for 7 days before automatic permanent deletion. Ensure PII anonymization guidelines are followed.
                         </div>
                     </div>
                 </div>
@@ -632,58 +632,66 @@
     function openDetailsById(jobId) {
         if (!jobId) return;
 
-        fetch("${createLink(action: 'getJobDetails')}?id=" + jobId)
-            .then(r => r.json())
+        fetch("${createLink(action: 'getJobDetails')}?id=" + jobId, {
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        })
+            .then(r => {
+                if (r.status === 401 || r.redirected) {
+                    window.location.href = "${createLink(controller: 'login', action: 'auth')}";
+                    return;
+                }
+                return r.json();
+            })
             .then(data => {
-                if (data.success && data.job) {
-                    var j = data.job;
+                if (!data || !data.success || !data.job) return;
+                var j = data.job;
 
-                    var nameEl = document.getElementById('detDatasetName');
-                    if (nameEl) nameEl.innerText = j.datasetName || '';
-                    var fmtEl = document.getElementById('detFormat');
-                    if (fmtEl) fmtEl.innerText = j.format || '';
-                    var usrEl = document.getElementById('detCreatedBy');
-                    if (usrEl) usrEl.innerText = j.createdBy || '';
-                    var dateEl = document.getElementById('detCreatedDate');
-                    if (dateEl) dateEl.innerText = j.createdDate || '';
-                    var durEl = document.getElementById('detDuration');
-                    if (durEl) durEl.innerText = (j.executionTimeMs || '0') + 's';
-                    var colsEl = document.getElementById('detColumns');
-                    if (colsEl) colsEl.innerText = (j.totalColumns || '0') + ' Columns';
-                    var regEl = document.getElementById('detRegion');
-                    if (regEl) regEl.innerText = j.regionCode || 'All Study Regions';
-                    var genEl = document.getElementById('detGender');
-                    if (genEl) genEl.innerText = j.gender || 'Both Genders';
+                var nameEl = document.getElementById('detDatasetName');
+                if (nameEl) nameEl.innerText = j.datasetName || '';
+                var fmtEl = document.getElementById('detFormat');
+                if (fmtEl) fmtEl.innerText = j.format || '';
+                var usrEl = document.getElementById('detCreatedBy');
+                if (usrEl) usrEl.innerText = j.createdBy || '';
+                var dateEl = document.getElementById('detCreatedDate');
+                if (dateEl) dateEl.innerText = j.createdDate || '';
+                var durEl = document.getElementById('detDuration');
+                if (durEl) durEl.innerText = (j.executionTimeMs || '0') + 's';
+                var colsEl = document.getElementById('detColumns');
+                if (colsEl) colsEl.innerText = (j.totalColumns || '0') + ' Columns';
+                var regEl = document.getElementById('detRegion');
+                if (regEl) regEl.innerText = j.regionCode || 'All Study Regions';
+                var genEl = document.getElementById('detGender');
+                if (genEl) genEl.innerText = j.gender || 'Both Genders';
 
-                    var badgeEl = document.getElementById('detStatusBadge');
-                    if (badgeEl) {
-                        badgeEl.innerText = j.status;
-                        badgeEl.className = 'badge px-2 py-1 ' + (j.status === 'COMPLETED' ? 'bg-success' : (j.status === 'EXECUTING' ? 'bg-primary' : 'bg-danger'));
-                    }
+                var badgeEl = document.getElementById('detStatusBadge');
+                if (badgeEl) {
+                    badgeEl.innerText = j.status;
+                    badgeEl.className = 'badge px-2 py-1 ' + (j.status === 'COMPLETED' ? 'bg-success' : (j.status === 'EXECUTING' ? 'bg-primary' : 'bg-danger'));
+                }
 
-                    var dlBox = document.getElementById('detDownloadBtnBox');
-                    if (dlBox) {
-                        if (j.status === 'COMPLETED' && j.downloadUrl) {
-                            dlBox.innerHTML = '<a href="' + j.downloadUrl + '" class="btn btn-primary btn-sm"><i class="fa-solid fa-download me-1"></i> Download File</a>';
-                        } else {
-                            dlBox.innerHTML = '';
-                        }
-                    }
-
-                    var el = document.getElementById('exportDetailsModal');
-                    if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
-                        var modal = bootstrap.Modal.getOrCreateInstance(el);
-                        modal.show();
-                    } else if (typeof $ !== 'undefined' && $(el).modal) {
-                        $(el).modal('show');
+                var dlBox = document.getElementById('detDownloadBtnBox');
+                if (dlBox) {
+                    if (j.status === 'COMPLETED' && j.downloadUrl) {
+                        dlBox.innerHTML = '<a href="' + j.downloadUrl + '" class="btn btn-primary btn-sm"><i class="fa-solid fa-download me-1"></i> Download File</a>';
                     } else {
-                        el.style.display = 'block';
-                        el.classList.add('show');
+                        dlBox.innerHTML = '';
                     }
+                }
+
+                var el = document.getElementById('exportDetailsModal');
+                if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+                    var modal = bootstrap.Modal.getOrCreateInstance(el);
+                    modal.show();
+                } else if (typeof $ !== 'undefined' && $(el).modal) {
+                    $(el).modal('show');
+                } else {
+                    el.style.display = 'block';
+                    el.classList.add('show');
                 }
             })
             .catch(e => console.log(e));
     }
+
     function filterHistoryTable() {
         var query = document.getElementById('searchInput2').value.toLowerCase();
         var status = document.getElementById('statusFilter2').value;
@@ -704,30 +712,36 @@
     }
 
     function pollActiveJobs() {
-        fetch("${createLink(action: 'getJobStatus')}")
-            .then(r => r.json())
+        fetch("${createLink(action: 'getJobStatus')}", {
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        })
+            .then(r => {
+                if (r.status === 401 || r.redirected) {
+                    return null;
+                }
+                return r.json();
+            })
             .then(data => {
-                if (data.success) {
-                    if (!data.activeJobs || data.activeJobs.length === 0) {
-                        var activeStepText = document.getElementById('activeStepText');
-                        if (activeStepText) {
-                            window.location.reload();
-                        }
-                    } else {
-                        data.activeJobs.forEach(job => {
-                            if (job.progressPercent >= 100 || job.status === 'COMPLETED') {
-                                window.location.reload();
-                            } else {
-                                var activeStepText = document.getElementById('activeStepText');
-                                var activePctText = document.getElementById('activePctText');
-                                var activeProgressBar = document.getElementById('activeProgressBar');
-
-                                if (activeStepText) activeStepText.innerText = job.currentStep;
-                                if (activePctText) activePctText.innerText = job.progressPercent + '%';
-                                if (activeProgressBar) activeProgressBar.style.width = job.progressPercent + '%';
-                            }
-                        });
+                if (!data || !data.success) return;
+                if (!data.activeJobs || data.activeJobs.length === 0) {
+                    var activeStepText = document.getElementById('activeStepText');
+                    if (activeStepText) {
+                        window.location.reload();
                     }
+                } else {
+                    data.activeJobs.forEach(job => {
+                        if (job.progressPercent >= 100 || job.status === 'COMPLETED') {
+                            window.location.reload();
+                        } else {
+                            var activeStepText = document.getElementById('activeStepText');
+                            var activePctText = document.getElementById('activePctText');
+                            var activeProgressBar = document.getElementById('activeProgressBar');
+
+                            if (activeStepText) activeStepText.innerText = job.currentStep;
+                            if (activePctText) activePctText.innerText = job.progressPercent + '%';
+                            if (activeProgressBar) activeProgressBar.style.width = job.progressPercent + '%';
+                        }
+                    });
                 }
             })
             .catch(e => console.log(e));

@@ -170,14 +170,10 @@ environments:
       logSql: false
   test:
     dataSource:
-
-      dbCreate: create-drop
-      username: hds_test
-      password:
-      driverClassName: org.h2.Driver
-      dialect: org.hibernate.dialect.H2Dialect
-      url: jdbc:h2:file:/tmp/hdsTestDb;MVCC=TRUE;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=FALSE
-      #url: jdbc:h2:mem:hdsTestDb;MVCC=TRUE;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=FALSE
+      dbCreate: none
+      url: ${DEV_DATABASE_URL}
+      username: ${DEV_DATABASE_USER}
+      password: ${DEV_DATABASE_PASS}
       logSql: false
   production:
     dataSource:

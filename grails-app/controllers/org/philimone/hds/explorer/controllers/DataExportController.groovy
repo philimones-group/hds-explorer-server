@@ -26,7 +26,7 @@ class DataExportController {
     def generalUtilitiesService
 
     def index() {
-        List<DataDictionaryService.TableMetadata> allTables = dataDictionaryService.getAllTables()
+        List<DataDictionaryService.TableMetadata> allTables = dataDictionaryService.getFinalTables()
         List<CoreFormExtension> customForms = CoreFormExtension.findAllByEnabled(true)
         List<DataExportItem> prejoinedViews = DataExportItem.getPrejoinedViews()
         List<Region> regions = Region.list([sort: 'code', order: 'asc'])
@@ -162,7 +162,7 @@ class DataExportController {
                 exportItem: exportItem,
                 datasetName: req.datasetName,
                 datasetLabel: req.datasetLabel,
-                format: req.format,
+                format: req.format.code,
                 status: DataExportStatus.EXECUTING,
                 progressPercent: 5,
                 currentStep: "Initiating export job...",
@@ -172,6 +172,7 @@ class DataExportController {
                 ageMax: req.ageMax,
                 regionCode: req.regionCode,
                 randomSamplePercent: req.randomSamplePercent,
+                selectedColumns: req.selectedColumns ? req.selectedColumns.join(",") : null,
                 includeDictionary: req.includeDictionary,
                 activeResidentsOnly: req.activeResidentsOnly,
                 nameAnonymizationMode: req.nameAnonymizationMode,
@@ -274,7 +275,7 @@ class DataExportController {
         ExportRequest req = new ExportRequest()
         req.datasetName = params.datasetName ?: "member"
         req.datasetType = params.datasetType == "PREJOINED_DSS" ? req.datasetName : params.datasetType
-        req.format = params.modalFormat ?: params.format ?: "CSV"
+        req.format = params.modalFormat ?: DataExportFormat.getFrom(params.format) ?: DataExportFormat.CSV
 
         //get datasetLabel
         if (req.datasetLabel?.empty) {

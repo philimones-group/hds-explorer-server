@@ -15,7 +15,7 @@ buildscript {
     }
 }
 
-version "1.2.0 build 442"
+version "1.2.1 build 448"
 group "org.philimone.hds.explorer"
 
 apply plugin:"eclipse"
@@ -120,11 +120,15 @@ dependencies {
     
     implementation 'org.liquibase:liquibase-core:4.19.0'
 
+    //apache poi to read excel/word files
+    implementation 'org.apache.poi:poi:5.5.1'
+    implementation 'org.apache.poi:poi-ooxml:5.5.1'
+
     //odk javarosa to read xforms instances
     implementation 'org.getodk:javarosa:4.2.0'
 
     //add hds-forms-lib the model plugin
-    implementation 'org.philimone.hds.forms.model:hds-forms-model-lib:1.0.3'
+    implementation 'org.philimone.hds.forms.model:hds-forms-model-lib:1.0.4'
 
     //load local libraries
     implementation fileTree(dir: 'lib', include: '*.jar')

@@ -823,10 +823,18 @@
         document.getElementById('datasetNameInput').value = name;
         var url = "${createLink(controller: 'dataExport', action: 'getColumns')}?datasetName=" + name;
 
-        fetch(url)
-            .then(r => r.json())
+        fetch(url, {
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        })
+            .then(r => {
+                if (r.status === 401 || r.redirected) {
+                    window.location.href = "${createLink(controller: 'login', action: 'auth')}";
+                    return;
+                }
+                return r.json();
+            })
             .then(data => {
-                if (data.success && data.columns) {
+                if (data && data.success && data.columns) {
                     availableCols = data.columns;
                     selectedCols = [...data.columns];
                     renderDualLists();
@@ -942,11 +950,18 @@
 
         fetch("${createLink(controller: 'dataExport', action: 'preview')}", {
             method: 'POST',
+            headers: { 'X-Requested-With': 'XMLHttpRequest' },
             body: formData
         })
-        .then(r => r.json())
+        .then(r => {
+            if (r.status === 401 || r.redirected) {
+                window.location.href = "${createLink(controller: 'login', action: 'auth')}";
+                return;
+            }
+            return r.json();
+        })
         .then(data => {
-            if (data.success && data.rows && data.rows.length > 0) {
+            if (data && data.success && data.rows && data.rows.length > 0) {
                 document.getElementById('metricRecords').innerText = data.rows.length;
                 var cols = Object.keys(data.rows[0]).map(k => ({ title: k, field: k }));
                 tabulatorGrid = new Tabulator("#previewTableGrid", {

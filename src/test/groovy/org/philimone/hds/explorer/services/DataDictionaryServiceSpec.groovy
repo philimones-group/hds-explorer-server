@@ -1,8 +1,10 @@
-package org.philimone.hds.explorer.server.model.main
+package org.philimone.hds.explorer.services
 
 import grails.testing.gorm.DataTest
 import grails.testing.services.ServiceUnitTest
-import org.philimone.hds.explorer.services.DataDictionaryService
+import org.philimone.hds.explorer.server.model.main.CoreFormExtension
+import org.philimone.hds.explorer.server.model.main.CoreFormExtensionModel
+import org.philimone.hds.explorer.server.model.main.Region
 import org.philimone.hds.forms.model.enums.SensitiveType
 import spock.lang.Specification
 

@@ -8,7 +8,9 @@ import org.springframework.core.env.Environment
 import org.springframework.core.env.PropertiesPropertySource
 import org.springframework.core.io.FileSystemResource
 import org.springframework.core.io.Resource
+import org.springframework.scheduling.annotation.EnableScheduling
 
+@EnableScheduling
 class Application extends GrailsAutoConfiguration implements EnvironmentAware {
     static void main(String[] args) {
         GrailsApp.run(Application, args)

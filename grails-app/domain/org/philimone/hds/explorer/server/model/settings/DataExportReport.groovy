@@ -31,6 +31,7 @@ class DataExportReport {
     Integer ageMax
     String regionCode
     Double randomSamplePercent
+    String selectedColumns
     Boolean includeDictionary = true
     Boolean activeResidentsOnly = true
 
@@ -74,6 +75,7 @@ class DataExportReport {
         ageMax nullable: true
         regionCode nullable: true
         randomSamplePercent nullable: true
+        selectedColumns nullable: true, maxSize: 4000
         includeDictionary nullable: false
         activeResidentsOnly nullable: false
 
@@ -119,6 +121,7 @@ class DataExportReport {
         ageMax column: 'age_max'
         regionCode column: 'region_code'
         randomSamplePercent column: 'random_sample_percent'
+        selectedColumns column: 'selected_columns', type: 'text'
         includeDictionary column: 'include_dictionary'
         activeResidentsOnly column: 'active_residents_only'
 

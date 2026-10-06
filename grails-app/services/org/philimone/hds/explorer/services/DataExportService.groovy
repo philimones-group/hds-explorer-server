@@ -2,6 +2,7 @@ package org.philimone.hds.explorer.services
 
 import grails.gorm.transactions.Transactional
 import org.apache.poi.ss.usermodel.*
+import org.apache.poi.xssf.streaming.SXSSFSheet
 import org.apache.poi.xssf.streaming.SXSSFWorkbook
 import org.hibernate.SessionFactory
 import org.hibernate.query.NativeQuery
@@ -92,16 +93,19 @@ class DataExportService {
                 report.currentStep = "Querying dataset records from database..."
                 report.save(flush: true, failOnError: true)
 
+                List<String> selectedColsList = report.selectedColumns ? report.selectedColumns.split(",").collect { it.trim() } : []
+
                 ExportRequest req = new ExportRequest(
                         datasetType: report.exportItem?.code ?: DataExportItem.REGULAR_TABLE.code,
                         datasetName: report.datasetName,
-                        format: report.format,
+                        format: DataExportFormat.getFrom(report.format),
                         referenceDate: report.referenceDate,
                         gender: report.gender,
                         ageMin: report.ageMin,
                         ageMax: report.ageMax,
                         regionCode: report.regionCode,
                         randomSamplePercent: report.randomSamplePercent,
+                        selectedColumns: selectedColsList,
                         includeDictionary: report.includeDictionary,
                         activeResidentsOnly: report.activeResidentsOnly,
                         nameAnonymizationMode: report.nameAnonymizationMode,
@@ -114,7 +118,6 @@ class DataExportService {
                 report.currentStep = "Processing anonymization & formatting data..."
                 report.save(flush: true, failOnError: true)
 
-                String fmt = req.format ? req.format.toUpperCase() : DataExportFormat.CSV.code
                 File exportedFile = generateExportFile(req)
 
                 report.progressPercent = PROGRESS_SAVING
@@ -130,7 +133,7 @@ class DataExportService {
                 report.executionTimeMs = duration
 
                 if (exportedFile && exportedFile.exists()) {
-                    if (fmt == DataExportFormat.CSV.code || fmt == DataExportFormat.EXCEL.code) {
+                    if (req.format == DataExportFormat.EXCEL || (req.format == DataExportFormat.CSV && !req.includeDictionary)) {
                         report.datasetFileName = exportedFile.name
                         report.datasetFileSize = exportedFile.length()
                     } else {
@@ -177,17 +180,16 @@ class DataExportService {
      * Generates export into temporary file first, then copies to attachments docs directory
      */
     File generateExportFile(ExportRequest request) {
-        String format = request.format ? request.format.toUpperCase() : DataExportFormat.CSV.code
-        String fileExt = getExportFileExtension(format)
-        String fileName = "${request.datasetName}_${format.toLowerCase()}_${System.currentTimeMillis()}${fileExt}"
+        String fileExt = getExportFileExtension(request)
+        String fileName = "hds_${request.datasetName?.toLowerCase()}_${request.format?.code?.toLowerCase()}_${System.currentTimeMillis()}${fileExt}"
 
         File tempFile = File.createTempFile(TEMP_FILE_PREFIX, TEMP_FILE_SUFFIX)
         try {
             tempFile.withOutputStream { tempOut ->
-                if (format == DataExportFormat.EXCEL.code) {
-                    exportToExcelStream(request, tempOut)
-                } else if (format == DataExportFormat.CSV.code) {
-                    exportToCsvStream(request, tempOut)
+                if (request.format == DataExportFormat.EXCEL) {
+                    exportToExcelStream(request, tempOut) //exports also data dictionary if it includes data dictionary
+                } else if (request.format == DataExportFormat.CSV && !request.includeDictionary) {
+                    exportToCsvStream(request, tempOut) //exports just the csv if not data dictionary included
                 } else {
                     exportToZipBundle(request, tempOut)
                 }
@@ -247,7 +249,7 @@ class DataExportService {
         // SXSSFWorkbook streams rows to disk in chunks to prevent OutOfMemoryError
         SXSSFWorkbook workbook = new SXSSFWorkbook(EXCEL_STREAMING_ROW_FLUSH_SIZE)
         try {
-            Sheet sheet = workbook.createSheet(request.datasetName ?: "Export")
+            Sheet sheet = workbook.createSheet(request.datasetName)
 
             String sql = buildExportSql(request)
             def session = sessionFactory.currentSession
@@ -263,7 +265,7 @@ class DataExportService {
                 Row headerRow = sheet.createRow(0)
                 CellStyle headerStyle = workbook.createCellStyle()
                 Font font = workbook.createFont()
-                font.setBoldweight(Font.BOLDWEIGHT_BOLD)
+                font.setBold(true)
                 headerStyle.setFont(font)
 
                 headers.eachWithIndex { h, idx ->
@@ -306,21 +308,24 @@ class DataExportService {
         ByteArrayOutputStream csvOut = new ByteArrayOutputStream()
         exportToCsvStream(request, csvOut)
         byte[] csvBytes = csvOut.toByteArray()
+        def baseName = "${request.datasetName?.toLowerCase()}"
 
-        zipOut.putNextEntry(new ZipEntry("${request.datasetName}_data.csv"))
+        zipOut.putNextEntry(new ZipEntry("${baseName}_data.csv"))
         zipOut.write(csvBytes)
         zipOut.closeEntry()
 
         // 2. Generate Syntax Import Script
-        String scriptExt = getScriptExtension(request.format)
-        String scriptContent = generateSyntaxScript(request)
+        if (request.format != DataExportFormat.CSV && request.format != DataExportFormat.EXCEL) { //SCRIPTS ARE ONLY GENERATED FOR STATA/SPSS/R/SAS
+            String scriptExt = getScriptExtension(request.format)
+            String scriptContent = generateSyntaxScript(request)
 
-        zipOut.putNextEntry(new ZipEntry("import_${request.datasetName}${scriptExt}"))
-        zipOut.write(scriptContent.getBytes("UTF-8"))
-        zipOut.closeEntry()
+            zipOut.putNextEntry(new ZipEntry("import_${baseName}${scriptExt}"))
+            zipOut.write(scriptContent.getBytes("UTF-8"))
+            zipOut.closeEntry()
+        }
 
         // 3. Generate Data Dictionary Excel
-        if (request.includeDictionary) {
+        if (request.includeDictionary && request.format != DataExportFormat.EXCEL) {
             ByteArrayOutputStream dictOut = new ByteArrayOutputStream()
             SXSSFWorkbook dictWorkbook = new SXSSFWorkbook(EXCEL_STREAMING_ROW_FLUSH_SIZE)
             appendDataDictionarySheet(dictWorkbook, request)
@@ -365,6 +370,24 @@ class DataExportService {
 
         String colName = reg.hierarchyLevel ? reg.hierarchyLevel.code : "hierarchy1"
         return " AND ${householdAlias}.${colName} = '${reg.code}'"
+    }
+
+    private String buildRegionCteSql(String tableName, String regionCode, String regionColumnName = "region_code") {
+        if (!regionCode || regionCode.trim().isEmpty()) {
+            return "SELECT t.* FROM `${tableName}` t WHERE 1=1"
+        }
+
+        String code = regionCode.trim()
+        return """
+            WITH RECURSIVE region_tree AS (
+                SELECT code FROM region WHERE code = '${code}'
+                UNION ALL
+                SELECT r.code FROM region r INNER JOIN region_tree rt ON r.parent_region_code = rt.code
+            )
+            SELECT t.* 
+            FROM `${tableName}` t
+            WHERE 1=1 AND t.${regionColumnName} IN (SELECT code FROM region_tree)
+        """
     }
 
     private String buildRegularTableSql(ExportRequest request) {
@@ -415,29 +438,127 @@ class DataExportService {
                 sql.append(buildRegionFilterClause(request.regionCode, "h"))
             }
         }
-        else if (table == "residency" || table == "head_relationship" || table.startsWith("marital_relationship")) {
-            String memberCol = (table == "marital_relationship") ? "member_a_code" : (table == "marital_relationship_ext") ? "member_a" : "member_code"
-
+        // 1B. RESIDENCY Table
+        else if (table == "residency") {
             sql = new StringBuilder("""
                 SELECT t.*
-                FROM `${table}` t
-                JOIN member m ON m.code = t.${memberCol}
-                LEFT JOIN residency r ON r.member_id = m.id AND (r.end_type = 'NA' OR r.end_date IS NULL) AND (r.status IS NULL OR r.status <> 2)
-                LEFT JOIN household h ON h.id = r.household_id
+                FROM residency t
+                JOIN member m ON m.id = t.member_id
+                LEFT JOIN household h ON h.id = t.household_id
                 WHERE 1=1
             """)
 
             if (request.activeResidentsOnly) {
-                sql.append(" AND (r.end_type = 'NA' OR r.end_date IS NULL)")
+                sql.append(" AND (t.end_type = 'NA' OR t.end_date IS NULL)")
             }
             if (request.gender && request.gender != "ALL") {
                 sql.append(" AND m.gender = '${request.gender}'")
             }
             if (request.ageMin != null) {
-                sql.append(" AND TIMESTAMPDIFF(YEAR, m.dob, ${refDateStr}) >= ${request.ageMin}")
+                sql.append(" AND TIMESTAMPDIFF(YEAR, m.dob, t.start_date) >= ${request.ageMin}")
             }
             if (request.ageMax != null) {
-                sql.append(" AND TIMESTAMPDIFF(YEAR, m.dob, ${refDateStr}) <= ${request.ageMax}")
+                sql.append(" AND TIMESTAMPDIFF(YEAR, m.dob, t.start_date) <= ${request.ageMax}")
+            }
+            if (request.referenceDate) {
+                sql.append(" AND t.start_date <= ${refDateStr} AND (t.end_date IS NULL OR t.end_date >= ${refDateStr})")
+            }
+            if (request.regionCode) {
+                sql.append(buildRegionFilterClause(request.regionCode, "h"))
+            }
+        }
+        // 1C. HEAD_RELATIONSHIP Table
+        else if (table == "head_relationship") {
+            sql = new StringBuilder("""
+                SELECT t.*
+                FROM head_relationship t
+                JOIN member m ON m.id = t.member_id
+                LEFT JOIN household h ON h.id = t.household_id
+                WHERE 1=1
+            """)
+
+            if (request.activeResidentsOnly) {
+                sql.append(" AND (t.end_type = 'NA' OR t.end_date IS NULL)")
+            }
+            if (request.gender && request.gender != "ALL") {
+                sql.append(" AND m.gender = '${request.gender}'")
+            }
+            if (request.ageMin != null) {
+                sql.append(" AND TIMESTAMPDIFF(YEAR, m.dob, t.start_date) >= ${request.ageMin}")
+            }
+            if (request.ageMax != null) {
+                sql.append(" AND TIMESTAMPDIFF(YEAR, m.dob, t.start_date) <= ${request.ageMax}")
+            }
+            if (request.referenceDate) {
+                sql.append(" AND t.start_date <= ${refDateStr} AND (t.end_date IS NULL OR t.end_date >= ${refDateStr})")
+            }
+            if (request.regionCode) {
+                sql.append(buildRegionFilterClause(request.regionCode, "h"))
+            }
+        }
+        // 1D. MARITAL_RELATIONSHIP Table
+        else if (table == "marital_relationship") {
+            sql = new StringBuilder("""
+                SELECT t.*
+                FROM marital_relationship t
+                LEFT JOIN member mA ON mA.id = t.member_a_id
+                LEFT JOIN member mB ON mB.id = t.member_b_id
+                WHERE 1=1
+            """)
+
+            if (request.activeResidentsOnly) { //currently married
+                sql.append(" AND (t.end_status IS NULL OR t.end_status = 'NA' OR t.end_date IS NULL)")
+            }
+            if (request.gender && request.gender != "ALL") {
+                sql.append(" AND (mA.gender = '${request.gender}' OR mB.gender = '${request.gender}')")
+            }
+            if (request.ageMin != null) {
+                sql.append(" AND (TIMESTAMPDIFF(YEAR, mA.dob, t.start_date) >= ${request.ageMin} OR TIMESTAMPDIFF(YEAR, mB.dob, t.start_date) >= ${request.ageMin})")
+            }
+            if (request.ageMax != null) {
+                sql.append(" AND (TIMESTAMPDIFF(YEAR, mA.dob, t.start_date) <= ${request.ageMax} OR TIMESTAMPDIFF(YEAR, mB.dob, t.start_date) <= ${request.ageMax})")
+            }
+            if (request.referenceDate) {
+                sql.append(" AND t.start_date <= ${refDateStr} AND (t.end_date IS NULL OR t.end_date >= ${refDateStr})")
+            }
+            if (request.regionCode) {
+                Region reg = Region.findByCode(request.regionCode.trim())
+                if (reg) {
+                    String colName = reg.hierarchyLevel ? reg.hierarchyLevel.code : "hierarchy1"
+                    sql.append(""" AND EXISTS (
+                        SELECT 1 FROM residency r 
+                        JOIN household h ON h.id = r.household_id 
+                        WHERE (r.member_id = mA.id OR r.member_id = mB.id) 
+                          AND r.start_date = (SELECT MAX(r2.start_date) FROM residency r2 WHERE r2.member_id = r.member_id AND (r2.status IS NULL OR r2.status <> 2))
+                          AND (r.status IS NULL OR r.status <> 2)
+                          AND h.${colName} = '${reg.code}'
+                    )""")
+                }
+            }
+        }
+        // 1E. MARITAL_RELATIONSHIP_EXT Form
+        else if (table == "marital_relationship_ext") {
+            sql = new StringBuilder("""
+                SELECT t.*
+                FROM marital_relationship_ext t
+                LEFT JOIN member mA ON mA.code = t.member_a
+                LEFT JOIN member mB ON mB.code = t.member_b
+                LEFT JOIN visit v ON v.code = t.visit_code
+                LEFT JOIN household h ON h.code = v.household_code
+                WHERE 1=1
+            """)
+
+            if (request.gender && request.gender != "ALL") {
+                sql.append(" AND (mA.gender = '${request.gender}' OR mB.gender = '${request.gender}')")
+            }
+            if (request.ageMin != null) {
+                sql.append(" AND (TIMESTAMPDIFF(YEAR, mA.dob, v.visit_date) >= ${request.ageMin} OR TIMESTAMPDIFF(YEAR, mB.dob, v.visit_date) >= ${request.ageMin})")
+            }
+            if (request.ageMax != null) {
+                sql.append(" AND (TIMESTAMPDIFF(YEAR, mA.dob, v.visit_date) <= ${request.ageMax} OR TIMESTAMPDIFF(YEAR, mB.dob, v.visit_date) <= ${request.ageMax})")
+            }
+            if (request.referenceDate) {
+                sql.append(" AND v.visit_date <= ${refDateStr}")
             }
             if (request.regionCode) {
                 sql.append(buildRegionFilterClause(request.regionCode, "h"))
@@ -484,13 +605,14 @@ class DataExportService {
             String dateCol = isExt ? "v.visit_date" : "t." + ((table.startsWith("death")) ? "death_date" : ((table.contains("migration")) ? "migration_date" : "event_date"))
             String memberJoin = isExt ? "JOIN member m ON m.code = t.member_code" : "JOIN member m ON m.id = t.member_id"
             String visitJoin = isExt ? "LEFT JOIN visit v ON v.code = t.visit_code" : "LEFT JOIN visit v ON v.id = t.visit_id"
+            String hhJoin = (table == "enumeration") ? "LEFT JOIN household h ON h.id = t.household_id" : "LEFT JOIN household h ON h.code = v.household_code"
 
             sql = new StringBuilder("""
                 SELECT t.*
                 FROM `${table}` t
                 ${memberJoin}
                 ${visitJoin}
-                LEFT JOIN household h ON h.code = v.household_code
+                ${hhJoin}
                 WHERE 1=1
             """)
 
@@ -511,12 +633,107 @@ class DataExportService {
             }
         }
         // 5. REPRODUCTIVE & MATERNAL SURVEILLANCE Group (Group 5: Pregnancy & Extensions)
+        else if (table == "pregnancy_child") {
+            sql = new StringBuilder("""
+                SELECT t.*
+                FROM `pregnancy_child` t
+                JOIN pregnancy_outcome po ON po.id = t.pregnancy_outcome_id
+                JOIN member mother ON mother.id = po.mother_id
+                LEFT JOIN visit v ON v.id = po.visit_id
+                LEFT JOIN household h ON h.code = v.household_code
+                WHERE 1=1
+            """)
+
+            if (request.ageMin != null) {
+                sql.append(" AND TIMESTAMPDIFF(YEAR, mother.dob, po.outcome_date) >= ${request.ageMin}")
+            }
+            if (request.ageMax != null) {
+                sql.append(" AND TIMESTAMPDIFF(YEAR, mother.dob, po.outcome_date) <= ${request.ageMax}")
+            }
+            if (request.referenceDate) {
+                sql.append(" AND po.outcome_date <= ${refDateStr}")
+            }
+            if (request.regionCode) {
+                sql.append(buildRegionFilterClause(request.regionCode, "h"))
+            }
+        }
+        else if (table == "pregnancy_child_ext") {
+            sql = new StringBuilder("""
+                SELECT t.*
+                FROM `pregnancy_child_ext` t
+                JOIN pregnancy_outcome_ext poe ON poe.id = t.pregnancy_outcome_ext_id
+                JOIN member mother ON mother.code = poe.mother_code
+                LEFT JOIN visit v ON v.code = poe.visit_code
+                LEFT JOIN household h ON h.code = v.household_code
+                WHERE 1=1
+            """)
+
+            if (request.ageMin != null) {
+                sql.append(" AND TIMESTAMPDIFF(YEAR, mother.dob, v.visit_date) >= ${request.ageMin}")
+            }
+            if (request.ageMax != null) {
+                sql.append(" AND TIMESTAMPDIFF(YEAR, mother.dob, v.visit_date) <= ${request.ageMax}")
+            }
+            if (request.referenceDate) {
+                sql.append(" AND v.visit_date <= ${refDateStr}")
+            }
+            if (request.regionCode) {
+                sql.append(buildRegionFilterClause(request.regionCode, "h"))
+            }
+        }
+        else if (table == "pregnancy_visit_child") {
+            sql = new StringBuilder("""
+                SELECT t.*
+                FROM `pregnancy_visit_child` t
+                JOIN pregnancy_visit pv ON pv.id = t.pregnancy_visit_id
+                JOIN member mother ON mother.id = pv.mother_id
+                LEFT JOIN visit v ON v.id = pv.visit_id
+                LEFT JOIN household h ON h.code = v.household_code
+                WHERE 1=1
+            """)
+
+            if (request.ageMin != null) {
+                sql.append(" AND TIMESTAMPDIFF(YEAR, mother.dob, pv.visit_date) >= ${request.ageMin}")
+            }
+            if (request.ageMax != null) {
+                sql.append(" AND TIMESTAMPDIFF(YEAR, mother.dob, pv.visit_date) <= ${request.ageMax}")
+            }
+            if (request.referenceDate) {
+                sql.append(" AND pv.visit_date <= ${refDateStr}")
+            }
+            if (request.regionCode) {
+                sql.append(buildRegionFilterClause(request.regionCode, "h"))
+            }
+        }
+        else if (table == "pregnancy_visit_child_ext") {
+            sql = new StringBuilder("""
+                SELECT t.*
+                FROM `pregnancy_visit_child_ext` t
+                JOIN pregnancy_visit_ext pve ON pve.id = t.pregnancy_visit_ext_id
+                JOIN member mother ON mother.code = pve.mother_code
+                LEFT JOIN visit v ON v.code = pve.visit_code
+                LEFT JOIN household h ON h.code = v.household_code
+                WHERE 1=1
+            """)
+
+            if (request.ageMin != null) {
+                sql.append(" AND TIMESTAMPDIFF(YEAR, mother.dob, v.visit_date) >= ${request.ageMin}")
+            }
+            if (request.ageMax != null) {
+                sql.append(" AND TIMESTAMPDIFF(YEAR, mother.dob, v.visit_date) <= ${request.ageMax}")
+            }
+            if (request.referenceDate) {
+                sql.append(" AND v.visit_date <= ${refDateStr}")
+            }
+            if (request.regionCode) {
+                sql.append(buildRegionFilterClause(request.regionCode, "h"))
+            }
+        }
         else if (table.startsWith("pregnancy_")) {
             boolean isExt = table.endsWith("_ext")
-            boolean nonDateTable = isExt || (table.startsWith("pregnancy_child") || table.startsWith("pregnancy_visit_child"))
             String motherJoin = isExt ? "JOIN member mother ON mother.code = t.mother_code" : "JOIN member mother ON mother.id = t.mother_id"
             String visitJoin = isExt ? "LEFT JOIN visit v ON v.code = t.visit_code" : "LEFT JOIN visit v ON v.id = t.visit_id"
-            String dateCol = nonDateTable ? "" : (table.startsWith("pregnancy_outcome")) ? "t.outcome_date" : ((table.startsWith("pregnancy_visit")) ? "t.visit_date" : "t.recorded_date")
+            String dateCol = isExt ? "v.visit_date" : ((table.startsWith("pregnancy_outcome")) ? "t.outcome_date" : ((table.startsWith("pregnancy_visit")) ? "t.visit_date" : "t.recorded_date"))
 
             sql = new StringBuilder("""
                 SELECT t.*
@@ -540,12 +757,31 @@ class DataExportService {
                 sql.append(buildRegionFilterClause(request.regionCode, "h"))
             }
         }
-        // 6. GENERIC FALLBACK FOR ALL OTHER TABLES (Region, Round, Users, etc.)
+        // 6. REGION & ADMINISTRATIVE MASTER Group
+        else if (table == "region" || table == "region_ext") {
+            String colName = (table == "region") ? "code" : "region_code"
+            if (request.regionCode) {
+                sql = new StringBuilder(buildRegionCteSql(table, request.regionCode, colName))
+            } else {
+                sql = new StringBuilder("SELECT t.* FROM `${table}` t WHERE 1=1")
+            }
+        }
+        else if (table == "region_head_relationship" || table == "change_region_head_ext") {
+            if (request.regionCode) {
+                sql = new StringBuilder(buildRegionCteSql(table, request.regionCode, "region_code"))
+            } else {
+                sql = new StringBuilder("SELECT t.* FROM `${table}` t WHERE 1=1")
+            }
+        }
+        else if (table == "round") {
+            sql = new StringBuilder("SELECT t.* FROM `round` t WHERE 1=1")
+            if (request.referenceDate) {
+                sql.append(" AND t.start_date <= ${refDateStr}")
+            }
+        }
+        // 7. GENERIC FALLBACK FOR ALL OTHER SYSTEM TABLES (_user, etc.)
         else {
             sql = new StringBuilder("SELECT t.* FROM `${table}` t WHERE 1=1")
-            if (request.regionCode) {
-                sql.append(buildRegionFilterClause(request.regionCode, "t"))
-            }
         }
 
         // Global Native SQL Random Sub-Sampling
@@ -560,6 +796,7 @@ class DataExportService {
         String refDateStr = request.referenceDate ? "'${request.referenceDate.toString()}'" : "CURRENT_DATE"
 
         StringBuilder filterWhere = new StringBuilder(" WHERE (r.status IS NULL OR r.status <> 2)")
+        String filterRand = ""
 
         if (request.referenceDate) {
             filterWhere.append(" AND r.start_date <= ${refDateStr} AND (r.end_date IS NULL OR r.end_date >= ${refDateStr})")
@@ -575,6 +812,9 @@ class DataExportService {
         }
         if (request.regionCode) {
             filterWhere.append(buildRegionFilterClause(request.regionCode, "h"))
+        }
+        if (request.randomSamplePercent != null && request.randomSamplePercent < 100.0) {
+            filterRand = " WHERE RAND() <= (${request.randomSamplePercent} / 100.0)"
         }
 
         String sql = """
@@ -625,12 +865,9 @@ class DataExportService {
                 LEFT JOIN region reg ON reg.code = h.region
                 ${filterWhere.toString()}
             ) eha
+            ${filterRand}
             ORDER BY eha.IndividualId, eha.EventDate ASC
         """
-
-        if (request.randomSamplePercent != null && request.randomSamplePercent < 100.0) {
-            sql += " AND RAND() <= (${request.randomSamplePercent} / 100.0)"
-        }
 
         return sql
     }
@@ -954,14 +1191,14 @@ class DataExportService {
     // --- Statistical Script Generators ---
 
     private String generateSyntaxScript(ExportRequest request) {
-        String fmt = request.format ? request.format.toUpperCase() : "STATA"
+        def fmt = request.format
 
         switch (fmt) {
-            case DataExportFormat.SPSS.code:
+            case DataExportFormat.SPSS:
                 return generateSpssScript(request)
-            case DataExportFormat.R.code:
+            case DataExportFormat.R:
                 return generateRScript(request)
-            case DataExportFormat.SAS.code:
+            case DataExportFormat.SAS:
                 return generateSasScript(request)
             default:
                 return generateStataDoScript(request)
@@ -1064,12 +1301,19 @@ class DataExportService {
 
     // --- Helper Utilities ---
 
+    private void trackAllColumnsForAutoResize(Sheet dictSheet) {
+        if (dictSheet instanceof SXSSFSheet) {
+            def sh = ((SXSSFSheet) dictSheet)
+            sh.trackAllColumnsForAutoSizing()
+        }
+    }
     private void appendDataDictionarySheet(Workbook workbook, ExportRequest request) {
         Sheet dictSheet = workbook.createSheet("Data Dictionary")
+        trackAllColumnsForAutoResize(dictSheet)
         Row headerRow = dictSheet.createRow(0)
         CellStyle headerStyle = workbook.createCellStyle()
         Font font = workbook.createFont()
-        font.setBoldweight(Font.BOLDWEIGHT_BOLD)
+        font.setBold(true)
         headerStyle.setFont(font)
 
         String[] headers = ["Table", "Column Name", "Data Type", "Sensitive Type", "Label", "Description", "Category Choices"]
@@ -1081,8 +1325,13 @@ class DataExportService {
 
         DataDictionaryService.TableMetadata meta = dataDictionaryService.getTableMetadata(request.datasetName)
         if (meta) {
+            int rowIndex = 1
             meta.columns.values().eachWithIndex { colMeta, idx ->
-                Row r = dictSheet.createRow(idx + 1)
+
+                //create only selected columns
+                if (!request.selectedColumns.contains(colMeta.columnName)) return
+
+                Row r = dictSheet.createRow(rowIndex++)
                 r.createCell(0).setCellValue(colMeta.tableName)
                 r.createCell(1).setCellValue(colMeta.columnName)
                 r.createCell(2).setCellValue(colMeta.dataType)
@@ -1098,6 +1347,11 @@ class DataExportService {
                     }
                 }
             }
+        }
+
+        // Auto-resize all columns after all rows are written
+        headers.eachWithIndex { h, i ->
+            dictSheet.autoSizeColumn(i)
         }
     }
 
@@ -1123,24 +1377,35 @@ class DataExportService {
     }
 
     private List<String> extractHeaders(Map<String, Object> firstRow, ExportRequest request) {
+        if (!firstRow) return []
+
         if (request.selectedColumns && !request.selectedColumns.isEmpty()) {
-            return request.selectedColumns
+            Map<String, String> rowKeysLowerMap = firstRow.keySet().collectEntries { [it.toLowerCase(), it] }
+            List<String> matchedHeaders = []
+            for (String userCol : request.selectedColumns) {
+                String matchedKey = rowKeysLowerMap.get(userCol.toLowerCase())
+                if (matchedKey) {
+                    matchedHeaders.add(matchedKey)
+                }
+            }
+            if (!matchedHeaders.isEmpty()) {
+                return matchedHeaders
+            }
         }
         return new ArrayList<>(firstRow.keySet())
     }
 
-    private String getScriptExtension(String format) {
-        String fmt = format ? format.toUpperCase() : ""
-        if (fmt == DataExportFormat.SPSS.code) return ".sps"
-        if (fmt == DataExportFormat.R.code) return ".R"
-        if (fmt == DataExportFormat.SAS.code) return ".sas"
+    private String getScriptExtension(DataExportFormat format) {
+        if (format == DataExportFormat.SPSS) return ".sps"
+        if (format == DataExportFormat.R) return ".R"
+        if (format == DataExportFormat.SAS) return ".sas"
         return ".do"
     }
 
-    private String getExportFileExtension(String format) {
-        String fmt = format ? format.toUpperCase() : ""
-        if (fmt == DataExportFormat.EXCEL.code) return ".xlsx"
-        if (fmt == DataExportFormat.CSV.code) return ".csv"
+    private String getExportFileExtension(ExportRequest request) {
+        DataExportFormat format = request.format
+        if (format == DataExportFormat.EXCEL) return ".xlsx"
+        if (format == DataExportFormat.CSV && !request.includeDictionary) return ".csv"
         return ".zip"
     }
 
@@ -1150,7 +1415,7 @@ class DataExportService {
         String datasetType = DataExportItem.REGULAR_TABLE.code
         String datasetName = "member"
         String datasetLabel = ""
-        String format = DataExportFormat.CSV.code
+        DataExportFormat format = DataExportFormat.CSV
         LocalDate referenceDate = LocalDate.now()
         String gender = "ALL"
         Integer ageMin

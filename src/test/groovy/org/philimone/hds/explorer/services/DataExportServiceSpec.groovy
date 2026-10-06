@@ -1,10 +1,12 @@
-package org.philimone.hds.explorer.server.model.main
+package org.philimone.hds.explorer.services
 
 import grails.testing.gorm.DataTest
 import grails.testing.services.ServiceUnitTest
+import org.philimone.hds.explorer.server.model.enums.DataExportFormat
+import org.philimone.hds.explorer.server.model.main.CoreFormExtension
+import org.philimone.hds.explorer.server.model.main.CoreFormExtensionModel
+import org.philimone.hds.explorer.server.model.main.Region
 import org.philimone.hds.explorer.server.model.settings.DataExportReport
-import org.philimone.hds.explorer.services.DataDictionaryService
-import org.philimone.hds.explorer.services.DataExportService
 import spock.lang.Specification
 
 class DataExportServiceSpec extends Specification implements ServiceUnitTest<DataExportService>, DataTest {
@@ -349,7 +351,7 @@ class DataExportServiceSpec extends Specification implements ServiceUnitTest<Dat
         mockDictService.getTableMetadata("member") >> meta
         mockDictService.getEnumTypeMetadata("Gender") >> enumType
 
-        DataExportService.ExportRequest req = new DataExportService.ExportRequest(datasetName: "member", format: "STATA")
+        DataExportService.ExportRequest req = new DataExportService.ExportRequest(datasetName: "member", format: DataExportFormat.STATA)
 
         when:
         String script = service.generateSyntaxScript(req)

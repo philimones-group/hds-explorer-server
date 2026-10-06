@@ -111,9 +111,9 @@ class DataDictionaryService {
         )
         personTimeMeta.addColumn(new ColumnMetadata(tableName: personTimeMeta.tableName, columnName: "member_code", dataType: "VARCHAR", sensitiveType: SensitiveType.NOT_APPLICABLE, label: "Member Code"))
         personTimeMeta.addColumn(new ColumnMetadata(tableName: personTimeMeta.tableName, columnName: "member_name", dataType: "VARCHAR", sensitiveType: SensitiveType.PERSON_NAME, label: "Member Full Name"))
-        personTimeMeta.addColumn(new ColumnMetadata(tableName: personTimeMeta.tableName, columnName: "gender", dataType: "VARCHAR", sensitiveType: SensitiveType.NOT_APPLICABLE, label: "Gender", enumTypeName: "Gender"))
-        personTimeMeta.addColumn(new ColumnMetadata(tableName: personTimeMeta.tableName, columnName: "dob", dataType: "DATE", sensitiveType: SensitiveType.DATE, label: "Date of Birth"))
-        personTimeMeta.addColumn(new ColumnMetadata(tableName: personTimeMeta.tableName, columnName: "age_at_reference_date", dataType: "INT", sensitiveType: SensitiveType.NOT_APPLICABLE, label: "Age at Baseline Reference Date"))
+        personTimeMeta.addColumn(new ColumnMetadata(tableName: personTimeMeta.tableName, columnName: "member_gender", dataType: "VARCHAR", sensitiveType: SensitiveType.NOT_APPLICABLE, label: "Gender", enumTypeName: "Gender"))
+        personTimeMeta.addColumn(new ColumnMetadata(tableName: personTimeMeta.tableName, columnName: "member_dob", dataType: "DATE", sensitiveType: SensitiveType.DATE, label: "Date of Birth"))
+        personTimeMeta.addColumn(new ColumnMetadata(tableName: personTimeMeta.tableName, columnName: "member_age_at_ref_date", dataType: "INT", sensitiveType: SensitiveType.NOT_APPLICABLE, label: "Age at Baseline Reference Date"))
         personTimeMeta.addColumn(new ColumnMetadata(tableName: personTimeMeta.tableName, columnName: "household_code", dataType: "VARCHAR", sensitiveType: SensitiveType.NOT_APPLICABLE, label: "Household Code"))
         personTimeMeta.addColumn(new ColumnMetadata(tableName: personTimeMeta.tableName, columnName: "household_name", dataType: "VARCHAR", sensitiveType: SensitiveType.PERSON_NAME, label: "Household Name"))
         personTimeMeta.addColumn(new ColumnMetadata(tableName: personTimeMeta.tableName, columnName: "start_type", dataType: "VARCHAR", sensitiveType: SensitiveType.NOT_APPLICABLE, label: "Residency Start Event Type", enumTypeName: "ResidencyStartType"))
@@ -189,7 +189,7 @@ class DataDictionaryService {
         indepthHhCompMeta.addColumn(new ColumnMetadata(tableName: indepthHhCompMeta.tableName, columnName: "household_institution_type", dataType: "VARCHAR", sensitiveType: SensitiveType.NOT_APPLICABLE, label: "Institution Type", enumTypeName: "HouseholdInstitutionType"))
         indepthHhCompMeta.addColumn(new ColumnMetadata(tableName: indepthHhCompMeta.tableName, columnName: "member_name", dataType: "VARCHAR", sensitiveType: SensitiveType.PERSON_NAME, label: "Member Full Name"))
         indepthHhCompMeta.addColumn(new ColumnMetadata(tableName: indepthHhCompMeta.tableName, columnName: "head_name", dataType: "VARCHAR", sensitiveType: SensitiveType.PERSON_NAME, label: "Head Full Name"))
-        indepthHhCompMeta.addColumn(new ColumnMetadata(tableName: indepthHhCompMeta.tableName, columnName: "age_at_reference_date", dataType: "INT", sensitiveType: SensitiveType.NOT_APPLICABLE, label: "Age at Baseline Reference Date"))
+        indepthHhCompMeta.addColumn(new ColumnMetadata(tableName: indepthHhCompMeta.tableName, columnName: "age_at_ref_date", dataType: "INT", sensitiveType: SensitiveType.NOT_APPLICABLE, label: "Age at Baseline Reference Date"))
         indepthHhCompMeta.addColumn(new ColumnMetadata(tableName: indepthHhCompMeta.tableName, columnName: "resident_since", dataType: "DATE", sensitiveType: SensitiveType.DATE, label: "Residency Start Date"))
         indepthHhCompMeta.addColumn(new ColumnMetadata(tableName: indepthHhCompMeta.tableName, columnName: "ProxyHeadName", dataType: "VARCHAR", sensitiveType: SensitiveType.PERSON_NAME, label: "Proxy Head Name"))
         indepthHhCompMeta.addColumn(new ColumnMetadata(tableName: indepthHhCompMeta.tableName, columnName: "ProxyHeadRole", dataType: "VARCHAR", sensitiveType: SensitiveType.NOT_APPLICABLE, label: "Proxy Head Role", enumTypeName: "ProxyHeadRole"))
@@ -440,17 +440,17 @@ class DataDictionaryService {
     private String getCellValue(Cell cell) {
         if (cell == null) return null
         switch (cell.getCellType()) {
-            case Cell.CELL_TYPE_STRING:
+            case CellType.STRING:
                 return cell.getStringCellValue()?.trim()
-            case Cell.CELL_TYPE_NUMERIC:
+            case CellType.NUMERIC:
                 if (DateUtil.isCellDateFormatted(cell)) {
                     return cell.getDateCellValue()?.toString()
                 }
                 double num = cell.getNumericCellValue()
                 return (num == (long) num) ? String.valueOf((long) num) : String.valueOf(num)
-            case Cell.CELL_TYPE_BOOLEAN:
+            case CellType.BOOLEAN:
                 return String.valueOf(cell.getBooleanCellValue())
-            case Cell.CELL_TYPE_FORMULA:
+            case CellType.FORMULA:
                 try {
                     return cell.getStringCellValue()?.trim()
                 } catch (Exception e) {
@@ -505,6 +505,10 @@ class DataDictionaryService {
 
     List<TableMetadata> getAllTables() {
         return new ArrayList<>(tablesMap.values())
+    }
+
+    List<TableMetadata> getFinalTables() {
+        return allTables.findAll { finalTableNames.containsKey(it.tableName) }
     }
 
     Map<String, TableMetadata> getTablesMap() {
