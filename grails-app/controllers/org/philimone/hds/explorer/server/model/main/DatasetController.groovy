@@ -64,7 +64,7 @@ class DatasetController {
 
         def dataset = new Dataset(params)
         dataset.name = datasetService.getDatasetName(fileName)
-        dataset.filename = newFile
+        dataset.filename = fileName
         dataset.tableColumnLabels = labels
 
         render view: "add", model: [dataSetInstance:dataset, dataSetColumns:columnsMap.keySet(), tableList:  tableList]
@@ -93,7 +93,7 @@ class DatasetController {
         def modules = moduleService.findAllByCodes(datasetInstance.modules)
 
         datasetInstance.name = datasetService.getDatasetName(fileName)
-        datasetInstance.filename = newFile
+        datasetInstance.filename = fileName
         datasetInstance.tableColumnLabels = labels
 
         render view: "edit", model: [datasetInstance:datasetInstance, modules: modules, dataSetColumns:columnsMap.keySet(), tableList:  tableList, dataSetInstanceList: Dataset.list(params)]
@@ -115,7 +115,7 @@ class DatasetController {
 
         //check if the dataset name is valid
         if (!datasetService.isValidDatasetName(dataSetInstance.name)){
-            def columnsMap = datasetService.getColumns(dataSetInstance.filename)
+            def columnsMap = datasetService.getColumns(dataSetInstance.file?.absolutePath)
             flash.message = message(code: "dataset.name.invalid.error.label")
             render view: "add", model: [dataSetInstance: dataSetInstance, dataSetColumns:columnsMap.keySet(), tableList:  tableList]
             return
@@ -133,7 +133,7 @@ class DatasetController {
         println "errors ${dataSetInstance.errors}"
 
         if (dataSetInstance.hasErrors()) {
-            def columnsMap = datasetService.getColumns(dataSetInstance.filename)
+            def columnsMap = datasetService.getColumns(dataSetInstance.file?.absolutePath)
             render view: "add", model: [dataSetInstance: dataSetInstance, dataSetColumns:columnsMap.keySet(), tableList:  tableList]
             return
         }
@@ -150,7 +150,7 @@ class DatasetController {
     def edit(Dataset datasetInstance) {
         def modules = moduleService.findAllByCodes(datasetInstance.modules)
 
-        def columnsMap = datasetService.getColumns(datasetInstance.filename)
+        def columnsMap = datasetService.getColumns(datasetInstance.file?.absolutePath)
 
         render view: "edit", model: [datasetInstance: datasetInstance, modules: modules, dataSetColumns:columnsMap.keySet(), tableList:  tableList, dataSetInstanceList: Dataset.list(params)]
     }
@@ -228,7 +228,7 @@ class DatasetController {
             return
         }
 
-        def file = new File(dataset.filename)
+        def file = dataset.file
 
         if (file != null && !file.exists() ) {
             render text: "Couldnt find the CSV file for the Dataset with id=${id}", status: BAD_REQUEST
@@ -274,7 +274,7 @@ class DatasetController {
                 }
 
                 //dataset.name = datasetService.getDatasetName(fileName)
-                dataset.filename = newFile
+                dataset.filename = fileName
                 dataset.tableColumnLabels = labels
                 def result = dataset.save(flush: true)
 

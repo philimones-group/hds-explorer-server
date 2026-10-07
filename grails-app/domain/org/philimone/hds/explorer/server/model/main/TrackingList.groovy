@@ -1,5 +1,6 @@
 package org.philimone.hds.explorer.server.model.main
 
+import org.philimone.hds.explorer.io.SystemPath
 import org.philimone.hds.explorer.server.model.audit.AuditableEntity
 import org.philimone.hds.explorer.server.model.types.StringCollectionType
 
@@ -16,16 +17,26 @@ class TrackingList extends AuditableEntity {
                       modules:String]
 
     String getFilenameOnly(){
-        new File(filename).name
+        if (filename == null) return null
+        return new File(filename).name
+    }
+
+    File getFile(){
+        if (filename == null) return null
+        File f = new File(filename)
+        if (f.isAbsolute() && f.exists()) {
+            return f
+        }
+        return new File(SystemPath.externalDocsPath, getFilenameOnly())
     }
 
     String getCompressedFilename(){
-        def f = new File(filename)
-        def fn = f.name
+        if (filename == null) return null
+        def fn = getFilenameOnly()
         int i = fn.lastIndexOf(".")
         def nfn = (i==-1 ? fn : fn.substring(0,i)) +".zip"
 
-        return f.parent + File.separator + nfn
+        return SystemPath.externalDocsPath + File.separator + nfn
     }
 
     static constraints = {

@@ -48,7 +48,7 @@ class CoreFormExtensionService {
         if (formExtension == null || formExtension.extFormPath == null) return
         //zip file
         ZipMaker zipMaker = new ZipMaker(formExtension.compressedExtFormPath)
-        zipMaker.addFile(formExtension.extFormPath)
+        zipMaker.addFile(formExtension.extFile.absolutePath)
         def b = zipMaker.makeZip()
 
         println "creating dataset zip file - ${formExtension.compressedExtFormPath} - success="+b

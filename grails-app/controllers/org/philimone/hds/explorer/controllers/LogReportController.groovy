@@ -21,14 +21,14 @@ class LogReportController {
 
         def logReportFile = LogReportFile.get(params.id)
 
-        File file = new File(logReportFile.fileName)
+        File file = logReportFile?.file
 
-        if (file.exists()) {
+        if (file != null && file.exists()) {
             response.setContentType("text/plain") // or or image/JPEG or text/xml or whatever type the file is
             response.setHeader("Content-disposition", "attachment;filename=\"${file.name}\"")
             response.outputStream << file.bytes
         } else {
-            render "${message(code: "default.file.not.found")} - ${logReportFile.fileName}"
+            render "${message(code: "default.file.not.found")} - ${logReportFile?.fileName}"
         }
 
     }

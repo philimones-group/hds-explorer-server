@@ -1,5 +1,6 @@
 package org.philimone.hds.explorer.server.model.main
 
+import org.philimone.hds.explorer.io.SystemPath
 import org.philimone.hds.explorer.server.model.enums.CoreForm
 
 
@@ -25,16 +26,29 @@ class CoreFormExtension {
         this.columnsMapping = str
     }
 
+    String getFilenameOnly() {
+        if (extFormPath == null) return null
+        return new File(extFormPath).name
+    }
+
+    File getExtFile() {
+        if (extFormPath == null) return null
+        File f = new File(extFormPath)
+        if (f.isAbsolute() && f.exists()) {
+            return f
+        }
+        return new File(SystemPath.externalDocsPath, getFilenameOnly())
+    }
+
     String getCompressedExtFormPath(){
 
         if (extFormPath == null) return null
 
-        def f = new File(extFormPath)
-        def fn = f.name
+        def fn = getFilenameOnly()
         int i = fn.lastIndexOf(".")
         def nfn = (i==-1 ? fn : fn.substring(0,i)) +".zip"
 
-        return f.parent + File.separator + nfn
+        return SystemPath.externalDocsPath + File.separator + nfn
     }
 
 

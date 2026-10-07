@@ -54,7 +54,7 @@ class SyncFilesController {
     def coreformext(String id){
         def form = CoreFormExtension.findByFormId(id)
 
-        def file = new File(form.extFormPath)
+        def file = form.extFile
         render file: file, fileName: file.name
     }
 
@@ -96,7 +96,7 @@ class SyncFilesController {
     def dataset(String id){
         def dataset = Dataset.get(id)
 
-        def file = new File(dataset.filename)
+        def file = dataset.file
         render file: file, fileName: file.name
     }
 

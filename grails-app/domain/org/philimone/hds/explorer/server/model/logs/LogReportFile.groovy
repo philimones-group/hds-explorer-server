@@ -1,5 +1,7 @@
 package org.philimone.hds.explorer.server.model.logs
 
+import org.philimone.hds.explorer.io.SystemPath
+
 import java.time.LocalDateTime
 
 /**
@@ -23,6 +25,15 @@ class LogReportFile {
             return new File(fileName).name //fileName.substring(fileName.lastIndexOf("/")+1)
 
         return ""
+    }
+
+    File getFile(){
+        if (fileName == null) return null
+        File f = new File(fileName)
+        if (f.isAbsolute() && f.exists()) {
+            return f
+        }
+        return new File(SystemPath.logsPath, getOnlyFileName())
     }
 
     String toString(){

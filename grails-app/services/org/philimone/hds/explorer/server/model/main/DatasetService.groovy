@@ -46,7 +46,7 @@ class DatasetService {
         def dataset = Dataset.findByName(name)
         if (dataset != null){
 
-            return getColumns(dataset.filename).keySet().toList()
+            return getColumns(dataset.file?.absolutePath).keySet().toList()
         }
 
         return null
@@ -60,7 +60,7 @@ class DatasetService {
 
         //zip file
         ZipMaker zipMaker = new ZipMaker(dataSet.compressedFilename)
-        zipMaker.addFile(dataSet.filename)
+        zipMaker.addFile(dataSet.file?.absolutePath)
         def b = zipMaker.makeZip()
 
         println "creating dataset zip file - ${dataSet.compressedFilename} - success="+b

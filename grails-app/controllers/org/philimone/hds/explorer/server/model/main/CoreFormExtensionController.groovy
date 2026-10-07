@@ -107,7 +107,7 @@ class CoreFormExtensionController {
     def downloadFormDef = {
         def coreFormExt = CoreFormExtension.get(params.id)
         //def filename = coreFormExt.extFormId + ".xlsx"
-        def file = new File(coreFormExt.extFormPath)
+        def file = coreFormExt.extFile
         render file: file, fileName: file.name, contentType:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     }
 
@@ -176,7 +176,7 @@ class CoreFormExtensionController {
         file.transferTo(new File(newFilePath))
 
         //coreFormExtension.extFormDefinition = xmlBytes
-        coreFormExtension.extFormPath = newFilePath
+        coreFormExtension.extFormPath = fileName
         coreFormExtension.save(flush:true)
 
         //compress the file
