@@ -31,6 +31,7 @@ import java.util.zip.ZipOutputStream
 class DataExportService {
 
     DataDictionaryService dataDictionaryService
+    GeneralUtilitiesService generalUtilitiesService
     SessionFactory sessionFactory
 
     // --- Configuration Constants ---
@@ -1188,6 +1189,11 @@ class DataExportService {
                 }
             }
 
+            // Clean unlocalized i18n keys from data values
+            if (value != null && (value.toString() == "member.unknown.label" || value.toString() == "member.unknown")) {
+                value = generalUtilitiesService.getMessage("member.unknown.label", "")
+            }
+
             processed.put(k, value)
         }
 
@@ -1217,29 +1223,112 @@ class DataExportService {
         }
     }
 
+    private String getDisplayLabel(DataDictionaryService.ColumnMetadata colMeta) {
+        if (!colMeta) return ""
+        if (colMeta.label && colMeta.label != colMeta.columnName) {
+            return colMeta.label
+        }
+        String name = colMeta.columnName ?: ""
+        return name.split("_").collect { it.capitalize() }.join(" ")
+    }
+
     private String generateStataDoScript(ExportRequest request) {
         String tableName = request.datasetName ?: "dataset"
         StringBuilder doScript = new StringBuilder()
         doScript.append("/* Stata Do-File for HDSS Data Export: ${tableName} */\n")
-        doScript.append("clear\n")
+        doScript.append("clear all\n")
+        doScript.append("set more off\n\n")
+        doScript.append("/* Import CSV Dataset */\n")
         doScript.append("import delimited using \"${tableName}_data.csv\", case(lower) clear\n\n")
 
         DataDictionaryService.TableMetadata meta = dataDictionaryService.getTableMetadata(tableName)
         if (meta) {
+            doScript.append("/* Variable Descriptions */\n")
             meta.columns.each { colName, colMeta ->
                 String stCol = sanitizeColumnName(colName)
-                if (colMeta.label) {
-                    doScript.append("label variable ${stCol} \"${escapeQuote(colMeta.label)}\"\n")
+                String label = getDisplayLabel(colMeta)
+                if (label) {
+                    doScript.append("capture label variable ${stCol} \"${escapeQuote(label)}\"\n")
                 }
+            }
+
+            doScript.append("\n/* Date & Timestamp Conversions */\n")
+            meta.columns.each { colName, colMeta ->
+                String stCol = sanitizeColumnName(colName)
+                String dataType = colMeta.dataType ? colMeta.dataType.toUpperCase() : ""
+                String label = getDisplayLabel(colMeta)
+
+                boolean isDate = dataType.contains("DATE") && !dataType.contains("TIME")
+                boolean isDateTime = dataType.contains("DATETIME") || dataType.contains("TIMESTAMP") || dataType.contains("TIME")
+
+                if (isDate) {
+                    doScript.append("capture confirm variable ${stCol}\n")
+                    doScript.append("if !_rc {\n")
+                    doScript.append("    capture gen ${stCol}_d = date(${stCol}, \"YMD\")\n")
+                    doScript.append("    capture format ${stCol}_d %td\n")
+                    doScript.append("    capture drop ${stCol}\n")
+                    doScript.append("    capture rename ${stCol}_d ${stCol}\n")
+                    if (label) {
+                        doScript.append("    capture label variable ${stCol} \"${escapeQuote(label)}\"\n")
+                    }
+                    doScript.append("}\n")
+                } else if (isDateTime) {
+                    doScript.append("capture confirm variable ${stCol}\n")
+                    doScript.append("if !_rc {\n")
+                    doScript.append("    capture gen ${stCol}_dt = clock(${stCol}, \"YMDhms\")\n")
+                    doScript.append("    capture format ${stCol}_dt %tc\n")
+                    doScript.append("    capture drop ${stCol}\n")
+                    doScript.append("    capture rename ${stCol}_dt ${stCol}\n")
+                    if (label) {
+                        doScript.append("    capture label variable ${stCol} \"${escapeQuote(label)}\"\n")
+                    }
+                    doScript.append("}\n")
+                }
+            }
+
+            doScript.append("\n/* Categorical Encoding & Value Labels */\n")
+            meta.columns.each { colName, colMeta ->
+                String stCol = sanitizeColumnName(colName)
+                String label = getDisplayLabel(colMeta)
                 if (colMeta.enumTypeName) {
                     DataDictionaryService.EnumTypeMetadata enumType = dataDictionaryService.getEnumTypeMetadata(colMeta.enumTypeName)
                     if (enumType && !enumType.options.isEmpty()) {
                         String lblName = "${stCol}_lbl"
-                        doScript.append("label define ${lblName}")
-                        enumType.options.each { opt ->
-                            doScript.append(" ${opt.code} \"${escapeQuote(opt.label)}\"")
+
+                        // Check if options have integer numeric codes or string codes
+                        boolean isNumericCodes = enumType.options.every { opt ->
+                            opt.code != null && opt.code.matches(/^-?\d+$/)
                         }
-                        doScript.append("\nlabel values ${stCol} ${lblName}\n")
+
+                        if (isNumericCodes) {
+                            doScript.append("capture confirm variable ${stCol}\n")
+                            doScript.append("if !_rc {\n")
+                            doScript.append("    label define ${lblName}")
+                            enumType.options.each { opt ->
+                                doScript.append(" ${opt.code} \"${escapeQuote(opt.label)}\"")
+                            }
+                            doScript.append(", replace\n")
+                            doScript.append("    label values ${stCol} ${lblName}\n")
+                            doScript.append("}\n")
+                        } else {
+                            // String categorical codes: encode string column to numeric before labeling
+                            def sortedOpts = enumType.options.sort { a, b -> (a.code ?: "").compareTo(b.code ?: "") }
+                            doScript.append("capture confirm variable ${stCol}\n")
+                            doScript.append("if !_rc {\n")
+                            doScript.append("    label define ${lblName}")
+                            sortedOpts.eachWithIndex { opt, idx ->
+                                doScript.append(" ${idx + 1} \"${escapeQuote(opt.label)}\"")
+                            }
+                            doScript.append(", replace\n")
+                            doScript.append("    encode ${stCol}, gen(${stCol}_encoded)\n")
+                            doScript.append("    label values ${stCol}_encoded ${lblName}\n")
+                            doScript.append("    drop ${stCol}\n")
+                            doScript.append("    rename ${stCol}_encoded ${stCol}\n")
+                            if (label) {
+                                doScript.append("    capture label variable ${stCol} \"${escapeQuote(label)}\"\n")
+                            }
+                            doScript.append("}\n")
+                        }
                     }
                 }
             }
@@ -1255,22 +1344,91 @@ class DataExportService {
         StringBuilder spss = new StringBuilder()
         spss.append("/* SPSS Syntax Script for HDSS Data Export: ${tableName} */\n")
         spss.append("GET DATA\n  /TYPE=TXT\n  /FILE=\"${tableName}_data.csv\"\n")
-        spss.append("  /DELCASE=LINE\n  /DELIMITERS=\",\"\n  /QUALIFIER='\"'\n  /ARRANGEMENT=DELIMITED\n")
-        spss.append("  /FIRSTCASE=2\n  /IMPORTCASE=ALL.\nEXECUTE.\n\n")
+        spss.append("  /ARRANGEMENT=DELIMITED\n  /DELCASE=LINE\n  /FIRSTCASE=2\n")
+        spss.append("  /DELIMITERS=\",\"\n  /QUALIFIER='\"'\n")
 
         DataDictionaryService.TableMetadata meta = dataDictionaryService.getTableMetadata(tableName)
+        if (meta && meta.columns && !meta.columns.isEmpty()) {
+            spss.append("  /VARIABLES=\n")
+            int colCount = meta.columns.size()
+            int i = 0
+            meta.columns.each { colName, colMeta ->
+                i++
+                String spCol = sanitizeColumnName(colName)
+                String dataType = colMeta.dataType ? colMeta.dataType.toUpperCase() : ""
+                String fmt = "A255"
+
+                if (dataType.contains("INT") || dataType.contains("LONG") || dataType.contains("SHORT")) {
+                    fmt = "F12.0"
+                } else if (dataType.contains("DOUBLE") || dataType.contains("FLOAT") || dataType.contains("DECIMAL") || dataType.contains("NUMERIC")) {
+                    fmt = "F12.4"
+                } else if (dataType.contains("BOOLEAN") || dataType.contains("BOOL")) {
+                    fmt = "A5"
+                } else if (dataType.contains("DATE") && !dataType.contains("TIME")) {
+                    fmt = "A10"
+                } else if (dataType.contains("DATETIME") || dataType.contains("TIMESTAMP") || dataType.contains("TIME")) {
+                    fmt = "A25"
+                }
+
+                String term = (i == colCount) ? "." : ""
+                spss.append("    ${spCol} ${fmt}${term}\n")
+            }
+        } else {
+            spss.append(".\n")
+        }
+        spss.append("EXECUTE.\n\n")
+
         if (meta) {
+            spss.append("/* Variable Descriptions */\n")
             spss.append("VARIABLE LABELS\n")
             meta.columns.each { colName, colMeta ->
                 String spCol = sanitizeColumnName(colName)
-                if (colMeta.label) {
-                    spss.append("  ${spCol} \"${escapeQuote(colMeta.label)}\"\n")
+                String label = getDisplayLabel(colMeta)
+                if (label) {
+                    spss.append("  ${spCol} \"${escapeQuote(label)}\"\n")
                 }
             }
             spss.append(".\nEXECUTE.\n\n")
+
+            // Value labels for categorical enum fields
+            spss.append("/* Value Labels for Categorical Variables */\n")
+            meta.columns.each { colName, colMeta ->
+                String spCol = sanitizeColumnName(colName)
+                if (colMeta.enumTypeName) {
+                    DataDictionaryService.EnumTypeMetadata enumType = dataDictionaryService.getEnumTypeMetadata(colMeta.enumTypeName)
+                    if (enumType && !enumType.options.isEmpty()) {
+                        boolean isNumericCodes = enumType.options.every { opt ->
+                            opt.code != null && opt.code.matches(/^-?\d+$/)
+                        }
+
+                        spss.append("VALUE LABELS ${spCol}\n")
+                        enumType.options.each { opt ->
+                            String valSpec = isNumericCodes ? "${opt.code}" : "'${escapeQuote(opt.code)}'"
+                            spss.append("  ${valSpec} \"${escapeQuote(opt.label)}\"\n")
+                        }
+                        spss.append(".\nEXECUTE.\n\n")
+                    }
+                }
+            }
+
+            // Date & Timestamp conversions using ALTER TYPE
+            spss.append("/* Date & Timestamp Conversions */\n")
+            meta.columns.each { colName, colMeta ->
+                String spCol = sanitizeColumnName(colName)
+                String dataType = colMeta.dataType ? colMeta.dataType.toUpperCase() : ""
+
+                boolean isDate = dataType.contains("DATE") && !dataType.contains("TIME")
+                boolean isDateTime = dataType.contains("DATETIME") || dataType.contains("TIMESTAMP") || dataType.contains("TIME")
+
+                if (isDate) {
+                    spss.append("ALTER TYPE ${spCol} (SDATE10).\n")
+                } else if (isDateTime) {
+                    spss.append("ALTER TYPE ${spCol} (DATETIME20).\n")
+                }
+            }
+            spss.append("EXECUTE.\n")
         }
 
-        spss.append("MISSING VALUES ALL ('').\nEXECUTE.\n")
         return spss.toString()
     }
 
@@ -1282,14 +1440,39 @@ class DataExportService {
 
         DataDictionaryService.TableMetadata meta = dataDictionaryService.getTableMetadata(tableName)
         if (meta) {
+            r.append("# Variable Labels / Descriptions\n")
+            meta.columns.each { colName, colMeta ->
+                String rCol = sanitizeColumnName(colName)
+                String label = getDisplayLabel(colMeta)
+                if (label) {
+                    r.append("if (\"${rCol}\" %in% colnames(df)) attr(df\$${rCol}, \"label\") <- \"${escapeQuote(label)}\"\n")
+                }
+            }
+
+            r.append("\n# Date & Timestamp Conversions\n")
+            meta.columns.each { colName, colMeta ->
+                String rCol = sanitizeColumnName(colName)
+                String dataType = colMeta.dataType ? colMeta.dataType.toUpperCase() : ""
+
+                boolean isDate = dataType.contains("DATE") && !dataType.contains("TIME")
+                boolean isDateTime = dataType.contains("DATETIME") || dataType.contains("TIMESTAMP") || dataType.contains("TIME")
+
+                if (isDate) {
+                    r.append("if (\"${rCol}\" %in% colnames(df)) df\$${rCol} <- as.Date(df\$${rCol}, format = \"%Y-%m-%d\")\n")
+                } else if (isDateTime) {
+                    r.append("if (\"${rCol}\" %in% colnames(df)) df\$${rCol} <- as.POSIXct(df\$${rCol}, format = \"%Y-%m-%d %H:%M:%S\")\n")
+                }
+            }
+
+            r.append("\n# Categorical Factors & Value Labels\n")
             meta.columns.each { colName, colMeta ->
                 String rCol = sanitizeColumnName(colName)
                 if (colMeta.enumTypeName) {
                     DataDictionaryService.EnumTypeMetadata enumType = dataDictionaryService.getEnumTypeMetadata(colMeta.enumTypeName)
                     if (enumType && !enumType.options.isEmpty()) {
-                        String levels = enumType.options.collect { "\"${it.code}\"" }.join(", ")
+                        String levels = enumType.options.collect { "\"${escapeQuote(it.code)}\"" }.join(", ")
                         String labels = enumType.options.collect { "\"${escapeQuote(it.label)}\"" }.join(", ")
-                        r.append("df\$${rCol} <- factor(df\$${rCol}, levels = c(${levels}), labels = c(${labels}))\n")
+                        r.append("if (\"${rCol}\" %in% colnames(df)) df\$${rCol} <- factor(df\$${rCol}, levels = c(${levels}), labels = c(${labels}))\n")
                     }
                 }
             }
@@ -1301,13 +1484,79 @@ class DataExportService {
 
     private String generateSasScript(ExportRequest request) {
         String tableName = request.datasetName ?: "dataset"
+        String sasTable = sanitizeColumnName(tableName)
+        if (sasTable.length() > 32) sasTable = sasTable.substring(0, 32)
+
         StringBuilder sas = new StringBuilder()
         sas.append("/* SAS Import Script for HDSS Data Export: ${tableName} */\n")
         sas.append("PROC IMPORT DATAFILE=\"${tableName}_data.csv\"\n")
-        sas.append("    OUT=WORK.${sanitizeColumnName(tableName)}\n")
+        sas.append("    OUT=WORK.${sasTable}\n")
         sas.append("    DBMS=CSV REPLACE;\n")
         sas.append("    GETNAMES=YES;\n")
         sas.append("RUN;\n\n")
+
+        DataDictionaryService.TableMetadata meta = dataDictionaryService.getTableMetadata(tableName)
+        if (meta) {
+            // 1. Categorical Value Formats via PROC FORMAT
+            StringBuilder procFormat = new StringBuilder()
+            Map<String, String> columnFormatMap = [:]
+
+            meta.columns.each { colName, colMeta ->
+                String sasCol = sanitizeColumnName(colName)
+                if (colMeta.enumTypeName) {
+                    DataDictionaryService.EnumTypeMetadata enumType = dataDictionaryService.getEnumTypeMetadata(colMeta.enumTypeName)
+                    if (enumType && !enumType.options.isEmpty()) {
+                        boolean isNumericCodes = enumType.options.every { opt ->
+                            opt.code != null && opt.code.matches(/^-?\d+$/)
+                        }
+
+                        String fmtName = sasCol.length() > 28 ? sasCol.substring(0, 28) + "_f" : "${sasCol}_f"
+                        String fullFmt = isNumericCodes ? "${fmtName}" : "\$${fmtName}"
+
+                        procFormat.append("    VALUE ${fullFmt}\n")
+                        enumType.options.each { opt ->
+                            String valSpec = isNumericCodes ? "${opt.code}" : "'${escapeQuote(opt.code)}'"
+                            procFormat.append("        ${valSpec} = \"${escapeQuote(opt.label)}\"\n")
+                        }
+                        procFormat.append("    ;\n")
+                        columnFormatMap.put(sasCol, "${fullFmt}.")
+                    }
+                }
+            }
+
+            if (procFormat.length() > 0) {
+                sas.append("/* Define Value Formats */\n")
+                sas.append("PROC FORMAT;\n")
+                sas.append(procFormat.toString())
+                sas.append("RUN;\n\n")
+            }
+
+            // 2. Apply Variable Labels & Value Formats via PROC DATASETS
+            sas.append("/* Apply Variable Labels and Value Formats */\n")
+            sas.append("PROC DATASETS LIB=WORK NOLIST;\n")
+            sas.append("    MODIFY ${sasTable};\n")
+
+            sas.append("    LABEL\n")
+            meta.columns.each { colName, colMeta ->
+                String sasCol = sanitizeColumnName(colName)
+                String label = getDisplayLabel(colMeta)
+                if (label) {
+                    sas.append("        ${sasCol} = \"${escapeQuote(label)}\"\n")
+                }
+            }
+            sas.append("    ;\n")
+
+            if (!columnFormatMap.isEmpty()) {
+                sas.append("    FORMAT\n")
+                columnFormatMap.each { col, fmt ->
+                    sas.append("        ${col} ${fmt}\n")
+                }
+                sas.append("    ;\n")
+            }
+
+            sas.append("QUIT;\n")
+        }
+
         return sas.toString()
     }
 
