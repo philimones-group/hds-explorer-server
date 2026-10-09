@@ -140,6 +140,19 @@ class DataExportService {
                         report.zipFileName = exportedFile.name
                         report.zipFileSize = exportedFile.length()
                     }
+
+                    if (req.exportedDatasetFilename) {
+                        report.datasetFileName = req.exportedDatasetFilename
+                        report.datasetFileSize = req.exportedDatasetFilesize
+                    }
+                    if (req.exportedCookbookFilename) {
+                        report.codebookFileName = req.exportedCookbookFilename
+                        report.codebookFileSize = req.exportedCookbookFilesize
+                    }
+                    if (req.exportedScriptFilename) {
+                        report.scriptFileName = req.exportedScriptFilename
+                        report.scriptFileSize = req.exportedScriptFilesize
+                    }
                 }
 
                 report.save(flush: true, failOnError: true)
@@ -160,20 +173,6 @@ class DataExportService {
                 }
             }
         }
-    }
-
-    /**
-     * Generates export into a temporary file, moves to attachments docs directory, and streams to output stream
-     */
-    File exportDataset(ExportRequest request, OutputStream outputStream) {
-        File finalExportFile = generateExportFile(request)
-        if (outputStream && finalExportFile && finalExportFile.exists()) {
-            finalExportFile.withInputStream { is ->
-                outputStream << is
-            }
-            outputStream.flush()
-        }
-        return finalExportFile
     }
 
     /**
@@ -309,19 +308,28 @@ class DataExportService {
         exportToCsvStream(request, csvOut)
         byte[] csvBytes = csvOut.toByteArray()
         def baseName = "${request.datasetName?.toLowerCase()}"
+        def dataFilename = "${baseName}_data.csv"
 
-        zipOut.putNextEntry(new ZipEntry("${baseName}_data.csv"))
+        zipOut.putNextEntry(new ZipEntry(dataFilename))
         zipOut.write(csvBytes)
         zipOut.closeEntry()
+
+        request.exportedDatasetFilename = dataFilename
+        request.exportedDatasetFilesize = csvBytes.length
 
         // 2. Generate Syntax Import Script
         if (request.format != DataExportFormat.CSV && request.format != DataExportFormat.EXCEL) { //SCRIPTS ARE ONLY GENERATED FOR STATA/SPSS/R/SAS
             String scriptExt = getScriptExtension(request.format)
             String scriptContent = generateSyntaxScript(request)
+            String scriptFilename = "import_${baseName}${scriptExt}"
 
-            zipOut.putNextEntry(new ZipEntry("import_${baseName}${scriptExt}"))
-            zipOut.write(scriptContent.getBytes("UTF-8"))
+            byte[] scriptBytes = scriptContent.getBytes("UTF-8")
+            zipOut.putNextEntry(new ZipEntry(scriptFilename))
+            zipOut.write(scriptBytes)
             zipOut.closeEntry()
+
+            request.exportedScriptFilename = scriptFilename
+            request.exportedScriptFilesize = scriptBytes.length
         }
 
         // 3. Generate Data Dictionary Excel
@@ -332,9 +340,13 @@ class DataExportService {
             dictWorkbook.write(dictOut)
             dictWorkbook.dispose()
 
+            byte[] dictBytes = dictOut.toByteArray()
             zipOut.putNextEntry(new ZipEntry(DICTIONARY_EXCEL_FILENAME))
-            zipOut.write(dictOut.toByteArray())
+            zipOut.write(dictBytes)
             zipOut.closeEntry()
+
+            request.exportedCookbookFilename = DICTIONARY_EXCEL_FILENAME
+            request.exportedCookbookFilesize = dictBytes.length
         }
 
         zipOut.finish()
@@ -1431,6 +1443,13 @@ class DataExportService {
         PhoneAnonymizationMode phoneAnonymizationMode = PhoneAnonymizationMode.MASK
         GpsAnonymizationMode gpsAnonymizationMode = GpsAnonymizationMode.ROUNDED
         DateAnonymizationMode dateAnonymizationMode = DateAnonymizationMode.EXACT
+
+        String exportedDatasetFilename = ""
+        Long exportedDatasetFilesize = 0L
+        String exportedCookbookFilename = ""
+        Long exportedCookbookFilesize = 0L
+        String exportedScriptFilename = ""
+        Long exportedScriptFilesize = 0L
 
         Integer maxRows
     }

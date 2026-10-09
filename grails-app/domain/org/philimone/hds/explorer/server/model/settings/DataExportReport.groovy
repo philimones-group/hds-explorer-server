@@ -43,10 +43,12 @@ class DataExportReport {
 
     // File Names & Sizes in SystemPath.externalDocsPath
     String datasetFileName
+    String scriptFileName
     String codebookFileName
     String zipFileName
 
     Long datasetFileSize = 0L
+    Long scriptFileSize = 0L
     Long codebookFileSize = 0L
     Long zipFileSize = 0L
 
@@ -57,6 +59,10 @@ class DataExportReport {
 
     User createdBy
     LocalDateTime createdDate = LocalDateTime.now()
+
+    Integer getTotalFiles() {
+        return (datasetFileName ? 1:0) + (scriptFileName ? 1:0) + (codebookFileName ? 1:0)
+    }
 
     static constraints = {
         id maxSize: 32
@@ -85,10 +91,12 @@ class DataExportReport {
         dateAnonymizationMode nullable: false
 
         datasetFileName nullable: true
+        scriptFileName nullable: true
         codebookFileName nullable: true
         zipFileName nullable: true
 
         datasetFileSize nullable: true
+        scriptFileSize nullable: true
         codebookFileSize nullable: true
         zipFileSize nullable: true
 
@@ -131,10 +139,12 @@ class DataExportReport {
         dateAnonymizationMode column: 'date_anonymization_mode', enumType: 'identity'
 
         datasetFileName column: 'dataset_file_name'
+        scriptFileName column: 'script_file_name'
         codebookFileName column: 'codebook_file_name'
         zipFileName column: 'zip_file_name'
 
         datasetFileSize column: 'dataset_file_size'
+        scriptFileSize column: 'script_file_size'
         codebookFileSize column: 'codebook_file_size'
         zipFileSize column: 'zip_file_size'
 

@@ -3,7 +3,7 @@
 <html>
 <head>
     <meta name="layout" content="main"/>
-    <title>Data Export History | HDS-Explorer Server</title>
+    <title><g:message code="dataExport.history.pageTitle" default="Data Export History | HDS-Explorer Server"/></title>
     <!-- FontAwesome 6 Pro / Free CDN -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
     <style>
@@ -175,19 +175,19 @@
                 <i class="fa-solid fa-clock-rotate-left"></i>
             </div>
             <div>
-                <h1 class="hero-title m-0 mb-1">Data Export History</h1>
+                <h1 class="hero-title m-0 mb-1"><g:message code="dataExport.history.heading" default="Data Export History"/></h1>
                 <p class="hero-subtitle mb-0">
-                    View and manage your past and ongoing data exports. Download generated files once processing is complete.
+                    <g:message code="dataExport.history.subtitle" default="View and manage your past and ongoing data exports. Download generated files once processing is complete."/>
                 </p>
             </div>
         </div>
 
         <div class="d-flex gap-2">
             <button type="button" class="btn btn-outline-secondary" style="padding-left: 40px; padding-right: 40px;" onclick="window.location.reload()">
-                <i class="bi bi-arrow-clockwise me-1"></i> Refresh
+                <i class="bi bi-arrow-clockwise me-1"></i> <g:message code="default.button.refresh" default="Refresh"/>
             </button>
             <g:link action="index" class="btn btn-outline-primary">
-                <i class="fa-solid fa-arrow-left me-1"></i> Back to Export Tool
+                <i class="fa-solid fa-arrow-left me-1"></i> <g:message code="dataExport.backToTool" default="Back to Export Tool"/>
             </g:link>
         </div>
     </div>
@@ -213,7 +213,7 @@
                                     <div class="text-muted" style="font-size: 13px">
                                         Started on ${activeReport.createdDate?.toString()?.replace('T', ' ')?.substring(0, 16)} • Requested by ${activeReport.createdBy ?: 'Paulo Filimone'}
                                     </div>
-                                    <span class="badge bg-primary rounded-pill mt-1"><i class="fa-solid fa-spinner spin-anim me-1"></i> Exporting...</span>
+                                    <span class="badge bg-primary rounded-pill mt-1"><i class="fa-solid fa-spinner spin-anim me-1"></i> <g:message code="dataExport.status.exporting" default="Exporting..."/></span>
                                 </div>
                             </div>
                         </div>
@@ -235,7 +235,7 @@
                         <!-- Right Area Button -->
                         <div class="col-md-3 text-end">
                             <button type="button" class="btn btn-outline-primary btn-sm" onclick="openDetailsById('${activeReport.id}')">
-                                <i class="fa-solid fa-eye me-1"></i> View Details
+                                <i class="fa-solid fa-eye me-1"></i> <g:message code="default.button.viewDetails" default="View Details"/>
                             </button>
                         </div>
                     </div>
@@ -247,23 +247,23 @@
 
                 <!-- Section Header Toolbar -->
                 <div class="py-3 px-5 border-bottom d-flex flex-wrap align-items-center justify-content-between gap-3" >
-                    <h2 class="m-0 fw-bold text-dark" style="font-size: 14px;">Previous Exports (${reports?.size() ?: 0})</h2>
+                    <h2 class="m-0 fw-bold text-dark" style="font-size: 14px;"><g:message code="dataExport.history.previousExports" default="Previous Exports"/> (${reports?.size() ?: 0})</h2>
 
                     <div class="d-flex flex-wrap align-items-center gap-2">
                         <!-- Search Input -->
                         <div class="input-group input-group-sm" style="width: 250px;">
                             <span class="input-group-text bg-white border-end-0"><i class="fa-solid fa-magnifying-glass text-muted"></i></span>
-                            <input type="text" id="searchInput2" class="form-control border-start-0" placeholder="Search exports..." onkeyup="filterHistoryTable()"/>
+                            <input type="text" id="searchInput2" class="form-control border-start-0" placeholder="${g.message(code: 'dataExport.history.searchPlaceholder', default: 'Search exports...')}" onkeyup="filterHistoryTable()"/>
                         </div>
 
                         <!-- Status Filter -->
                         <div class="input-group input-group-sm" style="width: 170px;">
                             <span class="input-group-text bg-white border-end-0"><i class="fa-solid fa-filter text-muted"></i></span>
                             <select id="statusFilter2" class="form-select form-select-sm border-start-0" onchange="filterHistoryTable()">
-                                <option value="ALL">All Statuses</option>
-                                <option value="EXECUTING">Exporting</option>
-                                <option value="COMPLETED">Completed</option>
-                                <option value="FAILED">Failed</option>
+                                <option value="ALL"><g:message code="dataExport.history.allStatuses" default="All Statuses"/></option>
+                                <option value="EXECUTING"><g:message code="dataExport.status.exporting" default="Exporting"/></option>
+                                <option value="COMPLETED"><g:message code="dataExport.status.completed" default="Completed"/></option>
+                                <option value="FAILED"><g:message code="dataExport.status.failed" default="Failed"/></option>
                             </select>
                         </div>
                     </div>
@@ -331,13 +331,13 @@
                                         <!-- Column 6: Status -->
                                         <td>
                                             <g:if test="${r.status == DataExportStatus.EXECUTING}">
-                                                <span class="badge bg-primary rounded-pill px-2 py-1"><i class="fa-solid fa-spinner spin-anim me-1"></i> Exporting...</span>
+                                                <span class="badge bg-primary rounded-pill px-2 py-1"><i class="fa-solid fa-spinner spin-anim me-1"></i> <g:message code="dataExport.status.exporting" default="Exporting..."/></span>
                                             </g:if>
                                             <g:elseif test="${r.status == DataExportStatus.COMPLETED}">
-                                                <span class="badge bg-success rounded-pill px-2 py-1"><i class="fa-solid fa-circle-check me-1"></i> Completed</span>
+                                                <span class="badge bg-success rounded-pill px-2 py-1"><i class="fa-solid fa-circle-check me-1"></i> <g:message code="dataExport.status.completed" default="Completed"/></span>
                                             </g:elseif>
                                             <g:else>
-                                                <span class="badge bg-danger rounded-pill px-2 py-1"><i class="fa-solid fa-circle-exclamation me-1"></i> Failed</span>
+                                                <span class="badge bg-danger rounded-pill px-2 py-1"><i class="fa-solid fa-circle-exclamation me-1"></i> <g:message code="dataExport.status.failed" default="Failed"/></span>
                                             </g:else>
                                         </td>
 
@@ -346,7 +346,7 @@
                                             <g:if test="${r.status == DataExportStatus.COMPLETED}">
                                                 <div class="fs-7 text-dark" style="white-space: nowrap;">
                                                     <i class="fa-solid fa-file-csv text-primary me-1"></i>
-                                                    ${r.zipFileName ? '(2 files)' : '(1 file)'}
+                                                    ${r.totalFiles>0 ? '(' + r.totalFiles + ' files)' : '(1 file)'}
                                                 </div>
                                             </g:if>
                                             <g:else>
@@ -360,13 +360,13 @@
                                                 <g:if test="${r.status == DataExportStatus.COMPLETED}">
                                                     <g:link action="downloadReportFile" id="${r.id}" class="btn btn-primary btn-sm px-3 d-inline-flex align-items-center gap-1" style="width: 110px;"  >
                                                         <i class="fa-solid fa-download me-1"></i>
-                                                        <span>Download</span>
+                                                        <span><g:message code="default.button.download" default="Download"/></span>
                                                     </g:link>
                                                 </g:if>
                                                 <g:else>
                                                     <button type="button" class="btn btn-secondary btn-sm px-3 d-inline-flex align-items-center gap-1" style="width: 110px;" onclick="openDetailsById('${r.id}')">
                                                         <i class="fa-solid fa-eye me-1"></i>
-                                                        <span>View details</span>
+                                                        <span><g:message code="default.button.viewDetails" default="View Details"/></span>
                                                     </button>
                                                 </g:else>
 
@@ -378,10 +378,10 @@
                                                     <ul class="dropdown-menu dropdown-menu-end shadow-sm">
                                                         <li>
                                                             <a class="dropdown-menu-item dropdown-item fs-7" href="#" onclick="openDetailsById('${r.id}'); return false;">
-                                                                <i class="fa-solid fa-eye me-2"></i> View Details
+                                                                <i class="fa-solid fa-eye me-2"></i> <g:message code="default.button.viewDetails" default="View Details"/>
                                                             </a>
                                                         </li>
-                                                        <li><g:link action="retryExport" id="${r.id}" class="dropdown-item fs-7"><i class="fa-solid fa-arrow-rotate-right me-2"></i> Re-run Export</g:link></li>
+                                                        <li><g:link action="retryExport" id="${r.id}" class="dropdown-item fs-7"><i class="fa-solid fa-arrow-rotate-right me-2"></i> <g:message code="dataExport.history.rerun" default="Re-run Export"/></g:link></li>
                                                     </ul>
                                                 </div>
                                             </div>
@@ -393,9 +393,9 @@
                                 <tr>
                                     <td colspan="8" class="text-center py-5">
                                         <i class="fa-solid fa-folder-open fs-1 text-muted mb-2"></i>
-                                        <h5 class="fw-bold text-dark">No Exports Yet</h5>
-                                        <p class="text-muted fs-7">Generate your first export using the Data Export Tool.</p>
-                                        <g:link action="index" class="btn btn-primary btn-sm mt-2"><i class="fa-solid fa-plus me-1"></i> Create Export</g:link>
+                                        <h5 class="fw-bold text-dark"><g:message code="dataExport.history.noExports" default="No Exports Yet"/></h5>
+                                        <p class="text-muted fs-7"><g:message code="dataExport.history.noExportsDesc" default="Generate your first export using the Data Export Tool."/></p>
+                                        <g:link action="index" class="btn btn-primary btn-sm mt-2"><i class="fa-solid fa-plus me-1"></i> <g:message code="dataExport.history.createExport" default="Create Export"/></g:link>
                                     </td>
                                 </tr>
                             </g:else>
@@ -431,7 +431,7 @@
                     <div class="card-custom p-3 mb-3" style="background: #eff6ff; border-color: #bfdbfe;">
                         <div class="d-flex align-items-center gap-2 mb-2 text-primary fw-bold" style="font-size: 13px;">
                             <i class="fa-solid fa-spinner spin-anim"></i>
-                            <span>Exporting...</span>
+                            <span><g:message code="dataExport.status.exporting" default="Exporting..."/></span>
                         </div>
 
                         <p class="text-muted mb-3" style="font-size: 13px;" id="activeStepDesc">
@@ -487,46 +487,46 @@
                     <div class="card-custom p-3 mb-3" style="background: #f0fdf4; border-color: #bbf7d0;">
                         <div class="d-flex align-items-center justify-content-between mb-2">
                             <span class="fw-bold text-success fs-7" style="font-size: 0.95rem;">
-                                <i class="fa-solid fa-circle-check me-1"></i> System Status
+                                <i class="fa-solid fa-circle-check me-1"></i> <g:message code="dataExport.systemStatus" default="System Status"/>
                             </span>
-                            <span class="badge bg-success rounded-pill px-2 py-1">READY</span>
+                            <span class="badge bg-success rounded-pill px-2 py-1"><g:message code="dataExport.status.ready" default="READY"/></span>
                         </div>
 
-                        <div class="fw-bold text-dark fs-6 mb-1" style="font-size: 0.9rem;">Export Engine Idle</div>
+                        <div class="fw-bold text-dark fs-6 mb-1" style="font-size: 0.9rem;"><g:message code="dataExport.engineIdle" default="Export Engine Idle"/></div>
                         <p class="text-muted fs-8 mb-3" style="font-size: 0.9rem;">
-                            No active export jobs currently in queue. You can configure and run a new dataset export anytime.
+                            <g:message code="dataExport.engineIdleDesc" default="No active export jobs currently in queue. You can configure and run a new dataset export anytime."/>
                         </p>
 
                         <g:link action="index" class="btn btn-success btn-sm w-100">
-                            <i class="fa-solid fa-plus me-1"></i> Start New Export
+                            <i class="fa-solid fa-plus me-1"></i> <g:message code="dataExport.startNewExport" default="Start New Export"/>
                         </g:link>
                     </div>
 
                     <!-- REAL STORAGE & USAGE STATS -->
                     <div class="card-custom p-3 mb-3">
                         <h6 class="fw-bold text-dark fs-7 mb-3" style="font-size: 0.95rem;">
-                            <i class="fa-solid fa-chart-pie me-2 text-primary"></i> Storage & Usage Stats
+                            <i class="fa-solid fa-chart-pie me-2 text-primary"></i> <g:message code="dataExport.stats.title" default="Storage & Usage Stats"/>
                         </h6>
 
                         <div class="d-flex flex-column gap-2 fs-7" style="font-size: 0.9rem;">
                             <div class="d-flex justify-content-between py-1 border-bottom">
-                                <span class="text-muted">Total Exports Run:</span>
+                                <span class="text-muted"><g:message code="dataExport.stats.totalExports" default="Total Exports Run:"/></span>
                                 <b class="text-dark">${totalExports ?: 0}</b>
                             </div>
                             <div class="d-flex justify-content-between py-1 border-bottom">
-                                <span class="text-muted">Files Generated Today:</span>
+                                <span class="text-muted"><g:message code="dataExport.stats.filesToday" default="Files Generated Today:"/></span>
                                 <b class="text-dark">${filesGeneratedToday ?: 0}</b>
                             </div>
                             <div class="d-flex justify-content-between py-1 border-bottom">
-                                <span class="text-muted">Records Exported Today:</span>
+                                <span class="text-muted"><g:message code="dataExport.stats.recordsToday" default="Records Exported Today:"/></span>
                                 <b class="text-dark">${recordsToday ? Number(recordsToday).toLocaleString() : 0}</b>
                             </div>
                             <div class="d-flex justify-content-between py-1 border-bottom">
-                                <span class="text-muted">Total Storage Used:</span>
+                                <span class="text-muted"><g:message code="dataExport.stats.storageUsed" default="Total Storage Used:"/></span>
                                 <b class="text-dark">${totalStorageBytes ? (totalStorageBytes / 1048576.0).round(1) : 0} MB</b>
                             </div>
                             <div class="d-flex justify-content-between py-1">
-                                <span class="text-muted">File Retention:</span>
+                                <span class="text-muted"><g:message code="dataExport.stats.retention" default="File Retention:"/></span>
                                 <b class="text-dark">7 Days (Auto-cleanup)</b>
                             </div>
                         </div>
@@ -538,7 +538,7 @@
                     <div class="d-flex align-items-start gap-2 text-primary-emphasis fs-8" style="font-size: 0.9rem;">
                         <i class="fa-solid fa-shield-halved fs-6 mt-1 text-primary"></i>
                         <div>
-                            <b>Data Governance Policy:</b> Generated dataset files are securely retained for 7 days before automatic permanent deletion. Ensure PII anonymization guidelines are followed.
+                            <b><g:message code="dataExport.governance.title" default="Data Governance Policy:"/></b> <g:message code="dataExport.governance.desc" default="Generated dataset files are securely retained for 7 days before automatic permanent deletion. Ensure PII anonymization guidelines are followed."/>
                         </div>
                     </div>
                 </div>
@@ -556,7 +556,7 @@
         <div class="modal-content border-0 shadow-lg rounded-3">
             <div class="modal-header rounded-top-3 py-3 modal-header-bevel">
                 <h5 class="modal-title fw-bold fs-6 m-0">
-                    <i class="fa-solid fa-circle-info text-info me-2"></i> Export Details
+                    <i class="fa-solid fa-circle-info text-info me-2"></i> <g:message code="dataExport.modal.detailsTitle" default="Export Details"/>
                 </h5>
                 <button type="button" class="btn-close btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
@@ -621,7 +621,7 @@
             </div>
 
             <div class="modal-footer bg-light rounded-bottom-3 py-2">
-                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal"><g:message code="default.button.close" default="Close"/></button>
                 <div id="detDownloadBtnBox"></div>
             </div>
         </div>

@@ -50,4 +50,5 @@ databaseChangeLog = {
     include file: 'alter-household-table-indexes.groovy'
     include file: 'add-selected_columns-to-data_export_report.groovy'
     include file: 'convert-absolute-paths-to-relative-filenames.groovy'
+    include file: 'add-script_filename_col-to-data_export_report.groovy'
 }

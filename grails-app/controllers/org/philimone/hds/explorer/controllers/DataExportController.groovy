@@ -115,7 +115,7 @@ class DataExportController {
                     ]
             ] as JSON)
         } else {
-            render([success: false, message: "Report ${reportId} not found"] as JSON)
+            render([success: false, message: message(code: 'dataExport.report.notFound', args: [reportId], default: "Report ${reportId} not found")] as JSON)
         }
     }
 
@@ -135,7 +135,7 @@ class DataExportController {
             }
             render([success: true, tableName: meta.tableName, columns: cols] as JSON)
         } else {
-            render([success: false, message: "Dataset ${datasetName} not found in dictionary"] as JSON)
+            render([success: false, message: message(code: 'dataExport.dataset.notFound', args: [datasetName], default: "Dataset ${datasetName} not found in dictionary")] as JSON)
         }
     }
 
@@ -204,7 +204,7 @@ class DataExportController {
             report.currentStep = "Cancelled by user"
             report.errorMessage = "Export job was cancelled by user."
             report.save(flush: true)
-            flash.message = "Export job cancelled."
+            flash.message = message(code: 'dataExport.job.cancelled', default: "Export job cancelled.")
         }
         redirect(action: 'history')
     }
@@ -225,7 +225,7 @@ class DataExportController {
                     dataExportService.processAsyncReport(id)
                 }
             }
-            flash.message = "Export job re-queued."
+            flash.message = message(code: 'dataExport.job.requeued', default: "Export job re-queued.")
         }
         redirect(action: 'history')
     }

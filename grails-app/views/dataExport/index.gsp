@@ -482,7 +482,7 @@
                 <!-- SECTION 1: DATASET SELECTION -->
                 <div class="enterprise-card">
                     <div class="enterprise-card-title">
-                        <span>Select Dataset Category</span>
+                        <span><g:message code="dataExport.step1.categoryTitle" default="Select Dataset Category"/></span>
                     </div>
 
                     <div class="category-card-grid">
@@ -557,16 +557,16 @@
                 <!-- SECTION 2: COLUMN SELECTION (DUAL-LIST SELECTOR) -->
                 <div class="enterprise-card">
                     <div class="enterprise-card-title">
-                        <span>Select Columns to Export</span>
-                        <span style="font-size: 0.85rem; font-weight: 500; color: #64748b;" id="selectedCountBadge">Selected Columns (0)</span>
+                        <span><g:message code="dataExport.step2.selectedColumns" default="Selected Columns"/></span>
+                        <span style="font-size: 0.85rem; font-weight: 500; color: #64748b;" id="selectedCountBadge"><g:message code="dataExport.step2.selectedColumns" default="Selected Columns"/> (0)</span>
                     </div>
 
                     <!-- Top Toolbar -->
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
                         <input type="text" id="columnSearchInput" class="form-control" style="max-width: 300px;" placeholder="🔍 Search Columns..." onkeyup="filterAvailableColumns(this.value)"/>
                         <div>
-                            <button type="button" class="btn btn-sm btn-outline-secondary" onclick="clearAllColumns()">Clear All</button>
-                            <button type="button" class="btn btn-sm btn-outline-primary" onclick="saveColumnSet()">Save Column Set</button>
+                            <button type="button" class="btn btn-sm btn-outline-secondary" onclick="clearAllColumns()"><g:message code="default.button.clearAll" default="Clear All"/></button>
+                            <button type="button" class="btn btn-sm btn-outline-primary" onclick="saveColumnSet()"><g:message code="dataExport.button.saveColumnSet" default="Save Column Set"/></button>
                         </div>
                     </div>
 
@@ -575,7 +575,7 @@
                         <!-- Left Panel: Available Columns -->
                         <div class="duallist-box">
                             <div class="duallist-header">
-                                <span>Available Columns</span>
+                                <span><g:message code="dataExport.step2.availableColumns" default="Available Columns"/></span>
                                 <span id="availCount">0</span>
                             </div>
                             <div class="duallist-list" id="availableColumnsList">
@@ -594,7 +594,7 @@
                         <!-- Right Panel: Selected Columns -->
                         <div class="duallist-box">
                             <div class="duallist-header">
-                                <span>Selected Columns</span>
+                                <span><g:message code="dataExport.step2.selectedColumns" default="Selected Columns"/></span>
                                 <span id="selectedCount">0</span>
                             </div>
                             <div class="duallist-list" id="selectedColumnsList">
@@ -607,12 +607,12 @@
                 <!-- SECTION 3: DATA PREVIEW -->
                 <div class="enterprise-card">
                     <div class="enterprise-card-title">
-                        <span>Data Preview (First 10 Records)</span>
-                        <button type="button" class="btn btn-sm btn-info" onclick="fetchPreview()">🔄 Refresh Preview</button>
+                        <span><g:message code="dataExport.step4.livePreview" default="Data Preview (First 10 Records)"/></span>
+                        <button type="button" class="btn btn-sm btn-info" onclick="fetchPreview()">🔄 <g:message code="dataExport.preview.refresh" default="Refresh Preview"/></button>
                     </div>
 
                     <div style="font-size: 0.85rem; color: #475569; margin-bottom: 10px; font-weight: 600;" id="previewMetrics">
-                        Records: <span id="metricRecords">0</span> | Selected Columns: <span id="metricCols">0</span>
+                        <g:message code="dataExport.preview.records" default="Records:"/> <span id="metricRecords">0</span> | <g:message code="dataExport.step2.selectedColumns" default="Selected Columns"/>: <span id="metricCols">0</span>
                     </div>
 
                     <div id="previewTableGrid"></div>
@@ -624,20 +624,20 @@
             <div class="right-sidebar">
                 <div class="enterprise-card">
                     <div style="font-size: 0.95rem; font-weight: 700; color: #1e293b; margin-bottom: 15px; border-bottom: 1px solid #cbd5e1; padding-bottom: 8px;">
-                        🎯 Cohort Scope & Spatial Filters
+                        🎯 <g:message code="dataExport.filter.scopeTitle" default="Cohort Scope & Spatial Filters"/>
                     </div>
 
                     <!-- Baseline Date -->
                     <div class="filter-control">
-                        <div class="filter-label">📅 Reference Date:</div>
+                        <div class="filter-label">📅 <g:message code="dataExport.filter.referenceDate" default="Reference Date:"/></div>
                         <input type="date" name="referenceDate" class="form-control form-control-sm" value="${java.time.LocalDate.now()}"/>
                     </div>
 
                     <!-- Spatial Scope -->
                     <div class="filter-control">
-                        <div class="filter-label">📍 Region / Zone:</div>
+                        <div class="filter-label">📍 <g:message code="dataExport.filter.region" default="Region / Zone:"/></div>
                         <select name="regionCode" class="form-control form-control-sm">
-                            <option value="">All Study Regions</option>
+                            <option value=""><g:message code="dataExport.filter.allRegions" default="All Study Regions"/></option>
                             <g:each in="${regions}" var="r">
                                 <option value="${r.code}">${r.code} - ${r.name}</option>
                             </g:each>
@@ -646,26 +646,26 @@
 
                     <!-- Gender Cohort -->
                     <div class="filter-control">
-                        <div class="filter-label">👥 Gender Cohort:</div>
+                        <div class="filter-label">👥 <g:message code="dataExport.filter.gender" default="Gender Cohort:"/></div>
                         <select name="gender" class="form-control form-control-sm">
-                            <option value="ALL">Both Genders</option>
-                            <option value="MALE">Male Only</option>
-                            <option value="FEMALE">Female Only</option>
+                            <option value="ALL"><g:message code="dataExport.filter.bothGenders" default="Both Genders"/></option>
+                            <option value="MALE"><g:message code="dataExport.filter.maleOnly" default="Male Only"/></option>
+                            <option value="FEMALE"><g:message code="dataExport.filter.femaleOnly" default="Female Only"/></option>
                         </select>
                     </div>
 
                     <!-- Age Range -->
                     <div class="filter-control">
-                        <div class="filter-label">🎂 Age Range (Years):</div>
+                        <div class="filter-label">🎂 <g:message code="dataExport.filter.ageRange" default="Age Range (Years):"/></div>
                         <div style="display: flex; gap: 6px;">
                             <input type="number" name="ageMin" class="form-control form-control-sm" placeholder="Min" min="0"/>
-                            <input type="number" name="ageMax" class="form-control form-control-sm" placeholder="Max" min="120"/>
+                            <input type="number" name="ageMax" class="form-control form-control-sm" placeholder="Max" min="1"/>
                         </div>
                     </div>
 
                     <!-- Random Sub-sampling -->
                     <div class="filter-control">
-                        <div class="filter-label">🎲 Sub-sampling (%):</div>
+                        <div class="filter-label">🎲 <g:message code="dataExport.filter.sampling" default="Sub-sampling (%):"/></div>
                         <input type="number" name="randomSamplePercent" class="form-control form-control-sm" value="100.0" min="1" max="100"/>
                     </div>
 
@@ -673,7 +673,7 @@
                     <div class="filter-control" style="margin-top: 10px;">
                         <div class="form-check form-switch">
                             <input class="form-check-input" type="checkbox" name="activeResidentsOnly" value="true" checked="checked" id="activeResidentsSwitch"/>
-                            <label class="form-check-label filter-label" for="activeResidentsSwitch">Latest Residency Only</label>
+                            <label class="form-check-label filter-label" for="activeResidentsSwitch"><g:message code="dataExport.filter.activeResidents" default="Latest Residency Only"/></label>
                         </div>
                     </div>
                 </div>
@@ -681,14 +681,14 @@
                 <!-- EXPORT ACTION CARD -->
                 <div class="export-action-card">
                     <div class="icon-ready"><asset:image src="skin/data_export_ready_icon.png" alt="Tables" width="36" height="36" /></div>
-                    <div style="font-weight: 700; font-size: 0.9rem; margin-bottom: 4px;">Ready to Export</div>
+                    <div style="font-weight: 700; font-size: 0.9rem; margin-bottom: 4px;"><g:message code="dataExport.ready.title" default="Ready to Export"/></div>
                     <div style="font-size: 0.75rem; color: #69708f; margin-bottom: 12px; line-height: 1.4; max-width: 200px;">
-                        Configure your export settings and click the button below to continue.
+                        <g:message code="dataExport.ready.desc" default="Configure your export settings and click the button below to continue."/>
                     </div>
 
                     <button type="button" class="export-gradient-btn" onclick="openExportModal()">
                         <asset:image src="skin/data_export_download.png" alt="Download" width="14" height="14" style="vertical-align: middle; margin-right: 6px;"/>
-                        Export Dataset
+                        <g:message code="dataExport.button.export" default="Export Dataset"/>
                     </button>
                 </div>
             </div>
@@ -699,7 +699,7 @@
             <div class="modal-dialog modal-compact modal-dialog-centered">
                 <div class="modal-content">
                     <div class="modal-header border-bottom border-2 shadow-sm modal-header-bevel" >
-                        <h5 class="modal-title">🚀 Export Dataset & Privacy Configuration</h5>
+                        <h5 class="modal-title">🚀 <g:message code="dataExport.modal.title" default="Export Dataset & Privacy Configuration"/></h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
 
@@ -707,7 +707,7 @@
                         <div class="row">
                             <!-- LEFT PANEL: EXPORT FORMAT -->
                             <div class="col-md-5 modal-panel-left">
-                                <h6 style="font-weight: 700; color: #1e293b; margin-bottom: 12px;">Export Format</h6>
+                                <h6 style="font-weight: 700; color: #1e293b; margin-bottom: 12px;"><g:message code="dataExport.modal.format" default="Export Format"/></h6>
 
                                 <g:each in="${exportFormats}" var="fmt" status="idx">
                                     <div class="format-option-card ${idx == 0 ? 'selected' : ''}" onclick="selectFormatOption('${fmt.code}', this)">
@@ -721,18 +721,18 @@
                                 </g:each>
 
                                 <div style="margin-top: 10px;">
-                                    <label style="font-size: 0.85rem;"><input type="checkbox" name="includeDictionary" value="true" checked="checked"/> Attach Data Dictionary</label>
+                                    <label style="font-size: 0.85rem;"><input type="checkbox" name="includeDictionary" value="true" checked="checked"/> <g:message code="dataExport.modal.attachDict" default="Attach Data Dictionary"/></label>
                                 </div>
                             </div>
 
                             <!-- RIGHT PANEL: SENSITIVE DATA CONTROLS (STACKED STYLED CARDS) -->
                             <div class="col-md-7" style="padding-left: 15px;">
-                                <h6 style="font-weight: 700; color: #1e293b; margin-bottom: 12px;">Sensitive Data Controls</h6>
+                                <h6 style="font-weight: 700; color: #1e293b; margin-bottom: 12px;"><g:message code="dataExport.modal.privacyTitle" default="Sensitive Data Controls"/></h6>
 
                                 <div style="max-height: 460px; overflow-y: auto; padding-right: 5px;">
                                     <!-- 1. Names Control -->
                                     <div class="privacy-card-box">
-                                        <div class="privacy-card-title">👤 Direct Identifiers (Names)</div>
+                                        <div class="privacy-card-title">👤 <g:message code="dataExport.privacy.names" default="Direct Identifiers (Names)"/></div>
                                         <div class="form-check fselect">
                                             <select name="nameAnonymizationMode" class="form-select form-select-sm">
                                                 <g:each in="${nameModes}" var="m">
@@ -744,7 +744,7 @@
 
                                     <!-- 2. Phone Control -->
                                     <div class="privacy-card-box">
-                                        <div class="privacy-card-title">📞 Contact Information (Phone)</div>
+                                        <div class="privacy-card-title">📞 <g:message code="dataExport.privacy.phones" default="Contact Information (Phone)"/></div>
                                         <div class="form-check fselect">
                                             <select name="phoneAnonymizationMode" class="form-select form-select-sm">
                                                 <g:each in="${phoneModes}" var="m">
@@ -756,7 +756,7 @@
 
                                     <!-- 3. GPS Control -->
                                     <div class="privacy-card-box">
-                                        <div class="privacy-card-title">📍 Spatial & GPS Precision</div>
+                                        <div class="privacy-card-title">📍 <g:message code="dataExport.privacy.gps" default="Spatial & GPS Precision"/></div>
                                         <div class="form-check fselect">
                                             <select name="gpsAnonymizationMode" class="form-select form-select-sm">
                                                 <g:each in="${gpsModes}" var="m">
@@ -768,7 +768,7 @@
 
                                     <!-- 4. Date Control -->
                                     <div class="privacy-card-box">
-                                        <div class="privacy-card-title">📅 Temporal & Date Granularity</div>
+                                        <div class="privacy-card-title">📅 <g:message code="dataExport.privacy.dates" default="Temporal & Date Granularity"/></div>
                                         <div class="form-check fselect">
                                             <select name="dateAnonymizationMode" class="form-select form-select-sm">
                                                 <g:each in="${dateModes}" var="m">
@@ -783,8 +783,8 @@
                     </div>
 
                     <div class="modal-footer" style="background: #f8fafc; padding: 12px 20px;">
-                        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn btn-success btn-sm font-weight-bold">Confirm & Download Export</button>
+                        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal"><g:message code="default.button.cancel" default="Cancel"/></button>
+                        <button type="submit" class="btn btn-success btn-sm font-weight-bold"><g:message code="dataExport.modal.confirm" default="Confirm & Download Export"/></button>
                     </div>
                 </div>
             </div>
@@ -870,8 +870,7 @@
 
         document.getElementById('availCount').innerText = availableCols.length - selectedCols.length;
         document.getElementById('selectedCount').innerText = selectedCols.length + "";
-        document.getElementById('selectedCountBadge').innerText = "Selected Columns (" + selectedCols.length + ")";
-        //document.getElementById('summaryCols').innerText = selectedCols.length + "";
+        document.getElementById('selectedCountBadge').innerText = "${g.message(code: 'dataExport.step2.selectedColumns', default: 'Selected Columns')} (" + selectedCols.length + ")";
         document.getElementById('metricCols').innerText = selectedCols.length + "";
     }
 
@@ -915,8 +914,6 @@
         if (document.getElementById('summaryFmt')) {
             document.getElementById('summaryFmt').innerText = fmt;
         }
-
-
     }
 
     function openExportModal() {
