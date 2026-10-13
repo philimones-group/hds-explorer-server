@@ -357,7 +357,7 @@ class DataDictionaryService {
     TableMetadata loadExtensionFormMetadata(CoreFormExtension coreFormExt) {
         if (!coreFormExt || !coreFormExt.extFormPath) return null
 
-        File hformFile = new File(coreFormExt.extFormPath)
+        File hformFile = coreFormExt.getExtFile()
         if (!hformFile.exists()) return null
 
         try {
@@ -384,8 +384,10 @@ class DataDictionaryService {
                         ColumnMetadata colMeta = new ColumnMetadata(
                                 tableName: extTableName,
                                 columnName: dbColName,
+                                formColumnName: formColName,
                                 dataType: col.getType()?.toString() ?: "STRING",
                                 sensitiveType: sensType,
+                                isMediaColumn: col.mediaColumn,
                                 description: col.getLabel() ?: formColName,
                                 label: col.getLabel() ?: formColName
                         )
@@ -539,8 +541,10 @@ class DataDictionaryService {
     static class ColumnMetadata {
         String tableName
         String columnName
+        String formColumnName
         String dataType
         SensitiveType sensitiveType = SensitiveType.NOT_APPLICABLE
+        Boolean isMediaColumn = false
         String description
         String label
         String enumTypeName

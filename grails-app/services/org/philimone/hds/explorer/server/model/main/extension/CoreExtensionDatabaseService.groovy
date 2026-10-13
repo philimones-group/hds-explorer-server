@@ -33,7 +33,7 @@ class CoreExtensionDatabaseService {
 
     def generateDatabaseModel(CoreFormExtension coreFormExtension) {
         if (coreFormExtension.extFormPath != null) {
-            def inputStream = new FileInputStream(new File(coreFormExtension.extFormPath))
+            def inputStream = new FileInputStream(coreFormExtension.getExtFile())
             def hForm = new ExcelFormParser(inputStream).getForm()
 
             if (hForm != null) {

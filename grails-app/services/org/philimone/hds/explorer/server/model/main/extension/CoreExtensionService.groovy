@@ -100,7 +100,7 @@ class CoreExtensionService {
     }
 
     CoreExtensionDatabaseService.SqlExecutionResult insertExtensionData(CoreFormExtension coreFormExt, String collectedId, byte[] instanceBytes) {
-        byte[] formDefBytes = new File(coreFormExt.extFormPath).bytes
+        byte[] formDefBytes = coreFormExt.getExtFile().bytes
         def hForm = new ExcelFormParser(new ByteArrayInputStream(formDefBytes)).getForm()
         def xmlData = getXmlMappedData(instanceBytes, hForm)
 
