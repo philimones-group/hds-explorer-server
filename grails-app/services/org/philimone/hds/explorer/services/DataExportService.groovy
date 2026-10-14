@@ -95,6 +95,7 @@ class DataExportService {
                 report.save(flush: true, failOnError: true)
 
                 List<String> selectedColsList = report.selectedColumns ? report.selectedColumns.split(",").collect { it.trim() } : []
+                DataDictionaryService.TableMetadata meta = dataDictionaryService.getTableMetadata(report.datasetName)
 
                 ExportRequest req = new ExportRequest(
                         datasetType: report.exportItem?.code ?: DataExportItem.REGULAR_TABLE.code,
@@ -110,6 +111,8 @@ class DataExportService {
                         includeDictionary: report.includeDictionary,
                         includeMediaFiles: report.includeMediaFiles,
                         activeResidentsOnly: report.activeResidentsOnly,
+                        hasMediaFields: meta?.hasMediaColumns ?: false,
+                        hasRepeatTables: meta?.hasRepeatTables ?: false,
                         nameAnonymizationMode: report.nameAnonymizationMode,
                         phoneAnonymizationMode: report.phoneAnonymizationMode,
                         gpsAnonymizationMode: report.gpsAnonymizationMode,
@@ -188,7 +191,7 @@ class DataExportService {
         File tempFile = File.createTempFile(TEMP_FILE_PREFIX, TEMP_FILE_SUFFIX)
         try {
             tempFile.withOutputStream { tempOut ->
-                if (request.includeMediaFiles) {
+                if (request.isExportingZip()) {
                     //must be a zip bundle
                     println "exporting zip media - ${fileName}"
                     exportToZipBundle(request, tempOut)
@@ -196,7 +199,7 @@ class DataExportService {
                     if (request.format == DataExportFormat.EXCEL) {
                         exportToExcelStream(request, tempOut)
                         //exports also data dictionary if it includes data dictionary
-                    } else if (request.format == DataExportFormat.CSV && !request.includeDictionary) {
+                    } else if (request.format == DataExportFormat.CSV) {
                         exportToCsvStream(request, tempOut) //exports just the csv if not data dictionary included
                     } else {
                         exportToZipBundle(request, tempOut)
@@ -226,17 +229,22 @@ class DataExportService {
     }
 
     private void exportToCsvStream(ExportRequest request, OutputStream outputStream) {
+        def sql = buildExportSql(request)
+
+        println "csv sql:\n${sql.trim()}"
+        println("csv cols: ${request?.selectedColumns?.join(',')}")
+
+        exportTableToCsvStream(request.datasetName, null, sql, request, outputStream)
+    }
+
+    private void exportTableToCsvStream(String tableName, DataDictionaryService.TableMetadata tableMetadata, String sql, ExportRequest request, OutputStream outputStream) {
         Writer writer = new BufferedWriter(new OutputStreamWriter(outputStream, "UTF-8"))
         // Write UTF-8 BOM to preserve Portuguese/French accents in Excel & Stata
         writer.write(UTF8_BOM)
 
-        String sql = buildExportSql(request)
         def session = sessionFactory.currentSession
         NativeQuery query = session.createNativeQuery(sql)
         query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE)
-
-        println "sql:\n${sql}"
-        //println("cols: ${request?.selectedColumns?.join(',')}")
 
         List<Map<String, Object>> resultList = query.list()
         if (resultList.isEmpty()) {
@@ -245,11 +253,11 @@ class DataExportService {
             return
         }
 
-        List<String> headers = extractHeaders(resultList.first(), request)
+        List<String> headers = extractHeadersForTable(tableName, tableMetadata, resultList.first(), request)
         writer.write(headers.collect { escapeCsv(it) }.join(",") + "\n")
 
         for (Map<String, Object> rawRow : resultList) {
-            Map<String, Object> row = processAndAnonymizeRow(rawRow, request)
+            Map<String, Object> row = processAndAnonymizeRow(tableName, rawRow, request)
             List<String> values = headers.collect { h -> escapeCsv(row.get(h)?.toString() ?: "") }
             writer.write(values.join(",") + "\n")
         }
@@ -261,44 +269,16 @@ class DataExportService {
         // SXSSFWorkbook streams rows to disk in chunks to prevent OutOfMemoryError
         SXSSFWorkbook workbook = new SXSSFWorkbook(EXCEL_STREAMING_ROW_FLUSH_SIZE)
         try {
-            Sheet sheet = workbook.createSheet(request.datasetName)
+            // Main Parent Sheet
+            def mainTableSql = buildExportSql(request)
+            writeTableToExcelSheet(workbook, request.datasetName, null, mainTableSql, request)
 
-            String sql = buildExportSql(request)
-            def session = sessionFactory.currentSession
-            NativeQuery query = session.createNativeQuery(sql)
-            query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE)
-
-            List<Map<String, Object>> resultList = query.list()
-
-            if (!resultList.isEmpty()) {
-                List<String> headers = extractHeaders(resultList.first(), request)
-
-                // Header Row
-                Row headerRow = sheet.createRow(0)
-                CellStyle headerStyle = workbook.createCellStyle()
-                Font font = workbook.createFont()
-                font.setBold(true)
-                headerStyle.setFont(font)
-
-                headers.eachWithIndex { h, idx ->
-                    Cell cell = headerRow.createCell(idx)
-                    cell.setCellValue(h)
-                    cell.setCellStyle(headerStyle)
-                }
-
-                // Data Rows
-                resultList.eachWithIndex { rawRow, rIdx ->
-                    Map<String, Object> row = processAndAnonymizeRow(rawRow, request)
-                    Row dataRow = sheet.createRow(rIdx + 1)
-                    headers.eachWithIndex { h, cIdx ->
-                        Object val = row.get(h)
-                        Cell cell = dataRow.createCell(cIdx)
-                        if (val instanceof Number) {
-                            cell.setCellValue(((Number) val).doubleValue())
-                        } else {
-                            cell.setCellValue(val?.toString() ?: "")
-                        }
-                    }
+            // Child Repeat Tables Sheets (if present, breadth-first top-down order)
+            if (request.hasRepeatTables) {
+                List<DataDictionaryService.TableMetadata> repeatTables = dataDictionaryService.getAllDescendantRepeatTables(request.datasetName)
+                repeatTables.each { childMeta ->
+                    String childSql = buildChildTableSql(childMeta.tableName, childMeta.parentTableName, request)
+                    writeTableToExcelSheet(workbook, childMeta.tableName, childMeta, childSql, request)
                 }
             }
 
@@ -313,10 +293,52 @@ class DataExportService {
         }
     }
 
+    private void writeTableToExcelSheet(SXSSFWorkbook workbook, String sheetName, DataDictionaryService.TableMetadata tableMetadata, String sql, ExportRequest request) {
+        Sheet sheet = workbook.createSheet(sheetName)
+
+        def session = sessionFactory.currentSession
+        NativeQuery query = session.createNativeQuery(sql)
+        query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE)
+
+        List<Map<String, Object>> resultList = query.list()
+
+        if (!resultList.isEmpty()) {
+            List<String> headers = extractHeadersForTable(sheetName, tableMetadata, resultList.first(), request)
+
+            // Header Row
+            Row headerRow = sheet.createRow(0)
+            CellStyle headerStyle = workbook.createCellStyle()
+            Font font = workbook.createFont()
+            font.setBold(true)
+            headerStyle.setFont(font)
+
+            headers.eachWithIndex { h, idx ->
+                Cell cell = headerRow.createCell(idx)
+                cell.setCellValue(h)
+                cell.setCellStyle(headerStyle)
+            }
+
+            // Data Rows
+            resultList.eachWithIndex { rawRow, rIdx ->
+                Map<String, Object> row = processAndAnonymizeRow(sheetName, rawRow, request)
+                Row dataRow = sheet.createRow(rIdx + 1)
+                headers.eachWithIndex { h, cIdx ->
+                    Object val = row.get(h)
+                    Cell cell = dataRow.createCell(cIdx)
+                    if (val instanceof Number) {
+                        cell.setCellValue(((Number) val).doubleValue())
+                    } else {
+                        cell.setCellValue(val?.toString() ?: "")
+                    }
+                }
+            }
+        }
+    }
+
     private void exportToZipBundle(ExportRequest request, OutputStream outputStream) {
         ZipOutputStream zipOut = new ZipOutputStream(outputStream)
 
-        // 1. Generate Data File (Excel or CSV)
+        // 1. Generate Main Data File (Excel or CSV)
         ByteArrayOutputStream dataOut = new ByteArrayOutputStream()
         if (request.format == DataExportFormat.EXCEL) {
             exportToExcelStream(request, dataOut)
@@ -336,6 +358,25 @@ class DataExportService {
         request.exportedDatasetFilename = dataFilename
         request.exportedDatasetFilesize = dataBytes.length
 
+        // 1b. Export Child Repeat Tables to ZIP (for CSV and non-Excel formats)
+        if (request.hasRepeatTables && request.format != DataExportFormat.EXCEL) {
+            List<DataDictionaryService.TableMetadata> repeatTables = dataDictionaryService.getAllDescendantRepeatTables(request.datasetName)
+            repeatTables.each { childMeta ->
+                ByteArrayOutputStream childOut = new ByteArrayOutputStream()
+                String childSql = buildChildTableSql(childMeta.tableName, childMeta.parentTableName, request)
+                exportTableToCsvStream(childMeta.tableName, childMeta, childSql, request, childOut)
+
+                println "child sql:\n${childSql}"
+
+                byte[] childBytes = childOut.toByteArray()
+                String childFilename = "${childMeta.tableName.toLowerCase()}_data.csv"
+
+                zipOut.putNextEntry(new ZipEntry(childFilename))
+                zipOut.write(childBytes)
+                zipOut.closeEntry()
+            }
+        }
+
         // 2. Generate Syntax Import Script
         if (isSyntaxScriptFormat(request.format)) { //SCRIPTS ARE ONLY GENERATED FOR STATA/SPSS/R/SAS
             String scriptExt = getScriptExtension(request.format)
@@ -349,6 +390,20 @@ class DataExportService {
 
             request.exportedScriptFilename = scriptFilename
             request.exportedScriptFilesize = scriptBytes.length
+
+            // Syntax scripts for child repeat tables
+            if (request.hasRepeatTables) {
+                List<DataDictionaryService.TableMetadata> repeatTables = dataDictionaryService.getAllDescendantRepeatTables(request.datasetName)
+                repeatTables.each { childMeta ->
+                    String childScriptContent = generateSyntaxScriptForTable(childMeta.tableName, request)
+                    String childScriptFilename = "import_${childMeta.tableName.toLowerCase()}${scriptExt}"
+
+                    byte[] cScriptBytes = childScriptContent.getBytes("UTF-8")
+                    zipOut.putNextEntry(new ZipEntry(childScriptFilename))
+                    zipOut.write(cScriptBytes)
+                    zipOut.closeEntry()
+                }
+            }
         }
 
         // 3. Generate Data Dictionary Excel
@@ -1178,17 +1233,30 @@ class DataExportService {
     // --- Anonymization & Row Processing ---
 
     private Map<String, Object> processAndAnonymizeRow(Map<String, Object> rawRow, ExportRequest request) {
+        return processAndAnonymizeRow(request.datasetName, rawRow, request)
+    }
+
+    private Map<String, Object> processAndAnonymizeRow(String tableName, Map<String, Object> rawRow, ExportRequest request) {
+        // Collect primary key 'id' into exportedTableIdsMap for repeat table filtering
+        Object rowId = rawRow.get("id") ?: rawRow.get("ID")
+        if (rowId != null) {
+            String idStr = rowId.toString().trim()
+            if (!idStr.isEmpty()) {
+                request.exportedTableIdsMap.computeIfAbsent(tableName) { [] }.add(idStr)
+            }
+        }
+
         Map<String, Object> processed = new LinkedHashMap<>()
 
         rawRow.each { k, val ->
             String dbColName = k.toString()
-            //println "origColName ${request.datasetName}.${dbColName}"
+            //println "origColName ${tableName}.${dbColName}"
             String colName = dbColName.toLowerCase()
             Object value = val
 
             if (value) {
 
-                DataDictionaryService.ColumnMetadata colMeta = dataDictionaryService.getColumnMetadata(request.datasetName, dbColName)
+                DataDictionaryService.ColumnMetadata colMeta = dataDictionaryService.getColumnMetadata(tableName, dbColName)
                 SensitiveType sensType = colMeta?.sensitiveType ?: SensitiveType.NOT_APPLICABLE
 
                 // 1. Person Names
@@ -1620,6 +1688,33 @@ class DataExportService {
         return sas.toString()
     }
 
+    private String generateSyntaxScriptForTable(String tableName, ExportRequest request) {
+        ExportRequest childReq = new ExportRequest(
+                datasetName: tableName,
+                format: request.format,
+                selectedColumns: []
+        )
+        return generateSyntaxScript(childReq)
+    }
+
+    String buildChildTableSql(String childTableName, String immediateParentTableName, ExportRequest request) {
+        List<String> parentIds = request.exportedTableIdsMap.get(immediateParentTableName)
+        if (!parentIds || parentIds.isEmpty()) {
+            return "SELECT c.* FROM `${childTableName}` c WHERE 1=0"
+        }
+
+        String fkCol = "${immediateParentTableName}_id"
+
+        // Chunk parent BIGINT IDs into groups of 1,000 for SQL safety
+        List<List<String>> chunks = parentIds.collate(1000)
+        String whereCondition = chunks.collect { chunk ->
+            String idList = chunk.collect { it.replaceAll("[^0-9]", "") }.findAll { !it.empty }.join(",")
+            return "c.${fkCol} IN (${idList})"
+        }.join(" OR ")
+
+        return "SELECT c.* FROM `${childTableName}` c WHERE ${whereCondition}"
+    }
+
     // --- Helper Utilities ---
 
     private void trackAllColumnsForAutoResize(Sheet dictSheet) {
@@ -1645,26 +1740,34 @@ class DataExportService {
         }
 
         DataDictionaryService.TableMetadata meta = dataDictionaryService.getTableMetadata(request.datasetName)
-        if (meta) {
-            int rowIndex = 1
-            meta.columns.values().eachWithIndex { colMeta, idx ->
+        List<DataDictionaryService.TableMetadata> targetMetas = [meta]
+        if (request.hasRepeatTables) {
+            List<DataDictionaryService.TableMetadata> descendants = dataDictionaryService.getAllDescendantRepeatTables(request.datasetName)
+            if (descendants) targetMetas.addAll(descendants)
+        }
 
-                //create only selected columns
-                if (!request.selectedColumns.contains(colMeta.columnName)) return
+        int rowIndex = 1
+        targetMetas.each { tMeta ->
+            if (tMeta) {
+                tMeta.columns.values().each { colMeta ->
+                    if (tMeta.tableName == request.datasetName && request.selectedColumns && !request.selectedColumns.contains(colMeta.columnName)) {
+                        return
+                    }
 
-                Row r = dictSheet.createRow(rowIndex++)
-                r.createCell(0).setCellValue(colMeta.tableName)
-                r.createCell(1).setCellValue(colMeta.columnName)
-                r.createCell(2).setCellValue(colMeta.dataType)
-                r.createCell(3).setCellValue(colMeta.sensitiveType?.code ?: "not_applicable")
-                r.createCell(4).setCellValue(colMeta.label ?: "")
-                r.createCell(5).setCellValue(colMeta.description ?: "")
+                    Row r = dictSheet.createRow(rowIndex++)
+                    r.createCell(0).setCellValue(colMeta.tableName)
+                    r.createCell(1).setCellValue(colMeta.columnName)
+                    r.createCell(2).setCellValue(colMeta.dataType)
+                    r.createCell(3).setCellValue(colMeta.sensitiveType?.code ?: "not_applicable")
+                    r.createCell(4).setCellValue(colMeta.label ?: "")
+                    r.createCell(5).setCellValue(colMeta.description ?: "")
 
-                if (colMeta.enumTypeName) {
-                    DataDictionaryService.EnumTypeMetadata enumType = dataDictionaryService.getEnumTypeMetadata(colMeta.enumTypeName)
-                    if (enumType) {
-                        String choices = enumType.options.collect { "${it.code}=${it.label}" }.join("; ")
-                        r.createCell(6).setCellValue(choices)
+                    if (colMeta.enumTypeName) {
+                        DataDictionaryService.EnumTypeMetadata enumType = dataDictionaryService.getEnumTypeMetadata(colMeta.enumTypeName)
+                        if (enumType) {
+                            String choices = enumType.options.findAll { it.code }.collect { "${it.code}=${it.label}" }.join("; ")
+                            r.createCell(6).setCellValue(choices)
+                        }
                     }
                 }
             }
@@ -1697,13 +1800,15 @@ class DataExportService {
         return val ? val.replace("\"", "\\\"") : ""
     }
 
-    private List<String> extractHeaders(Map<String, Object> firstRow, ExportRequest request) {
+    private List<String> extractHeadersForTable(String tableName, DataDictionaryService.TableMetadata tableMetadata, Map<String, Object> firstRow, ExportRequest request) {
         if (!firstRow) return []
 
-        if (request.selectedColumns && !request.selectedColumns.isEmpty()) {
+        def selectedColumns = tableMetadata?.isRepeatTable ? tableMetadata.columnNames : request.selectedColumns
+
+        if (selectedColumns && !selectedColumns.isEmpty()) {
             Map<String, String> rowKeysLowerMap = firstRow.keySet().collectEntries { [it.toLowerCase(), it] }
             List<String> matchedHeaders = []
-            for (String userCol : request.selectedColumns) {
+            for (String userCol : selectedColumns) {
                 String matchedKey = rowKeysLowerMap.get(userCol.toLowerCase())
                 if (matchedKey) {
                     matchedHeaders.add(matchedKey)
@@ -1720,14 +1825,15 @@ class DataExportService {
         if (format == DataExportFormat.SPSS) return ".sps"
         if (format == DataExportFormat.R) return ".R"
         if (format == DataExportFormat.SAS) return ".sas"
+        if (format == DataExportFormat.STATA) return ".do"
         return ".do"
     }
 
     private String getExportFileExtension(ExportRequest request) {
         DataExportFormat format = request.format
-        if (request.includeMediaFiles) return ".zip"
+        if (request.isExportingZip()) return ".zip"
         if (format == DataExportFormat.EXCEL) return ".xlsx"
-        if (format == DataExportFormat.CSV && !request.includeDictionary) return ".csv"
+        if (format == DataExportFormat.CSV) return ".csv"
         return ".zip"
     }
 
@@ -1749,6 +1855,11 @@ class DataExportService {
         Boolean includeDictionary = false
         Boolean activeResidentsOnly = false
 
+        Map<String, List<String>> exportedTableIdsMap = new java.util.concurrent.ConcurrentHashMap<>()
+
+        Boolean hasMediaFields = false
+        Boolean hasRepeatTables = false
+
         // Granular Privacy Controls via Enums
         NameAnonymizationMode nameAnonymizationMode = NameAnonymizationMode.INITIALS
         PhoneAnonymizationMode phoneAnonymizationMode = PhoneAnonymizationMode.MASK
@@ -1766,7 +1877,7 @@ class DataExportService {
         Integer maxRows
 
         boolean isExportingZip() {
-            return includeMediaFiles || isSyntaxScriptFormat(format) || (format == DataExportFormat.CSV && includeDictionary)
+            return (includeMediaFiles && hasMediaFields) || (hasRepeatTables && format != DataExportFormat.EXCEL) || isSyntaxScriptFormat(format) || (format == DataExportFormat.CSV && includeDictionary)
         }
     }
 }

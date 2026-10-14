@@ -283,7 +283,7 @@ class DataExportController {
 
         //get datasetLabel
         if (req.datasetLabel?.empty) {
-            def allTables = dataDictionaryService.getTablesMap()
+            def allTables = dataDictionaryService.getTablesMapReadOnly()
             List<CoreFormExtension> customForms = CoreFormExtension.findAllByEnabled(true)
             List<DataExportItem> prejoinedViews = DataExportItem.getPrejoinedViews()
 
@@ -342,6 +342,12 @@ class DataExportController {
         req.phoneAnonymizationMode = PhoneAnonymizationMode.getFrom(params.phoneAnonymizationMode) ?: PhoneAnonymizationMode.MASK
         req.gpsAnonymizationMode = GpsAnonymizationMode.getFrom(params.gpsAnonymizationMode) ?: GpsAnonymizationMode.ROUNDED
         req.dateAnonymizationMode = DateAnonymizationMode.getFrom(params.dateAnonymizationMode) ?: DateAnonymizationMode.EXACT
+
+        DataDictionaryService.TableMetadata meta = dataDictionaryService.getTableMetadata(req.datasetName)
+        if (meta) {
+            req.hasMediaFields = meta.hasMediaColumns
+            req.hasRepeatTables = meta.hasRepeatTables
+        }
 
         return req
     }

@@ -5,8 +5,12 @@ import org.apache.poi.ss.usermodel.*
 import org.apache.poi.xssf.usermodel.XSSFSheet
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import org.philimone.hds.explorer.server.model.enums.DataExportItem
+import org.philimone.hds.explorer.server.model.enums.extensions.FormColumnType
 import org.philimone.hds.explorer.server.model.main.CoreFormExtension
 import org.philimone.hds.explorer.server.model.main.CoreFormExtensionModel
+import org.philimone.hds.explorer.server.model.main.extension.ExtensionDatabaseColumns
+import org.philimone.hds.forms.model.ColumnGroup
+import org.philimone.hds.forms.model.ColumnRepeatGroup
 import org.philimone.hds.forms.model.Column
 import org.philimone.hds.forms.model.ColumnValue
 import org.philimone.hds.forms.model.HForm
@@ -243,15 +247,6 @@ class DataDictionaryService {
         }
     }
 
-    /**
-     * Parses the Excel dictionary containing 'all-tables' and 'all-types' worksheets
-     */
-    void parseExcelDictionary(File file) {
-        if (file && file.exists()) {
-            file.withInputStream { is -> parseExcelDictionary(is) }
-        }
-    }
-
     void parseExcelDictionary(InputStream inputStream) {
         XSSFWorkbook workbook = new XSSFWorkbook(inputStream);
         try {
@@ -351,6 +346,20 @@ class DataDictionaryService {
         }
     }
 
+    private void collectColumnsFromGroup(ColumnGroup group, List<Column> acc) {
+        if (group == null) return
+        if (group instanceof ColumnRepeatGroup) {
+            def rgroup = group as ColumnRepeatGroup
+            for (def childGroup : rgroup.getColumnsGroups()) {
+                collectColumnsFromGroup(childGroup, acc)
+            }
+        } else {
+            for (def col : group.getColumns()) {
+                acc.add(col)
+            }
+        }
+    }
+
     /**
      * Parses custom dynamic extension forms (XLS HForms) using hds-forms-model-lib ExcelFormParser
      */
@@ -365,58 +374,210 @@ class DataDictionaryService {
             HForm hform = parser.getForm()
             if (!hform) return null
 
-            List<CoreFormExtensionModel> mappings = CoreFormExtensionModel.findAllByCoreForm(coreFormExt)
+            List<CoreFormExtensionModel> mappings = CoreFormExtensionModel.findAllByCoreForm(coreFormExt, [sort: "dbColumnIndex", order: "asc"])
+            if (!mappings || mappings.isEmpty()) return null
 
             String extTableName = coreFormExt.extFormId ?: hform.getFormId()
+
+            // 1. Collect all columns recursively from HForm
+            List<Column> allFormColumns = []
+            if (hform.getColumns()) {
+                for (def colGroup : hform.getColumns()) {
+                    collectColumnsFromGroup(colGroup, allFormColumns)
+                }
+            }
+
+            Map<String, TableMetadata> formTablesMap = [:]
+
+            // 2. Build Main Table Metadata
             TableMetadata extTableMeta = new TableMetadata(
                     tableName: extTableName,
                     description: hform.getFormName() ?: "Custom Extension Form ${extTableName}"
             )
+            // Manually add implicit system columns for main table
+            extTableMeta.addColumn(new ColumnMetadata(tableName: extTableName, columnName: "id", dataType: "BIGINT", sensitiveType: SensitiveType.NOT_APPLICABLE, description: "Primary Key", label: "ID"))
+            extTableMeta.addColumn(new ColumnMetadata(tableName: extTableName, columnName: "collected_id", dataType: "VARCHAR", sensitiveType: SensitiveType.NOT_APPLICABLE, description: "Collected ID", label: "Collected ID"))
+            formTablesMap.put(extTableName, extTableMeta)
 
-            if (hform.getColumns()) {
-                for (def colGroup : hform.getColumns()) {
-                    for (def col : colGroup.getColumns()) {
-                        String formColName = col.getName()
-                        CoreFormExtensionModel modelMap = mappings.find { it.formColumnName == formColName }
-                        String dbColName = modelMap?.dbColumnName ?: formColName
-                        SensitiveType sensType = col.getSensitiveType()
+            // 3. Process main table mapped columns
+            List<CoreFormExtensionModel> mainTableCols = mappings.findAll {
+                it.dbColumnTable == extTableName && it.formColumnType != FormColumnType.REPEAT_GROUP
+            }.sort { it.dbColumnIndex }
+            for (CoreFormExtensionModel modelMap : mainTableCols) {
+                String dbColName = modelMap.dbColumnName
+                String formColName = modelMap.formColumnName
+                String labelSuffix = ""
 
-                        ColumnMetadata colMeta = new ColumnMetadata(
-                                tableName: extTableName,
-                                columnName: dbColName,
-                                formColumnName: formColName,
-                                dataType: col.getType()?.toString() ?: "STRING",
-                                sensitiveType: sensType,
-                                isMediaColumn: col.mediaColumn,
-                                description: col.getLabel() ?: formColName,
-                                label: col.getLabel() ?: formColName
-                        )
+                Column col = allFormColumns.find { it.getName() == formColName }
+                if (col == null) {
+                    if (modelMap.formColumnType == FormColumnType.GEOPOINT) {
+                        def lastIndexOfSuffix = formColName.lastIndexOf(modelMap.formChoiceValue)
+                        def realFormColName = formColName.substring(0, lastIndexOfSuffix)
+                        col = allFormColumns.find { it.getName() == realFormColName }
+                        labelSuffix = modelMap.formChoiceValue
+                    } else if (modelMap.formColumnType == FormColumnType.MULTIPLE_ITEMS) {
+                        def lastIndexOfSuffix = formColName.lastIndexOf("_")
+                        def realFormColName = formColName.substring(0, lastIndexOfSuffix)
+                        col = allFormColumns.find { it.getName() == realFormColName }
+                        labelSuffix = modelMap.formChoiceValue
+                    }
+                }
 
-                        // Extract choice options if present
-                        if (col.getTypeOptions()) {
-                            String enumTypeName = "EXT_${extTableName}_${dbColName}"
-                            EnumTypeMetadata enumType = new EnumTypeMetadata(
-                                    enumTypeName: enumTypeName,
-                                    description: "Choices for ${formColName}"
-                            )
-                            for (def toption : col.getTypeOptions().entrySet()) {
-                                enumType.addOption(new EnumOptionMetadata(
-                                        enumTypeName: enumTypeName,
-                                        code: toption.key,
-                                        label: toption.value.label,
-                                        description: toption.value.label
-                                ))
-                            }
-                            enumsMap.put(enumTypeName, enumType)
-                            colMeta.enumTypeName = enumTypeName
+                ColumnMetadata colMeta = new ColumnMetadata(
+                        tableName: extTableName,
+                        columnName: dbColName,
+                        formColumnName: formColName,
+                        dataType: modelMap.dbColumnType?.name() ?: (col?.getType()?.toString() ?: "STRING"),
+                        sensitiveType: col?.getSensitiveType() ?: SensitiveType.NOT_APPLICABLE,
+                        isMediaColumn: col?.mediaColumn,
+                        description: col?.getLabel() + (labelSuffix ? " (${labelSuffix})" : "") ?: formColName,
+                        label: col?.getLabel() + (labelSuffix ? " (${labelSuffix})" : "") ?: formColName
+                )
+
+                if (col != null && col.getTypeOptions()) {
+                    String enumTypeName = "EXT_${extTableName}_${dbColName}"
+                    EnumTypeMetadata enumType = new EnumTypeMetadata(
+                            enumTypeName: enumTypeName,
+                            description: "Choices for ${formColName}"
+                    )
+                    for (def toption : col.getTypeOptions().entrySet()) {
+                        enumType.addOption(new EnumOptionMetadata(
+                                enumTypeName: enumTypeName,
+                                code: toption.key,
+                                label: toption.value.label,
+                                description: toption.value.label
+                        ))
+                    }
+                    enumsMap.put(enumTypeName, enumType)
+                    colMeta.enumTypeName = enumTypeName
+                }
+
+                extTableMeta.addColumn(colMeta)
+            }
+
+            // 4. Build Child Repeat Tables Metadata
+            List<CoreFormExtensionModel> repeatGroupMappings = mappings.findAll {
+                it.formColumnType == FormColumnType.REPEAT_GROUP
+            }.sort { it.dbColumnIndex }
+            for (CoreFormExtensionModel repeatMap : repeatGroupMappings) {
+                String childTableName = repeatMap.dbColumnTable
+                if (!childTableName || formTablesMap.containsKey(childTableName)) continue
+
+                String immediateParent = repeatMap.parentGroup?.dbColumnTable ?: extTableName
+
+                TableMetadata childMeta = new TableMetadata(
+                        tableName: childTableName,
+                        description: "Repeat Group Table for ${extTableName} (${childTableName})",
+                        isRepeatTable: true,
+                        parentTableName: immediateParent
+                )
+
+                List<CoreFormExtensionModel> childCols = mappings.findAll {
+                    it.dbColumnTable == childTableName && it.formColumnType != FormColumnType.REPEAT_GROUP
+                }.sort { it.dbColumnIndex }
+                for (CoreFormExtensionModel childModelMap : childCols) {
+                    String cDbColName = childModelMap.dbColumnName
+                    String cFormColName = childModelMap.formColumnName
+                    String labelSuffix = ""
+
+                    Column col = allFormColumns.find { it.getName() == cFormColName }
+                    if (col == null) {
+                        if (childModelMap.formColumnType == FormColumnType.GEOPOINT) {
+                            def lastIndexOfSuffix = cFormColName.lastIndexOf(childModelMap.formChoiceValue)
+                            def realFormColName = cFormColName.substring(0, lastIndexOfSuffix)
+                            col = allFormColumns.find { it.getName() == realFormColName }
+                            labelSuffix = childModelMap.formChoiceValue
+                        } else if (childModelMap.formColumnType == FormColumnType.MULTIPLE_ITEMS) {
+                            def lastIndexOfSuffix = cFormColName.lastIndexOf("_")
+                            def realFormColName = cFormColName.substring(0, lastIndexOfSuffix)
+                            col = allFormColumns.find { it.getName() == realFormColName }
+                            labelSuffix = childModelMap.formChoiceValue
                         }
+                    }
 
-                        extTableMeta.addColumn(colMeta)
+                    ColumnMetadata colMeta = new ColumnMetadata(
+                            tableName: childTableName,
+                            columnName: cDbColName,
+                            formColumnName: cFormColName,
+                            dataType: childModelMap.dbColumnType?.name() ?: (col?.getType()?.toString() ?: "STRING"),
+                            sensitiveType: col?.getSensitiveType() ?: SensitiveType.NOT_APPLICABLE,
+                            isMediaColumn: col?.mediaColumn,
+                            description: col?.getLabel() + (labelSuffix ? " (${labelSuffix})" : "")  ?: cFormColName,
+                            label: col?.getLabel() + (labelSuffix ? " (${labelSuffix})" : "")  ?: cFormColName
+                    )
+
+                    //handle special columns labels
+                    if (childModelMap.formColumnName == ExtensionDatabaseColumns.ID) {
+                        colMeta.label = "Child Table ID"
+                        colMeta.description = colMeta.label
+                    } else if (childModelMap.formColumnName == ExtensionDatabaseColumns.COLLECTED_ID) {
+                        colMeta.label = "Child Table Parent - Collected ID"
+                        colMeta.description = colMeta.label
+                    } else if (childModelMap.formColumnName == ExtensionDatabaseColumns.FORM_PARENT_ID) {
+                        colMeta.label = "Child Table Parent - ID"
+                        colMeta.description = colMeta.label
+                    } else if (childModelMap.formColumnName == ExtensionDatabaseColumns.ORDINAL_NUMBER) {
+                        colMeta.label = "Child Table Ordinal Index"
+                        colMeta.description = colMeta.label
+                    }
+
+                    if (col != null && col.getTypeOptions()?.size() > 0) {
+                        String enumTypeName = "EXT_${childTableName}_${cDbColName}"
+                        EnumTypeMetadata enumType = new EnumTypeMetadata(
+                                enumTypeName: enumTypeName,
+                                description: "Choices for ${cFormColName}"
+                        )
+                        for (def toption : col.getTypeOptions().entrySet()) {
+                            enumType.addOption(new EnumOptionMetadata(
+                                    enumTypeName: enumTypeName,
+                                    code: toption.key,
+                                    label: toption.value.label,
+                                    description: toption.value.label
+                            ))
+                        }
+                        enumsMap.put(enumTypeName, enumType)
+                        colMeta.enumTypeName = enumTypeName
+                    }
+
+                    childMeta.addColumn(colMeta)
+                }
+
+                formTablesMap.put(childTableName, childMeta)
+            }
+
+            // 5. Link child repeat tables to immediate parent TableMetadata
+            formTablesMap.each { tName, tMeta ->
+                if (tMeta.parentTableName != null) {
+                    TableMetadata parentMeta = formTablesMap.get(tMeta.parentTableName)
+                    if (parentMeta && !parentMeta.childRepeatTables.contains(tName)) {
+                        parentMeta.childRepeatTables.add(tName)
+                        parentMeta.hasRepeatTables = true
                     }
                 }
             }
 
-            tablesMap.put(extTableName, extTableMeta)
+            // 6. Propagate hasMediaColumns bottom-up
+            formTablesMap.each { tName, tMeta ->
+                if (tMeta.hasMediaColumns) {
+                    extTableMeta.hasMediaColumns = true
+                    String pName = tMeta.parentTableName
+                    while (pName != null) {
+                        TableMetadata pMeta = formTablesMap.get(pName)
+                        if (pMeta) {
+                            pMeta.hasMediaColumns = true
+                            pName = pMeta.parentTableName
+                        } else {
+                            break
+                        }
+                    }
+                }
+            }
+
+            // Register all tables in master tablesMap
+            formTablesMap.each { tName, tMeta ->
+                tablesMap.put(tName, tMeta)
+            }
+
             return extTableMeta
         } catch (Exception e) {
             log.error("Failed to parse XLS HForm extension for ${coreFormExt.extFormId}: ${e.message}", e)
@@ -485,18 +646,49 @@ class DataDictionaryService {
      */
     synchronized TableMetadata reloadExtensionForm(CoreFormExtension coreFormExt) {
         if (!coreFormExt || !coreFormExt.extFormId) return null
+        removeExtensionForm(coreFormExt.extFormId)
         if (!coreFormExt.enabled) {
-            tablesMap.remove(coreFormExt.extFormId)
             return null
         }
         return loadExtensionFormMetadata(coreFormExt)
     }
 
     /**
-     * Removes an Extension Form from the in-memory Data Dictionary
+     * Performs breadth-first traversal returning all descendant repeat tables in top-down execution order
+     */
+    List<TableMetadata> getAllDescendantRepeatTables(String mainTableName) {
+        List<TableMetadata> descendants = []
+        TableMetadata mainMeta = getTableMetadata(mainTableName)
+        if (!mainMeta || !mainMeta.childRepeatTables) return descendants
+
+        Queue<String> queue = new LinkedList<>()
+        queue.addAll(mainMeta.childRepeatTables)
+
+        while (!queue.isEmpty()) {
+            String currentName = queue.poll()
+            TableMetadata currentMeta = getTableMetadata(currentName)
+            if (currentMeta) {
+                if (!descendants.any { it.tableName == currentName }) {
+                    descendants.add(currentMeta)
+                }
+                if (currentMeta.childRepeatTables) {
+                    queue.addAll(currentMeta.childRepeatTables)
+                }
+            }
+        }
+
+        return descendants
+    }
+
+    /**
+     * Removes an Extension Form and all its nested descendant repeat tables from the in-memory Data Dictionary
      */
     synchronized void removeExtensionForm(String extFormId) {
         if (extFormId) {
+            List<TableMetadata> descendants = getAllDescendantRepeatTables(extFormId)
+            descendants.each { dMeta ->
+                tablesMap.remove(dMeta.tableName)
+            }
             tablesMap.remove(extFormId)
         }
     }
@@ -513,12 +705,8 @@ class DataDictionaryService {
         return allTables.findAll { finalTableNames.containsKey(it.tableName) }
     }
 
-    Map<String, TableMetadata> getTablesMap() {
+    Map<String, TableMetadata> getTablesMapReadOnly() {
         return Collections.unmodifiableMap(tablesMap)
-    }
-
-    Map<String, EnumTypeMetadata> getEnumsMap() {
-        return Collections.unmodifiableMap(enumsMap)
     }
 
     // --- Inner Metadata Classes ---
@@ -527,14 +715,28 @@ class DataDictionaryService {
         String tableName
         String domainName
         String description
+        boolean isRepeatTable = false
+        String parentTableName
+        List<String> childRepeatTables = new ArrayList<>()
+        boolean hasMediaColumns = false
+        boolean hasRepeatTables = false
         Map<String, ColumnMetadata> columns = new LinkedHashMap<>()
+        List<String> columnNames = []
 
         void addColumn(ColumnMetadata col) {
             columns.put(col.columnName, col)
+            columnNames.add(col.columnName)
+            if (col.isMediaColumn) {
+                hasMediaColumns = true
+            }
         }
 
         ColumnMetadata getColumn(String columnName) {
             return columns.get(columnName)
+        }
+
+        List<String> getColumnNamesList() {
+            return columnNames
         }
     }
 
