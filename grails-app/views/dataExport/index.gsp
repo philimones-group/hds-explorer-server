@@ -722,6 +722,8 @@
 
                                 <div style="margin-top: 10px;">
                                     <label style="font-size: 0.85rem;"><input type="checkbox" name="includeDictionary" value="true" checked="checked"/> <g:message code="dataExport.modal.attachDict" default="Attach Data Dictionary"/></label>
+                                    <br>
+                                    <label style="font-size: 0.85rem;"><input type="checkbox" name="includeMediaFiles" value="true" /> <g:message code="dataExport.modal.attachMedia" default="Attach Media Files"/></label>
                                 </div>
                             </div>
 
@@ -798,6 +800,29 @@
     var selectedCols = [];
     var tabulatorGrid = null;
 
+    var ACTIVE_RESIDENTS_TABLES = ['member', 'member_ext', 'residency', 'head_relationship', 'marital_relationship'];
+
+    function updateActiveResidentsControl(name) {
+        var catType = document.getElementById('datasetTypeInput').value;
+        var switchEl = document.getElementById('activeResidentsSwitch');
+        var containerEl = switchEl ? switchEl.closest('.filter-control') : null;
+
+        var isSupported = (catType === 'REGULAR_TABLE') && ACTIVE_RESIDENTS_TABLES.includes(name);
+
+        if (containerEl) {
+            if (isSupported) {
+                switchEl.disabled = false;
+                containerEl.style.opacity = '1';
+                containerEl.style.pointerEvents = 'auto';
+            } else {
+                switchEl.disabled = true;
+                switchEl.checked = false;
+                containerEl.style.opacity = '0.4';
+                containerEl.style.pointerEvents = 'none';
+            }
+        }
+    }
+
     function selectCategory(catType, cardId) {
         document.querySelectorAll('.category-card').forEach(c => c.classList.remove('selected'));
         document.getElementById(cardId).classList.add('selected');
@@ -821,6 +846,8 @@
 
     function onDatasetNameChanged(name) {
         document.getElementById('datasetNameInput').value = name;
+        updateActiveResidentsControl(name);
+
         var url = "${createLink(controller: 'dataExport', action: 'getColumns')}?datasetName=" + name;
 
         fetch(url, {

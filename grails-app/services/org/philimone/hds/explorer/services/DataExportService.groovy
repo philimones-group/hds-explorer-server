@@ -108,6 +108,7 @@ class DataExportService {
                         randomSamplePercent: report.randomSamplePercent,
                         selectedColumns: selectedColsList,
                         includeDictionary: report.includeDictionary,
+                        includeMediaFiles: report.includeMediaFiles,
                         activeResidentsOnly: report.activeResidentsOnly,
                         nameAnonymizationMode: report.nameAnonymizationMode,
                         phoneAnonymizationMode: report.phoneAnonymizationMode,
@@ -134,12 +135,13 @@ class DataExportService {
                 report.executionTimeMs = duration
 
                 if (exportedFile && exportedFile.exists()) {
-                    if (req.format == DataExportFormat.EXCEL || (req.format == DataExportFormat.CSV && !req.includeDictionary)) {
-                        report.datasetFileName = exportedFile.name
-                        report.datasetFileSize = exportedFile.length()
-                    } else {
+                    if (req.isExportingZip()) {
                         report.zipFileName = exportedFile.name
                         report.zipFileSize = exportedFile.length()
+                    } else {
+                        //single file
+                        report.datasetFileName = exportedFile.name
+                        report.datasetFileSize = exportedFile.length()
                     }
 
                     if (req.exportedDatasetFilename) {
@@ -186,12 +188,19 @@ class DataExportService {
         File tempFile = File.createTempFile(TEMP_FILE_PREFIX, TEMP_FILE_SUFFIX)
         try {
             tempFile.withOutputStream { tempOut ->
-                if (request.format == DataExportFormat.EXCEL) {
-                    exportToExcelStream(request, tempOut) //exports also data dictionary if it includes data dictionary
-                } else if (request.format == DataExportFormat.CSV && !request.includeDictionary) {
-                    exportToCsvStream(request, tempOut) //exports just the csv if not data dictionary included
-                } else {
+                if (request.includeMediaFiles) {
+                    //must be a zip bundle
+                    println "exporting zip media - ${fileName}"
                     exportToZipBundle(request, tempOut)
+                } else {
+                    if (request.format == DataExportFormat.EXCEL) {
+                        exportToExcelStream(request, tempOut)
+                        //exports also data dictionary if it includes data dictionary
+                    } else if (request.format == DataExportFormat.CSV && !request.includeDictionary) {
+                        exportToCsvStream(request, tempOut) //exports just the csv if not data dictionary included
+                    } else {
+                        exportToZipBundle(request, tempOut)
+                    }
                 }
             }
 
@@ -225,6 +234,9 @@ class DataExportService {
         def session = sessionFactory.currentSession
         NativeQuery query = session.createNativeQuery(sql)
         query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE)
+
+        println "sql:\n${sql}"
+        //println("cols: ${request?.selectedColumns?.join(',')}")
 
         List<Map<String, Object>> resultList = query.list()
         if (resultList.isEmpty()) {
@@ -304,22 +316,28 @@ class DataExportService {
     private void exportToZipBundle(ExportRequest request, OutputStream outputStream) {
         ZipOutputStream zipOut = new ZipOutputStream(outputStream)
 
-        // 1. Generate CSV Data
-        ByteArrayOutputStream csvOut = new ByteArrayOutputStream()
-        exportToCsvStream(request, csvOut)
-        byte[] csvBytes = csvOut.toByteArray()
+        // 1. Generate Data File (Excel or CSV)
+        ByteArrayOutputStream dataOut = new ByteArrayOutputStream()
+        if (request.format == DataExportFormat.EXCEL) {
+            exportToExcelStream(request, dataOut)
+        } else {
+            exportToCsvStream(request, dataOut)
+        }
+        byte[] dataBytes = dataOut.toByteArray()
+        def dataFilenameExtension = (request.format == DataExportFormat.EXCEL) ? "xlsx" : "csv"
         def baseName = "${request.datasetName?.toLowerCase()}"
-        def dataFilename = "${baseName}_data.csv"
+        def dataFilename = "${baseName}_data.${dataFilenameExtension}"
+        def mediaFolder = "media${File.separator}"
 
         zipOut.putNextEntry(new ZipEntry(dataFilename))
-        zipOut.write(csvBytes)
+        zipOut.write(dataBytes)
         zipOut.closeEntry()
 
         request.exportedDatasetFilename = dataFilename
-        request.exportedDatasetFilesize = csvBytes.length
+        request.exportedDatasetFilesize = dataBytes.length
 
         // 2. Generate Syntax Import Script
-        if (request.format != DataExportFormat.CSV && request.format != DataExportFormat.EXCEL) { //SCRIPTS ARE ONLY GENERATED FOR STATA/SPSS/R/SAS
+        if (isSyntaxScriptFormat(request.format)) { //SCRIPTS ARE ONLY GENERATED FOR STATA/SPSS/R/SAS
             String scriptExt = getScriptExtension(request.format)
             String scriptContent = generateSyntaxScript(request)
             String scriptFilename = "import_${baseName}${scriptExt}"
@@ -350,7 +368,21 @@ class DataExportService {
             request.exportedCookbookFilesize = dictBytes.length
         }
 
+        // 4. Add Media Files to zip bundle
+        if (request.includeMediaFiles && !request.exportedMediaFiles.empty) {
+            request.exportedMediaFiles.each { mediaFile ->
+                zipOut.putNextEntry(new ZipEntry(mediaFolder + mediaFile.getName()))
+                zipOut.write(mediaFile.bytes)
+                zipOut.closeEntry()
+            }
+
+        }
+
         zipOut.finish()
+    }
+
+    static boolean isSyntaxScriptFormat(DataExportFormat format) {
+        return format==DataExportFormat.R || format==DataExportFormat.SAS  || format==DataExportFormat.SPSS || format==DataExportFormat.STATA
     }
 
     // --- SQL Query Builders ---
@@ -435,7 +467,13 @@ class DataExportService {
                 WHERE 1=1
             """)
 
-            if (request.activeResidentsOnly) {
+            if (request.referenceDate) {
+                if (request.activeResidentsOnly) {
+                    sql.append(" AND r.start_date <= ${refDateStr} AND (r.end_type = 'NA' OR r.end_date IS NULL OR r.end_date >= ${refDateStr})")
+                } else {
+                    sql.append(" AND (r.start_date IS NULL OR r.start_date <= ${refDateStr})")
+                }
+            } else if (request.activeResidentsOnly) {
                 sql.append(" AND (r.end_type = 'NA' OR r.end_date IS NULL)")
             }
             if (request.gender && request.gender != "ALL") {
@@ -461,20 +499,23 @@ class DataExportService {
                 WHERE 1=1
             """)
 
-            if (request.activeResidentsOnly) {
-                sql.append(" AND (t.end_type = 'NA' OR t.end_date IS NULL)")
-            }
             if (request.gender && request.gender != "ALL") {
                 sql.append(" AND m.gender = '${request.gender}'")
             }
             if (request.ageMin != null) {
-                sql.append(" AND TIMESTAMPDIFF(YEAR, m.dob, t.start_date) >= ${request.ageMin}")
+                sql.append(" AND TIMESTAMPDIFF(YEAR, m.dob, ${refDateStr}) >= ${request.ageMin}")
             }
             if (request.ageMax != null) {
-                sql.append(" AND TIMESTAMPDIFF(YEAR, m.dob, t.start_date) <= ${request.ageMax}")
+                sql.append(" AND TIMESTAMPDIFF(YEAR, m.dob, ${refDateStr}) <= ${request.ageMax}")
             }
             if (request.referenceDate) {
-                sql.append(" AND t.start_date <= ${refDateStr} AND (t.end_date IS NULL OR t.end_date >= ${refDateStr})")
+                if (request.activeResidentsOnly) {
+                    sql.append(" AND t.start_date <= ${refDateStr} AND (t.end_type = 'NA' OR t.end_date IS NULL OR t.end_date >= ${refDateStr})")
+                } else {
+                    sql.append(" AND t.start_date <= ${refDateStr}")
+                }
+            } else if (request.activeResidentsOnly) {
+                sql.append(" AND (t.end_type = 'NA' OR t.end_date IS NULL)")
             }
             if (request.regionCode) {
                 sql.append(buildRegionFilterClause(request.regionCode, "h"))
@@ -490,20 +531,23 @@ class DataExportService {
                 WHERE 1=1
             """)
 
-            if (request.activeResidentsOnly) {
-                sql.append(" AND (t.end_type = 'NA' OR t.end_date IS NULL)")
-            }
             if (request.gender && request.gender != "ALL") {
                 sql.append(" AND m.gender = '${request.gender}'")
             }
             if (request.ageMin != null) {
-                sql.append(" AND TIMESTAMPDIFF(YEAR, m.dob, t.start_date) >= ${request.ageMin}")
+                sql.append(" AND TIMESTAMPDIFF(YEAR, m.dob, ${refDateStr}) >= ${request.ageMin}")
             }
             if (request.ageMax != null) {
-                sql.append(" AND TIMESTAMPDIFF(YEAR, m.dob, t.start_date) <= ${request.ageMax}")
+                sql.append(" AND TIMESTAMPDIFF(YEAR, m.dob, ${refDateStr}) <= ${request.ageMax}")
             }
             if (request.referenceDate) {
-                sql.append(" AND t.start_date <= ${refDateStr} AND (t.end_date IS NULL OR t.end_date >= ${refDateStr})")
+                if (request.activeResidentsOnly) {
+                    sql.append(" AND t.start_date <= ${refDateStr} AND (t.end_type = 'NA' OR t.end_date IS NULL OR t.end_date >= ${refDateStr})")
+                } else {
+                    sql.append(" AND t.start_date <= ${refDateStr}")
+                }
+            } else if (request.activeResidentsOnly) {
+                sql.append(" AND (t.end_type = 'NA' OR t.end_date IS NULL)")
             }
             if (request.regionCode) {
                 sql.append(buildRegionFilterClause(request.regionCode, "h"))
@@ -519,20 +563,23 @@ class DataExportService {
                 WHERE 1=1
             """)
 
-            if (request.activeResidentsOnly) { //currently married
-                sql.append(" AND (t.end_status IS NULL OR t.end_status = 'NA' OR t.end_date IS NULL)")
-            }
             if (request.gender && request.gender != "ALL") {
                 sql.append(" AND (mA.gender = '${request.gender}' OR mB.gender = '${request.gender}')")
             }
             if (request.ageMin != null) {
-                sql.append(" AND (TIMESTAMPDIFF(YEAR, mA.dob, t.start_date) >= ${request.ageMin} OR TIMESTAMPDIFF(YEAR, mB.dob, t.start_date) >= ${request.ageMin})")
+                sql.append(" AND (TIMESTAMPDIFF(YEAR, mA.dob, ${refDateStr}) >= ${request.ageMin} OR TIMESTAMPDIFF(YEAR, mB.dob, ${refDateStr}) >= ${request.ageMin})")
             }
             if (request.ageMax != null) {
-                sql.append(" AND (TIMESTAMPDIFF(YEAR, mA.dob, t.start_date) <= ${request.ageMax} OR TIMESTAMPDIFF(YEAR, mB.dob, t.start_date) <= ${request.ageMax})")
+                sql.append(" AND (TIMESTAMPDIFF(YEAR, mA.dob, ${refDateStr}) <= ${request.ageMax} OR TIMESTAMPDIFF(YEAR, mB.dob, ${refDateStr}) <= ${request.ageMax})")
             }
             if (request.referenceDate) {
-                sql.append(" AND t.start_date <= ${refDateStr} AND (t.end_date IS NULL OR t.end_date >= ${refDateStr})")
+                if (request.activeResidentsOnly) {
+                    sql.append(" AND t.start_date <= ${refDateStr} AND (t.end_status IS NULL OR t.end_status = 'NA' OR t.end_date IS NULL OR t.end_date >= ${refDateStr})")
+                } else {
+                    sql.append(" AND t.start_date <= ${refDateStr}")
+                }
+            } else if (request.activeResidentsOnly) {
+                sql.append(" AND (t.end_status IS NULL OR t.end_status = 'NA' OR t.end_date IS NULL)")
             }
             if (request.regionCode) {
                 Region reg = Region.findByCode(request.regionCode.trim())
@@ -565,10 +612,10 @@ class DataExportService {
                 sql.append(" AND (mA.gender = '${request.gender}' OR mB.gender = '${request.gender}')")
             }
             if (request.ageMin != null) {
-                sql.append(" AND (TIMESTAMPDIFF(YEAR, mA.dob, v.visit_date) >= ${request.ageMin} OR TIMESTAMPDIFF(YEAR, mB.dob, v.visit_date) >= ${request.ageMin})")
+                sql.append(" AND (TIMESTAMPDIFF(YEAR, mA.dob, ${refDateStr}) >= ${request.ageMin} OR TIMESTAMPDIFF(YEAR, mB.dob, ${refDateStr}) >= ${request.ageMin})")
             }
             if (request.ageMax != null) {
-                sql.append(" AND (TIMESTAMPDIFF(YEAR, mA.dob, v.visit_date) <= ${request.ageMax} OR TIMESTAMPDIFF(YEAR, mB.dob, v.visit_date) <= ${request.ageMax})")
+                sql.append(" AND (TIMESTAMPDIFF(YEAR, mA.dob, ${refDateStr}) <= ${request.ageMax} OR TIMESTAMPDIFF(YEAR, mB.dob, ${refDateStr}) <= ${request.ageMax})")
             }
             if (request.referenceDate) {
                 sql.append(" AND v.visit_date <= ${refDateStr}")
@@ -633,10 +680,10 @@ class DataExportService {
                 sql.append(" AND m.gender = '${request.gender}'")
             }
             if (request.ageMin != null) {
-                sql.append(" AND TIMESTAMPDIFF(YEAR, m.dob, ${dateCol}) >= ${request.ageMin}")
+                sql.append(" AND TIMESTAMPDIFF(YEAR, m.dob, ${refDateStr}) >= ${request.ageMin}")
             }
             if (request.ageMax != null) {
-                sql.append(" AND TIMESTAMPDIFF(YEAR, m.dob, ${dateCol}) <= ${request.ageMax}")
+                sql.append(" AND TIMESTAMPDIFF(YEAR, m.dob, ${refDateStr}) <= ${request.ageMax}")
             }
             if (request.referenceDate) {
                 sql.append(" AND ${dateCol} <= ${refDateStr}")
@@ -658,10 +705,10 @@ class DataExportService {
             """)
 
             if (request.ageMin != null) {
-                sql.append(" AND TIMESTAMPDIFF(YEAR, mother.dob, po.outcome_date) >= ${request.ageMin}")
+                sql.append(" AND TIMESTAMPDIFF(YEAR, mother.dob, ${refDateStr}) >= ${request.ageMin}")
             }
             if (request.ageMax != null) {
-                sql.append(" AND TIMESTAMPDIFF(YEAR, mother.dob, po.outcome_date) <= ${request.ageMax}")
+                sql.append(" AND TIMESTAMPDIFF(YEAR, mother.dob, ${refDateStr}) <= ${request.ageMax}")
             }
             if (request.referenceDate) {
                 sql.append(" AND po.outcome_date <= ${refDateStr}")
@@ -682,10 +729,10 @@ class DataExportService {
             """)
 
             if (request.ageMin != null) {
-                sql.append(" AND TIMESTAMPDIFF(YEAR, mother.dob, v.visit_date) >= ${request.ageMin}")
+                sql.append(" AND TIMESTAMPDIFF(YEAR, mother.dob, ${refDateStr}) >= ${request.ageMin}")
             }
             if (request.ageMax != null) {
-                sql.append(" AND TIMESTAMPDIFF(YEAR, mother.dob, v.visit_date) <= ${request.ageMax}")
+                sql.append(" AND TIMESTAMPDIFF(YEAR, mother.dob, ${refDateStr}) <= ${request.ageMax}")
             }
             if (request.referenceDate) {
                 sql.append(" AND v.visit_date <= ${refDateStr}")
@@ -706,10 +753,10 @@ class DataExportService {
             """)
 
             if (request.ageMin != null) {
-                sql.append(" AND TIMESTAMPDIFF(YEAR, mother.dob, pv.visit_date) >= ${request.ageMin}")
+                sql.append(" AND TIMESTAMPDIFF(YEAR, mother.dob, ${refDateStr}) >= ${request.ageMin}")
             }
             if (request.ageMax != null) {
-                sql.append(" AND TIMESTAMPDIFF(YEAR, mother.dob, pv.visit_date) <= ${request.ageMax}")
+                sql.append(" AND TIMESTAMPDIFF(YEAR, mother.dob, ${refDateStr}) <= ${request.ageMax}")
             }
             if (request.referenceDate) {
                 sql.append(" AND pv.visit_date <= ${refDateStr}")
@@ -730,10 +777,10 @@ class DataExportService {
             """)
 
             if (request.ageMin != null) {
-                sql.append(" AND TIMESTAMPDIFF(YEAR, mother.dob, v.visit_date) >= ${request.ageMin}")
+                sql.append(" AND TIMESTAMPDIFF(YEAR, mother.dob, ${refDateStr}) >= ${request.ageMin}")
             }
             if (request.ageMax != null) {
-                sql.append(" AND TIMESTAMPDIFF(YEAR, mother.dob, v.visit_date) <= ${request.ageMax}")
+                sql.append(" AND TIMESTAMPDIFF(YEAR, mother.dob, ${refDateStr}) <= ${request.ageMax}")
             }
             if (request.referenceDate) {
                 sql.append(" AND v.visit_date <= ${refDateStr}")
@@ -758,10 +805,10 @@ class DataExportService {
             """)
 
             if (request.ageMin != null && dateCol) {
-                sql.append(" AND TIMESTAMPDIFF(YEAR, mother.dob, ${dateCol}) >= ${request.ageMin}")
+                sql.append(" AND TIMESTAMPDIFF(YEAR, mother.dob, ${refDateStr}) >= ${request.ageMin}")
             }
             if (request.ageMax != null && dateCol) {
-                sql.append(" AND TIMESTAMPDIFF(YEAR, mother.dob, ${dateCol}) <= ${request.ageMax}")
+                sql.append(" AND TIMESTAMPDIFF(YEAR, mother.dob, ${refDateStr}) <= ${request.ageMax}")
             }
             if (request.referenceDate && dateCol) {
                 sql.append(" AND ${dateCol} <= ${refDateStr}")
@@ -966,10 +1013,10 @@ class DataExportService {
         """)
 
         if (request.ageMin != null) {
-            sql.append(" AND TIMESTAMPDIFF(YEAR, m.dob, po.outcome_date) >= ${request.ageMin}")
+            sql.append(" AND TIMESTAMPDIFF(YEAR, m.dob, ${refDateStr}) >= ${request.ageMin}")
         }
         if (request.ageMax != null) {
-            sql.append(" AND TIMESTAMPDIFF(YEAR, m.dob, po.outcome_date) <= ${request.ageMax}")
+            sql.append(" AND TIMESTAMPDIFF(YEAR, m.dob, ${refDateStr}) <= ${request.ageMax}")
         }
         if (request.referenceDate) {
             sql.append(" AND po.outcome_date <= ${refDateStr}")
@@ -1014,10 +1061,10 @@ class DataExportService {
         """)
 
         if (request.ageMin != null) {
-            sql.append(" AND TIMESTAMPDIFF(YEAR, m.dob, po.outcome_date) >= ${request.ageMin}")
+            sql.append(" AND TIMESTAMPDIFF(YEAR, m.dob, ${refDateStr}) >= ${request.ageMin}")
         }
         if (request.ageMax != null) {
-            sql.append(" AND TIMESTAMPDIFF(YEAR, m.dob, po.outcome_date) <= ${request.ageMax}")
+            sql.append(" AND TIMESTAMPDIFF(YEAR, m.dob, ${refDateStr}) <= ${request.ageMax}")
         }
         if (request.referenceDate) {
             sql.append(" AND po.outcome_date <= ${refDateStr}")
@@ -1134,64 +1181,77 @@ class DataExportService {
         Map<String, Object> processed = new LinkedHashMap<>()
 
         rawRow.each { k, val ->
-            String origColName = k.toString()
-            String colName = origColName.toLowerCase()
+            String dbColName = k.toString()
+            //println "origColName ${request.datasetName}.${dbColName}"
+            String colName = dbColName.toLowerCase()
             Object value = val
 
-            DataDictionaryService.ColumnMetadata colMeta = dataDictionaryService.getColumnMetadata(request.datasetName, origColName)
-            SensitiveType sensType = colMeta?.sensitiveType ?: SensitiveType.NOT_APPLICABLE
+            if (value) {
 
-            // 1. Person Names
-            if (sensType == SensitiveType.PERSON_NAME) {
-                if (request.nameAnonymizationMode == NameAnonymizationMode.REMOVE) {
-                    return // Skip column
-                } else if (request.nameAnonymizationMode == NameAnonymizationMode.INITIALS) {
-                    value = value ? maskName(value.toString()) : value
-                }
-            }
-            // 2. Phone Numbers
-            else if (sensType == SensitiveType.PHONE_NUMBER) {
-                if (request.phoneAnonymizationMode == PhoneAnonymizationMode.REMOVE) {
-                    return // Skip column
-                } else if (request.phoneAnonymizationMode == PhoneAnonymizationMode.MASK) {
-                    value = value ? PHONE_MASK_TEMPLATE : value
-                }
-            }
-            // 3. GPS Coordinates
-            else if (sensType == SensitiveType.GPS) {
-                if (request.gpsAnonymizationMode == GpsAnonymizationMode.REMOVE) {
-                    return // Skip column
-                } else if (request.gpsAnonymizationMode == GpsAnonymizationMode.ROUNDED) {
-                    if (value instanceof Double) {
-                        value = Math.round(((Double) value).doubleValue() * 100.0) / 100.0
+                DataDictionaryService.ColumnMetadata colMeta = dataDictionaryService.getColumnMetadata(request.datasetName, dbColName)
+                SensitiveType sensType = colMeta?.sensitiveType ?: SensitiveType.NOT_APPLICABLE
+
+                // 1. Person Names
+                if (sensType == SensitiveType.PERSON_NAME) {
+                    if (request.nameAnonymizationMode == NameAnonymizationMode.REMOVE) {
+                        return // Skip column
+                    } else if (request.nameAnonymizationMode == NameAnonymizationMode.INITIALS) {
+                        value = maskName(value.toString())
                     }
                 }
-            }
-            // 4. Dates
-            else if (sensType == SensitiveType.DATE) {
-
-                if (request.dateAnonymizationMode == DateAnonymizationMode.REMOVE) {
-                    return // Skip column
-                } else if (request.dateAnonymizationMode == DateAnonymizationMode.SHIFT_DATES && value != null) {
-                    if (value instanceof LocalDate) {
-                        value = ((LocalDate) value).minusDays(DATE_SHIFT_OFFSET_DAYS)
-                    } else {
-                        try {
-                            String s = value.toString()
-                            if (s.length() >= 10) {
-                                LocalDate parsed = LocalDate.parse(s.substring(0, 10))
-                                value = parsed.minusDays(DATE_SHIFT_OFFSET_DAYS).toString()
-                            }
-                        } catch (Exception e) {
-                            // Keep original if unparseable
+                // 2. Phone Numbers
+                else if (sensType == SensitiveType.PHONE_NUMBER) {
+                    if (request.phoneAnonymizationMode == PhoneAnonymizationMode.REMOVE) {
+                        return // Skip column
+                    } else if (request.phoneAnonymizationMode == PhoneAnonymizationMode.MASK) {
+                        value = PHONE_MASK_TEMPLATE
+                    }
+                }
+                // 3. GPS Coordinates
+                else if (sensType == SensitiveType.GPS) {
+                    if (request.gpsAnonymizationMode == GpsAnonymizationMode.REMOVE) {
+                        return // Skip column
+                    } else if (request.gpsAnonymizationMode == GpsAnonymizationMode.ROUNDED) {
+                        if (value instanceof Double) {
+                            value = Math.round(((Double) value).doubleValue() * 100.0) / 100.0
                         }
                     }
                 }
-            }
+                // 4. Dates
+                else if (sensType == SensitiveType.DATE) {
 
-            // Clean unlocalized i18n keys from data values
-            if (value != null && (value.toString() == "member.unknown.label" || value.toString() == "member.unknown")) {
-                value = generalUtilitiesService.getMessage("member.unknown.label", "")
+                    if (request.dateAnonymizationMode == DateAnonymizationMode.REMOVE) {
+                        return // Skip column
+                    } else if (request.dateAnonymizationMode == DateAnonymizationMode.SHIFT_DATES && value != null) {
+                        if (value instanceof LocalDate) {
+                            value = ((LocalDate) value).minusDays(DATE_SHIFT_OFFSET_DAYS)
+                        } else {
+                            try {
+                                String s = value.toString()
+                                if (s.length() >= 10) {
+                                    LocalDate parsed = LocalDate.parse(s.substring(0, 10))
+                                    value = parsed.minusDays(DATE_SHIFT_OFFSET_DAYS).toString()
+                                }
+                            } catch (Exception e) {
+                                // Keep original if unparseable
+                            }
+                        }
+                    }
+                }
+
+                // Clean unlocalized i18n keys from data values
+                if (value != null && (value.toString() == "member.unknown.label" || value.toString() == "member.unknown")) {
+                    value = generalUtilitiesService.getMessage("member.unknown.label", "")
+                }
+
+                // Save media files
+                if (request.includeMediaFiles && colMeta?.isMediaColumn && value != null) {
+                    def mediaFile = new File(SystemPath.externalDocsPath, value.toString())
+                    println "file ${value.toString()} - exists = ${mediaFile.exists()}"
+                    if (mediaFile.exists()) {
+                        request.exportedMediaFiles.add(mediaFile)
+                    }
+                }
             }
 
             processed.put(k, value)
@@ -1665,6 +1725,7 @@ class DataExportService {
 
     private String getExportFileExtension(ExportRequest request) {
         DataExportFormat format = request.format
+        if (request.includeMediaFiles) return ".zip"
         if (format == DataExportFormat.EXCEL) return ".xlsx"
         if (format == DataExportFormat.CSV && !request.includeDictionary) return ".csv"
         return ".zip"
@@ -1684,8 +1745,9 @@ class DataExportService {
         String regionCode
         Double randomSamplePercent = 100.0
         List<String> selectedColumns = []
-        Boolean includeDictionary = true
-        Boolean activeResidentsOnly = true
+        Boolean includeMediaFiles = true
+        Boolean includeDictionary = false
+        Boolean activeResidentsOnly = false
 
         // Granular Privacy Controls via Enums
         NameAnonymizationMode nameAnonymizationMode = NameAnonymizationMode.INITIALS
@@ -1699,7 +1761,12 @@ class DataExportService {
         Long exportedCookbookFilesize = 0L
         String exportedScriptFilename = ""
         Long exportedScriptFilesize = 0L
+        List<File> exportedMediaFiles = new ArrayList<>()
 
         Integer maxRows
+
+        boolean isExportingZip() {
+            return includeMediaFiles || isSyntaxScriptFormat(format) || (format == DataExportFormat.CSV && includeDictionary)
+        }
     }
 }

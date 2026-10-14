@@ -123,6 +123,9 @@ class DataExportController {
         String datasetName = params.datasetName ? params.datasetName.trim() : ""
         DataDictionaryService.TableMetadata meta = dataDictionaryService.getTableMetadata(datasetName)
 
+        //println "retrieve columns(${datasetName})"
+        //println "retrieved columns = ${meta?.columns?.keySet()?.join(",")}"
+
         if (meta) {
             List<Map<String, Object>> cols = meta.columns.values().collect { c ->
                 [
@@ -174,6 +177,7 @@ class DataExportController {
                 randomSamplePercent: req.randomSamplePercent,
                 selectedColumns: req.selectedColumns ? req.selectedColumns.join(",") : null,
                 includeDictionary: req.includeDictionary,
+                includeMediaFiles: req.includeMediaFiles,
                 activeResidentsOnly: req.activeResidentsOnly,
                 nameAnonymizationMode: req.nameAnonymizationMode,
                 phoneAnonymizationMode: req.phoneAnonymizationMode,
@@ -330,8 +334,9 @@ class DataExportController {
             }
         }
 
-        req.includeDictionary = params.includeDictionary ? params.includeDictionary.toBoolean() : true
-        req.activeResidentsOnly = params.activeResidentsOnly ? params.activeResidentsOnly.toBoolean() : true
+        req.includeDictionary = params.includeDictionary ? params.includeDictionary.toBoolean() : false
+        req.includeMediaFiles = params.includeMediaFiles ? params.includeMediaFiles.toBoolean() : false
+        req.activeResidentsOnly = params.activeResidentsOnly ? params.activeResidentsOnly.toBoolean() : false
 
         req.nameAnonymizationMode = NameAnonymizationMode.getFrom(params.nameAnonymizationMode) ?: NameAnonymizationMode.INITIALS
         req.phoneAnonymizationMode = PhoneAnonymizationMode.getFrom(params.phoneAnonymizationMode) ?: PhoneAnonymizationMode.MASK

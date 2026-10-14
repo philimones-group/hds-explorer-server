@@ -33,6 +33,7 @@ class DataExportReport {
     Double randomSamplePercent
     String selectedColumns
     Boolean includeDictionary = true
+    Boolean includeMediaFiles = false
     Boolean activeResidentsOnly = true
 
     // Granular Anonymization & Privacy Enums
@@ -83,6 +84,7 @@ class DataExportReport {
         randomSamplePercent nullable: true
         selectedColumns nullable: true, maxSize: 4000
         includeDictionary nullable: false
+        includeMediaFiles nullable: false
         activeResidentsOnly nullable: false
 
         nameAnonymizationMode nullable: false
@@ -131,6 +133,7 @@ class DataExportReport {
         randomSamplePercent column: 'random_sample_percent'
         selectedColumns column: 'selected_columns', type: 'text'
         includeDictionary column: 'include_dictionary'
+        includeMediaFiles column: 'include_media_files'
         activeResidentsOnly column: 'active_residents_only'
 
         nameAnonymizationMode column: 'name_anonymization_mode', enumType: 'identity'
