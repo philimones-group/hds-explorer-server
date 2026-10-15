@@ -434,22 +434,29 @@ class DataDictionaryService {
                         label: col?.getLabel() + (labelSuffix ? " (${labelSuffix})" : "") ?: formColName
                 )
 
-                if (col != null && col.getTypeOptions()) {
-                    String enumTypeName = "EXT_${extTableName}_${dbColName}"
-                    EnumTypeMetadata enumType = new EnumTypeMetadata(
-                            enumTypeName: enumTypeName,
-                            description: "Choices for ${formColName}"
-                    )
-                    for (def toption : col.getTypeOptions().entrySet()) {
-                        enumType.addOption(new EnumOptionMetadata(
-                                enumTypeName: enumTypeName,
-                                code: toption.key,
-                                label: toption.value.label,
-                                description: toption.value.label
-                        ))
+                if (col != null && col.getTypeOptions() != null && !col.getTypeOptions().isEmpty()) {
+                    def validOptionsMap = col.getTypeOptions().entrySet().findAll { entry ->
+                        entry.key != null && !entry.key.toString().trim().isEmpty()
                     }
-                    enumsMap.put(enumTypeName, enumType)
-                    colMeta.enumTypeName = enumTypeName
+                    if (!validOptionsMap.isEmpty()) {
+                        String enumTypeName = "EXT_${extTableName}_${dbColName}"
+                        EnumTypeMetadata enumType = new EnumTypeMetadata(
+                                enumTypeName: enumTypeName,
+                                description: "Choices for ${formColName}"
+                        )
+                        for (def toption : validOptionsMap) {
+                            String code = toption.key.toString().trim()
+                            String label = toption.value?.label ? toption.value.label.trim() : code
+                            enumType.addOption(new EnumOptionMetadata(
+                                    enumTypeName: enumTypeName,
+                                    code: code,
+                                    label: label,
+                                    description: label
+                            ))
+                        }
+                        enumsMap.put(enumTypeName, enumType)
+                        colMeta.enumTypeName = enumTypeName
+                    }
                 }
 
                 extTableMeta.addColumn(colMeta)
@@ -521,22 +528,29 @@ class DataDictionaryService {
                         colMeta.description = colMeta.label
                     }
 
-                    if (col != null && col.getTypeOptions()?.size() > 0) {
-                        String enumTypeName = "EXT_${childTableName}_${cDbColName}"
-                        EnumTypeMetadata enumType = new EnumTypeMetadata(
-                                enumTypeName: enumTypeName,
-                                description: "Choices for ${cFormColName}"
-                        )
-                        for (def toption : col.getTypeOptions().entrySet()) {
-                            enumType.addOption(new EnumOptionMetadata(
-                                    enumTypeName: enumTypeName,
-                                    code: toption.key,
-                                    label: toption.value.label,
-                                    description: toption.value.label
-                            ))
+                    if (col != null && col.getTypeOptions() != null && !col.getTypeOptions().isEmpty()) {
+                        def validOptionsMap = col.getTypeOptions().entrySet().findAll { entry ->
+                            entry.key != null && !entry.key.toString().trim().isEmpty()
                         }
-                        enumsMap.put(enumTypeName, enumType)
-                        colMeta.enumTypeName = enumTypeName
+                        if (!validOptionsMap.isEmpty()) {
+                            String enumTypeName = "EXT_${childTableName}_${cDbColName}"
+                            EnumTypeMetadata enumType = new EnumTypeMetadata(
+                                    enumTypeName: enumTypeName,
+                                    description: "Choices for ${cFormColName}"
+                            )
+                            for (def toption : validOptionsMap) {
+                                String code = toption.key.toString().trim()
+                                String label = toption.value?.label ? toption.value.label.trim() : code
+                                enumType.addOption(new EnumOptionMetadata(
+                                        enumTypeName: enumTypeName,
+                                        code: code,
+                                        label: label,
+                                        description: label
+                                ))
+                            }
+                            enumsMap.put(enumTypeName, enumType)
+                            colMeta.enumTypeName = enumTypeName
+                        }
                     }
 
                     childMeta.addColumn(colMeta)

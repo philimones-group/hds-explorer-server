@@ -1354,6 +1354,8 @@ class DataExportService {
         String tableName = request.datasetName ?: "dataset"
         StringBuilder doScript = new StringBuilder()
         doScript.append("/* Stata Do-File for HDSS Data Export: ${tableName} */\n")
+        doScript.append("/* Optional: Set working directory to folder containing CSV data files */\n")
+        doScript.append("/* cd \"/path/to/folder\" */\n\n")
         doScript.append("clear all\n")
         doScript.append("set more off\n\n")
         doScript.append("/* Import CSV Dataset */\n")
@@ -1411,41 +1413,48 @@ class DataExportService {
                 if (colMeta.enumTypeName) {
                     DataDictionaryService.EnumTypeMetadata enumType = dataDictionaryService.getEnumTypeMetadata(colMeta.enumTypeName)
                     if (enumType && !enumType.options.isEmpty()) {
-                        String lblName = "${stCol}_lbl"
-
-                        // Check if options have integer numeric codes or string codes
-                        boolean isNumericCodes = enumType.options.every { opt ->
-                            opt.code != null && opt.code.matches(/^-?\d+$/)
+                        List<DataDictionaryService.EnumOptionMetadata> validOptions = enumType.options.findAll {
+                            it.code != null && !it.code.trim().isEmpty()
                         }
 
-                        if (isNumericCodes) {
-                            doScript.append("capture confirm variable ${stCol}\n")
-                            doScript.append("if !_rc {\n")
-                            doScript.append("    label define ${lblName}")
-                            enumType.options.each { opt ->
-                                doScript.append(" ${opt.code} \"${escapeQuote(opt.label)}\"")
+                        if (!validOptions.isEmpty()) {
+                            String lblName = "${stCol}_lbl"
+
+                            boolean isNumericCodes = validOptions.every { opt ->
+                                opt.code != null && opt.code.matches(/^-?\d+$/)
                             }
-                            doScript.append(", replace\n")
-                            doScript.append("    label values ${stCol} ${lblName}\n")
-                            doScript.append("}\n")
-                        } else {
-                            // String categorical codes: encode string column to numeric before labeling
-                            def sortedOpts = enumType.options.sort { a, b -> (a.code ?: "").compareTo(b.code ?: "") }
-                            doScript.append("capture confirm variable ${stCol}\n")
-                            doScript.append("if !_rc {\n")
-                            doScript.append("    label define ${lblName}")
-                            sortedOpts.eachWithIndex { opt, idx ->
-                                doScript.append(" ${idx + 1} \"${escapeQuote(opt.label)}\"")
+
+                            if (isNumericCodes) {
+                                doScript.append("capture confirm variable ${stCol}\n")
+                                doScript.append("if !_rc {\n")
+                                doScript.append("    capture label drop ${lblName}\n")
+                                doScript.append("    label define ${lblName}")
+                                validOptions.each { opt ->
+                                    doScript.append(" ${opt.code} \"${escapeQuote(opt.label)}\"")
+                                }
+                                doScript.append(", replace\n")
+                                doScript.append("    destring ${stCol}, replace\n")
+                                doScript.append("    label values ${stCol} ${lblName}\n")
+                                doScript.append("}\n")
+                            } else {
+                                def sortedOpts = validOptions.sort { a, b -> (a.code ?: "").compareTo(b.code ?: "") }
+                                doScript.append("capture confirm variable ${stCol}\n")
+                                doScript.append("if !_rc {\n")
+                                doScript.append("    capture label drop ${lblName}\n")
+                                doScript.append("    label define ${lblName}")
+                                sortedOpts.eachWithIndex { opt, idx ->
+                                    doScript.append(" ${idx + 1} \"${escapeQuote(opt.label)}\"")
+                                }
+                                doScript.append(", replace\n")
+                                doScript.append("    encode ${stCol}, gen(${stCol}_encoded)\n")
+                                doScript.append("    label values ${stCol}_encoded ${lblName}\n")
+                                doScript.append("    drop ${stCol}\n")
+                                doScript.append("    rename ${stCol}_encoded ${stCol}\n")
+                                if (label) {
+                                    doScript.append("    capture label variable ${stCol} \"${escapeQuote(label)}\"\n")
+                                }
+                                doScript.append("}\n")
                             }
-                            doScript.append(", replace\n")
-                            doScript.append("    encode ${stCol}, gen(${stCol}_encoded)\n")
-                            doScript.append("    label values ${stCol}_encoded ${lblName}\n")
-                            doScript.append("    drop ${stCol}\n")
-                            doScript.append("    rename ${stCol}_encoded ${stCol}\n")
-                            if (label) {
-                                doScript.append("    capture label variable ${stCol} \"${escapeQuote(label)}\"\n")
-                            }
-                            doScript.append("}\n")
                         }
                     }
                 }
@@ -1461,6 +1470,8 @@ class DataExportService {
         String tableName = request.datasetName ?: "dataset"
         StringBuilder spss = new StringBuilder()
         spss.append("/* SPSS Syntax Script for HDSS Data Export: ${tableName} */\n")
+        spss.append("/* Optional: Set working directory to folder containing CSV data files */\n")
+        spss.append("/* CD '/path/to/folder'. */\n\n")
         spss.append("GET DATA\n  /TYPE=TXT\n  /FILE=\"${tableName}_data.csv\"\n")
         spss.append("  /ARRANGEMENT=DELIMITED\n  /DELCASE=LINE\n  /FIRSTCASE=2\n")
         spss.append("  /DELIMITERS=\",\"\n  /QUALIFIER='\"'\n")
@@ -1556,6 +1567,8 @@ class DataExportService {
         String tableName = request.datasetName ?: "dataset"
         StringBuilder r = new StringBuilder()
         r.append("# R Import Script for HDSS Data Export: ${tableName}\n")
+        r.append("# Optional: Set working directory to folder containing CSV data files\n")
+        r.append("# setwd(\"/path/to/folder\")\n\n")
         r.append("df <- read.csv(\"${tableName}_data.csv\", stringsAsFactors = FALSE, encoding = \"UTF-8\")\n\n")
 
         DataDictionaryService.TableMetadata meta = dataDictionaryService.getTableMetadata(tableName)
@@ -1590,9 +1603,14 @@ class DataExportService {
                 if (colMeta.enumTypeName) {
                     DataDictionaryService.EnumTypeMetadata enumType = dataDictionaryService.getEnumTypeMetadata(colMeta.enumTypeName)
                     if (enumType && !enumType.options.isEmpty()) {
-                        String levels = enumType.options.collect { "\"${escapeQuote(it.code)}\"" }.join(", ")
-                        String labels = enumType.options.collect { "\"${escapeQuote(it.label)}\"" }.join(", ")
-                        r.append("if (\"${rCol}\" %in% colnames(df)) df\$${rCol} <- factor(df\$${rCol}, levels = c(${levels}), labels = c(${labels}))\n")
+                        List<DataDictionaryService.EnumOptionMetadata> validOptions = enumType.options.findAll {
+                            it.code != null && !it.code.trim().isEmpty()
+                        }
+                        if (!validOptions.isEmpty()) {
+                            String levels = validOptions.collect { "\"${escapeQuote(it.code)}\"" }.join(", ")
+                            String labels = validOptions.collect { "\"${escapeQuote(it.label)}\"" }.join(", ")
+                            r.append("if (\"${rCol}\" %in% colnames(df)) df\$${rCol} <- factor(df\$${rCol}, levels = c(${levels}), labels = c(${labels}))\n")
+                        }
                     }
                 }
             }
@@ -1609,6 +1627,14 @@ class DataExportService {
 
         StringBuilder sas = new StringBuilder()
         sas.append("/* SAS Import Script for HDSS Data Export: ${tableName} */\n")
+        sas.append("/* Optional: Set working directory in SAS Studio / SAS Viya / SASApp Server */\n")
+        sas.append("/* Option 1 (SAS Studio / Files Home): */\n")
+        sas.append("/* %let home_dir = %sysget(HOME); */\n")
+        sas.append("/* %let rc = %sysfunc(dlgcdir(\"&home_dir\")); */\n")
+        sas.append("/* Option 2 (SAS Viya Studio Auto-detect Program Path): */\n")
+        sas.append("/* %let path = %substr(%sysget(SAS_EXECFILEPATH), 1, %eval(%length(%sysget(SAS_EXECFILEPATH)) - %length(%sysget(SAS_EXECFILENAME)))); */\n")
+        sas.append("/* Option 3 (SAS Custom Folder Path): */\n")
+        sas.append("/* %let path = /your/sas/folder/path; */\n\n")
         sas.append("PROC IMPORT DATAFILE=\"${tableName}_data.csv\"\n")
         sas.append("    OUT=WORK.${sasTable}\n")
         sas.append("    DBMS=CSV REPLACE;\n")
@@ -1626,20 +1652,25 @@ class DataExportService {
                 if (colMeta.enumTypeName) {
                     DataDictionaryService.EnumTypeMetadata enumType = dataDictionaryService.getEnumTypeMetadata(colMeta.enumTypeName)
                     if (enumType && !enumType.options.isEmpty()) {
-                        boolean isNumericCodes = enumType.options.every { opt ->
-                            opt.code != null && opt.code.matches(/^-?\d+$/)
+                        List<DataDictionaryService.EnumOptionMetadata> validOptions = enumType.options.findAll {
+                            it.code != null && !it.code.trim().isEmpty()
                         }
+                        if (!validOptions.isEmpty()) {
+                            boolean isNumericCodes = validOptions.every { opt ->
+                                opt.code != null && opt.code.matches(/^-?\d+$/)
+                            }
 
-                        String fmtName = sasCol.length() > 28 ? sasCol.substring(0, 28) + "_f" : "${sasCol}_f"
-                        String fullFmt = isNumericCodes ? "${fmtName}" : "\$${fmtName}"
+                            String fmtName = sasCol.length() > 28 ? sasCol.substring(0, 28) + "_f" : "${sasCol}_f"
+                            String fullFmt = isNumericCodes ? "${fmtName}" : "\$${fmtName}"
 
-                        procFormat.append("    VALUE ${fullFmt}\n")
-                        enumType.options.each { opt ->
-                            String valSpec = isNumericCodes ? "${opt.code}" : "'${escapeQuote(opt.code)}'"
-                            procFormat.append("        ${valSpec} = \"${escapeQuote(opt.label)}\"\n")
+                            procFormat.append("    VALUE ${fullFmt}\n")
+                            validOptions.each { opt ->
+                                String valSpec = isNumericCodes ? "${opt.code}" : "'${escapeQuote(opt.code)}'"
+                                procFormat.append("        ${valSpec} = \"${escapeQuote(opt.label)}\"\n")
+                            }
+                            procFormat.append("    ;\n")
+                            columnFormatMap.put(sasCol, "${fullFmt}.")
                         }
-                        procFormat.append("    ;\n")
-                        columnFormatMap.put(sasCol, "${fullFmt}.")
                     }
                 }
             }
@@ -1751,7 +1782,9 @@ class DataExportService {
     private String generateMasterRScript(ExportRequest request) {
         List<String> allTables = getAllExportTableNames(request)
         StringBuilder r = new StringBuilder()
-        r.append("# Master R Import Script for HDSS Data Export: ${request.datasetName}\n\n")
+        r.append("# Master R Import Script for HDSS Data Export: ${request.datasetName}\n")
+        r.append("# Optional: Set working directory to folder containing CSV data files\n")
+        r.append("# setwd(\"/path/to/folder\")\n\n")
 
         List<String> rDataFrames = []
 
@@ -1766,8 +1799,11 @@ class DataExportService {
             ExportRequest tableReq = new ExportRequest(datasetName: tableName, format: request.format)
             String singleTableScript = generateRScript(tableReq)
 
+            // Strip header comments from individual block
+            String cleanedBlock = singleTableScript.replace("# Optional: Set working directory to folder containing CSV data files\n# setwd(\"/path/to/folder\")\n\n", "")
+
             // Customize data frame variable name from df to df_<tableName>
-            String customizedScript = singleTableScript
+            String customizedScript = cleanedBlock
                     .replace("df <- read.csv(\"${tableName}_data.csv\"", "${varName} <- read.csv(\"${tableName}_data.csv\"")
                     .replace("df\$", "${varName}\$")
                     .replace("summary(df)", "summary(${varName})")
@@ -1787,11 +1823,19 @@ class DataExportService {
     private String generateMasterSasScript(ExportRequest request) {
         List<String> allTables = getAllExportTableNames(request)
         StringBuilder sas = new StringBuilder()
-        sas.append("/* Master SAS Import Script for HDSS Data Export: ${request.datasetName} */\n\n")
+        sas.append("/* Master SAS Import Script for HDSS Data Export: ${request.datasetName} */\n")
+        sas.append("/* Optional: Set working directory in SAS Studio / SAS Viya / SASApp Server */\n")
+        sas.append("/* Option 1 (SAS Studio / Files Home): */\n")
+        sas.append("/* %let home_dir = %sysget(HOME); */\n")
+        sas.append("/* %let rc = %sysfunc(dlgcdir(\"&home_dir\")); */\n")
+        sas.append("/* Option 2 (SAS Viya Studio Auto-detect Program Path): */\n")
+        sas.append("/* %let path = %substr(%sysget(SAS_EXECFILEPATH), 1, %eval(%length(%sysget(SAS_EXECFILEPATH)) - %length(%sysget(SAS_EXECFILENAME)))); */\n")
+        sas.append("/* Option 3 (SAS Custom Folder Path): */\n")
+        sas.append("/* %let path = /your/sas/folder/path; */\n\n")
 
         allTables.eachWithIndex { tableName, idx ->
             sas.append("/* ==================================================================== */\n")
-            sas.append("/* Table ${idx + 1}: ${tableName}\n")
+            sas.append("/* Table ${idx + 1}: ${tableName} */\n")
             sas.append("/* ==================================================================== */\n")
 
             ExportRequest tableReq = new ExportRequest(datasetName: tableName, format: request.format)
