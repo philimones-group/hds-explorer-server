@@ -1742,19 +1742,22 @@ class DataExportService {
         List<String> allTables = getAllExportTableNames(request)
         StringBuilder doScript = new StringBuilder()
         doScript.append("/* Master Stata Do-File for HDSS Data Export: ${request.datasetName} */\n")
+        doScript.append("/* Optional: Set working directory to folder containing CSV data files */\n")
+        doScript.append("/* cd \"/path/to/folder\" */\n\n")
         doScript.append("clear all\n")
         doScript.append("set more off\n\n")
 
         allTables.eachWithIndex { tableName, idx ->
             doScript.append("/* ==================================================================== */\n")
-            doScript.append("/* Table ${idx + 1}: ${tableName}\n")
+            doScript.append("/* Table ${idx + 1}: ${tableName} */\n")
             doScript.append("/* ==================================================================== */\n")
 
             ExportRequest tableReq = new ExportRequest(datasetName: tableName, format: request.format)
             String singleTableScript = generateStataDoScript(tableReq)
 
-            // Strip header "clear all\nset more off\n\n" from individual script to keep master do-file clean
+            // Strip header "clear all\nset more off\n\n" and cd comments from individual script block
             String cleanedBlock = singleTableScript.replace("clear all\nset more off\n\n", "")
+            cleanedBlock = cleanedBlock.replace("/* Optional: Set working directory to folder containing CSV data files */\n/* cd \"/path/to/folder\" */\n\n", "")
             doScript.append(cleanedBlock).append("\n\n")
         }
 
@@ -1764,11 +1767,13 @@ class DataExportService {
     private String generateMasterSpssScript(ExportRequest request) {
         List<String> allTables = getAllExportTableNames(request)
         StringBuilder spss = new StringBuilder()
-        spss.append("/* Master SPSS Syntax Script for HDSS Data Export: ${request.datasetName} */\n\n")
+        spss.append("/* Master SPSS Syntax Script for HDSS Data Export: ${request.datasetName} */\n")
+        spss.append("/* Optional: Set working directory to folder containing CSV data files */\n")
+        spss.append("/* CD '/path/to/folder'. */\n\n")
 
         allTables.eachWithIndex { tableName, idx ->
             spss.append("/* ==================================================================== */\n")
-            spss.append("/* Table ${idx + 1}: ${tableName}\n")
+            spss.append("/* Table ${idx + 1}: ${tableName} */\n")
             spss.append("/* ==================================================================== */\n")
 
             ExportRequest tableReq = new ExportRequest(datasetName: tableName, format: request.format)
