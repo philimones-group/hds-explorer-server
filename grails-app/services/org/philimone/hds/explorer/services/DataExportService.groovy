@@ -377,8 +377,8 @@ class DataExportService {
             }
         }
 
-        // 2. Generate Syntax Import Script
-        if (isSyntaxScriptFormat(request.format)) { //SCRIPTS ARE ONLY GENERATED FOR STATA/SPSS/R/SAS
+        // 2. Generate Syntax Import Script (Single Master Script if repeat tables exist)
+        if (isSyntaxScriptFormat(request.format)) { // SCRIPTS ARE ONLY GENERATED FOR STATA/SPSS/R/SAS
             String scriptExt = getScriptExtension(request.format)
             String scriptContent = generateSyntaxScript(request)
             String scriptFilename = "import_${baseName}${scriptExt}"
@@ -390,20 +390,6 @@ class DataExportService {
 
             request.exportedScriptFilename = scriptFilename
             request.exportedScriptFilesize = scriptBytes.length
-
-            // Syntax scripts for child repeat tables
-            if (request.hasRepeatTables) {
-                List<DataDictionaryService.TableMetadata> repeatTables = dataDictionaryService.getAllDescendantRepeatTables(request.datasetName)
-                repeatTables.each { childMeta ->
-                    String childScriptContent = generateSyntaxScriptForTable(childMeta.tableName, request)
-                    String childScriptFilename = "import_${childMeta.tableName.toLowerCase()}${scriptExt}"
-
-                    byte[] cScriptBytes = childScriptContent.getBytes("UTF-8")
-                    zipOut.putNextEntry(new ZipEntry(childScriptFilename))
-                    zipOut.write(cScriptBytes)
-                    zipOut.closeEntry()
-                }
-            }
         }
 
         // 3. Generate Data Dictionary Excel
@@ -1337,6 +1323,10 @@ class DataExportService {
     // --- Statistical Script Generators ---
 
     private String generateSyntaxScript(ExportRequest request) {
+        if (request.hasRepeatTables) {
+            return generateMasterSyntaxScript(request)
+        }
+
         def fmt = request.format
 
         switch (fmt) {
@@ -1483,28 +1473,14 @@ class DataExportService {
             meta.columns.each { colName, colMeta ->
                 i++
                 String spCol = sanitizeColumnName(colName)
-                String dataType = colMeta.dataType ? colMeta.dataType.toUpperCase() : ""
-                String fmt = "A255"
-
-                if (dataType.contains("INT") || dataType.contains("LONG") || dataType.contains("SHORT")) {
-                    fmt = "F12.0"
-                } else if (dataType.contains("DOUBLE") || dataType.contains("FLOAT") || dataType.contains("DECIMAL") || dataType.contains("NUMERIC")) {
-                    fmt = "F12.4"
-                } else if (dataType.contains("BOOLEAN") || dataType.contains("BOOL")) {
-                    fmt = "A5"
-                } else if (dataType.contains("DATE") && !dataType.contains("TIME")) {
-                    fmt = "A10"
-                } else if (dataType.contains("DATETIME") || dataType.contains("TIMESTAMP") || dataType.contains("TIME")) {
-                    fmt = "A25"
-                }
-
                 String term = (i == colCount) ? "." : ""
-                spss.append("    ${spCol} ${fmt}${term}\n")
+                spss.append("    ${spCol} A255${term}\n")
             }
         } else {
             spss.append(".\n")
         }
-        spss.append("EXECUTE.\n\n")
+        spss.append("EXECUTE.\n")
+        spss.append("DATASET NAME ${sanitizeColumnName(tableName)} WINDOW=FRONT.\n\n")
 
         if (meta) {
             spss.append("/* Variable Descriptions */\n")
@@ -1518,42 +1494,58 @@ class DataExportService {
             }
             spss.append(".\nEXECUTE.\n\n")
 
-            // Value labels for categorical enum fields
+            // Data Type Conversions via ALTER TYPE (Handles blank CSV strings cleanly)
+            spss.append("/* Data Type Conversions */\n")
+            meta.columns.each { colName, colMeta ->
+                String spCol = sanitizeColumnName(colName)
+                String dataType = colMeta.dataType ? colMeta.dataType.toUpperCase() : ""
+
+                boolean isInt = dataType.contains("INT") || dataType.contains("LONG") || dataType.contains("SHORT")
+                boolean isDouble = dataType.contains("DOUBLE") || dataType.contains("FLOAT") || dataType.contains("DECIMAL") || dataType.contains("NUMERIC")
+                boolean isDate = dataType.contains("DATE") && !dataType.contains("TIME")
+                boolean isDateTime = dataType.contains("DATETIME") || dataType.contains("TIMESTAMP") || dataType.contains("TIME")
+
+                if (isInt) {
+                    spss.append("ALTER TYPE ${spCol} (F12.0).\n")
+                } else if (isDouble) {
+                    spss.append("ALTER TYPE ${spCol} (F12.4).\n")
+                } else if (isDate) {
+                    spss.append("ALTER TYPE ${spCol} (SDATE10).\n")
+                } else if (isDateTime) {
+                    spss.append("ALTER TYPE ${spCol} (DATETIME20).\n")
+                }
+            }
+            spss.append("EXECUTE.\n\n")
+
+            // Value labels for categorical enum fields (filtering out blank option codes)
             spss.append("/* Value Labels for Categorical Variables */\n")
             meta.columns.each { colName, colMeta ->
                 String spCol = sanitizeColumnName(colName)
                 if (colMeta.enumTypeName) {
                     DataDictionaryService.EnumTypeMetadata enumType = dataDictionaryService.getEnumTypeMetadata(colMeta.enumTypeName)
                     if (enumType && !enumType.options.isEmpty()) {
-                        boolean isNumericCodes = enumType.options.every { opt ->
-                            opt.code != null && opt.code.matches(/^-?\d+$/)
+                        List<DataDictionaryService.EnumOptionMetadata> validOptions = enumType.options.findAll {
+                            it.code != null && !it.code.trim().isEmpty()
                         }
 
-                        spss.append("VALUE LABELS ${spCol}\n")
-                        enumType.options.each { opt ->
-                            String valSpec = isNumericCodes ? "${opt.code}" : "'${escapeQuote(opt.code)}'"
-                            spss.append("  ${valSpec} \"${escapeQuote(opt.label)}\"\n")
+                        if (!validOptions.isEmpty()) {
+                            boolean isNumericCodes = validOptions.every { opt ->
+                                opt.code != null && opt.code.matches(/^-?\d+$/)
+                            }
+
+                            spss.append("VALUE LABELS ${spCol}\n")
+                            validOptions.each { opt ->
+                                String valSpec = isNumericCodes ? "${opt.code}" : "'${escapeQuote(opt.code)}'"
+                                spss.append("  ${valSpec} \"${escapeQuote(opt.label)}\"\n")
+                            }
+                            spss.append(".\nEXECUTE.\n\n")
                         }
-                        spss.append(".\nEXECUTE.\n\n")
                     }
                 }
             }
 
-            // Date & Timestamp conversions using ALTER TYPE
-            spss.append("/* Date & Timestamp Conversions */\n")
-            meta.columns.each { colName, colMeta ->
-                String spCol = sanitizeColumnName(colName)
-                String dataType = colMeta.dataType ? colMeta.dataType.toUpperCase() : ""
-
-                boolean isDate = dataType.contains("DATE") && !dataType.contains("TIME")
-                boolean isDateTime = dataType.contains("DATETIME") || dataType.contains("TIMESTAMP") || dataType.contains("TIME")
-
-                if (isDate) {
-                    spss.append("ALTER TYPE ${spCol} (SDATE10).\n")
-                } else if (isDateTime) {
-                    spss.append("ALTER TYPE ${spCol} (DATETIME20).\n")
-                }
-            }
+            spss.append("/* Save Native SPSS Data File (.sav) */\n")
+            spss.append("SAVE OUTFILE=\"${tableName}.sav\".\n")
             spss.append("EXECUTE.\n")
         }
 
@@ -1683,6 +1675,128 @@ class DataExportService {
             }
 
             sas.append("QUIT;\n")
+        }
+
+        return sas.toString()
+    }
+
+    // --- Master Script Generators (Single Master Script for Root + All Descendant Repeat Tables) ---
+
+    private String generateMasterSyntaxScript(ExportRequest request) {
+        def fmt = request.format
+        switch (fmt) {
+            case DataExportFormat.SPSS:
+                return generateMasterSpssScript(request)
+            case DataExportFormat.R:
+                return generateMasterRScript(request)
+            case DataExportFormat.SAS:
+                return generateMasterSasScript(request)
+            default:
+                return generateMasterStataDoScript(request)
+        }
+    }
+
+    private List<String> getAllExportTableNames(ExportRequest request) {
+        List<String> tableNames = [request.datasetName]
+        if (request.hasRepeatTables) {
+            List<DataDictionaryService.TableMetadata> descendants = dataDictionaryService.getAllDescendantRepeatTables(request.datasetName)
+            if (descendants) {
+                descendants.each { tableNames.add(it.tableName) }
+            }
+        }
+        return tableNames
+    }
+
+    private String generateMasterStataDoScript(ExportRequest request) {
+        List<String> allTables = getAllExportTableNames(request)
+        StringBuilder doScript = new StringBuilder()
+        doScript.append("/* Master Stata Do-File for HDSS Data Export: ${request.datasetName} */\n")
+        doScript.append("clear all\n")
+        doScript.append("set more off\n\n")
+
+        allTables.eachWithIndex { tableName, idx ->
+            doScript.append("/* ==================================================================== */\n")
+            doScript.append("/* Table ${idx + 1}: ${tableName}\n")
+            doScript.append("/* ==================================================================== */\n")
+
+            ExportRequest tableReq = new ExportRequest(datasetName: tableName, format: request.format)
+            String singleTableScript = generateStataDoScript(tableReq)
+
+            // Strip header "clear all\nset more off\n\n" from individual script to keep master do-file clean
+            String cleanedBlock = singleTableScript.replace("clear all\nset more off\n\n", "")
+            doScript.append(cleanedBlock).append("\n\n")
+        }
+
+        return doScript.toString()
+    }
+
+    private String generateMasterSpssScript(ExportRequest request) {
+        List<String> allTables = getAllExportTableNames(request)
+        StringBuilder spss = new StringBuilder()
+        spss.append("/* Master SPSS Syntax Script for HDSS Data Export: ${request.datasetName} */\n\n")
+
+        allTables.eachWithIndex { tableName, idx ->
+            spss.append("/* ==================================================================== */\n")
+            spss.append("/* Table ${idx + 1}: ${tableName}\n")
+            spss.append("/* ==================================================================== */\n")
+
+            ExportRequest tableReq = new ExportRequest(datasetName: tableName, format: request.format)
+            String singleTableScript = generateSpssScript(tableReq)
+            spss.append(singleTableScript).append("\n\n")
+        }
+
+        return spss.toString()
+    }
+
+    private String generateMasterRScript(ExportRequest request) {
+        List<String> allTables = getAllExportTableNames(request)
+        StringBuilder r = new StringBuilder()
+        r.append("# Master R Import Script for HDSS Data Export: ${request.datasetName}\n\n")
+
+        List<String> rDataFrames = []
+
+        allTables.eachWithIndex { tableName, idx ->
+            String varName = "df_${sanitizeColumnName(tableName)}"
+            rDataFrames.add(varName)
+
+            r.append("# ====================================================================\n")
+            r.append("# Table ${idx + 1}: ${tableName}\n")
+            r.append("# ====================================================================\n")
+
+            ExportRequest tableReq = new ExportRequest(datasetName: tableName, format: request.format)
+            String singleTableScript = generateRScript(tableReq)
+
+            // Customize data frame variable name from df to df_<tableName>
+            String customizedScript = singleTableScript
+                    .replace("df <- read.csv(\"${tableName}_data.csv\"", "${varName} <- read.csv(\"${tableName}_data.csv\"")
+                    .replace("df\$", "${varName}\$")
+                    .replace("summary(df)", "summary(${varName})")
+
+            r.append(customizedScript).append("\n\n")
+        }
+
+        if (!rDataFrames.isEmpty()) {
+            String dfListStr = rDataFrames.join(", ")
+            r.append("# Save all data frames into a single R Workspace file\n")
+            r.append("save(${dfListStr}, file = \"${request.datasetName}_workspace.RData\")\n")
+        }
+
+        return r.toString()
+    }
+
+    private String generateMasterSasScript(ExportRequest request) {
+        List<String> allTables = getAllExportTableNames(request)
+        StringBuilder sas = new StringBuilder()
+        sas.append("/* Master SAS Import Script for HDSS Data Export: ${request.datasetName} */\n\n")
+
+        allTables.eachWithIndex { tableName, idx ->
+            sas.append("/* ==================================================================== */\n")
+            sas.append("/* Table ${idx + 1}: ${tableName}\n")
+            sas.append("/* ==================================================================== */\n")
+
+            ExportRequest tableReq = new ExportRequest(datasetName: tableName, format: request.format)
+            String singleTableScript = generateSasScript(tableReq)
+            sas.append(singleTableScript).append("\n\n")
         }
 
         return sas.toString()
