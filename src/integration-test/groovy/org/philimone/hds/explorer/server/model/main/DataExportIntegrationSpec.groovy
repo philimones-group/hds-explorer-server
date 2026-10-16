@@ -5,6 +5,7 @@ import grails.testing.mixin.integration.Integration
 import org.hibernate.SessionFactory
 import org.philimone.hds.explorer.server.model.enums.RegionLevel
 import org.philimone.hds.explorer.services.DataExportService
+import org.philimone.hds.explorer.services.ExportRequest
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -30,7 +31,7 @@ class DataExportIntegrationSpec extends Specification {
     @Unroll
     void "test real database execution for pre-joined view: #datasetName"() {
         setup:
-        DataExportService.ExportRequest request = new DataExportService.ExportRequest(
+        ExportRequest request = new ExportRequest(
                 datasetName: datasetName,
                 gender: "FEMALE",
                 ageMin: 15,
@@ -63,7 +64,7 @@ class DataExportIntegrationSpec extends Specification {
     @Unroll
     void "test real database execution for core final table: #datasetName"() {
         setup:
-        DataExportService.ExportRequest request = new DataExportService.ExportRequest(
+        ExportRequest request = new ExportRequest(
                 datasetName: datasetName,
                 gender: "FEMALE",
                 ageMin: 15,
@@ -112,7 +113,7 @@ class DataExportIntegrationSpec extends Specification {
     @Unroll
     void "test real database execution for dynamic XLS extension form: #datasetName"() {
         setup:
-        DataExportService.ExportRequest request = new DataExportService.ExportRequest(
+        ExportRequest request = new ExportRequest(
                 datasetName: datasetName,
                 gender: "FEMALE",
                 ageMin: 15,

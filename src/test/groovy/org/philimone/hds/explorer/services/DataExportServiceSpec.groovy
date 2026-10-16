@@ -45,7 +45,7 @@ class DataExportServiceSpec extends Specification implements ServiceUnitTest<Dat
 
     void "test INDEPTH_CORE_RESIDENCY pre-joined view SQL construction"() {
         setup:
-        DataExportService.ExportRequest request = new DataExportService.ExportRequest(
+        ExportRequest request = new ExportRequest(
                 datasetName: "INDEPTH_CORE_RESIDENCY",
                 gender: "MALE",
                 ageMin: 18,
@@ -67,7 +67,7 @@ class DataExportServiceSpec extends Specification implements ServiceUnitTest<Dat
 
     void "test RESIDENCY_PERSON_TIME pre-joined view SQL construction"() {
         setup:
-        DataExportService.ExportRequest request = new DataExportService.ExportRequest(
+        ExportRequest request = new ExportRequest(
                 datasetName: "RESIDENCY_PERSON_TIME",
                 gender: "FEMALE"
         )
@@ -84,7 +84,7 @@ class DataExportServiceSpec extends Specification implements ServiceUnitTest<Dat
 
     void "test INDEPTH_MATERNAL_PREGNANCY pre-joined view SQL construction"() {
         setup:
-        DataExportService.ExportRequest request = new DataExportService.ExportRequest(
+        ExportRequest request = new ExportRequest(
                 datasetName: "INDEPTH_MATERNAL_PREGNANCY",
                 ageMin: 15,
                 ageMax: 49
@@ -106,7 +106,7 @@ class DataExportServiceSpec extends Specification implements ServiceUnitTest<Dat
 
     void "test MATERNAL_PREGNANCY pre-joined view SQL construction"() {
         setup:
-        DataExportService.ExportRequest request = new DataExportService.ExportRequest(
+        ExportRequest request = new ExportRequest(
                 datasetName: "MATERNAL_PREGNANCY",
                 ageMin: 15,
                 ageMax: 49
@@ -125,7 +125,7 @@ class DataExportServiceSpec extends Specification implements ServiceUnitTest<Dat
 
     void "test INDEPTH_HOUSEHOLD_COMPOSITION pre-joined view SQL construction"() {
         setup:
-        DataExportService.ExportRequest request = new DataExportService.ExportRequest(
+        ExportRequest request = new ExportRequest(
                 datasetName: "INDEPTH_HOUSEHOLD_COMPOSITION"
         )
 
@@ -142,7 +142,7 @@ class DataExportServiceSpec extends Specification implements ServiceUnitTest<Dat
 
     void "test HOUSEHOLD_COMPOSITION pre-joined view SQL construction"() {
         setup:
-        DataExportService.ExportRequest request = new DataExportService.ExportRequest(
+        ExportRequest request = new ExportRequest(
                 datasetName: "HOUSEHOLD_COMPOSITION"
         )
 
@@ -161,7 +161,7 @@ class DataExportServiceSpec extends Specification implements ServiceUnitTest<Dat
 
     void "test member table SQL query construction"() {
         setup:
-        DataExportService.ExportRequest request = new DataExportService.ExportRequest(
+        ExportRequest request = new ExportRequest(
                 datasetName: "member",
                 gender: "FEMALE",
                 ageMin: 15,
@@ -184,7 +184,7 @@ class DataExportServiceSpec extends Specification implements ServiceUnitTest<Dat
 
     void "test household table SQL query construction"() {
         setup:
-        DataExportService.ExportRequest request = new DataExportService.ExportRequest(
+        ExportRequest request = new ExportRequest(
                 datasetName: "household"
         )
 
@@ -197,7 +197,7 @@ class DataExportServiceSpec extends Specification implements ServiceUnitTest<Dat
 
     void "test visit table SQL query construction"() {
         setup:
-        DataExportService.ExportRequest request = new DataExportService.ExportRequest(
+        ExportRequest request = new ExportRequest(
                 datasetName: "visit"
         )
 
@@ -211,7 +211,7 @@ class DataExportServiceSpec extends Specification implements ServiceUnitTest<Dat
 
     void "test death table SQL query construction"() {
         setup:
-        DataExportService.ExportRequest request = new DataExportService.ExportRequest(
+        ExportRequest request = new ExportRequest(
                 datasetName: "death",
                 gender: "MALE"
         )
@@ -227,7 +227,7 @@ class DataExportServiceSpec extends Specification implements ServiceUnitTest<Dat
 
     void "test in_migration table SQL query construction"() {
         setup:
-        DataExportService.ExportRequest request = new DataExportService.ExportRequest(
+        ExportRequest request = new ExportRequest(
                 datasetName: "in_migration"
         )
 
@@ -243,7 +243,7 @@ class DataExportServiceSpec extends Specification implements ServiceUnitTest<Dat
 
     void "test member_ext extension form SQL query construction"() {
         setup:
-        DataExportService.ExportRequest request = new DataExportService.ExportRequest(
+        ExportRequest request = new ExportRequest(
                 datasetName: "member_ext",
                 gender: "FEMALE"
         )
@@ -258,7 +258,7 @@ class DataExportServiceSpec extends Specification implements ServiceUnitTest<Dat
 
     void "test household_ext extension form SQL query construction"() {
         setup:
-        DataExportService.ExportRequest request = new DataExportService.ExportRequest(
+        ExportRequest request = new ExportRequest(
                 datasetName: "household_ext"
         )
 
@@ -271,7 +271,7 @@ class DataExportServiceSpec extends Specification implements ServiceUnitTest<Dat
 
     void "test visit_ext extension form SQL query construction"() {
         setup:
-        DataExportService.ExportRequest request = new DataExportService.ExportRequest(
+        ExportRequest request = new ExportRequest(
                 datasetName: "visit_ext"
         )
 
@@ -284,7 +284,7 @@ class DataExportServiceSpec extends Specification implements ServiceUnitTest<Dat
 
     void "test death_ext extension form SQL query construction"() {
         setup:
-        DataExportService.ExportRequest request = new DataExportService.ExportRequest(
+        ExportRequest request = new ExportRequest(
                 datasetName: "death_ext"
         )
 
@@ -299,7 +299,7 @@ class DataExportServiceSpec extends Specification implements ServiceUnitTest<Dat
 
     void "test pregnancy_visit_ext extension form SQL query construction"() {
         setup:
-        DataExportService.ExportRequest request = new DataExportService.ExportRequest(
+        ExportRequest request = new ExportRequest(
                 datasetName: "pregnancy_visit_ext"
         )
 
@@ -319,7 +319,7 @@ class DataExportServiceSpec extends Specification implements ServiceUnitTest<Dat
         Region region = new Region(code: "PEMBA", name: "Pemba District", hierarchyLevel: org.philimone.hds.explorer.server.model.enums.RegionLevel.HIERARCHY_2)
         region.save(flush: true)
 
-        DataExportService.ExportRequest request = new DataExportService.ExportRequest(
+        ExportRequest request = new ExportRequest(
                 datasetName: "household",
                 regionCode: "PEMBA"
         )
@@ -351,7 +351,7 @@ class DataExportServiceSpec extends Specification implements ServiceUnitTest<Dat
         mockDictService.getTableMetadata("member") >> meta
         mockDictService.getEnumTypeMetadata("Gender") >> enumType
 
-        DataExportService.ExportRequest req = new DataExportService.ExportRequest(datasetName: "member", format: DataExportFormat.STATA)
+        ExportRequest req = new ExportRequest(datasetName: "member", format: DataExportFormat.STATA)
 
         when:
         String script = service.generateSyntaxScript(req)

@@ -12,7 +12,7 @@ import org.philimone.hds.explorer.server.model.enums.PhoneAnonymizationMode
 import org.philimone.hds.explorer.server.model.main.CoreFormExtension
 import org.philimone.hds.explorer.services.DataDictionaryService
 import org.philimone.hds.explorer.services.DataExportService
-import org.philimone.hds.explorer.services.DataExportService.ExportRequest
+import org.philimone.hds.explorer.services.ExportRequest
 import org.philimone.hds.explorer.server.model.main.Region
 import org.philimone.hds.explorer.server.model.settings.DataExportReport
 

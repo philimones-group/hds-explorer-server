@@ -29,6 +29,10 @@ enum DataExportFormat {
         return code
     }
 
+    boolean isSyntaxScriptFormat() {
+        return this==DataExportFormat.R || this==DataExportFormat.SAS  || this==DataExportFormat.SPSS || this==DataExportFormat.STATA
+    }
+
     @Override
     String toString() {
         return name

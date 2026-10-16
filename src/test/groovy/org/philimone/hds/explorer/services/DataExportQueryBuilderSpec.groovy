@@ -25,7 +25,7 @@ class DataExportQueryBuilderSpec extends Specification implements ServiceUnitTes
     @Unroll
     void "test buildExportSql for pre-joined view dataset: #datasetName"() {
         setup:
-        DataExportService.ExportRequest request = new DataExportService.ExportRequest(
+        ExportRequest request = new ExportRequest(
                 datasetName: datasetName,
                 gender: "FEMALE",
                 ageMin: 15,
@@ -62,7 +62,7 @@ class DataExportQueryBuilderSpec extends Specification implements ServiceUnitTes
     @Unroll
     void "test buildExportSql for core database final table: #datasetName"() {
         setup:
-        DataExportService.ExportRequest request = new DataExportService.ExportRequest(
+        ExportRequest request = new ExportRequest(
                 datasetName: datasetName,
                 gender: "FEMALE",
                 ageMin: 15,
@@ -115,7 +115,7 @@ class DataExportQueryBuilderSpec extends Specification implements ServiceUnitTes
     @Unroll
     void "test buildExportSql for dynamic XLS extension form: #datasetName"() {
         setup:
-        DataExportService.ExportRequest request = new DataExportService.ExportRequest(
+        ExportRequest request = new ExportRequest(
                 datasetName: datasetName,
                 gender: "FEMALE",
                 ageMin: 15,
