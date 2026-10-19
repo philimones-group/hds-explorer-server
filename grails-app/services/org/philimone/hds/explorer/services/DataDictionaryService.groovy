@@ -51,8 +51,8 @@ class DataDictionaryService {
             'region_head_relationship': 'RegionHeadRelationship',
             'residency'             : 'Residency',
             'round'                 : 'Round',
-            'visit'                 : 'Visit',
-            '_user'                 : 'User'
+            'visit'                 : 'Visit'/*,
+            '_user'                 : 'User'*/ //Exclude user table
     ]
 
 

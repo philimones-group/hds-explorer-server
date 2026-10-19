@@ -9,7 +9,8 @@ enum DataExportItem {
     INDEPTH_RESIDENCY_PERSON_TIME ("INDEPTH_CORE_RESIDENCY", "dataExportItem.indepthCoreResidency", true),
     INDEPTH_MATERNAL_PREGNANCY ("INDEPTH_MATERNAL_PREGNANCY", "dataExportItem.indepthMaternalPregnancy", true),
     INDEPTH_HOUSEHOLD_COMPOSITION ("INDEPTH_HOUSEHOLD_COMPOSITION", "dataExportItem.indepthHouseholdComposition", true),
-    DYNAMIC_FORM             ("DYNAMIC_FORM", "dataExportItem.dynamicForm", false)
+    DYNAMIC_FORM             ("DYNAMIC_FORM", "dataExportItem.dynamicForm", false),
+    AI_PROMPT                ("AI_PROMPT", "dataExportItem.aiPrompt", false)
 
     String code
     String name

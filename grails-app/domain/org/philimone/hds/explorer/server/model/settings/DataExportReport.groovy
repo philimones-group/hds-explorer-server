@@ -36,6 +36,11 @@ class DataExportReport {
     Boolean includeMediaFiles = false
     Boolean activeResidentsOnly = true
 
+    // AI Prompt Mode
+    Boolean aiPromptMode = false
+    String aiPromptText
+    String executedSql
+
     // Granular Anonymization & Privacy Enums
     NameAnonymizationMode nameAnonymizationMode = NameAnonymizationMode.INITIALS
     PhoneAnonymizationMode phoneAnonymizationMode = PhoneAnonymizationMode.MASK
@@ -87,6 +92,10 @@ class DataExportReport {
         includeMediaFiles nullable: false
         activeResidentsOnly nullable: false
 
+        aiPromptMode nullable: false
+        aiPromptText nullable: true, maxSize: 5000
+        executedSql nullable: true
+
         nameAnonymizationMode nullable: false
         phoneAnonymizationMode nullable: false
         gpsAnonymizationMode nullable: false
@@ -135,6 +144,10 @@ class DataExportReport {
         includeDictionary column: 'include_dictionary'
         includeMediaFiles column: 'include_media_files'
         activeResidentsOnly column: 'active_residents_only'
+
+        aiPromptMode column: 'ai_prompt_mode'
+        aiPromptText column: 'ai_prompt_text', type: 'text'
+        executedSql column: 'executed_sql', type: 'text'
 
         nameAnonymizationMode column: 'name_anonymization_mode', enumType: 'identity'
         phoneAnonymizationMode column: 'phone_anonymization_mode', enumType: 'identity'

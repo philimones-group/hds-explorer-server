@@ -25,6 +25,12 @@ class ExportRequest {
     Boolean includeDictionary = false
     Boolean activeResidentsOnly = false
 
+    // AI Prompt Mode
+    Boolean aiPromptMode = false
+    String aiPromptText = ""
+    String generatedSql = ""
+    List<Object> sqlParamValues = []
+
     Map<String, List<String>> exportedTableIdsMap = new java.util.concurrent.ConcurrentHashMap<>()
 
     Boolean hasMediaFields = false

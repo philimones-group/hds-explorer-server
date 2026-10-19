@@ -160,6 +160,16 @@ dataSource:
 #    dialect: org.hibernate.dialect.PostgreSQL94Dialect
 #    logSql: true
 
+dataSources:
+  export:
+    pooled: true
+    driverClassName: com.mysql.cj.jdbc.Driver
+    dialect: org.hibernate.dialect.MySQL8Dialect
+    username: hds_export
+    password: export_password
+    url: jdbc:mysql://localhost/hds_explorer_db?autoReconnect=true&zeroDateTimeBehavior=convertToNull&useSSL=false
+    readOnly: true
+
 environments:
   development:
     dataSource:
@@ -168,6 +178,14 @@ environments:
       username: ${DEV_DATABASE_USER}
       password: ${DEV_DATABASE_PASS}
       logSql: false
+    dataSources:
+      export:
+        dbCreate: none
+        url: ${DEV_DATABASE_URL}
+        username: ${DEV_DATABASE_EXPORT_USER}
+        password: ${DEV_DATABASE_EXPORT_PASS}
+        readOnly: true
+        logSql: false
   test:
     dataSource:
       dbCreate: none
@@ -175,6 +193,14 @@ environments:
       username: ${DEV_DATABASE_USER}
       password: ${DEV_DATABASE_PASS}
       logSql: false
+    dataSources:
+      export:
+        dbCreate: none
+        url: ${DEV_DATABASE_URL}
+        username: ${DEV_DATABASE_EXPORT_USER}
+        password: ${DEV_DATABASE_EXPORT_PASS}
+        readOnly: true
+        logSql: false
   production:
     dataSource:
       url: jdbc:mysql://localhost/hds_explorer_db?createDatabaseIfNotExist=true&autoReconnect=true&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true
