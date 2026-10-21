@@ -105,48 +105,58 @@ class DataReconciliationService {
         def processed = 0
         println "proccessing ${households_ids.size()} records"
         households_ids.collate(1000).each { batch ->
-            def households = Household.findAllByIdInList(batch)
 
-            households.each {household ->
-                processed++
+                def households = Household.findAllByIdInList(batch)
 
-                //get residencies to determine household status and update members
-                def residencies = Residency.countByHouseholdAndEndType(household, ResidencyEndType.NOT_APPLICABLE)
-                def head = HeadRelationship.findByHouseholdAndRelationshipTypeAndEndType(household, HeadRelationshipType.HEAD_OF_HOUSEHOLD, HeadRelationshipEndType.NOT_APPLICABLE, [sort: "startDate", order: "desc"])
-                def hierarchies = regionService.getHierarchies(household.parentRegion?.code)
+                households.each {household ->
+                    processed++
 
-                //UPDATE HOUSEHOLD STATUS
-                household.status = residencies > 0 ? HouseholdStatus.HOUSE_OCCUPIED : !finalStatuses.contains(household.status) ? HouseholdStatus.HOUSE_VACANT : household.status
+                    //get residencies to determine household status and update members
+                    def residencies = Residency.countByHouseholdAndEndType(household, ResidencyEndType.NOT_APPLICABLE)
+                    def head = HeadRelationship.findByHouseholdAndRelationshipTypeAndEndType(household, HeadRelationshipType.HEAD_OF_HOUSEHOLD, HeadRelationshipEndType.NOT_APPLICABLE, [sort: "startDate", order: "desc"])
+                    def hierarchies = regionService.getHierarchies(household.region)
 
-                //UPDATE HEAD OF HOUSEHOLD
-                if (head != null) {
-                    household.headMember = head.member
-                    household.headCode = head.member.code
-                    household.headName = head.member.name
-                } else {
-                    household.headMember = null
-                    household.headCode = null
-                    household.headName = null
+                    //UPDATE HOUSEHOLD STATUS
+                    household.status = residencies > 0 ? HouseholdStatus.HOUSE_OCCUPIED : !finalStatuses.contains(household.status) ? HouseholdStatus.HOUSE_VACANT : household.status
+
+                    //UPDATE HEAD OF HOUSEHOLD
+                    if (head != null) {
+                        household.headMember = head.member
+                        household.headCode = head.member.code
+                        household.headName = head.member.name
+                    } else {
+                        household.headMember = null
+                        household.headCode = null
+                        household.headName = null
+                    }
+
+                    //UPDATE HIERARCHIES REGIONS
+                    household.hierarchy1 = hierarchies?.hierarchy1
+                    household.hierarchy2 = hierarchies?.hierarchy2
+                    household.hierarchy3 = hierarchies?.hierarchy3
+                    household.hierarchy4 = hierarchies?.hierarchy4
+                    household.hierarchy5 = hierarchies?.hierarchy5
+                    household.hierarchy6 = hierarchies?.hierarchy6
+                    household.hierarchy7 = hierarchies?.hierarchy7
+                    household.hierarchy8 = hierarchies?.hierarchy8
+
+                    //household.save()
+
+                    Household.executeUpdate(
+                            "update Household h set h.status=?0, h.headMember=?1, h.headCode=?2, h.headName=?3, " +
+                            "h.hierarchy1=?4, h.hierarchy2=?5, h.hierarchy3=?6, h.hierarchy4=?7, " +
+                            "h.hierarchy5=?8, h.hierarchy6=?9, h.hierarchy7=?10, h.hierarchy8=?11 where h.id=?12",
+                            [household.status, household.headMember, household.headCode, household.headName,
+                             household.hierarchy1, household.hierarchy2, household.hierarchy3, household.hierarchy4,
+                             household.hierarchy5, household.hierarchy6, household.hierarchy7, household.hierarchy8,
+                             household.id])
+
+                    if (processed % 500 == 0) {
+                        cleanUpGorm()
+                        println "clearing ${processed}"
+                    }
                 }
 
-                //UPDATE HIERARCHIES REGIONS
-                household.hierarchy1 = hierarchies?.hierarchy1
-                household.hierarchy2 = hierarchies?.hierarchy2
-                household.hierarchy3 = hierarchies?.hierarchy3
-                household.hierarchy4 = hierarchies?.hierarchy4
-                household.hierarchy5 = hierarchies?.hierarchy5
-                household.hierarchy6 = hierarchies?.hierarchy6
-                household.hierarchy7 = hierarchies?.hierarchy7
-                household.hierarchy8 = hierarchies?.hierarchy8
-
-                //household.save()
-                Household.executeUpdate("update Household h set h.status=?0, h.headMember=?1, h.headCode=?2, h.headName=?3 where h.id=?4", [household.status, household.headMember, household.headCode, household.headName, household.id])
-
-                if (processed % 500 == 0) {
-                    cleanUpGorm()
-                    println "clearing ${processed}"
-                }
-            }
         }
     }
 

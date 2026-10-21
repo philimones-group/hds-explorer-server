@@ -723,6 +723,60 @@ class DataDictionaryService {
         return Collections.unmodifiableMap(tablesMap)
     }
 
+    /**
+     * Resolves column metadata across all loaded tables in tablesMap without heuristic guessing.
+     */
+    ColumnMetadata findColumnMetadata(String columnName, String preferredTableName = null) {
+        if (!columnName) return null
+
+        if (preferredTableName) {
+            TableMetadata prefTable = getTableMetadata(preferredTableName)
+            if (prefTable && prefTable.getColumn(columnName)) {
+                return prefTable.getColumn(columnName)
+            }
+        }
+
+        // Search across all tables in tablesMap
+        for (TableMetadata table : tablesMap.values()) {
+            ColumnMetadata col = table.getColumn(columnName)
+            if (col != null) {
+                return col
+            }
+        }
+
+        return null
+    }
+
+    /**
+     * Constructs a synthetic TableMetadata instance for AI-generated export datasets.
+     */
+    TableMetadata buildAiExportTableMetadata(List<Map<String, Object>> extractedCols) {
+        TableMetadata meta = new TableMetadata(
+                tableName: "AI_EXPORT",
+                description: "AI Natural Language Export Dataset"
+        )
+
+        extractedCols?.each { raw ->
+            String cName = raw.columnName ? raw.columnName.toString() : ""
+            if (!cName) return
+
+            ColumnMetadata matched = findColumnMetadata(cName)
+
+            ColumnMetadata col = new ColumnMetadata(
+                    tableName: "AI_EXPORT",
+                    columnName: cName,
+                    dataType: raw.dataType ? raw.dataType.toString() : "VARCHAR",
+                    sensitiveType: matched?.sensitiveType ?: SensitiveType.NOT_APPLICABLE,
+                    label: matched?.label ?: cName,
+                    description: matched?.description ?: matched?.label ?: cName,
+                    enumTypeName: matched?.enumTypeName
+            )
+            meta.addColumn(col)
+        }
+
+        return meta
+    }
+
     // --- Inner Metadata Classes ---
 
     static class TableMetadata {

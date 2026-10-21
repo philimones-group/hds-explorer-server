@@ -194,6 +194,117 @@
             display: flex;
         }
 
+        /* AI Prompt Option Styling */
+        .category-card-ai .icon-box {
+            color: #7c3aed;
+            background: #f3e8ff;
+            border-color: #e9d5ff;
+        }
+        .category-card-ai.selected {
+            border-color: #8b5cf6;
+            background: rgba(245, 243, 255, 0.75);
+        }
+        .category-card-ai:hover {
+            border-color: #a78bfa;
+        }
+        .category-card-ai .card-title {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .ai-option-pill {
+            display: inline-flex;
+            align-items: center;
+            border-radius: 999px;
+            padding: 0px 7px;
+            color: #6d28d9;
+            background: #ede9fe;
+            font-size: 0.65rem;
+            font-weight: 700;
+            letter-spacing: .03em;
+        }
+        .ai-prompt-panel {
+            display: none;
+            margin-top: 16px;
+            padding: 18px;
+            border: 1px solid #ddd6fe;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #ffffff 0%, #faf7ff 100%);
+        }
+        .ai-prompt-panel.is-visible {
+            display: block;
+        }
+        .ai-prompt-heading {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+            color: #4c1d95;
+            font-weight: 700;
+            font-size: 0.98rem;
+        }
+        .ai-prompt-heading-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            background: #ede9fe;
+            color: #7c3aed;
+            font-size: 1.15rem;
+        }
+        .ai-prompt-textarea {
+            min-height: 90px;
+            resize: vertical;
+            border: 1px solid #c4b5fd;
+            border-radius: 9px;
+            padding: 12px 14px;
+            font-size: 0.9rem;
+            line-height: 1.55;
+            box-shadow: none;
+        }
+        .ai-prompt-textarea:focus {
+            border-color: #8b5cf6;
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.13);
+        }
+        .ai-prompt-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            margin-top: 10px;
+            color: #64748b;
+            font-size: 0.75rem;
+        }
+        .ai-prompt-examples {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 7px;
+            margin-top: 10px;
+        }
+        .ai-prompt-example {
+            border: 1px solid #ddd6fe;
+            border-radius: 999px;
+            background: #ffffff;
+            color: #6d28d9;
+            padding: 5px 10px;
+            font-size: 0.75rem;
+            cursor: pointer;
+        }
+        .ai-prompt-example:hover {
+            background: #f3e8ff;
+            border-color: #c4b5fd;
+        }
+        @media (max-width: 1200px) {
+            .category-card-grid { flex-wrap: wrap; gap: 10px; }
+            .category-card { flex: 1 1 calc(50% - 8px); }
+        }
+        @media (max-width: 767px) {
+            .category-card { flex-basis: 100%; }
+            .ai-prompt-footer { align-items: flex-start; flex-direction: column; }
+        }
+
         /* Tabulator - Clean White Tabulator Theme for Data Preview */
         #previewTableGrid.tabulator {
             font-size: 0.8rem;
@@ -474,6 +585,9 @@
         <input type="hidden" name="datasetType" id="datasetTypeInput" value="REGULAR_TABLE"/>
         <input type="hidden" name="datasetName" id="datasetNameInput" value="member"/>
         <input type="hidden" name="format" id="formatInput" value="CSV"/>
+        <input type="hidden" name="aiPromptMode" id="aiPromptModeInput" value="false"/>
+        <input type="hidden" name="generatedSql" id="generatedSqlInput" value=""/>
+        <input type="hidden" name="sqlParamValues" id="sqlParamValuesInput" value=""/>
 
         <div class="workspace-row">
             <!-- LEFT SECTION (~75% WIDTH) -->
@@ -515,10 +629,67 @@
                                 <div class="card-desc"><g:message code="dataExport.step1.dynamicFormsDesc" /></div>
                             </div>
                         </div>
+
+                        <!-- Card 4: AI Prompt -->
+                        <div class="category-card category-card-ai" id="cardAIPrompt" onclick="selectCategory('AI_PROMPT', 'cardAIPrompt')" role="button" tabindex="0" aria-controls="aiPromptPanel" aria-label="Use AI Prompt to describe the dataset in natural language">
+                            <div class="checkmark-badge">✓</div>
+                            <div class="icon-box"><asset:image src="skin/data_export_category_ai_prompt.png" alt="AI Prompt" width="30" height="32"/></div>
+                            <div class="card-content">
+                                <div class="card-title">AI Prompt <span class="ai-option-pill">AI</span></div>
+                                <div class="card-desc">Export data using natural language query (powered with AI).</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- AI PROMPT INPUT: shown only when the AI Prompt option is selected -->
+                    <div id="aiPromptPanel" class="ai-prompt-panel" aria-hidden="true">
+                        <div class="ai-prompt-heading">
+                            <span class="ai-prompt-heading-icon">
+                                <i class="fa-solid fa-wand-magic-sparkles" aria-hidden="true"></i>
+                                <asset:image src="skin/data_export_category_ai_prompt.png" alt="AI Prompt" width="22" height="22"/>
+                            </span>
+                            <div>
+                                <div style="margin-bottom: -4px;">Describe what data you want to export</div>
+                                <div style="font-size:0.76rem; font-weight:500; color:#7c6b99;">Write your request in natural language — no SQL required | Be specific about the population, fields, date range, filters, and privacy requirements.</div>
+                            </div>
+                        </div>
+                        <textarea id="aiPromptText" name="aiPrompt" class="form-control ai-prompt-textarea" maxlength="5000"
+                                  placeholder="Example: Export all active residents in Maputo Province who are 18–49 years old, including their household code, sex, age, residency status, and village. Exclude names and phone numbers."
+                                  oninput="updateAIPromptCounter()" aria-describedby="aiPromptHelp"></textarea>
+
+                        <!-- TRANSLATION ACTION BUTTON -->
+                        <div style="margin-top: 15px; display: flex; gap: 10px; align-items: center;">
+                            <button type="button" id="btnGenerateSql" class="btn btn-primary" onclick="generateSqlFromPrompt()">
+                                ✨ <g:message code="dataExport.ai.generateSql" default="Generate SQL Query"/>
+                            </button>
+                        </div>
+
+                        <!-- AI TRANSLATION RESULT PANEL -->
+                        <div id="aiResultPanel" style="display: none; margin-top: 18px; padding: 16px; border: 1px solid #c4b5fd; border-radius: 10px; background: #fdfcff;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                                <span class="badge bg-success" style="font-size: 0.78rem; padding: 6px 10px;">
+                                    🛡️ <g:message code="dataExport.ai.readOnlyValidated" default="Read-Only Validated"/>
+                                </span>
+                                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="copyGeneratedSql()">
+                                    📋 <g:message code="dataExport.ai.copySql" default="Copy SQL"/>
+                                </button>
+                            </div>
+
+                            <!-- Logic Explanation -->
+                            <div style="font-size: 0.85rem; color: #4c1d95; margin-bottom: 8px;" id="aiLogicExplanation"></div>
+
+                            <!-- Read-Only Code Box -->
+                            <pre id="aiSqlCodeBox" style="background: #1e293b; color: #38bdf8; padding: 12px 16px; border-radius: 8px; font-family: monospace; font-size: 0.82rem; white-space: pre-wrap; word-break: break-all; margin-bottom: 0;"></pre>
+                        </div>
+
+                        <div class="alert alert-light border mt-3 mb-0 py-2" style="font-size:0.78rem; color:#6b5b83;">
+                            <i class="fa-solid fa-shield-halved me-1" aria-hidden="true"></i>
+                            Review the generated dataset and privacy settings before exporting. The natural-language request will be submitted with the export form.
+                        </div>
                     </div>
 
                     <!-- SEARCHABLE DROPDOWN + VIEW DESCRIPTION -->
-                    <div style="display: flex; gap: 15px; align-items: center;">
+                    <div id="datasetSelectorControls" style="display: flex; gap: 15px; align-items: center;">
                         <div style="flex: 1;" id="selectContainerRaw">
                             <label class="filter-label"><g:message code="dataExport.step1.selectTable" default="Select Table:"/></label>
                             <select id="regularTableSelect" class="form-control" onchange="onDatasetNameChanged(this.value)">
@@ -555,7 +726,7 @@
                 </div>
 
                 <!-- SECTION 2: COLUMN SELECTION (DUAL-LIST SELECTOR) -->
-                <div class="enterprise-card">
+                <div class="enterprise-card" id="columnSelectionCard">
                     <div class="enterprise-card-title">
                         <span><g:message code="dataExport.step2.selectedColumns" default="Selected Columns"/></span>
                         <span style="font-size: 0.85rem; font-weight: 500; color: #64748b;" id="selectedCountBadge"><g:message code="dataExport.step2.selectedColumns" default="Selected Columns"/> (0)</span>
@@ -649,8 +820,8 @@
                         <div class="filter-label">👥 <g:message code="dataExport.filter.gender" default="Gender Cohort:"/></div>
                         <select name="gender" class="form-control form-control-sm">
                             <option value="ALL"><g:message code="dataExport.filter.bothGenders" default="Both Genders"/></option>
-                            <option value="MALE"><g:message code="dataExport.filter.maleOnly" default="Male Only"/></option>
-                            <option value="FEMALE"><g:message code="dataExport.filter.femaleOnly" default="Female Only"/></option>
+                            <option value="M"><g:message code="dataExport.filter.maleOnly" default="Male Only"/></option>
+                            <option value="F"><g:message code="dataExport.filter.femaleOnly" default="Female Only"/></option>
                         </select>
                     </div>
 
@@ -791,6 +962,23 @@
                 </div>
             </div>
         </div>
+
+        <!-- BOOTSTRAP ALERT / NOTIFICATION MODAL DIALOG -->
+        <div class="modal fade" id="aiAlertModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header border-bottom shadow-sm py-2">
+                        <h5 class="modal-title" id="aiAlertModalTitle">⚠️ Notice</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body" id="aiAlertModalBody" style="padding: 20px; font-size: 0.95rem; line-height: 1.5; color: #334155;">
+                    </div>
+                    <div class="modal-footer py-2">
+                        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">OK</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </g:form>
     </div>
 </div>
@@ -828,12 +1016,130 @@
         document.getElementById(cardId).classList.add('selected');
         document.getElementById('datasetTypeInput').value = catType;
 
-        document.getElementById('selectContainerRaw').style.display = (catType === 'REGULAR_TABLE') ? 'block' : 'none';
-        document.getElementById('selectContainerPrejoined').style.display = (catType === 'PREJOINED_DSS') ? 'block' : 'none';
-        document.getElementById('selectContainerForms').style.display = (catType === 'DYNAMIC_FORM') ? 'block' : 'none';
+        var isAIPrompt = catType === 'AI_PROMPT';
+        document.getElementById('selectContainerRaw').style.display = (!isAIPrompt && catType === 'REGULAR_TABLE') ? 'block' : 'none';
+        document.getElementById('selectContainerPrejoined').style.display = (!isAIPrompt && catType === 'PREJOINED_DSS') ? 'block' : 'none';
+        document.getElementById('selectContainerForms').style.display = (!isAIPrompt && catType === 'DYNAMIC_FORM') ? 'block' : 'none';
+        document.getElementById('datasetSelectorControls').style.display = isAIPrompt ? 'none' : 'flex';
+        document.getElementById('aiPromptPanel').classList.toggle('is-visible', isAIPrompt);
+        document.getElementById('aiPromptPanel').setAttribute('aria-hidden', isAIPrompt ? 'false' : 'true');
+        document.getElementById('aiPromptModeInput').value = isAIPrompt ? 'true' : 'false';
+
+        var hasGeneratedSql = document.getElementById('generatedSqlInput').value.trim().length > 0;
+        document.getElementById('columnSelectionCard').style.display = (isAIPrompt && !hasGeneratedSql) ? 'none' : '';
+
+        if (isAIPrompt) {
+            document.getElementById('datasetNameInput').value = 'AI_PROMPT';
+            document.getElementById('activeResidentsSwitch').checked = false;
+            document.getElementById('aiPromptText').focus();
+            updateAIPromptCounter();
+            return;
+        }
 
         var name = getActiveDatasetName();
         onDatasetNameChanged(name);
+    }
+
+    function showAiModalAlert(title, message, isError) {
+        var titleEl = document.getElementById('aiAlertModalTitle');
+        var bodyEl = document.getElementById('aiAlertModalBody');
+
+        if (titleEl) {
+            titleEl.innerHTML = isError ?
+                '<span class="text-danger fw-bold"><i class="fa-solid fa-circle-exclamation me-2"></i>' + (title || 'AI Translation Error') + '</span>' :
+                '<span class="text-primary fw-bold"><i class="fa-solid fa-circle-info me-2"></i>' + (title || 'Notification') + '</span>';
+        }
+
+        if (bodyEl) {
+            var alertClass = isError ? 'alert-danger border-danger-subtle' : 'alert-info border-info-subtle';
+            bodyEl.innerHTML =
+                '<div class="alert ' + alertClass + ' mb-0 shadow-sm" style="border-radius: 10px; padding: 16px 18px; font-size: 0.92rem; line-height: 1.6;">' +
+                    message +
+                '</div>';
+        }
+
+        var modalEl = document.getElementById('aiAlertModal');
+        if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+            var modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+            modal.show();
+        } else if (typeof $ !== 'undefined' && $(modalEl).modal) {
+            $(modalEl).modal('show');
+        } else {
+            alert(message);
+        }
+    }
+
+    function generateSqlFromPrompt() {
+        var promptText = document.getElementById('aiPromptText').value.trim();
+        if (!promptText) {
+            showAiModalAlert('⚠️ Prompt Required', 'Please enter a data request prompt.', true);
+            document.getElementById('aiPromptText').focus();
+            return;
+        }
+
+        // Clear and hide previous result panel and hidden SQL inputs
+        document.getElementById('aiResultPanel').style.display = 'none';
+        document.getElementById('aiLogicExplanation').innerText = '';
+        document.getElementById('aiSqlCodeBox').innerText = '';
+        document.getElementById('generatedSqlInput').value = '';
+        document.getElementById('sqlParamValuesInput').value = '';
+
+        var btn = document.getElementById('btnGenerateSql');
+        var originalBtnHtml = btn.innerHTML;
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Translating request to SQL...';
+
+        var formData = new FormData();
+        formData.append('aiPrompt', promptText);
+        var refDateEl = document.querySelector('input[name="referenceDate"]');
+        if (refDateEl) formData.append('referenceDate', refDateEl.value);
+        var regCodeEl = document.querySelector('select[name="regionCode"]');
+        if (regCodeEl) formData.append('regionCode', regCodeEl.value);
+
+        fetch("${createLink(controller: 'dataExport', action: 'translatePrompt')}", {
+            method: 'POST',
+            headers: { 'X-Requested-With': 'XMLHttpRequest' },
+            body: formData,
+            signal: (typeof AbortSignal !== 'undefined' && AbortSignal.timeout) ? AbortSignal.timeout(180000) : null
+        })
+        .then(r => r.json())
+        .then(data => {
+            btn.disabled = false;
+            btn.innerHTML = originalBtnHtml;
+
+            if (data && data.success && data.sql) {
+                document.getElementById('generatedSqlInput').value = data.sql;
+                document.getElementById('sqlParamValuesInput').value = JSON.stringify(data.paramValues || []);
+                document.getElementById('aiLogicExplanation').innerText = data.explanation || 'SQL query generated successfully based on your prompt.';
+                document.getElementById('aiSqlCodeBox').innerText = data.sql;
+                document.getElementById('aiResultPanel').style.display = 'block';
+                document.getElementById('columnSelectionCard').style.display = 'block';
+
+                if (data.columns && data.columns.length > 0) {
+                    availableCols = data.columns;
+                    selectedCols = [...data.columns];
+                    renderDualLists();
+                }
+
+                fetchPreview();
+            } else {
+                showAiModalAlert('⚠️ Translation Failed', data.message || 'Failed translating prompt to SQL. Please refine your request and try again.', true);
+            }
+        })
+        .catch(err => {
+            btn.disabled = false;
+            btn.innerHTML = originalBtnHtml;
+            showAiModalAlert('⚠️ Translation Error', 'An error occurred during AI prompt translation: ' + err.message, true);
+        });
+    }
+
+    function copyGeneratedSql() {
+        var sql = document.getElementById('generatedSqlInput').value;
+        if (sql) {
+            navigator.clipboard.writeText(sql).then(() => {
+                showAiModalAlert('📋 Copied', 'SQL Query copied to clipboard!', false);
+            });
+        }
     }
 
     function getActiveDatasetName() {
@@ -841,11 +1147,30 @@
         if (type === 'REGULAR_TABLE') return document.getElementById('regularTableSelect').value;
         if (type === 'PREJOINED_DSS') return document.getElementById('prejoinedSelect').value;
         if (type === 'DYNAMIC_FORM') return document.getElementById('dynamicFormSelect').value;
+        if (type === 'AI_PROMPT') return 'AI_PROMPT';
         return 'member';
     }
 
+    function updateAIPromptCounter() {
+        var prompt = document.getElementById('aiPromptText');
+        var counter = document.getElementById('aiPromptCharCount');
+        if (prompt && counter) counter.innerText = prompt.value.length;
+    }
+
+    function useAIPromptExample(example) {
+        var prompt = document.getElementById('aiPromptText');
+        if (!prompt) return;
+        prompt.value = example;
+        updateAIPromptCounter();
+        prompt.focus();
+    }
+
+    var currentDatasetDescription = "Longitudinal surveillance dataset.";
+    var currentDatasetCategoryName = "";
+
     function onDatasetNameChanged(name) {
         document.getElementById('datasetNameInput').value = name;
+        if (document.getElementById('datasetTypeInput').value === 'AI_PROMPT') return;
         updateActiveResidentsControl(name);
 
         var url = "${createLink(controller: 'dataExport', action: 'getColumns')}?datasetName=" + name;
@@ -861,10 +1186,14 @@
                 return r.json();
             })
             .then(data => {
-                if (data && data.success && data.columns) {
-                    availableCols = data.columns;
-                    selectedCols = [...data.columns];
-                    renderDualLists();
+                if (data && data.success) {
+                    currentDatasetDescription = data.description || "Longitudinal surveillance dataset.";
+                    currentDatasetCategoryName = data.categoryName || document.getElementById('datasetTypeInput').value;
+                    if (data.columns) {
+                        availableCols = data.columns;
+                        selectedCols = [...data.columns];
+                        renderDualLists();
+                    }
                 }
             });
     }
@@ -944,6 +1273,17 @@
     }
 
     function openExportModal() {
+        var isAIPrompt = document.getElementById('datasetTypeInput').value === 'AI_PROMPT';
+        if (isAIPrompt) {
+            var promptText = document.getElementById('aiPromptText').value.trim();
+            if (!promptText) {
+                document.getElementById('aiPromptText').focus();
+                document.getElementById('aiPromptText').classList.add('is-invalid');
+                showAiModalAlert('⚠️ Prompt Required', 'Please describe the dataset you want to export before proceeding.', true);
+                return;
+            }
+            document.getElementById('aiPromptText').classList.remove('is-invalid');
+        }
         var el = document.getElementById('exportModal');
         if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
             var modal = bootstrap.Modal.getOrCreateInstance(el);
@@ -996,14 +1336,20 @@
                     paginationSize: 10
                 });
             } else {
-                alert("No preview records found matching the filters.");
+                showAiModalAlert('ℹ️ No Records Found', 'No preview records found matching the current filters.', false);
             }
         });
     }
 
     function viewDatasetDescription() {
         var name = getActiveDatasetName();
-        alert("Dataset: " + name + "\nDescription: Longitudinal surveillance dataset.");
+        var categoryName = currentDatasetCategoryName || document.getElementById('datasetTypeInput').value;
+
+        var msgHtml = '<strong>Dataset:</strong> ' + name + '<br><br>' +
+                      '<strong>Category:</strong> ' + categoryName + '<br><br>' +
+                      '<strong>Description:</strong> ' + currentDatasetDescription;
+
+        showAiModalAlert('Dataset Description: ' + name, msgHtml, false);
     }
 
     document.addEventListener("DOMContentLoaded", function() {

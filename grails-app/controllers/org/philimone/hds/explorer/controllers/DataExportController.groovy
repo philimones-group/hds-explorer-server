@@ -1,6 +1,7 @@
 package org.philimone.hds.explorer.controllers
 
 import grails.converters.JSON
+import groovy.json.JsonSlurper
 import org.philimone.hds.explorer.io.SystemPath
 import org.philimone.hds.explorer.server.model.enums.DataExportFormat
 import org.philimone.hds.explorer.server.model.enums.DataExportItem
@@ -11,10 +12,12 @@ import org.philimone.hds.explorer.server.model.enums.NameAnonymizationMode
 import org.philimone.hds.explorer.server.model.enums.PhoneAnonymizationMode
 import org.philimone.hds.explorer.server.model.main.CoreFormExtension
 import org.philimone.hds.explorer.services.DataDictionaryService
+import org.philimone.hds.explorer.services.DataExportNaturalLanguageSqlService
 import org.philimone.hds.explorer.services.DataExportService
 import org.philimone.hds.explorer.services.ExportRequest
 import org.philimone.hds.explorer.server.model.main.Region
 import org.philimone.hds.explorer.server.model.settings.DataExportReport
+import org.philimone.hds.explorer.services.SqlTranslationResult
 
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -23,6 +26,7 @@ class DataExportController {
 
     DataDictionaryService dataDictionaryService
     DataExportService dataExportService
+    def dataExportNaturalLanguageSqlService
     def generalUtilitiesService
 
     def index() {
@@ -32,8 +36,8 @@ class DataExportController {
         List<Region> regions = Region.list([sort: 'code', order: 'asc'])
 
         [
-                tables: allTables,
-                customForms: customForms,
+                tables: allTables.sort { it.tableName },
+                customForms: customForms.sort { it.extFormId },
                 prejoinedViews: prejoinedViews,
                 regions: regions,
                 exportFormats: DataExportFormat.values(),
@@ -127,6 +131,9 @@ class DataExportController {
         //println "retrieved columns = ${meta?.columns?.keySet()?.join(",")}"
 
         if (meta) {
+            DataExportItem exportItem = DataExportItem.getFrom(datasetName) ?: DataExportItem.REGULAR_TABLE
+            String categoryName = message(code: exportItem.name, default: exportItem.code)
+
             List<Map<String, Object>> cols = meta.columns.values().collect { c ->
                 [
                         columnName: c.columnName,
@@ -136,7 +143,12 @@ class DataExportController {
                         sensitiveType: c.sensitiveType?.code ?: "not_applicable"
                 ]
             }
-            render([success: true, tableName: meta.tableName, columns: cols] as JSON)
+            render([success    : true,
+                    tableName  : meta.tableName,
+                    domainName : meta.domainName ?: meta.tableName,
+                    categoryName: categoryName,
+                    columns    : cols,
+                    description: meta.description ?: "Longitudinal surveillance dataset."] as JSON)
         } else {
             render([success: false, message: message(code: 'dataExport.dataset.notFound', args: [datasetName], default: "Dataset ${datasetName} not found in dictionary")] as JSON)
         }
@@ -145,10 +157,51 @@ class DataExportController {
     def preview() {
         try {
             ExportRequest req = bindExportRequest()
-            List<Map<String, Object>> rows = dataExportService.executePreview(req)
+            List<Map<String, Object>> rows
+            if (req.aiPromptMode && req.generatedSql) {
+                rows = dataExportNaturalLanguageSqlService.fetchPreviewRows(req.generatedSql, req.sqlParamValues, req.selectedColumns, 10)
+            } else {
+                rows = dataExportService.executePreview(req)
+            }
             render([success: true, rows: rows, totalRows: rows.size()] as JSON)
         } catch (Exception e) {
             log.error("Preview failed: ${e.message}", e)
+            render([success: false, message: e.message] as JSON)
+        }
+    }
+
+    def translatePrompt() {
+        try {
+            String promptText = params.aiPrompt ? params.aiPrompt.toString().trim() : ""
+            String regionCode = params.regionCode ? params.regionCode.toString().trim() : null
+            LocalDate refDate = LocalDate.now()
+            if (params.referenceDate) {
+                try {
+                    refDate = LocalDate.parse(params.referenceDate.toString())
+                } catch (Exception e) {
+                    refDate = LocalDate.now()
+                }
+            }
+
+            SqlTranslationResult result = dataExportNaturalLanguageSqlService.translatePromptToSql(promptText)
+
+            if (result.isValid && result.sql) {
+                List<Map<String, Object>> cols = dataExportNaturalLanguageSqlService.extractSqlColumnMetadata(result.sql, result.paramValues)
+                render([
+                        success      : true,
+                        sql          : result.sql,
+                        paramValues  : result.paramValues,
+                        explanation  : result.explanation,
+                        columns      : cols
+                ] as JSON)
+            } else {
+                render([
+                        success     : false,
+                        message     : result.errorMessage ?: "Failed translating prompt to SQL."
+                ] as JSON)
+            }
+        } catch (Exception e) {
+            log.error("Failed AI translation endpoint: ${e.message}", e)
             render([success: false, message: e.message] as JSON)
         }
     }
@@ -179,6 +232,10 @@ class DataExportController {
                 includeDictionary: req.includeDictionary,
                 includeMediaFiles: req.includeMediaFiles,
                 activeResidentsOnly: req.activeResidentsOnly,
+                aiPromptMode: req.aiPromptMode,
+                aiPromptText: req.aiPromptText,
+                executedSql: req.generatedSql,
+                sqlParamValues: req.sqlParamValues ? groovy.json.JsonOutput.toJson(req.sqlParamValues) : null,
                 nameAnonymizationMode: req.nameAnonymizationMode,
                 phoneAnonymizationMode: req.phoneAnonymizationMode,
                 gpsAnonymizationMode: req.gpsAnonymizationMode,
@@ -296,7 +353,7 @@ class DataExportController {
                 def f = customForms.find { it.extFormId == req.datasetName}
                 if (f)
                     req.datasetLabel = "${g.message(code: f.formName)} (${f.extFormId})"
-            } else {
+            } else if (dataExportItem.isPrejoinedView) {
                 def v = prejoinedViews.find{ it.code == req.datasetName}
                 if (v)
                     req.datasetLabel = "${g.message(code: v.name)}"
@@ -337,6 +394,36 @@ class DataExportController {
         req.includeDictionary = params.includeDictionary ? params.includeDictionary.toBoolean() : false
         req.includeMediaFiles = params.includeMediaFiles ? params.includeMediaFiles.toBoolean() : false
         req.activeResidentsOnly = params.activeResidentsOnly ? params.activeResidentsOnly.toBoolean() : false
+
+        // Bind AI Prompt Mode fields
+        req.aiPromptMode = params.aiPromptMode ? params.aiPromptMode.toBoolean() : (params.datasetType == "AI_PROMPT")
+        req.aiPromptText = params.aiPrompt ? params.aiPrompt.toString().trim() : ""
+        req.generatedSql = params.generatedSql ? params.generatedSql.toString().trim() : ""
+
+        if (params.sqlParamValues) {
+            try {
+                String rawStr = params.sqlParamValues.toString().trim()
+                if (params.sqlParamValues instanceof List && !((List) params.sqlParamValues).isEmpty()) {
+                    rawStr = ((List) params.sqlParamValues).first().toString().trim()
+                }
+                if (rawStr.startsWith("[") && rawStr.endsWith("]")) {
+                    def parsed = new JsonSlurper().parseText(rawStr)
+                    if (parsed instanceof List) {
+                        req.sqlParamValues = (List<Object>) parsed
+                    }
+                } else if (params.sqlParamValues instanceof List) {
+                    req.sqlParamValues = (List<Object>) params.sqlParamValues
+                } else if (params.sqlParamValues instanceof String[]) {
+                    req.sqlParamValues = Arrays.asList(params.sqlParamValues)
+                }
+            } catch (Exception e) {
+                log.warn("Failed parsing sqlParamValues: ${e.message}", e)
+            }
+        }
+
+        if (req.aiPromptMode && req.datasetLabel.empty) {
+            req.datasetLabel = "AI Natural Language Export"
+        }
 
         req.nameAnonymizationMode = NameAnonymizationMode.getFrom(params.nameAnonymizationMode) ?: NameAnonymizationMode.INITIALS
         req.phoneAnonymizationMode = PhoneAnonymizationMode.getFrom(params.phoneAnonymizationMode) ?: PhoneAnonymizationMode.MASK

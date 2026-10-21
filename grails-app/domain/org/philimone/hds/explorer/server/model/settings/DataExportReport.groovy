@@ -40,6 +40,7 @@ class DataExportReport {
     Boolean aiPromptMode = false
     String aiPromptText
     String executedSql
+    String sqlParamValues
 
     // Granular Anonymization & Privacy Enums
     NameAnonymizationMode nameAnonymizationMode = NameAnonymizationMode.INITIALS
@@ -94,7 +95,8 @@ class DataExportReport {
 
         aiPromptMode nullable: false
         aiPromptText nullable: true, maxSize: 5000
-        executedSql nullable: true
+        executedSql nullable: true, maxSize: 5000
+        sqlParamValues nullable: true, maxSize: 4000
 
         nameAnonymizationMode nullable: false
         phoneAnonymizationMode nullable: false
@@ -148,6 +150,7 @@ class DataExportReport {
         aiPromptMode column: 'ai_prompt_mode'
         aiPromptText column: 'ai_prompt_text', type: 'text'
         executedSql column: 'executed_sql', type: 'text'
+        sqlParamValues column: 'sql_param_values', type: 'text'
 
         nameAnonymizationMode column: 'name_anonymization_mode', enumType: 'identity'
         phoneAnonymizationMode column: 'phone_anonymization_mode', enumType: 'identity'

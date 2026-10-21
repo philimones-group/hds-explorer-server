@@ -28,6 +28,14 @@ hds.explorer.system.path: "/var/lib/hds-explorer"
   #dataSource.password: d33_2019xx
   #dataSource.url: jdbc:mysql://localhost/hds_explorer_db?createDatabaseIfNotExist=true&autoReconnect=true&zeroDateTimeBehavior=convertToNull&useSSL=false
 
+  #dataSource_export.pooled: true
+  #dataSource_export.driverClassName: com.mysql.cj.jdbc.Driver
+  #dataSource_export.dialect: org.hibernate.dialect.MySQL8Dialect
+  #dataSource_export.username: hds_export
+  #dataSource_export.password: hds_test
+  #dataSource_export.url: jdbc:mysql://localhost/hds_explorer_db?createDatabaseIfNotExist=true&autoReconnect=true&zeroDateTimeBehavior=convertToNull&useSSL=false
+  #dataSource_export.readOnly: true
+
 # Postgres Config
   #dataSource.pooled: true
   #dataSource.jmxExport: true

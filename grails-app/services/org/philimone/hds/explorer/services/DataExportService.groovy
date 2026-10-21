@@ -1,6 +1,9 @@
 package org.philimone.hds.explorer.services
 
 import grails.gorm.transactions.Transactional
+import groovy.json.JsonSlurper
+import groovy.sql.GroovyRowResult
+import groovy.sql.Sql
 import org.apache.poi.ss.usermodel.*
 import org.apache.poi.xssf.streaming.SXSSFSheet
 import org.apache.poi.xssf.streaming.SXSSFWorkbook
@@ -27,6 +30,7 @@ class DataExportService {
     DataExportSqlQueryBuilderService dataExportSqlQueryBuilderService
     DataExportScriptsBuilderService dataExportScriptsBuilderService
     DataExportAnonymizationService dataExportAnonymizationService
+    DataExportNaturalLanguageSqlService dataExportNaturalLanguageSqlService
     GeneralUtilitiesService generalUtilitiesService
     SessionFactory sessionFactory
 
@@ -64,7 +68,19 @@ class DataExportService {
 
         List<Map<String, Object>> resultList = query.list()
         for (Map<String, Object> rawRow : resultList) {
-            rows.add(processRow(rawRow, request))
+            Map<String, Object> processed = processRow(rawRow, request)
+            if (request.selectedColumns && !request.selectedColumns.isEmpty()) {
+                Map<String, Object> ordered = new LinkedHashMap<>()
+                request.selectedColumns.each { colName ->
+                    if (processed.containsKey(colName)) {
+                        ordered.put(colName, processed.get(colName))
+                    }
+                }
+                if (!ordered.isEmpty()) {
+                    processed = ordered
+                }
+            }
+            rows.add(processed)
         }
 
         return rows
@@ -89,6 +105,18 @@ class DataExportService {
                 List<String> selectedColsList = report.selectedColumns ? report.selectedColumns.split(",").collect { it.trim() } : []
                 DataDictionaryService.TableMetadata meta = dataDictionaryService.getTableMetadata(report.datasetName)
 
+                List<Object> sqlParamsList = []
+                if (report.sqlParamValues) {
+                    try {
+                        def parsedParams = new JsonSlurper().parseText(report.sqlParamValues)
+                        if (parsedParams instanceof List) {
+                            sqlParamsList = (List<Object>) parsedParams
+                        }
+                    } catch (Exception e) {
+                        log.warn("Failed parsing report.sqlParamValues: ${e.message}")
+                    }
+                }
+
                 ExportRequest req = new ExportRequest(
                         datasetType: report.exportItem?.code ?: DataExportItem.REGULAR_TABLE.code,
                         datasetName: report.datasetName,
@@ -105,6 +133,10 @@ class DataExportService {
                         activeResidentsOnly: report.activeResidentsOnly,
                         hasMediaFields: meta?.hasMediaColumns ?: false,
                         hasRepeatTables: meta?.hasRepeatTables ?: false,
+                        aiPromptMode: report.aiPromptMode ?: false,
+                        aiPromptText: report.aiPromptText ?: "",
+                        generatedSql: report.executedSql ?: "",
+                        sqlParamValues: sqlParamsList,
                         nameAnonymizationMode: report.nameAnonymizationMode,
                         phoneAnonymizationMode: report.phoneAnonymizationMode,
                         gpsAnonymizationMode: report.gpsAnonymizationMode,
@@ -156,18 +188,22 @@ class DataExportService {
                 report.save(flush: true, failOnError: true)
                 println("Successfully completed async export job for report ${reportId} in ${duration}ms")
             } catch (Exception e) {
-                println("Async export processing failed for report ${reportId}: ${e.message}", e)
+                e.printStackTrace()
+                println("Async export processing failed for report ${reportId}: ${e.message}")
                 transactionStatus.setRollbackOnly()
+            }
+        }
 
-                DataExportReport.withNewTransaction {
-                    DataExportReport errReport = DataExportReport.get(reportId)
-                    if (errReport) {
-                        errReport.status = DataExportStatus.FAILED
-                        errReport.progressPercent = 0
-                        errReport.currentStep = "Export failed"
-                        errReport.errorMessage = e.message
-                        errReport.save(flush: true)
-                    }
+        DataExportReport reportCheck = DataExportReport.read(reportId)
+        if (reportCheck && reportCheck.status != DataExportStatus.COMPLETED) {
+            DataExportReport.withNewTransaction {
+                DataExportReport errReport = DataExportReport.get(reportId)
+                if (errReport && errReport.status != DataExportStatus.COMPLETED) {
+                    errReport.status = DataExportStatus.FAILED
+                    errReport.progressPercent = 0
+                    errReport.currentStep = "Export failed"
+                    errReport.errorMessage = "Export processing failed. Please check server logs."
+                    errReport.save(flush: true)
                 }
             }
         }
@@ -212,12 +248,64 @@ class DataExportService {
     }
 
     private void exportToCsvStream(ExportRequest request, OutputStream outputStream) {
+        if (request.aiPromptMode && request.generatedSql) {
+            exportAiPromptTableToCsvStream(request.generatedSql, request.sqlParamValues, request, outputStream)
+            return
+        }
+
         def sql = dataExportSqlQueryBuilderService.buildExportSql(request)
 
         println "csv sql:\n${sql.trim()}"
         println("csv cols: ${request?.selectedColumns?.join(',')}")
 
         exportTableToCsvStream(request.datasetName, null, sql, request, outputStream)
+    }
+
+    private void exportAiPromptTableToCsvStream(String sqlQuery, List<Object> params, ExportRequest request, OutputStream outputStream) {
+        Writer writer = new BufferedWriter(new OutputStreamWriter(outputStream, "UTF-8"))
+        writer.write(UTF8_BOM)
+
+        dataExportNaturalLanguageSqlService.withSql { Sql sql ->
+            List<String> headers = request.selectedColumns ?: []
+            boolean headersWritten = false
+
+            Closure rowHandler = { rawRow ->
+                Map<String, Object> mapRow = new LinkedHashMap<>()
+                if (rawRow instanceof GroovyRowResult || rawRow instanceof Map) {
+                    ((Map) rawRow).entrySet().each { entry -> mapRow.put(entry.key.toString(), entry.value) }
+                } else if (rawRow != null) {
+                    def metaData = rawRow.getMetaData()
+                    for (int i = 1; i <= metaData.columnCount; i++) {
+                        String colName = metaData.getColumnLabel(i) ?: metaData.getColumnName(i)
+                        mapRow.put(colName, rawRow.getObject(i))
+                    }
+                }
+
+                if (!headersWritten) {
+                    List<String> sqlOutputCols = mapRow.keySet().toList()
+                    if (request.selectedColumns && !request.selectedColumns.isEmpty()) {
+                        headers = request.selectedColumns.findAll { sqlOutputCols.contains(it) }
+                        if (headers.isEmpty()) headers = sqlOutputCols
+                    } else {
+                        headers = sqlOutputCols
+                    }
+                    writer.write(headers.collect { escapeCsv(it) }.join(",") + "\n")
+                    headersWritten = true
+                }
+
+                Map<String, Object> row = processRow(request.datasetName, mapRow, request)
+                List<String> values = headers.collect { h -> escapeCsv(row.get(h)?.toString() ?: "") }
+                writer.write(values.join(",") + "\n")
+            }
+
+            if (params && !params.isEmpty()) {
+                sql.eachRow(sqlQuery, params, rowHandler)
+            } else {
+                sql.eachRow(sqlQuery, rowHandler)
+            }
+        }
+
+        writer.flush()
     }
 
     private void exportTableToCsvStream(String tableName, DataDictionaryService.TableMetadata tableMetadata, String sql, ExportRequest request, OutputStream outputStream) {
@@ -252,16 +340,20 @@ class DataExportService {
         // SXSSFWorkbook streams rows to disk in chunks to prevent OutOfMemoryError
         SXSSFWorkbook workbook = new SXSSFWorkbook(EXCEL_STREAMING_ROW_FLUSH_SIZE)
         try {
-            // Main Parent Sheet
-            def mainTableSql = dataExportSqlQueryBuilderService.buildExportSql(request)
-            writeTableToExcelSheet(workbook, request.datasetName, null, mainTableSql, request)
+            if (request.aiPromptMode && request.generatedSql) {
+                writeAiPromptTableToExcelSheet(workbook, request.datasetName ?: "AI Export", request.generatedSql, request.sqlParamValues, request)
+            } else {
+                // Main Parent Sheet
+                def mainTableSql = dataExportSqlQueryBuilderService.buildExportSql(request)
+                writeTableToExcelSheet(workbook, request.datasetName, null, mainTableSql, request)
 
-            // Child Repeat Tables Sheets (if present, breadth-first top-down order)
-            if (request.hasRepeatTables) {
-                List<DataDictionaryService.TableMetadata> repeatTables = dataDictionaryService.getAllDescendantRepeatTables(request.datasetName)
-                repeatTables.each { childMeta ->
-                    String childSql = dataExportSqlQueryBuilderService.buildChildTableSql(childMeta.tableName, childMeta.parentTableName, request)
-                    writeTableToExcelSheet(workbook, childMeta.tableName, childMeta, childSql, request)
+                // Child Repeat Tables Sheets (if present, breadth-first top-down order)
+                if (request.hasRepeatTables) {
+                    List<DataDictionaryService.TableMetadata> repeatTables = dataDictionaryService.getAllDescendantRepeatTables(request.datasetName)
+                    repeatTables.each { childMeta ->
+                        String childSql = dataExportSqlQueryBuilderService.buildChildTableSql(childMeta.tableName, childMeta.parentTableName, request)
+                        writeTableToExcelSheet(workbook, childMeta.tableName, childMeta, childSql, request)
+                    }
                 }
             }
 
@@ -273,6 +365,70 @@ class DataExportService {
             workbook.write(outputStream)
         } finally {
             workbook.dispose() // dispose of temporary files on disk
+        }
+    }
+
+    private void writeAiPromptTableToExcelSheet(SXSSFWorkbook workbook, String sheetName, String sqlQuery, List<Object> params, ExportRequest request) {
+        Sheet sheet = workbook.createSheet(sheetName ?: "AI Export")
+
+        dataExportNaturalLanguageSqlService.withSql { Sql sql ->
+            List<String> headers = request.selectedColumns ?: []
+            CellStyle headerStyle = workbook.createCellStyle()
+            Font font = workbook.createFont()
+            font.setBold(true)
+            headerStyle.setFont(font)
+
+            boolean headersWritten = false
+            int rowIndex = 0
+
+            Closure rowHandler = { rawRow ->
+                Map<String, Object> mapRow = new LinkedHashMap<>()
+                if (rawRow instanceof GroovyRowResult || rawRow instanceof Map) {
+                    ((Map) rawRow).entrySet().each { entry -> mapRow.put(entry.key.toString(), entry.value) }
+                } else if (rawRow != null) {
+                    def metaData = rawRow.getMetaData()
+                    for (int i = 1; i <= metaData.columnCount; i++) {
+                        String colName = metaData.getColumnLabel(i) ?: metaData.getColumnName(i)
+                        mapRow.put(colName, rawRow.getObject(i))
+                    }
+                }
+
+                if (!headersWritten) {
+                    List<String> sqlOutputCols = mapRow.keySet().toList()
+                    if (request.selectedColumns && !request.selectedColumns.isEmpty()) {
+                        headers = request.selectedColumns.findAll { sqlOutputCols.contains(it) }
+                        if (headers.isEmpty()) headers = sqlOutputCols
+                    } else {
+                        headers = sqlOutputCols
+                    }
+                    Row headerRow = sheet.createRow(0)
+                    headers.eachWithIndex { h, idx ->
+                        Cell cell = headerRow.createCell(idx)
+                        cell.setCellValue(h)
+                        cell.setCellStyle(headerStyle)
+                    }
+                    headersWritten = true
+                    rowIndex = 1
+                }
+
+                Map<String, Object> row = processRow(sheetName, mapRow, request)
+                Row dataRow = sheet.createRow(rowIndex++)
+                headers.eachWithIndex { h, cIdx ->
+                    Object val = row.get(h)
+                    Cell cell = dataRow.createCell(cIdx)
+                    if (val instanceof Number) {
+                        cell.setCellValue(((Number) val).doubleValue())
+                    } else {
+                        cell.setCellValue(val?.toString() ?: "")
+                    }
+                }
+            }
+
+            if (params && !params.isEmpty()) {
+                sql.eachRow(sqlQuery, params, rowHandler)
+            } else {
+                sql.eachRow(sqlQuery, rowHandler)
+            }
         }
     }
 
@@ -421,18 +577,25 @@ class DataExportService {
             c.setCellStyle(headerStyle)
         }
 
-        DataDictionaryService.TableMetadata meta = dataDictionaryService.getTableMetadata(request.datasetName)
-        List<DataDictionaryService.TableMetadata> targetMetas = [meta]
-        if (request.hasRepeatTables) {
-            List<DataDictionaryService.TableMetadata> descendants = dataDictionaryService.getAllDescendantRepeatTables(request.datasetName)
-            if (descendants) targetMetas.addAll(descendants)
+        List<DataDictionaryService.TableMetadata> targetMetas = []
+        if (request.aiPromptMode && request.generatedSql) {
+            List<Map<String, Object>> extractedCols = dataExportNaturalLanguageSqlService.extractSqlColumnMetadata(request.generatedSql, request.sqlParamValues)
+            DataDictionaryService.TableMetadata aiMeta = dataDictionaryService.buildAiExportTableMetadata(extractedCols)
+            targetMetas = [aiMeta]
+        } else {
+            DataDictionaryService.TableMetadata meta = dataDictionaryService.getTableMetadata(request.datasetName)
+            if (meta) targetMetas.add(meta)
+            if (request.hasRepeatTables) {
+                List<DataDictionaryService.TableMetadata> descendants = dataDictionaryService.getAllDescendantRepeatTables(request.datasetName)
+                if (descendants) targetMetas.addAll(descendants)
+            }
         }
 
         int rowIndex = 1
         targetMetas.each { tMeta ->
             if (tMeta) {
                 tMeta.columns.values().each { colMeta ->
-                    if (tMeta.tableName == request.datasetName && request.selectedColumns && !request.selectedColumns.contains(colMeta.columnName)) {
+                    if (request.selectedColumns && !request.selectedColumns.contains(colMeta.columnName)) {
                         return
                     }
 
