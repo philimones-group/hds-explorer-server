@@ -793,7 +793,7 @@
 
             <!-- RIGHT STICKY SIDEBAR (~25% WIDTH) -->
             <div class="right-sidebar">
-                <div class="enterprise-card">
+                <div class="enterprise-card" id="filtersCard">
                     <div style="font-size: 0.95rem; font-weight: 700; color: #1e293b; margin-bottom: 15px; border-bottom: 1px solid #cbd5e1; padding-bottom: 8px;">
                         🎯 <g:message code="dataExport.filter.scopeTitle" default="Cohort Scope & Spatial Filters"/>
                     </div>
@@ -805,7 +805,7 @@
                     </div>
 
                     <!-- Spatial Scope -->
-                    <div class="filter-control">
+                    <div class="filter-control" id="regionControl">
                         <div class="filter-label">📍 <g:message code="dataExport.filter.region" default="Region / Zone:"/></div>
                         <select name="regionCode" class="form-control form-control-sm">
                             <option value=""><g:message code="dataExport.filter.allRegions" default="All Study Regions"/></option>
@@ -816,7 +816,7 @@
                     </div>
 
                     <!-- Gender Cohort -->
-                    <div class="filter-control">
+                    <div class="filter-control" id="genderControl">
                         <div class="filter-label">👥 <g:message code="dataExport.filter.gender" default="Gender Cohort:"/></div>
                         <select name="gender" class="form-control form-control-sm">
                             <option value="ALL"><g:message code="dataExport.filter.bothGenders" default="Both Genders"/></option>
@@ -826,7 +826,7 @@
                     </div>
 
                     <!-- Age Range -->
-                    <div class="filter-control">
+                    <div class="filter-control" id="ageRangeControl">
                         <div class="filter-label">🎂 <g:message code="dataExport.filter.ageRange" default="Age Range (Years):"/></div>
                         <div style="display: flex; gap: 6px;">
                             <input type="number" name="ageMin" class="form-control form-control-sm" placeholder="Min" min="0"/>
@@ -844,7 +844,7 @@
                     <div class="filter-control" style="margin-top: 10px;">
                         <div class="form-check form-switch">
                             <input class="form-check-input" type="checkbox" name="activeResidentsOnly" value="true" checked="checked" id="activeResidentsSwitch"/>
-                            <label class="form-check-label filter-label" for="activeResidentsSwitch"><g:message code="dataExport.filter.activeResidents" default="Latest Residency Only"/></label>
+                            <label class="form-check-label filter-label" for="activeResidentsSwitch"><g:message code="dataExport.filter.activeResidents" default="Active Residents Only"/></label>
                         </div>
                     </div>
                 </div>
@@ -988,27 +988,59 @@
     var selectedCols = [];
     var tabulatorGrid = null;
 
+    var MEMBER_FILTER_TABLES = ['member', 'marital_relationship', 'enumeration', 'in_migration', 'out_migration', 'death', 'pregnancy_registration', 'pregnancy_outcome', 'pregnancy_child', 'pregnancy_visit', 'pregnancy_visit_child', 'residency', 'head_relationship',
+                                'member_ext', 'marital_relationship_ext', 'in_migration_ext', 'out_migration_ext', 'death_ext', 'pregnancy_registration_ext', 'pregnancy_outcome_ext', 'pregnancy_child_ext', 'pregnancy_visit_ext', 'pregnancy_visit_child_ext'];
     var ACTIVE_RESIDENTS_TABLES = ['member', 'member_ext', 'residency', 'head_relationship', 'marital_relationship'];
 
-    function updateActiveResidentsControl(name) {
-        var catType = document.getElementById('datasetTypeInput').value;
-        var switchEl = document.getElementById('activeResidentsSwitch');
-        var containerEl = switchEl ? switchEl.closest('.filter-control') : null;
+    function updateFilterControls(catType, name) {
+        var isAIPrompt = catType === 'AI_PROMPT';
+        var filtersCard = document.getElementById('filtersCard');
 
-        var isSupported = (catType === 'REGULAR_TABLE') && ACTIVE_RESIDENTS_TABLES.includes(name);
-
-        if (containerEl) {
-            if (isSupported) {
-                switchEl.disabled = false;
-                containerEl.style.opacity = '1';
-                containerEl.style.pointerEvents = 'auto';
-            } else {
-                switchEl.disabled = true;
-                switchEl.checked = false;
-                containerEl.style.opacity = '0.4';
-                containerEl.style.pointerEvents = 'none';
+        if (isAIPrompt) {
+            if (filtersCard) {
+                filtersCard.style.opacity = '0.45';
+                filtersCard.style.pointerEvents = 'none';
+                filtersCard.querySelectorAll('input, select').forEach(function(el) { el.disabled = true; });
             }
+            return;
         }
+
+        if (filtersCard) {
+            filtersCard.style.opacity = '1';
+            filtersCard.style.pointerEvents = 'auto';
+            filtersCard.querySelectorAll('input, select').forEach(function(el) { el.disabled = false; });
+        }
+
+        var isMemberBased = MEMBER_FILTER_TABLES.includes(name) || catType === 'PREJOINED_DSS';
+        toggleFilterControl('genderControl', 'gender', isMemberBased);
+        toggleFilterControl('ageRangeControl', ['ageMin', 'ageMax'], isMemberBased);
+
+        var isRegionSupported = (name !== 'round');
+        toggleFilterControl('regionControl', 'regionCode', isRegionSupported);
+
+        var isResidencySupported = (catType === 'REGULAR_TABLE') && ACTIVE_RESIDENTS_TABLES.includes(name);
+        var switchEl = document.getElementById('activeResidentsSwitch');
+        var switchContainer = switchEl ? switchEl.closest('.filter-control') : null;
+        if (switchEl && switchContainer) {
+            switchEl.disabled = !isResidencySupported;
+            if (!isResidencySupported) switchEl.checked = false;
+            switchContainer.style.opacity = isResidencySupported ? '1' : '0.4';
+            switchContainer.style.pointerEvents = isResidencySupported ? 'auto' : 'none';
+        }
+    }
+
+    function toggleFilterControl(controlId, inputNames, isEnabled) {
+        var container = document.getElementById(controlId);
+        if (!container) return;
+
+        container.style.opacity = isEnabled ? '1' : '0.4';
+        container.style.pointerEvents = isEnabled ? 'auto' : 'none';
+
+        var names = Array.isArray(inputNames) ? inputNames : [inputNames];
+        names.forEach(function(n) {
+            var el = document.querySelector('[name="' + n + '"]');
+            if (el) el.disabled = !isEnabled;
+        });
     }
 
     function selectCategory(catType, cardId) {
@@ -1030,7 +1062,7 @@
 
         if (isAIPrompt) {
             document.getElementById('datasetNameInput').value = 'AI_PROMPT';
-            document.getElementById('activeResidentsSwitch').checked = false;
+            updateFilterControls('AI_PROMPT', 'AI_PROMPT');
             document.getElementById('aiPromptText').focus();
             updateAIPromptCounter();
             return;
@@ -1170,8 +1202,9 @@
 
     function onDatasetNameChanged(name) {
         document.getElementById('datasetNameInput').value = name;
-        if (document.getElementById('datasetTypeInput').value === 'AI_PROMPT') return;
-        updateActiveResidentsControl(name);
+        var catType = document.getElementById('datasetTypeInput').value;
+        if (catType === 'AI_PROMPT') return;
+        updateFilterControls(catType, name);
 
         var url = "${createLink(controller: 'dataExport', action: 'getColumns')}?datasetName=" + name;
 

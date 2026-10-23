@@ -159,6 +159,8 @@ def aiGroqKey = project.hasProperty('DEV_HDS_EXPLORER_SERVER_AI_GROQ_API_KEY') ?
 def aiGeminiKey = project.hasProperty('DEV_HDS_EXPLORER_SERVER_AI_GEMINI_API_KEY') ? project.getProperty('DEV_HDS_EXPLORER_SERVER_AI_GEMINI_API_KEY') : ''
 def aiModelName = project.hasProperty('DEV_HDS_EXPLORER_SERVER_AI_MODEL_NAME') ? project.getProperty('DEV_HDS_EXPLORER_SERVER_AI_MODEL_NAME') : ''
 def aiProvider = project.hasProperty('DEV_HDS_EXPLORER_SERVER_AI_PROVIDER') ? project.getProperty('DEV_HDS_EXPLORER_SERVER_AI_PROVIDER') : ''
+def aiOllamaUrl = project.hasProperty('DEV_HDS_EXPLORER_SERVER_AI_OLLAMA_URL') ? project.getProperty('DEV_HDS_EXPLORER_SERVER_AI_OLLAMA_URL') : ''
+
 
 bootRun {
     ignoreExitValue true
@@ -184,6 +186,7 @@ bootRun {
     systemProperty 'DEV_HDS_EXPLORER_SERVER_AI_GEMINI_API_KEY', aiGeminiKey
     systemProperty 'DEV_HDS_EXPLORER_SERVER_AI_MODEL_NAME', aiModelName
     systemProperty 'DEV_HDS_EXPLORER_SERVER_AI_PROVIDER', aiProvider
+    systemProperty 'DEV_HDS_EXPLORER_SERVER_AI_OLLAMA_URL', aiOllamaUrl
 
 }
 
