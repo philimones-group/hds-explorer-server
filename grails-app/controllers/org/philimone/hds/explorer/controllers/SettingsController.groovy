@@ -1,17 +1,18 @@
 package org.philimone.hds.explorer.controllers
 
 import grails.converters.JSON
+import org.philimone.hds.explorer.security.CryptoUtils
 import org.philimone.hds.explorer.server.model.authentication.User
 import org.philimone.hds.explorer.server.model.enums.settings.SettingsExportHistoryMode
-import org.philimone.hds.explorer.server.model.json.JConstant
 import org.philimone.hds.explorer.server.model.json.JLanguage
-import org.philimone.hds.explorer.server.model.main.CoreFormColumnOptions
 import org.philimone.hds.explorer.server.model.main.Module
 import org.philimone.hds.explorer.server.model.main.Region
 import org.philimone.hds.explorer.server.model.settings.Codes
 import org.philimone.hds.explorer.server.settings.generator.CodeGeneratorFactory
 import org.philimone.hds.explorer.taglib.DatatablesUITagLib
 import org.philimone.hds.explorer.taglib.TabulatorTagLib
+
+import java.time.LocalDate
 
 class SettingsController {
 
@@ -20,6 +21,7 @@ class SettingsController {
     def codeGeneratorService
     def coreFormColumnOptionsService
     def settingsService
+    def dataExportNaturalLanguageSqlService
     def dt = new DatatablesUITagLib()
     def tb = new TabulatorTagLib()
 
@@ -42,11 +44,21 @@ class SettingsController {
         def antSchedule = applicationParamService.getStringValue(Codes.PARAMS_ANTEPARTUM_SCHEDULE)
         def postSchedule = applicationParamService.getStringValue(Codes.PARAMS_POSTPARTUM_SCHEDULE)
 
+        //AI Settings
+        def selectedAiProvider  = applicationParamService.getStringValue(Codes.PARAMS_SYSTEM_AI_PROVIDER) ?: Codes.SYSTEM_AI_PROVIDER
+        def selectedAiOllamaUrl = applicationParamService.getStringValue(Codes.PARAMS_SYSTEM_AI_OLLAMA_URL) ?: Codes.SYSTEM_AI_OLLAMA_URL
+        def rawAiApiKey         = applicationParamService.getStringValue(Codes.PARAMS_SYSTEM_AI_API_KEY) ?: Codes.SYSTEM_AI_API_KEY
+        def realAiApiKey        = CryptoUtils.decrypt(rawAiApiKey)
+        def maskedAiApiKey      = realAiApiKey ? (realAiApiKey.length() > 8 ? realAiApiKey.substring(0, 6) + "••••••••••••••••••••••••" + realAiApiKey.substring(realAiApiKey.length() - 4) : "••••••••") : ""
+        def selectedAiModelName = applicationParamService.getStringValue(Codes.PARAMS_SYSTEM_AI_MODEL_NAME) ?: Codes.SYSTEM_AI_MODEL_NAME
+
         [languages: languages, selectedLanguage: currentLanguage.language, calendars: supportedCalendars, selectedCalendar: selectedCalendar, codeGenerators: Codes.SYSTEM_ALL_CODE_GENERATORS,
          codeGeneratorsRules: codeGenIncrementalRules, selectedCodeGenerator: Codes.SYSTEM_CODE_GENERATOR, selectedGpsRequired: gpsRequired,
          selectedCodeGeneratorIncRule: Codes.SYSTEM_CODE_GENERATOR_INCREMENTAL_RULE, selectedRegionHeadSupport: regionHeadSupport,
          maxAntVisits: maxAntVisits, maxPostVisits: maxPostVisits, antSchedule: antSchedule, postSchedule: postSchedule,
-         selectedExportHistoryMode: selectedExportHistoryMode, exportHistoryModes: exportHistoryModes, errorMessages: new ArrayList<String>()]
+         selectedExportHistoryMode: selectedExportHistoryMode, exportHistoryModes: exportHistoryModes,
+         selectedAiProvider: selectedAiProvider, selectedAiOllamaUrl: selectedAiOllamaUrl, selectedAiApiKey: maskedAiApiKey, selectedAiModelName: selectedAiModelName,
+         errorMessages: new ArrayList<String>()]
     }
 
     def updateParameters = {
@@ -199,6 +211,49 @@ class SettingsController {
 
         flash.message = message(code: 'settings.pregnancy.update.success.label')
         redirect(action: "parameters")
+    }
+
+    def updateAiParameters = {
+        def provider  = params.aiProvider ? params.aiProvider.toString().trim() : "ollama"
+        def ollamaUrl = params.aiOllamaUrl ? params.aiOllamaUrl.toString().trim() : "http://localhost:11434"
+        def apiKey    = params.aiApiKey ? params.aiApiKey.toString().trim() : ""
+        def modelName = params.aiModelName ? params.aiModelName.toString().trim() : "sqlcoder"
+
+        applicationParamService.updateApplicationParam(Codes.PARAMS_SYSTEM_AI_PROVIDER, provider)
+        applicationParamService.updateApplicationParam(Codes.PARAMS_SYSTEM_AI_OLLAMA_URL, ollamaUrl)
+
+        // Only update API key if user entered a NEW key (not containing bullet '•')
+        if (apiKey && !apiKey.contains("•")) {
+            String encKey = CryptoUtils.encrypt(apiKey)
+            applicationParamService.updateApplicationParam(Codes.PARAMS_SYSTEM_AI_API_KEY, encKey)
+            Codes.SYSTEM_AI_API_KEY = apiKey
+        }
+
+        applicationParamService.updateApplicationParam(Codes.PARAMS_SYSTEM_AI_MODEL_NAME, modelName)
+
+        // Update in-memory Codes static constants
+        Codes.SYSTEM_AI_PROVIDER   = provider
+        Codes.SYSTEM_AI_OLLAMA_URL = ollamaUrl
+        Codes.SYSTEM_AI_MODEL_NAME = modelName
+
+        flash.message = message(code: 'settings.ai.update.success.label', default: "AI Settings updated successfully!")
+        redirect(action: "parameters")
+    }
+
+    def testAiConnection = {
+        try {
+            long startTime = System.currentTimeMillis()
+            def testResult = dataExportNaturalLanguageSqlService.translatePromptToSql("Export 1 member", LocalDate.now(), null)
+            long elapsed = System.currentTimeMillis() - startTime
+
+            if (testResult.isValid && testResult.sql) {
+                render([success: true, message: message(code: 'settings.ai.connectionSuccess', args: [elapsed], default: "Connected successfully in ${elapsed}ms!"), latencyMs: elapsed] as JSON)
+            } else {
+                render([success: false, message: testResult.errorMessage ?: message(code: 'settings.ai.connectionFailed', default: "Connection failed.")] as JSON)
+            }
+        } catch (Exception e) {
+            render([success: false, message: message(code: 'settings.ai.connectionErrorMsg', args: [e.message], default: "AI Test Connection Error: ${e.message}")] as JSON)
+        }
     }
 
     def getCustomOptionsColumns = {

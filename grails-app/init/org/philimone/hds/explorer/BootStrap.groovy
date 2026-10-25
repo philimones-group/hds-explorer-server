@@ -2,6 +2,7 @@ package org.philimone.hds.explorer
 
 import net.betainteractive.utilities.GeneralUtil
 import net.betainteractive.utilities.StringUtil
+import org.philimone.hds.explorer.security.CryptoUtils
 import org.philimone.hds.explorer.server.model.authentication.Role
 import org.philimone.hds.explorer.server.model.authentication.SecurityMap
 import org.philimone.hds.explorer.server.model.authentication.User
@@ -498,6 +499,17 @@ class BootStrap {
         aps.addParam(Codes.PARAMS_SYSTEM_USE_ETHIOPIAN_CALENDAR, (sysUeth!=null) ? sysUeth.equalsIgnoreCase("true") : false)
         aps.addParam(Codes.PARAMS_SYSTEM_EXPORT_HISTORY_MODE, (sysExhm != null) ? sysExhm : SettingsExportHistoryMode.FULL.code)
         aps.addParam(Codes.PARAMS_SYSTEM_HOMEPATH, sysPath)
+
+        // Seed AI Prompt Parameters if not present in database
+        def sysAiProv = svc.getConfigValue("${Codes.PARAMS_SYSTEM_AI_PROVIDER}") ?: System.getProperty("DEV_HDS_EXPLORER_SERVER_AI_PROVIDER")
+        def sysAiOurl = svc.getConfigValue("${Codes.PARAMS_SYSTEM_AI_OLLAMA_URL}") ?: System.getProperty("DEV_HDS_EXPLORER_SERVER_AI_OLLAMA_URL")
+        def sysAiKey  = svc.getConfigValue("${Codes.PARAMS_SYSTEM_AI_API_KEY}") ?: System.getProperty("DEV_HDS_EXPLORER_SERVER_AI_API_KEY")
+        def sysAiModel = svc.getConfigValue("${Codes.PARAMS_SYSTEM_AI_MODEL_NAME}") ?: System.getProperty("DEV_HDS_EXPLORER_SERVER_AI_MODEL_NAME")
+
+        aps.addParam(Codes.PARAMS_SYSTEM_AI_PROVIDER, sysAiProv ?: Codes.SYSTEM_AI_PROVIDER)
+        aps.addParam(Codes.PARAMS_SYSTEM_AI_OLLAMA_URL, sysAiOurl ?: Codes.SYSTEM_AI_OLLAMA_URL)
+        aps.addParam(Codes.PARAMS_SYSTEM_AI_API_KEY, sysAiKey ? CryptoUtils.encrypt(sysAiKey) : Codes.SYSTEM_AI_API_KEY)
+        aps.addParam(Codes.PARAMS_SYSTEM_AI_MODEL_NAME, sysAiModel ?: Codes.SYSTEM_AI_MODEL_NAME)
 
         aps.addParamNullable(RegionLevel.HIERARCHY_1.code, null)
         aps.addParamNullable(RegionLevel.HIERARCHY_2.code, null)

@@ -50,6 +50,44 @@
     </head>
     <body>
         <g:javascript>
+            function onAiProviderChanged(provider) {
+                var isOllama = provider === 'ollama';
+                $("#aiOllamaUrlContainer").toggle(isOllama);
+                $("#aiApiKeyContainer").toggle(!isOllama);
+            }
+
+            function toggleApiKeyVisibility() {
+                var input = document.getElementById('aiApiKey');
+                if (input) {
+                    input.type = (input.type === 'password') ? 'text' : 'password';
+                }
+            }
+
+            function testAiServerConnection() {
+                var btn = $("#btnTestAiConn");
+                var badge = $("#aiConnTestResult");
+                btn.prop('disabled', true).text("${g.message(code: 'settings.ai.testingConnection', default: 'Testing connection...')}");
+                badge.text("${g.message(code: 'settings.ai.connecting', default: 'Connecting to AI provider...')}").css("color", "#0284c7");
+
+                $.ajax({
+                    url: "${createLink(controller: 'settings', action: 'testAiConnection')}",
+                    type: "POST",
+                    dataType: "json",
+                    success: function(data) {
+                        btn.prop('disabled', false).html("🔌 " + "${g.message(code: 'settings.ai.testConnectionBtn', default: 'Test AI Connection')}");
+                        if (data && data.success) {
+                            badge.text("✓ " + data.message).css("color", "#16a34a");
+                        } else {
+                            badge.text("❌ " + (data.message || "${g.message(code: 'settings.ai.connectionFailed', default: 'Connection failed')}")).css("color", "#dc2626");
+                        }
+                    },
+                    error: function(err) {
+                        btn.prop('disabled', false).html("🔌 " + "${g.message(code: 'settings.ai.testConnectionBtn', default: 'Test AI Connection')}");
+                        badge.text("❌ " + "${g.message(code: 'settings.ai.connectionError', default: 'Connection error:')} " + err.statusText).css("color", "#dc2626");
+                    }
+                });
+            }
+
             $(document).ready(function() {
                 $(".settings-tabs li").click(function() {
                     var tabId = $(this).attr("data-tab");
@@ -64,6 +102,9 @@
                 });
 
                 renderPregnancySchedules();
+
+                var currentProv = $("#aiProvider").val();
+                onAiProviderChanged(currentProv);
             });
 
             function renderPregnancySchedules() {
@@ -123,6 +164,7 @@
                 <ul class="settings-tabs">
                     <li class="active" data-tab="core-options"><g:message code="settings.parameters.tab.system.label" /></li>
                     <li data-tab="pregnancy-surveillance"><g:message code="settings.parameters.tab.pregnancy.label" /></li>
+                    <li data-tab="ai-prompt-settings"><g:message code="settings.parameters.tab.ai.label" default="AI Prompt Dataset Export Tool" /></li>
                 </ul>
 
                 <div id="core-options" class="settings-tab-content active">
@@ -253,6 +295,66 @@
 
                             <div id="postpartumScheduleContainer" class="schedule-container">
                                 <!-- Dynamic inputs -->
+                            </div>
+                        </fieldset>
+                        <fieldset class="buttons">
+                            <g:submitButton name="update" class="save" value="${message(code: 'default.button.update.label')}" />
+                        </fieldset>
+                    </g:form>
+                </div>
+
+                <div id="ai-prompt-settings" class="settings-tab-content">
+                    <g:form action="updateAiParameters" method="POST">
+                        <fieldset class="form">
+                            <!-- 1. AI Provider -->
+                            <div class="fieldcontain required">
+                                <label for="aiProvider">
+                                    <g:message code="settings.ai.provider.label" default="AI Provider" />
+                                    <span class="required-indicator">*</span>
+                                </label>
+                                <select id="aiProvider" name="aiProvider" class="many-to-one" onchange="onAiProviderChanged(this.value)">
+                                    <option value="ollama" ${selectedAiProvider == 'ollama' ? 'selected="selected"' : ''}><g:message code="settings.ai.provider.ollama" default="Ollama (Local)" /></option>
+                                    <option value="groq" ${selectedAiProvider == 'groq' ? 'selected="selected"' : ''}><g:message code="settings.ai.provider.groq" default="Groq AI" /></option>
+                                    <option value="gemini" ${selectedAiProvider == 'gemini' ? 'selected="selected"' : ''}><g:message code="settings.ai.provider.gemini" default="Google Gemini" /></option>
+                                    <option value="openai" ${selectedAiProvider == 'openai' ? 'selected="selected"' : ''}><g:message code="settings.ai.provider.openai" default="OpenAI" /></option>
+                                    <option value="openrouter" ${selectedAiProvider == 'openrouter' ? 'selected="selected"' : ''}><g:message code="settings.ai.provider.openrouter" default="OpenRouter" /></option>
+                                </select>
+                            </div>
+
+                            <!-- 2. Ollama Base URL -->
+                            <div class="fieldcontain" id="aiOllamaUrlContainer">
+                                <label for="aiOllamaUrl">
+                                    <g:message code="settings.ai.ollamaUrl.label" default="Ollama Base URL" />
+                                </label>
+                                <input type="text" id="aiOllamaUrl" name="aiOllamaUrl" value="${selectedAiOllamaUrl}" placeholder="http://localhost:11434" style="width: 350px;" />
+                                <span class="help-block" style="font-size: 0.8rem; color: #666; margin-left: 10px;"><g:message code="settings.ai.ollamaUrl.hint" default="Hint: For Docker, use http://host.docker.internal:11434" /></span>
+                            </div>
+
+                            <!-- 3. Cloud Provider API Key -->
+                            <div class="fieldcontain" id="aiApiKeyContainer" style="display: none;">
+                                <label for="aiApiKey">
+                                    <g:message code="settings.ai.apiKey.label" default="AI Provider API Key" />
+                                </label>
+                                <div style="display: inline-block;">
+                                    <input type="password" id="aiApiKey" name="aiApiKey" value="${selectedAiApiKey}" autocomplete="new-password" style="width: 350px;" placeholder="${message(code: 'settings.ai.apiKey.placeholder', default: 'Enter Cloud API Key (e.g. gsk_... or sk-...)')}" />
+                                    <button type="button" class="button" onclick="toggleApiKeyVisibility()" style="margin-left: 5px;"><g:message code="settings.ai.toggleKey" default="Show/Hide" /></button>
+                                </div>
+                            </div>
+
+                            <!-- 4. AI Model Name -->
+                            <div class="fieldcontain required">
+                                <label for="aiModelName">
+                                    <g:message code="settings.ai.modelName.label" default="AI Model Name" />
+                                    <span class="required-indicator">*</span>
+                                </label>
+                                <input type="text" id="aiModelName" name="aiModelName" value="${selectedAiModelName}" required="" placeholder="${message(code: 'settings.ai.modelName.placeholder', default: 'e.g. sqlcoder, llama-3.3-70b-versatile, gemini-1.5-flash, gpt-4o')}" style="width: 350px;" />
+                            </div>
+
+                            <!-- Test Connection Result Status Badge -->
+                            <div class="fieldcontain" style="margin-top: 10px;">
+                                <label></label>
+                                <button type="button" id="btnTestAiConn" class="button" onclick="testAiServerConnection()"><g:message code="settings.ai.testConnectionBtn" default="Test AI Connection" /></button>
+                                <span id="aiConnTestResult" style="margin-left: 15px; font-weight: bold; font-size: 0.9rem;"></span>
                             </div>
                         </fieldset>
                         <fieldset class="buttons">

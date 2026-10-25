@@ -9,16 +9,17 @@ import dev.langchain4j.service.SystemMessage
 import dev.langchain4j.service.UserMessage
 import dev.langchain4j.service.V
 import grails.gorm.transactions.Transactional
-import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
 import groovy.sql.GroovyRowResult
 import groovy.sql.Sql
+import org.philimone.hds.explorer.security.CryptoUtils
 import org.philimone.hds.explorer.server.model.main.CoreFormExtension
+import org.philimone.hds.explorer.server.model.settings.ApplicationParam
+import org.philimone.hds.explorer.server.model.settings.Codes
 import org.philimone.hds.forms.model.enums.SensitiveType
 
 import javax.sql.DataSource
 import java.sql.Connection
-import java.sql.DatabaseMetaData
 import java.sql.ResultSet
 import java.sql.ResultSetMetaData
 import java.time.Duration
@@ -126,19 +127,37 @@ class DataExportNaturalLanguageSqlService {
         }
     }
 
+    def applicationParamService
+
+    private String getSettingValue(String paramKey, String envKey, String defaultValue) {
+        String dbVal = applicationParamService ? applicationParamService.getStringValue(paramKey) : null
+        if (!dbVal) {
+            dbVal = ApplicationParam.findByName(paramKey)?.value
+        }
+        if (dbVal && !dbVal.trim().isEmpty()) {
+            return CryptoUtils.decrypt(dbVal.trim())
+        }
+        String envVal = System.getProperty(envKey) ?: System.getenv(envKey)
+        if (envVal && !envVal.trim().isEmpty()) {
+            return envVal.trim()
+        }
+        return defaultValue
+    }
+
     private ChatLanguageModel getResolvedChatLanguageModel() {
         if (chatLanguageModel != null) {
             return chatLanguageModel
         }
 
-        String providerCode = System.getProperty("DEV_HDS_EXPLORER_SERVER_AI_PROVIDER") ?: System.getenv("DEV_HDS_EXPLORER_SERVER_AI_PROVIDER") ?: "ollama"
+        String providerCode = getSettingValue(Codes.PARAMS_SYSTEM_AI_PROVIDER, "DEV_HDS_EXPLORER_SERVER_AI_PROVIDER", "ollama")
         AiProvider provider = AiProvider.getFrom(providerCode)
-        String customModelName = System.getProperty("DEV_HDS_EXPLORER_SERVER_AI_MODEL_NAME") ?: System.getenv("DEV_HDS_EXPLORER_SERVER_AI_MODEL_NAME")
+        String customModelName = getSettingValue(Codes.PARAMS_SYSTEM_AI_MODEL_NAME, "DEV_HDS_EXPLORER_SERVER_AI_MODEL_NAME", null)
+        String apiKey = getSettingValue(Codes.PARAMS_SYSTEM_AI_API_KEY, "DEV_HDS_EXPLORER_SERVER_AI_API_KEY", "")
 
         switch (provider) {
             case AiProvider.OLLAMA:
-                String ollamaUrl = System.getProperty("DEV_HDS_EXPLORER_SERVER_AI_OLLAMA_URL") ?: System.getenv("DEV_HDS_EXPLORER_SERVER_AI_OLLAMA_URL") ?: "http://127.0.0.1:11434"
-                String modelName = customModelName ?: "gemma4" // "sqlcoder"
+                String ollamaUrl = getSettingValue(Codes.PARAMS_SYSTEM_AI_OLLAMA_URL, "DEV_HDS_EXPLORER_SERVER_AI_OLLAMA_URL", "http://localhost:11434")
+                String modelName = customModelName ?: "sqlcoder"
                 println("Using AI Provider: Ollama (${ollamaUrl}, model: ${modelName})")
                 return OllamaChatModel.builder()
                         .baseUrl(ollamaUrl)
@@ -151,12 +170,11 @@ class DataExportNaturalLanguageSqlService {
                         .build()
 
             case AiProvider.GROQ:
-                String groqKey = System.getProperty("DEV_HDS_EXPLORER_SERVER_AI_GROQ_API_KEY") ?: System.getenv("DEV_HDS_EXPLORER_SERVER_AI_GROQ_API_KEY") ?: System.getenv("GROQ_API_KEY")
                 String modelName = customModelName ?: "llama-3.3-70b-versatile"
                 println("Using AI Provider: Groq (model: ${modelName})")
                 return OpenAiChatModel.builder()
                         .baseUrl("https://api.groq.com/openai/v1")
-                        .apiKey(groqKey)
+                        .apiKey(apiKey)
                         .modelName(modelName)
                         .temperature(0.0d)
                         .timeout(Duration.ofSeconds(60))
@@ -164,11 +182,10 @@ class DataExportNaturalLanguageSqlService {
                         .build()
 
             case AiProvider.GEMINI:
-                String geminiKey = System.getProperty("DEV_HDS_EXPLORER_SERVER_AI_GEMINI_API_KEY") ?: System.getenv("DEV_HDS_EXPLORER_SERVER_AI_GEMINI_API_KEY")
                 String modelName = customModelName ?: "gemini-1.5-flash"
                 println("Using AI Provider: Google Gemini (model: ${modelName})")
                 return GoogleAiGeminiChatModel.builder()
-                        .apiKey(geminiKey)
+                        .apiKey(apiKey)
                         .modelName(modelName)
                         .temperature(0.0d)
                         .timeout(Duration.ofMinutes(2))
@@ -176,11 +193,10 @@ class DataExportNaturalLanguageSqlService {
                         .build()
 
             case AiProvider.OPENAI:
-                String openAiKey = System.getProperty("DEV_HDS_EXPLORER_SERVER_AI_OPENAI_API_KEY") ?: System.getenv("DEV_HDS_EXPLORER_SERVER_AI_OPENAI_API_KEY") ?: System.getenv("AI_PROMPT_OPENAI_API_KEY") ?: System.getProperty("AI_PROMPT_OPENAI_API_KEY") ?: "demo"
                 String modelName = customModelName ?: "gpt-4o"
                 println("Using AI Provider: OpenAI (model: ${modelName})")
                 return OpenAiChatModel.builder()
-                        .apiKey(openAiKey)
+                        .apiKey(apiKey)
                         .modelName(modelName)
                         .temperature(0.0d)
                         .timeout(Duration.ofSeconds(60))
@@ -188,12 +204,11 @@ class DataExportNaturalLanguageSqlService {
                         .build()
 
             case AiProvider.OPENROUTER:
-                String openRouterKey = System.getProperty("DEV_HDS_EXPLORER_SERVER_AI_OPENROUTER_API_KEY") ?: System.getenv("DEV_HDS_EXPLORER_SERVER_AI_OPENROUTER_API_KEY")
                 String modelName = customModelName ?: "anthropic/claude-3.5-sonnet"
                 println("Using AI Provider: OpenRouter (model: ${modelName})")
                 return OpenAiChatModel.builder()
                         .baseUrl("https://openrouter.ai/api/v1")
-                        .apiKey(openRouterKey)
+                        .apiKey(apiKey)
                         .modelName(modelName)
                         .temperature(0.0d)
                         .timeout(Duration.ofSeconds(60))
@@ -428,7 +443,6 @@ class DataExportNaturalLanguageSqlService {
                     conn?.close()
                 }
             }
-            println "conn readonly - ${isReadOnly}"
             return isReadOnly
         } catch (Exception e) {
             println "Failed checking DataSource read-only status: ${e.message}"

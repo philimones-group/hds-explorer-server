@@ -25,6 +25,12 @@ class Codes {
     static final String PARAMS_SYSTEM_EXPORT_HISTORY_MODE = "hds.explorer.system.export.history.mode";
     static final String PARAMS_SYSTEM_HOMEPATH = "hds.explorer.system.path"
 
+    // AI Settings Parameter Keys
+    static final String PARAMS_SYSTEM_AI_PROVIDER = "hds.explorer.system.ai.provider"
+    static final String PARAMS_SYSTEM_AI_OLLAMA_URL = "hds.explorer.system.ai.ollama.url"
+    static final String PARAMS_SYSTEM_AI_API_KEY = "hds.explorer.system.ai.api.key"
+    static final String PARAMS_SYSTEM_AI_MODEL_NAME = "hds.explorer.system.ai.model.name"
+
     static final String MEMBER_UNKNOWN_CODE = "UNK"
 
     /* Mutable Constants - Will be loaded during bootstrap */
@@ -45,6 +51,11 @@ class Codes {
     static boolean SYSTEM_USE_ETHIOPIAN_CALENDAR = false
     static String SYSTEM_CODE_GENERATOR_INCREMENTAL_RULE = CodeGeneratorIncrementalRule.INCREMENT_LAST_CODE.code
     static SettingsExportHistoryMode SYSTEM_EXPORT_HISTORY_MODE = SettingsExportHistoryMode.FULL
+
+    static String SYSTEM_AI_PROVIDER   = "ollama"
+    static String SYSTEM_AI_OLLAMA_URL = "http://localhost:11434"
+    static String SYSTEM_AI_API_KEY    = ""
+    static String SYSTEM_AI_MODEL_NAME = "gemma4"
 
     static String SYSTEM_HOMEPATH = "/var/lib/hds-explorer"
     static List<JConstant> SYSTEM_ALL_CODE_GENERATORS = new ArrayList<>()

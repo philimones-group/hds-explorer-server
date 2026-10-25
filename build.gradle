@@ -153,6 +153,7 @@ def databasePass = project.hasProperty('DEV_HDS_EXPLORER_SERVER_DB_PASS') ? proj
 def dbExportUser = project.hasProperty('DEV_HDS_EXPLORER_SERVER_DB_EXPORT_USER') ? project.getProperty('DEV_HDS_EXPLORER_SERVER_DB_EXPORT_USER') : ''
 def dbExportPass = project.hasProperty('DEV_HDS_EXPLORER_SERVER_DB_EXPORT_PASS') ? project.getProperty('DEV_HDS_EXPLORER_SERVER_DB_EXPORT_PASS') : ''
 
+def aiApiKey = project.hasProperty('DEV_HDS_EXPLORER_SERVER_AI_API_KEY') ? project.getProperty('DEV_HDS_EXPLORER_SERVER_AI_API_KEY') : ''
 def aiOpenAiKey = project.hasProperty('DEV_HDS_EXPLORER_SERVER_AI_OPENAI_API_KEY') ? project.getProperty('DEV_HDS_EXPLORER_SERVER_AI_OPENAI_API_KEY') : ''
 def aiOpenRouterKey = project.hasProperty('DEV_HDS_EXPLORER_SERVER_AI_OPENROUTER_API_KEY') ? project.getProperty('DEV_HDS_EXPLORER_SERVER_AI_OPENROUTER_API_KEY') : ''
 def aiGroqKey = project.hasProperty('DEV_HDS_EXPLORER_SERVER_AI_GROQ_API_KEY') ? project.getProperty('DEV_HDS_EXPLORER_SERVER_AI_GROQ_API_KEY') : ''
@@ -180,6 +181,7 @@ bootRun {
     systemProperty 'DEV_DATABASE_EXPORT_USER', dbExportUser
     systemProperty 'DEV_DATABASE_EXPORT_PASS', dbExportPass
 
+    systemProperty 'DEV_HDS_EXPLORER_SERVER_AI_API_KEY', aiApiKey
     systemProperty 'DEV_HDS_EXPLORER_SERVER_AI_OPENAI_API_KEY', aiOpenAiKey
     systemProperty 'DEV_HDS_EXPLORER_SERVER_AI_OPENROUTER_API_KEY', aiOpenRouterKey
     systemProperty 'DEV_HDS_EXPLORER_SERVER_AI_GROQ_API_KEY', aiGroqKey

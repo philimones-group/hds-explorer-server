@@ -631,12 +631,12 @@
                         </div>
 
                         <!-- Card 4: AI Prompt -->
-                        <div class="category-card category-card-ai" id="cardAIPrompt" onclick="selectCategory('AI_PROMPT', 'cardAIPrompt')" role="button" tabindex="0" aria-controls="aiPromptPanel" aria-label="Use AI Prompt to describe the dataset in natural language">
+                        <div class="category-card category-card-ai" id="cardAIPrompt" onclick="selectCategory('AI_PROMPT', 'cardAIPrompt')" role="button" tabindex="0" aria-controls="aiPromptPanel" aria-label="${message(code: 'dataExport.ai.promptCardTitle', default: 'AI Prompt')}">
                             <div class="checkmark-badge">✓</div>
                             <div class="icon-box"><asset:image src="skin/data_export_category_ai_prompt.png" alt="AI Prompt" width="30" height="32"/></div>
                             <div class="card-content">
-                                <div class="card-title">AI Prompt <span class="ai-option-pill">AI</span></div>
-                                <div class="card-desc">Export data using natural language query (powered with AI).</div>
+                                <div class="card-title"><g:message code="dataExport.ai.promptCardTitle" default="AI Prompt"/> <span class="ai-option-pill">AI</span></div>
+                                <div class="card-desc"><g:message code="dataExport.ai.promptCardDesc" default="Export data using natural language query (powered with AI)."/></div>
                             </div>
                         </div>
                     </div>
@@ -649,18 +649,22 @@
                                 <asset:image src="skin/data_export_category_ai_prompt.png" alt="AI Prompt" width="22" height="22"/>
                             </span>
                             <div>
-                                <div style="margin-bottom: -4px;">Describe what data you want to export</div>
-                                <div style="font-size:0.76rem; font-weight:500; color:#7c6b99;">Write your request in natural language — no SQL required | Be specific about the population, fields, date range, filters, and privacy requirements.</div>
+                                <div style="margin-bottom: -4px;"><g:message code="dataExport.ai.promptHeading" default="Describe what data you want to export"/></div>
+                                <div style="font-size:0.76rem; font-weight:500; color:#7c6b99;"><g:message code="dataExport.ai.promptSubheading" default="Write your request in natural language — no SQL required | Be specific about the population, fields, date range, filters, and privacy requirements."/></div>
                             </div>
                         </div>
                         <textarea id="aiPromptText" name="aiPrompt" class="form-control ai-prompt-textarea" maxlength="5000"
-                                  placeholder="Example: Export all active residents in Maputo Province who are 18–49 years old, including their household code, sex, age, residency status, and village. Exclude names and phone numbers."
+                                  placeholder="${message(code: 'dataExport.ai.promptPlaceholder', default: 'Example: Export all active residents in Maputo Province who are 18–49 years old, including their household code, sex, age, residency status, and village. Exclude names and phone numbers.')}"
                                   oninput="updateAIPromptCounter()" aria-describedby="aiPromptHelp"></textarea>
+                        <div class="ai-prompt-footer">
+                            <span id="aiPromptHelp"><g:message code="dataExport.ai.promptFooterHint" default="Review the generated dataset and privacy settings before exporting. The natural-language request will be submitted with the export form."/></span>
+                            <span><strong id="aiPromptCharCount">0</strong> / 5,000</span>
+                        </div>
 
                         <!-- TRANSLATION ACTION BUTTON -->
                         <div style="margin-top: 15px; display: flex; gap: 10px; align-items: center;">
                             <button type="button" id="btnGenerateSql" class="btn btn-primary" onclick="generateSqlFromPrompt()">
-                                ✨ <g:message code="dataExport.ai.generateSql" default="Generate SQL Query"/>
+                                <g:message code="dataExport.ai.generateSql" default="Generate SQL Query"/>
                             </button>
                         </div>
 
@@ -668,10 +672,10 @@
                         <div id="aiResultPanel" style="display: none; margin-top: 18px; padding: 16px; border: 1px solid #c4b5fd; border-radius: 10px; background: #fdfcff;">
                             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
                                 <span class="badge bg-success" style="font-size: 0.78rem; padding: 6px 10px;">
-                                    🛡️ <g:message code="dataExport.ai.readOnlyValidated" default="Read-Only Validated"/>
+                                    <g:message code="dataExport.ai.readOnlyValidated" default="Read-Only Validated"/>
                                 </span>
                                 <button type="button" class="btn btn-sm btn-outline-secondary" onclick="copyGeneratedSql()">
-                                    📋 <g:message code="dataExport.ai.copySql" default="Copy SQL"/>
+                                    <g:message code="dataExport.ai.copySql" default="Copy SQL"/>
                                 </button>
                             </div>
 
@@ -1104,7 +1108,7 @@
     function generateSqlFromPrompt() {
         var promptText = document.getElementById('aiPromptText').value.trim();
         if (!promptText) {
-            showAiModalAlert('⚠️ Prompt Required', 'Please enter a data request prompt.', true);
+            showAiModalAlert("${g.message(code: 'dataExport.ai.modalPromptRequiredTitle', default: '⚠️ Prompt Required')}", "${g.message(code: 'dataExport.ai.modalPromptRequiredMsg', default: 'Please enter a data request prompt.')}", true);
             document.getElementById('aiPromptText').focus();
             return;
         }
@@ -1119,7 +1123,7 @@
         var btn = document.getElementById('btnGenerateSql');
         var originalBtnHtml = btn.innerHTML;
         btn.disabled = true;
-        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Translating request to SQL...';
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> ' + "${g.message(code: 'dataExport.ai.spinnerTranslating', default: 'Translating request to SQL...')}";
 
         var formData = new FormData();
         formData.append('aiPrompt', promptText);
@@ -1142,7 +1146,7 @@
             if (data && data.success && data.sql) {
                 document.getElementById('generatedSqlInput').value = data.sql;
                 document.getElementById('sqlParamValuesInput').value = JSON.stringify(data.paramValues || []);
-                document.getElementById('aiLogicExplanation').innerText = data.explanation || 'SQL query generated successfully based on your prompt.';
+                document.getElementById('aiLogicExplanation').innerText = data.explanation || "${g.message(code: 'dataExport.ai.explanationDefault', default: 'SQL query generated successfully based on your prompt.')}";
                 document.getElementById('aiSqlCodeBox').innerText = data.sql;
                 document.getElementById('aiResultPanel').style.display = 'block';
                 document.getElementById('columnSelectionCard').style.display = 'block';
@@ -1155,13 +1159,13 @@
 
                 fetchPreview();
             } else {
-                showAiModalAlert('⚠️ Translation Failed', data.message || 'Failed translating prompt to SQL. Please refine your request and try again.', true);
+                showAiModalAlert("${g.message(code: 'dataExport.ai.modalFailedTitle', default: '⚠️ Translation Failed')}", data.message || "${g.message(code: 'dataExport.ai.modalFailedMsg', default: 'Failed translating prompt to SQL. Please refine your request and try again.')}", true);
             }
         })
         .catch(err => {
             btn.disabled = false;
             btn.innerHTML = originalBtnHtml;
-            showAiModalAlert('⚠️ Translation Error', 'An error occurred during AI prompt translation: ' + err.message, true);
+            showAiModalAlert("${g.message(code: 'dataExport.ai.modalErrorTitle', default: '⚠️ Translation Error')}", err.message, true);
         });
     }
 
@@ -1169,7 +1173,7 @@
         var sql = document.getElementById('generatedSqlInput').value;
         if (sql) {
             navigator.clipboard.writeText(sql).then(() => {
-                showAiModalAlert('📋 Copied', 'SQL Query copied to clipboard!', false);
+                showAiModalAlert("${g.message(code: 'dataExport.ai.modalCopiedTitle', default: '📋 Copied')}", "${g.message(code: 'dataExport.ai.modalCopiedMsg', default: 'SQL Query copied to clipboard!')}", false);
             });
         }
     }
@@ -1369,7 +1373,7 @@
                     paginationSize: 10
                 });
             } else {
-                showAiModalAlert('ℹ️ No Records Found', 'No preview records found matching the current filters.', false);
+                showAiModalAlert("${g.message(code: 'dataExport.ai.modalNoRecordsTitle', default: 'ℹ️ No Records Found')}", "${g.message(code: 'dataExport.ai.modalNoRecordsMsg', default: 'No preview records found matching the current filters.')}", false);
             }
         });
     }
@@ -1382,7 +1386,7 @@
                       '<strong>Category:</strong> ' + categoryName + '<br><br>' +
                       '<strong>Description:</strong> ' + currentDatasetDescription;
 
-        showAiModalAlert('Dataset Description: ' + name, msgHtml, false);
+        showAiModalAlert("${g.message(code: 'dataExport.ai.datasetDescriptionTitle', default: 'Dataset Description:')} " + name, msgHtml, false);
     }
 
     document.addEventListener("DOMContentLoaded", function() {
