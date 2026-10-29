@@ -26,12 +26,35 @@ To get started with HDS-Explorer, simply clone the repository and then from with
    `DEV_HDS_EXPLORER_SERVER_DB_URL=jdbc:mysql://localhost/hds_explorer_db?createDatabaseIfNotExist=true&autoReconnect=true&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true`   
    `DEV_HDS_EXPLORER_SERVER_DB_USER=hds_explorer`   
    `DEV_HDS_EXPLORER_SERVER_DB_PASS=hds_test`   
+   * Configure the Read-Only Data Export DataSource (connected as a SELECT-only database user for dataset exports and AI prompts)  
+   `DEV_HDS_EXPLORER_SERVER_EXPORT_DB_URL=jdbc:mysql://localhost/hds_explorer_db?useSSL=false&allowPublicKeyRetrieval=true`   
+   `DEV_HDS_EXPLORER_SERVER_EXPORT_DB_USER=hds_export`   
+   `DEV_HDS_EXPLORER_SERVER_EXPORT_DB_PASS=hds_export_pass`   
    * Create HDS-Explorer resources directory and grant access to your Linux User  
    `sudo mkdir /var/lib/hds-explorer`   
    `sudo chown -R $USER:$USER_GROUP /var/lib/hds-explorer/`  
    * Goto hds-explorer cloned directory and Generate WAR  
    `cd hds-explorer-server`   
    `grails clean && grails war`
+
+### Security Best Practice: Read-Only Export Database User (`hds_export`)
+For security enforcement during dataset exports and AI Natural Language query execution, `dataSource_export` should be connected as a restricted user with **`SELECT`-only permissions**. This guarantees database-level write-protection regardless of generated query logic.
+
+**MySQL / MariaDB Read-Only User Setup**:
+```sql
+CREATE USER 'hds_export'@'localhost' IDENTIFIED BY 'hds_export_pass';
+GRANT SELECT ON hds_explorer_db.* TO 'hds_export'@'localhost';
+FLUSH PRIVILEGES;
+```
+
+**PostgreSQL Read-Only User Setup**:
+```sql
+CREATE USER hds_export WITH PASSWORD 'hds_export_pass';
+GRANT CONNECT ON DATABASE hds_explorer_db TO hds_export;
+GRANT USAGE ON SCHEMA public TO hds_export;
+GRANT SELECT ON ALL TABLES IN SCHEMA public TO hds_export;
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT ON TABLES TO hds_export;
+```
   
 ### Binary Files for HDS-Explorer Server and Client/Mobile
 
