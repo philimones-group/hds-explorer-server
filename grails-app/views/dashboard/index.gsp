@@ -4,7 +4,7 @@
     <title>HDS-Explorer Dashboard</title>
 
     <meta name="layout" content="simplemain" />
-    <asset:stylesheet src="index-bundle-dashboard.css" />
+    <asset:stylesheet src="index-bundle-dashboard.min.css" />
 
     <style type="text/css">
         .rootreact {
@@ -15,7 +15,7 @@
 <body>
 
     <div id="root" class="rootreact"></div>
-    <asset:javascript src="index-bundle-dashboard.js" />
+    <asset:javascript src="index-bundle-dashboard.min.js" />
 
 </body>
 </html>
