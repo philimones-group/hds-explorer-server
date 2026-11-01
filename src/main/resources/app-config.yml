@@ -25,20 +25,26 @@ hds.explorer.system.path: "/var/lib/hds-explorer"
 
 # Default datasource for HDS-Database
 # MySQL Config
-  #dataSource.pooled: true
-  #dataSource.driverClassName: com.mysql.cj.jdbc.Driver
-  #dataSource.dialect: org.hibernate.dialect.MySQL8Dialect
-  #dataSource.username: hds_explorer
-  #dataSource.password: d33_2019xx
-  #dataSource.url: jdbc:mysql://localhost/hds_explorer_db?createDatabaseIfNotExist=true&autoReconnect=true&zeroDateTimeBehavior=convertToNull&useSSL=false
+dataSource.pooled: true
+dataSource.driverClassName: com.mysql.cj.jdbc.Driver
+dataSource.dialect: org.hibernate.dialect.MySQL8Dialect
+dataSource.username: hds_explorer
+dataSource.password: hds_explorer_pass
+dataSource.url: jdbc:mysql://localhost:3306/hds_explorer_db?createDatabaseIfNotExist=true&autoReconnect=true&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true
+# Docker Compose MySQL Config - the hostname is "docker-hds-db" uncomment to use it with docker
+#dataSource.url: jdbc:mysql://docker-hds-db:3306/hds_explorer_db?createDatabaseIfNotExist=true&autoReconnect=true&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true
 
-  #dataSource_export.pooled: true
-  #dataSource_export.driverClassName: com.mysql.cj.jdbc.Driver
-  #dataSource_export.dialect: org.hibernate.dialect.MySQL8Dialect
-  #dataSource_export.username: hds_export
-  #dataSource_export.password: hds_test
-  #dataSource_export.url: jdbc:mysql://localhost/hds_explorer_db?createDatabaseIfNotExist=true&autoReconnect=true&zeroDateTimeBehavior=convertToNull&useSSL=false
-  #dataSource_export.readOnly: true
+dataSource_export.pooled: true
+dataSource_export.driverClassName: com.mysql.cj.jdbc.Driver
+dataSource_export.dialect: org.hibernate.dialect.MySQL8Dialect
+dataSource_export.username: hds_export
+dataSource_export.password: hds_export_pass
+dataSource_export.readOnly: true
+dataSource_export.url: jdbc:mysql://localhost:3306/hds_explorer_db?createDatabaseIfNotExist=true&autoReconnect=true&readOnly=true&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true
+# Docker Compose MySQL Config - the hostname is "docker-hds-db" uncomment to use it with docker
+#dataSource_export.url: jdbc:mysql://docker-hds-db:3306/hds_explorer_db?createDatabaseIfNotExist=true&autoReconnect=true&readOnly=true&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true
+
+
 
 # Postgres Config
   #dataSource.pooled: true
@@ -46,8 +52,16 @@ hds.explorer.system.path: "/var/lib/hds-explorer"
   #dataSource.driverClassName: org.postgresql.Driver
   #dataSource.dialect: org.hibernate.dialect.PostgreSQL94Dialect
   #dataSource.username: hds_explorer
-  #dataSource.password: d33_2019xx
+  #dataSource.password: hds_explorer_pass
   #dataSource.url: "jdbc:postgresql://localhost:5432/hds_explorer_db"
+
+  #dataSource_export.pooled: true
+  #dataSource_export.jmxExport: true
+  #dataSource_export.driverClassName: org.postgresql.Driver
+  #dataSource_export.dialect: org.hibernate.dialect.PostgreSQL94Dialect
+  #dataSource_export.username: hds_export
+  #dataSource_export.password: hds_test
+  #dataSource_export.url: "jdbc:postgresql://localhost:5432/hds_explorer_db?readOnly=true"
 
 # Don't forget to turn on access from a less secure app in your Gmail account configuration, otherwise, google will block it and return this error.
 #

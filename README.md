@@ -11,6 +11,36 @@ This application server can be deployed on a Tomcat server (or any servlet 2.5+ 
 * ODK website: [https://opendatakit.org](https://opendatakit.org)
 
 
+### 🚀 Quick Start with Docker
+The fastest way to run `hds-explorer-server` with a pre-configured MySQL database in Docker:
+
+1. **Clone the repository**:
+   ```bash
+   git clone https://github.com/philimones-group/hds-explorer-server.git
+   cd hds-explorer-server
+   ```
+
+2. **Customize Configuration & Start Containers**:
+   * *(Optional)* Edit database credentials or system parameters in `app-config.yml` (located directly in the project root directory).
+   * *Important*: Ensure the database credentials (usernames and passwords) created in `docker-init/01-init-users.sql` **EXACTLY MATCH** the credentials set in `app-config.yml`, whether using default accounts (`hds_explorer` / `hds_export`) or custom usernames created for your environment.
+   * *Start Containers*:
+     ```bash
+     docker compose up -d --build
+     ```
+   * *The multi-stage build compiles the application inside Docker automatically—no local JDK or Gradle required!*
+
+3. **Access HDS-Explorer**:
+   * Open `http://localhost:8080` in your browser.
+
+4. **Updating a Running Deployment**:
+   * To update your running containers after pulling new code changes:
+     ```bash
+     git pull origin main
+     docker compose up -d --build
+     ```
+   * *Database records and uploaded forms remain 100% safe in persistent Docker volumes.*
+
+
 ### Build/Development Instructions
 HDS-Explorer is being developed using Grails Framework 5.3.2, a Groovy Web Application Framework https://grails.org.
 

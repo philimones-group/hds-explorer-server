@@ -1,0 +1,49 @@
+services:
+  # --------------------------------------------------------------------------
+  # 1. Primary MySQL Database Service
+  # --------------------------------------------------------------------------
+  docker-hds-db:
+    image: mysql:8.0
+    container_name: hds-explorer-db
+    restart: always
+    environment:
+      MYSQL_DATABASE: hds_explorer_db
+      MYSQL_ROOT_PASSWORD: root_secure_pass
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./docker-init:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  # --------------------------------------------------------------------------
+  # 2. HDS-Explorer Application (Multi-Stage Build)
+  # --------------------------------------------------------------------------
+  server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: paulphilimone/hds-explorer-server:${APP_VERSION:-latest}
+    container_name: hds-explorer-server
+    restart: always
+    depends_on:
+      docker-hds-db:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+    extra_hosts:
+      - "host.docker.internal:host-gateway" # Enables container access to local host Ollama instance
+    volumes:
+      - hds_resources:/var/lib/hds-explorer
+      - ./app-config.yml:/var/lib/hds-explorer/app-config.yml
+
+volumes:
+  mysql_data:
+    driver: local
+  hds_resources:
+    driver: local

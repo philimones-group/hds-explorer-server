@@ -2,10 +2,12 @@ package org.philimone.hds.explorer
 
 import grails.boot.GrailsApp
 import grails.boot.config.GrailsAutoConfiguration
+import org.philimone.hds.explorer.io.SystemPath
 import org.springframework.beans.factory.config.YamlPropertiesFactoryBean
 import org.springframework.context.EnvironmentAware
 import org.springframework.core.env.Environment
 import org.springframework.core.env.PropertiesPropertySource
+import org.springframework.core.io.ClassPathResource
 import org.springframework.core.io.FileSystemResource
 import org.springframework.core.io.Resource
 import org.springframework.scheduling.annotation.EnableScheduling
@@ -21,13 +23,11 @@ class Application extends GrailsAutoConfiguration implements EnvironmentAware {
 
         String conf = "hds_explorer.config.location"
 
-        def configFile = getExternalConfigurationFile()
+        Resource resourceConfig = getConfigurationResource()
 
-        println "path: ${configFile}, ${conf}, istest=${isTestEnvironment()}"
+        println "path: ${resourceConfig}, ${conf}, istest=${isTestEnvironment()}"
 
-        if (configFile != null){
-            Resource resourceConfig = new FileSystemResource(configFile)
-
+        if (resourceConfig != null && resourceConfig.exists()){
             YamlPropertiesFactoryBean ypfb = new YamlPropertiesFactoryBean()
 
             ypfb.setResources([resourceConfig] as Resource[])
@@ -39,17 +39,15 @@ class Application extends GrailsAutoConfiguration implements EnvironmentAware {
         }
     }
 
-    File getExternalConfigurationFile(){
-        try {
-            def url = getClass().classLoader.getResource("app-config.yml")
-
-            return new File(url.toURI())
-        }catch (Exception ex){
-            //ex.printStackTrace()
-
-            return null
+    Resource getConfigurationResource(){
+        // 1. Check if external /var/lib/hds-explorer/app-config.yml exists
+        File externalConfig = new File(SystemPath.HOME_PATH, "app-config.yml")
+        if (externalConfig.exists()){
+            return new FileSystemResource(externalConfig)
         }
 
+        // 2. Fallback to bundled app-config.yml inside WAR
+        return new ClassPathResource("app-config.yml")
     }
 
     boolean isTestEnvironment(){
