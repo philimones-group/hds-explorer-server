@@ -23,7 +23,7 @@ import java.time.format.DateTimeFormatter
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
 
-@Transactional(readOnly = true)
+@Transactional
 class DataExportService {
 
     DataDictionaryService dataDictionaryService

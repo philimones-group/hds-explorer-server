@@ -3,7 +3,7 @@ package org.philimone.hds.explorer.services
 import grails.gorm.transactions.Transactional
 import org.philimone.hds.explorer.server.model.enums.DataExportFormat
 
-@Transactional(readOnly = true)
+@Transactional
 class DataExportScriptsBuilderService {
 
     DataDictionaryService dataDictionaryService

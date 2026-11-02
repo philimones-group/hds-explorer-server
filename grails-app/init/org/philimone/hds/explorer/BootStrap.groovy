@@ -52,6 +52,7 @@ class BootStrap {
     def applicationParamService
     def codeGeneratorService
     def coreFormExtensionService
+    def dataExportCleanupService
 
     def init = { servletContext ->
 
@@ -62,7 +63,8 @@ class BootStrap {
         setupCodeGenerators()
         defaultAppUser()
 
-        testApp()
+        // Clean up expired export files on startup
+        dataExportCleanupService.cleanExportFiles()
     }
 
     def destroy = {

@@ -1,13 +1,14 @@
 package org.philimone.hds.explorer.services
 
 import grails.gorm.transactions.Transactional
-import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
 import org.philimone.hds.explorer.io.SystemPath
+import org.philimone.hds.explorer.server.model.settings.DataExportReport
 import org.springframework.scheduling.annotation.Scheduled
 
+import java.time.LocalDateTime
+
 @Slf4j
-@CompileStatic
 @Transactional
 class DataExportCleanupService {
 
@@ -42,7 +43,27 @@ class DataExportCleanupService {
                     }
                 }
 
-                println("DataExportCleanupJob completed. Deleted ${deletedCount} expired export files from ${exportDir.absolutePath}.")
+                // Option A: Clear file references on expired DataExportReport database records
+                LocalDateTime cutoffDate = LocalDateTime.now().minusDays(7)
+                List<DataExportReport> expiredReports = DataExportReport.findAllByCreatedDateLessThan(cutoffDate)
+                int updatedReportsCount = 0
+
+                expiredReports.each { report ->
+                    if (report.datasetFileName != null || report.zipFileName != null || report.scriptFileName != null || report.codebookFileName != null) {
+                        report.datasetFileName = null
+                        report.zipFileName = null
+                        report.scriptFileName = null
+                        report.codebookFileName = null
+                        report.datasetFileSize = 0L
+                        report.zipFileSize = 0L
+                        report.scriptFileSize = 0L
+                        report.codebookFileSize = 0L
+                        report.save(flush: true)
+                        updatedReportsCount++
+                    }
+                }
+
+                println("DataExportCleanupJob completed. Deleted ${deletedCount} expired export files from disk and updated ${updatedReportsCount} database records.")
             } else {
                 println("DataExportCleanupJob: External docs directory ${exportDir.absolutePath} does not exist yet.")
             }

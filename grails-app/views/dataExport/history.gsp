@@ -343,12 +343,15 @@
 
                                         <!-- Column 7: Files -->
                                         <td>
-                                            <g:if test="${r.status == DataExportStatus.COMPLETED}">
+                                            <g:if test="${r.status == DataExportStatus.COMPLETED && r.totalFiles > 0}">
                                                 <div class="fs-7 text-dark" style="white-space: nowrap;">
                                                     <i class="fa-solid fa-file-csv text-primary me-1"></i>
                                                     ${r.totalFiles>0 ? '(' + r.totalFiles + ' files)' : '(1 file)'}
                                                 </div>
                                             </g:if>
+                                            <g:elseif test="${r.status == DataExportStatus.COMPLETED && r.totalFiles == 0}">
+                                                <span class="badge bg-warning text-dark rounded-pill px-2 py-1"><i class="fa-solid fa-clock me-1"></i> <g:message code="dataExport.history.fileExpired" default="Expired"/></span>
+                                            </g:elseif>
                                             <g:else>
                                                 <span class="text-muted">-</span>
                                             </g:else>
@@ -357,12 +360,18 @@
                                         <!-- Column 8: Actions -->
                                         <td class="text-end pe-4" style="white-space: nowrap;">
                                             <div class="d-flex align-items-center justify-content-end gap-2">
-                                                <g:if test="${r.status == DataExportStatus.COMPLETED}">
+                                                <g:if test="${r.status == DataExportStatus.COMPLETED && r.totalFiles > 0}">
                                                     <g:link action="downloadReportFile" id="${r.id}" class="btn btn-primary btn-sm px-3 d-inline-flex align-items-center gap-1" style="width: 110px;"  >
                                                         <i class="fa-solid fa-download me-1"></i>
                                                         <span><g:message code="default.button.download" default="Download"/></span>
                                                     </g:link>
                                                 </g:if>
+                                                <g:elseif test="${r.status == DataExportStatus.COMPLETED && r.totalFiles == 0}">
+                                                    <button type="button" class="btn btn-outline-secondary btn-sm px-3 d-inline-flex align-items-center gap-1" style="width: 110px;" disabled title="${g.message(code: 'dataExport.history.fileExpiredTooltip', default: 'Export file retention period (7 days) has expired. Click Re-run to generate again.')}">
+                                                        <i class="fa-solid fa-clock me-1"></i>
+                                                        <span><g:message code="dataExport.history.fileExpired" default="Expired"/></span>
+                                                    </button>
+                                                </g:elseif>
                                                 <g:else>
                                                     <button type="button" class="btn btn-secondary btn-sm px-3 d-inline-flex align-items-center gap-1" style="width: 110px;" onclick="openDetailsById('${r.id}')">
                                                         <i class="fa-solid fa-eye me-1"></i>
