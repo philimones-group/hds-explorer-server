@@ -53,6 +53,7 @@ class BootStrap {
     def codeGeneratorService
     def coreFormExtensionService
     def dataExportCleanupService
+    def syncFilesReportService
 
     def init = { servletContext ->
 
@@ -551,17 +552,8 @@ class BootStrap {
 
 
         //Insert Sync Reports
-        new SyncFilesReport(name: SyncEntity.PARAMETERS).save(flush:true)
-        new SyncFilesReport(name: SyncEntity.MODULES).save(flush:true)
-        new SyncFilesReport(name: SyncEntity.FORMS).save(flush:true)
-        new SyncFilesReport(name: SyncEntity.DATASETS).save(flush:true)
-        new SyncFilesReport(name: SyncEntity.DATASETS_CSV_FILES).save(flush:true)
-        new SyncFilesReport(name: SyncEntity.TRACKING_LISTS).save(flush:true)
-        new SyncFilesReport(name: SyncEntity.USERS).save(flush:true)
-        new SyncFilesReport(name: SyncEntity.REGIONS).save(flush:true)
-        new SyncFilesReport(name: SyncEntity.HOUSEHOLDS).save(flush:true)
-        new SyncFilesReport(name: SyncEntity.MEMBERS).save(flush:true)
-
+        syncFilesReportService.updateAllSyncReports()
+        
         //Insert Unknown Member for reference Unknown Individual
         //code: UNK, Unknown Member,
         new Member(id: "Unknown Member", code: Codes.MEMBER_UNKNOWN_CODE, name: "member.unknown.label", gender: Gender.MALE, dob: GeneralUtil.getDate(1900,1,1), maritalStatus: MaritalStatus.SINGLE).save(flush: true)

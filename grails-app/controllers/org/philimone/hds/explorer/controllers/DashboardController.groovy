@@ -10,7 +10,7 @@ class DashboardController {
     def index() { }
 
     def totals = {
-        def totals = dashboardService.retrieveTotals()
+        def totals = dashboardService.retrieveTotals2()
         [totals: totals]
     }
 

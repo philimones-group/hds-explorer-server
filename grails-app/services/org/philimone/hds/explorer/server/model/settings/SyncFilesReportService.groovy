@@ -34,6 +34,22 @@ class SyncFilesReportService {
         SyncFilesReport.findByName(entity)
     }
 
+    def updateAllSyncReports() {
+        def saveRecords = SyncFilesReport.list()
+        SyncFilesReport.executeUpdate("delete from SyncFilesReport s")
+
+        //recreate
+        SyncEntity.values().each { entity ->
+            def savedRecord = saveRecords.find { it.name == entity }
+            def newReport = new SyncFilesReport()
+            newReport.code = entity.code
+            newReport.name = entity
+            newReport.records = (savedRecord != null) ? savedRecord.records : 0
+            newReport.syncDate = (savedRecord != null) ? savedRecord.syncDate : LocalDateTime.now()
+            newReport.save()
+        }
+    }
+
     def clearReports() {
         SyncFilesReport.deleteAll();
     }

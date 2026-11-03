@@ -76,6 +76,58 @@ class DashboardService {
         return totals
     }
 
+    Totals retrieveTotals2() {
+        def totals = new Totals()
+
+        totals.households = Household.count()
+
+        def memberCounts = Member.executeQuery("""
+            select count(m.id), 
+                   sum(case when m.gender = :male then 1L else 0L end), 
+                   sum(case when m.gender = :female then 1L else 0L end)
+            from Member m where m.code != 'UNK'
+        """, [male: Gender.MALE, female: Gender.FEMALE]).first()
+
+        totals.individuals = (memberCounts[0] ?: 0) as long
+        totals.individuals_male = (memberCounts[1] ?: 0) as long
+        totals.individuals_female = (memberCounts[2] ?: 0) as long
+
+        def residentCounts = Residency.executeQuery("""
+            select count(r.id),
+                   sum(case when r.member.gender = :male then 1L else 0L end),
+                   sum(case when r.member.gender = :female then 1L else 0L end)
+            from Residency r where r.endType = :endType
+        """, [endType: ResidencyEndType.NOT_APPLICABLE, male: Gender.MALE, female: Gender.FEMALE]).first()
+
+        totals.residents = (residentCounts[0] ?: 0) as long
+        totals.residents_male = (residentCounts[1] ?: 0) as long
+        totals.residents_female = (residentCounts[2] ?: 0) as long
+
+        def outmigrationCounts = OutMigration.executeQuery("""
+            select count(o.id),
+                   sum(case when o.member.gender = :male then 1L else 0L end),
+                   sum(case when o.member.gender = :female then 1L else 0L end)
+            from OutMigration o where o.migrationType = :migType
+        """, [migType: OutMigrationType.EXTERNAL, male: Gender.MALE, female: Gender.FEMALE]).first()
+
+        totals.outmigrations = (outmigrationCounts[0] ?: 0) as long
+        totals.outmigrations_male = (outmigrationCounts[1] ?: 0) as long
+        totals.outmigrations_female = (outmigrationCounts[2] ?: 0) as long
+
+        def deathCounts = Death.executeQuery("""
+            select count(d.id),
+                   sum(case when d.member.gender = :male then 1L else 0L end),
+                   sum(case when d.member.gender = :female then 1L else 0L end)
+            from Death d
+        """, [male: Gender.MALE, female: Gender.FEMALE]).first()
+
+        totals.deaths = (deathCounts[0] ?: 0) as long
+        totals.deaths_male = (deathCounts[1] ?: 0) as long
+        totals.deaths_female = (deathCounts[2] ?: 0) as long
+
+        return totals
+    }
+
     /*
     * old slow method
     */
